@@ -1,0 +1,2650 @@
+[
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 204,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 208,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 58,
+		"race" : 1,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 48,
+		"race" : 1,
+		"class" : 2,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 48,
+		"race" : 1,
+		"class" : 2,
+		"deity" : 204,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 48,
+		"race" : 1,
+		"class" : 2,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 48,
+		"race" : 1,
+		"class" : 2,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 48,
+		"race" : 1,
+		"class" : 2,
+		"deity" : 208,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 48,
+		"race" : 1,
+		"class" : 2,
+		"deity" : 212,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 54,
+		"race" : 1,
+		"class" : 3,
+		"deity" : 204,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 54,
+		"race" : 1,
+		"class" : 3,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 54,
+		"race" : 1,
+		"class" : 3,
+		"deity" : 208,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 54,
+		"race" : 1,
+		"class" : 3,
+		"deity" : 212,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 55,
+		"race" : 1,
+		"class" : 4,
+		"deity" : 207,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 55,
+		"race" : 1,
+		"class" : 4,
+		"deity" : 215,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 57,
+		"race" : 1,
+		"class" : 5,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 57,
+		"race" : 1,
+		"class" : 5,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 49,
+		"race" : 1,
+		"class" : 6,
+		"deity" : 207,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 49,
+		"race" : 1,
+		"class" : 6,
+		"deity" : 215,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 52,
+		"race" : 1,
+		"class" : 7,
+		"deity" : 210,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 52,
+		"race" : 1,
+		"class" : 7,
+		"deity" : 396,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 202,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 202,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 204,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 205,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 205,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 208,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 209,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 209,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 210,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 210,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 211,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 211,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 213,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 213,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 214,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 214,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 215,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 215,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 216,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 216,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 47,
+		"race" : 1,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 201,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 204,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 207,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 212,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 56,
+		"race" : 1,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 53,
+		"race" : 1,
+		"class" : 11,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 53,
+		"race" : 1,
+		"class" : 11,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 204,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 208,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 213,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 213,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 12,
+		"deity" : 396,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 204,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 208,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 51,
+		"race" : 1,
+		"class" : 13,
+		"deity" : 396,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 204,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 208,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 50,
+		"race" : 1,
+		"class" : 14,
+		"deity" : 396,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 4,
+		"race" : 2,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 4,
+		"race" : 2,
+		"class" : 1,
+		"deity" : 214,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 4,
+		"race" : 2,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 2,
+		"race" : 2,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 2,
+		"race" : 2,
+		"class" : 9,
+		"deity" : 214,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 2,
+		"race" : 2,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 3,
+		"race" : 2,
+		"class" : 10,
+		"deity" : 214,
+		"start_zone" : 29,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 0,
+		"race" : 2,
+		"class" : 15,
+		"deity" : 208,
+		"start_zone" : 29,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 0,
+		"race" : 2,
+		"class" : 15,
+		"deity" : 214,
+		"start_zone" : 29,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 1,
+		"race" : 2,
+		"class" : 16,
+		"deity" : 211,
+		"start_zone" : 29,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 1,
+		"race" : 2,
+		"class" : 16,
+		"deity" : 214,
+		"start_zone" : 29,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 1,
+		"race" : 2,
+		"class" : 16,
+		"deity" : 396,
+		"start_zone" : 29,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 17,
+		"race" : 3,
+		"class" : 2,
+		"deity" : 203,
+		"start_zone" : 75,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 17,
+		"race" : 3,
+		"class" : 2,
+		"deity" : 209,
+		"start_zone" : 24,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 17,
+		"race" : 3,
+		"class" : 2,
+		"deity" : 210,
+		"start_zone" : 24,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 21,
+		"race" : 3,
+		"class" : 3,
+		"deity" : 209,
+		"start_zone" : 24,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 21,
+		"race" : 3,
+		"class" : 3,
+		"deity" : 210,
+		"start_zone" : 24,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 22,
+		"race" : 3,
+		"class" : 5,
+		"deity" : 203,
+		"start_zone" : 75,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 20,
+		"race" : 3,
+		"class" : 11,
+		"deity" : 203,
+		"start_zone" : 75,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 12,
+		"deity" : 209,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 12,
+		"deity" : 210,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 12,
+		"deity" : 213,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 12,
+		"deity" : 396,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 13,
+		"deity" : 209,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 13,
+		"deity" : 210,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 19,
+		"race" : 3,
+		"class" : 13,
+		"deity" : 396,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 18,
+		"race" : 3,
+		"class" : 14,
+		"deity" : 209,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 18,
+		"race" : 3,
+		"class" : 14,
+		"deity" : 210,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 18,
+		"race" : 3,
+		"class" : 14,
+		"deity" : 396,
+		"start_zone" : 23,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 85,
+		"race" : 4,
+		"class" : 1,
+		"deity" : 207,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 85,
+		"race" : 4,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 85,
+		"race" : 4,
+		"class" : 1,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 85,
+		"race" : 4,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 83,
+		"race" : 4,
+		"class" : 4,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 82,
+		"race" : 4,
+		"class" : 6,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 202,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 204,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 205,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 207,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 208,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 209,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 210,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 211,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 212,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 213,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 214,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 216,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 81,
+		"race" : 4,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 84,
+		"race" : 4,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 84,
+		"race" : 4,
+		"class" : 9,
+		"deity" : 207,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 84,
+		"race" : 4,
+		"class" : 9,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 84,
+		"race" : 4,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 43,
+		"race" : 5,
+		"class" : 2,
+		"deity" : 215,
+		"start_zone" : 61,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 46,
+		"race" : 5,
+		"class" : 3,
+		"deity" : 215,
+		"start_zone" : 61,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 12,
+		"deity" : 204,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 12,
+		"deity" : 207,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 12,
+		"deity" : 208,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 12,
+		"deity" : 213,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 12,
+		"deity" : 215,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 12,
+		"deity" : 396,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 13,
+		"deity" : 204,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 13,
+		"deity" : 207,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 13,
+		"deity" : 208,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 13,
+		"deity" : 215,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 45,
+		"race" : 5,
+		"class" : 13,
+		"deity" : 396,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 44,
+		"race" : 5,
+		"class" : 14,
+		"deity" : 204,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 44,
+		"race" : 5,
+		"class" : 14,
+		"deity" : 207,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 44,
+		"race" : 5,
+		"class" : 14,
+		"deity" : 208,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 44,
+		"race" : 5,
+		"class" : 14,
+		"deity" : 215,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 44,
+		"race" : 5,
+		"class" : 14,
+		"deity" : 396,
+		"start_zone" : 62,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 11,
+		"race" : 6,
+		"class" : 1,
+		"deity" : 206,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 11,
+		"race" : 6,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 11,
+		"race" : 6,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 5,
+		"race" : 6,
+		"class" : 2,
+		"deity" : 206,
+		"start_zone" : 42,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 10,
+		"race" : 6,
+		"class" : 5,
+		"deity" : 206,
+		"start_zone" : 42,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 9,
+		"race" : 6,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 42,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 9,
+		"race" : 6,
+		"class" : 9,
+		"deity" : 206,
+		"start_zone" : 42,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 9,
+		"race" : 6,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 42,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 8,
+		"race" : 6,
+		"class" : 11,
+		"deity" : 206,
+		"start_zone" : 42,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 7,
+		"race" : 6,
+		"class" : 12,
+		"deity" : 206,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 7,
+		"race" : 6,
+		"class" : 12,
+		"deity" : 213,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 7,
+		"race" : 6,
+		"class" : 12,
+		"deity" : 396,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 7,
+		"race" : 6,
+		"class" : 13,
+		"deity" : 206,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 7,
+		"race" : 6,
+		"class" : 13,
+		"deity" : 396,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 6,
+		"race" : 6,
+		"class" : 14,
+		"deity" : 206,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 6,
+		"race" : 6,
+		"class" : 14,
+		"deity" : 396,
+		"start_zone" : 41,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 201,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 204,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 206,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 208,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 209,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 209,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 209,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 214,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 214,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 214,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 9,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 36,
+		"race" : 7,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 33,
+		"race" : 7,
+		"class" : 3,
+		"deity" : 204,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 33,
+		"race" : 7,
+		"class" : 3,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 33,
+		"race" : 7,
+		"class" : 3,
+		"deity" : 208,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 33,
+		"race" : 7,
+		"class" : 3,
+		"deity" : 212,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 33,
+		"race" : 7,
+		"class" : 3,
+		"deity" : 215,
+		"start_zone" : 61,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 34,
+		"race" : 7,
+		"class" : 4,
+		"deity" : 207,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 34,
+		"race" : 7,
+		"class" : 4,
+		"deity" : 215,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 34,
+		"race" : 7,
+		"class" : 4,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 32,
+		"race" : 7,
+		"class" : 6,
+		"deity" : 207,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 32,
+		"race" : 7,
+		"class" : 6,
+		"deity" : 215,
+		"start_zone" : 3,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 32,
+		"race" : 7,
+		"class" : 6,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 202,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 202,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 202,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 204,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 205,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 205,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 205,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 207,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 208,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 209,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 209,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 209,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 210,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 210,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 210,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 211,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 211,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 211,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 212,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 213,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 213,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 213,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 214,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 214,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 214,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 215,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 215,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 216,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 216,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 216,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 1,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 8,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 31,
+		"race" : 7,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 201,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 204,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 207,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 212,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 215,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 2,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 10,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 35,
+		"race" : 7,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 54,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 16,
+		"race" : 8,
+		"class" : 1,
+		"deity" : 202,
+		"start_zone" : 60,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 16,
+		"race" : 8,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 60,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 13,
+		"race" : 8,
+		"class" : 2,
+		"deity" : 202,
+		"start_zone" : 67,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 14,
+		"race" : 8,
+		"class" : 3,
+		"deity" : 202,
+		"start_zone" : 67,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 15,
+		"race" : 8,
+		"class" : 9,
+		"deity" : 202,
+		"start_zone" : 67,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 15,
+		"race" : 8,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 67,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 15,
+		"race" : 8,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 67,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 12,
+		"race" : 8,
+		"class" : 16,
+		"deity" : 202,
+		"start_zone" : 67,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 12,
+		"race" : 8,
+		"class" : 16,
+		"deity" : 205,
+		"start_zone" : 67,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 12,
+		"race" : 8,
+		"class" : 16,
+		"deity" : 396,
+		"start_zone" : 67,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 74,
+		"race" : 9,
+		"class" : 1,
+		"deity" : 203,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 74,
+		"race" : 9,
+		"class" : 1,
+		"deity" : 206,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 74,
+		"race" : 9,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 74,
+		"race" : 9,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 72,
+		"race" : 9,
+		"class" : 5,
+		"deity" : 203,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 72,
+		"race" : 9,
+		"class" : 5,
+		"deity" : 206,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 73,
+		"race" : 9,
+		"class" : 10,
+		"deity" : 203,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 73,
+		"race" : 9,
+		"class" : 10,
+		"deity" : 206,
+		"start_zone" : 52,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 70,
+		"race" : 9,
+		"class" : 15,
+		"deity" : 203,
+		"start_zone" : 52,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 70,
+		"race" : 9,
+		"class" : 15,
+		"deity" : 206,
+		"start_zone" : 52,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 71,
+		"race" : 9,
+		"class" : 16,
+		"deity" : 203,
+		"start_zone" : 52,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 71,
+		"race" : 9,
+		"class" : 16,
+		"deity" : 206,
+		"start_zone" : 52,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 71,
+		"race" : 9,
+		"class" : 16,
+		"deity" : 211,
+		"start_zone" : 52,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 71,
+		"race" : 9,
+		"class" : 16,
+		"deity" : 396,
+		"start_zone" : 52,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 107,
+		"race" : 10,
+		"class" : 1,
+		"deity" : 203,
+		"start_zone" : 49,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 107,
+		"race" : 10,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 49,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 107,
+		"race" : 10,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 49,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 67,
+		"race" : 10,
+		"class" : 5,
+		"deity" : 203,
+		"start_zone" : 49,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 67,
+		"race" : 10,
+		"class" : 5,
+		"deity" : 211,
+		"start_zone" : 49,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 68,
+		"race" : 10,
+		"class" : 10,
+		"deity" : 211,
+		"start_zone" : 49,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 65,
+		"race" : 10,
+		"class" : 15,
+		"deity" : 211,
+		"start_zone" : 49,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 108,
+		"race" : 10,
+		"class" : 16,
+		"deity" : 203,
+		"start_zone" : 49,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 108,
+		"race" : 10,
+		"class" : 16,
+		"deity" : 211,
+		"start_zone" : 49,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 108,
+		"race" : 10,
+		"class" : 16,
+		"deity" : 396,
+		"start_zone" : 49,
+		"expansions_req" : 64
+	},
+	{
+		"allocation_id" : 42,
+		"race" : 11,
+		"class" : 1,
+		"deity" : 202,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 42,
+		"race" : 11,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 42,
+		"race" : 11,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 37,
+		"race" : 11,
+		"class" : 2,
+		"deity" : 205,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 39,
+		"race" : 11,
+		"class" : 3,
+		"deity" : 207,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 40,
+		"race" : 11,
+		"class" : 4,
+		"deity" : 207,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 38,
+		"race" : 11,
+		"class" : 6,
+		"deity" : 207,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 41,
+		"race" : 11,
+		"class" : 9,
+		"deity" : 202,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 41,
+		"race" : 11,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 41,
+		"race" : 11,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 19,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 30,
+		"race" : 12,
+		"class" : 1,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 30,
+		"race" : 12,
+		"class" : 1,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 30,
+		"race" : 12,
+		"class" : 1,
+		"deity" : 211,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 30,
+		"race" : 12,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 23,
+		"race" : 12,
+		"class" : 2,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 23,
+		"race" : 12,
+		"class" : 2,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 23,
+		"race" : 12,
+		"class" : 2,
+		"deity" : 205,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 27,
+		"race" : 12,
+		"class" : 3,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 29,
+		"race" : 12,
+		"class" : 5,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 28,
+		"race" : 12,
+		"class" : 9,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 28,
+		"race" : 12,
+		"class" : 9,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 28,
+		"race" : 12,
+		"class" : 9,
+		"deity" : 205,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 28,
+		"race" : 12,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 26,
+		"race" : 12,
+		"class" : 11,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 12,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 12,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 12,
+		"deity" : 213,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 12,
+		"deity" : 396,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 13,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 13,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 25,
+		"race" : 12,
+		"class" : 13,
+		"deity" : 396,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 24,
+		"race" : 12,
+		"class" : 14,
+		"deity" : 201,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 24,
+		"race" : 12,
+		"class" : 14,
+		"deity" : 202,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 24,
+		"race" : 12,
+		"class" : 14,
+		"deity" : 396,
+		"start_zone" : 55,
+		"expansions_req" : 0
+	},
+	{
+		"allocation_id" : 64,
+		"race" : 128,
+		"class" : 1,
+		"deity" : 203,
+		"start_zone" : 106,
+		"expansions_req" : 1
+	},
+	{
+		"allocation_id" : 62,
+		"race" : 128,
+		"class" : 5,
+		"deity" : 203,
+		"start_zone" : 106,
+		"expansions_req" : 1
+	},
+	{
+		"allocation_id" : 60,
+		"race" : 128,
+		"class" : 7,
+		"deity" : 203,
+		"start_zone" : 106,
+		"expansions_req" : 1
+	},
+	{
+		"allocation_id" : 63,
+		"race" : 128,
+		"class" : 10,
+		"deity" : 203,
+		"start_zone" : 106,
+		"expansions_req" : 1
+	},
+	{
+		"allocation_id" : 61,
+		"race" : 128,
+		"class" : 11,
+		"deity" : 203,
+		"start_zone" : 82,
+		"expansions_req" : 1
+	},
+	{
+		"allocation_id" : 59,
+		"race" : 128,
+		"class" : 15,
+		"deity" : 203,
+		"start_zone" : 106,
+		"expansions_req" : 5
+	},
+	{
+		"allocation_id" : 80,
+		"race" : 130,
+		"class" : 1,
+		"deity" : 396,
+		"start_zone" : 155,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 75,
+		"race" : 130,
+		"class" : 8,
+		"deity" : 396,
+		"start_zone" : 155,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 78,
+		"race" : 130,
+		"class" : 9,
+		"deity" : 396,
+		"start_zone" : 155,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 79,
+		"race" : 130,
+		"class" : 10,
+		"deity" : 396,
+		"start_zone" : 155,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 76,
+		"race" : 130,
+		"class" : 15,
+		"deity" : 396,
+		"start_zone" : 155,
+		"expansions_req" : 4
+	},
+	{
+		"allocation_id" : 77,
+		"race" : 130,
+		"class" : 16,
+		"deity" : 396,
+		"start_zone" : 155,
+		"expansions_req" : 68
+	}
+]

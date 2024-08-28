@@ -1,0 +1,73 @@
+export default interface CharacterProfile {
+  id: number;
+  accountId: number;
+  forumId: number;
+  name: string;
+  lastName: string;
+  title: string;
+  suffix: string;
+  zoneId: number;
+  position: {
+    x: number;
+    y: number;
+    z: number;
+    heading: number;
+  };
+  gender: number;
+  race: number;
+  class: number;
+  level: number;
+  deity: number;
+  birthday: number;
+  lastLogin: number;
+  timePlayed: number;
+  level2: number;
+  anon: number;
+  gm: number;
+  appearance: {
+    face: number;
+    hairColor: number;
+    hairStyle: number;
+    beard: number;
+    beardColor: number;
+    eyeColor1: number;
+    eyeColor2: number;
+  };
+
+  exp: number;
+  aaPointsSpent: number;
+  aaExp: number;
+  aaPoints: number;
+
+  stats: {
+    points: number;
+    curHp: number;
+    mana: number;
+    endurance: number;
+    intoxication: number;
+    str: number;
+    sta: number;
+    cha: number;
+    dex: number;
+    int: number;
+    agi: number;
+    wis: number;
+  };
+  zoneChangeCount: number;
+  hungerLevel: number;
+  thirstLevel: number;
+  pvpStatus: number;
+  airRemaining: number;
+  autosplitEnabled: number;
+  mailkey: string;
+  firstLogon: number;
+  eAaEffects: number;
+  ePercentToAa: number;
+  eExpendedAaSpent: number;
+  boatId: number;
+  boatName: string | null;
+  famished: number;
+  isDeleted: number;
+  showHelm: number;
+  fatigue: number;
+}
