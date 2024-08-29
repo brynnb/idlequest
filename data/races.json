@@ -1,1852 +1,1852 @@
 [
 	{
-		"name" : "Abhorent",
-		"id" : 193,
-		"no_coin" : 0
+		"name": "Abhorent",
+		"id": 193,
+		"no_coin": 0
 	},
 	{
-		"name" : "Air Elemental",
-		"id" : 210,
-		"no_coin" : 0
+		"name": "Air Elemental",
+		"id": 210,
+		"no_coin": 0
 	},
 	{
-		"name" : "Air Mephit",
-		"id" : 291,
-		"no_coin" : 0
+		"name": "Air Mephit",
+		"id": 291,
+		"no_coin": 0
 	},
 	{
-		"name" : "Akheva",
-		"id" : 230,
-		"no_coin" : 0
+		"name": "Akheva",
+		"id": 230,
+		"no_coin": 0
 	},
 	{
-		"name" : "Alligator",
-		"id" : 91,
-		"no_coin" : 1
+		"name": "Alligator",
+		"id": 91,
+		"no_coin": 1
 	},
 	{
-		"name" : "Animated Armor",
-		"id" : 323,
-		"no_coin" : 0
+		"name": "Animated Armor",
+		"id": 323,
+		"no_coin": 0
 	},
 	{
-		"name" : "Arachnid",
-		"id" : 326,
-		"no_coin" : 1
+		"name": "Arachnid",
+		"id": 326,
+		"no_coin": 1
 	},
 	{
-		"name" : "Armadillo",
-		"id" : 87,
-		"no_coin" : 1
+		"name": "Armadillo",
+		"id": 87,
+		"no_coin": 1
 	},
 	{
-		"name" : "Aviak",
-		"id" : 13,
-		"no_coin" : 0
+		"name": "Aviak",
+		"id": 13,
+		"no_coin": 0
 	},
 	{
-		"name" : "Barbarian",
-		"id" : 2,
-		"no_coin" : 0
+		"name": "Barbarian",
+		"id": 2,
+		"no_coin": 0
 	},
 	{
-		"name" : "Barrel",
-		"id" : 377,
-		"no_coin" : 1
+		"name": "Barrel",
+		"id": 377,
+		"no_coin": 1
 	},
 	{
-		"name" : "Bear",
-		"id" : 43,
-		"no_coin" : 1
+		"name": "Bear",
+		"id": 43,
+		"no_coin": 1
 	},
 	{
-		"name" : "Beetle",
-		"id" : 22,
-		"no_coin" : 1
+		"name": "Beetle",
+		"id": 22,
+		"no_coin": 1
 	},
 	{
-		"name" : "Bertoxxulous",
-		"id" : 152,
-		"no_coin" : 0
+		"name": "Bertoxxulous",
+		"id": 152,
+		"no_coin": 0
 	},
 	{
-		"name" : "Bixie",
-		"id" : 79,
-		"no_coin" : 0
+		"name": "Bixie",
+		"id": 79,
+		"no_coin": 0
 	},
 	{
-		"name" : "Black and White Dragons",
-		"id" : 195,
-		"no_coin" : 0
+		"name": "Black and White Dragons",
+		"id": 195,
+		"no_coin": 0
 	},
 	{
-		"name" : "Black Knight",
-		"id" : 322,
-		"no_coin" : 0
+		"name": "Black Knight",
+		"id": 322,
+		"no_coin": 0
 	},
 	{
-		"name" : "Blood Raven",
-		"id" : 279,
-		"no_coin" : 1
+		"name": "Blood Raven",
+		"id": 279,
+		"no_coin": 1
 	},
 	{
-		"name" : "Bloodgills",
-		"id" : 59,
-		"no_coin" : 0
+		"name": "Bloodgills",
+		"id": 59,
+		"no_coin": 0
 	},
 	{
-		"name" : "Boat",
-		"id" : 141,
-		"no_coin" : 0
+		"name": "Boat",
+		"id": 141,
+		"no_coin": 0
 	},
 	{
-		"name" : "Bone Golem",
-		"id" : 362,
-		"no_coin" : 0
+		"name": "Bone Golem",
+		"id": 362,
+		"no_coin": 0
 	},
 	{
-		"name" : "Bones",
-		"id" : 383,
-		"no_coin" : 0
+		"name": "Bones",
+		"id": 383,
+		"no_coin": 0
 	},
 	{
-		"name" : "BoT Portal",
-		"id" : 329,
-		"no_coin" : 1
+		"name": "BoT Portal",
+		"id": 329,
+		"no_coin": 1
 	},
 	{
-		"name" : "Box",
-		"id" : 376,
-		"no_coin" : 0
+		"name": "Box",
+		"id": 376,
+		"no_coin": 0
 	},
 	{
-		"name" : "Bristlebane",
-		"id" : 153,
-		"no_coin" : 0
+		"name": "Bristlebane",
+		"id": 153,
+		"no_coin": 0
 	},
 	{
-		"name" : "Broken Clockwork",
-		"id" : 274,
-		"no_coin" : 0
+		"name": "Broken Clockwork",
+		"id": 274,
+		"no_coin": 0
 	},
 	{
-		"name" : "Brontotherium",
-		"id" : 169,
-		"no_coin" : 0
+		"name": "Brontotherium",
+		"id": 169,
+		"no_coin": 0
 	},
 	{
-		"name" : "Brownie",
-		"id" : 15,
-		"no_coin" : 0
+		"name": "Brownie",
+		"id": 15,
+		"no_coin": 0
 	},
 	{
-		"name" : "Bubonian",
-		"id" : 269,
-		"no_coin" : 0
+		"name": "Bubonian",
+		"id": 269,
+		"no_coin": 0
 	},
 	{
-		"name" : "Burynai",
-		"id" : 144,
-		"no_coin" : 0
+		"name": "Burynai",
+		"id": 144,
+		"no_coin": 0
 	},
 	{
-		"name" : "Cazic-Thule",
-		"id" : 95,
-		"no_coin" : 0
+		"name": "Cazic-Thule",
+		"id": 95,
+		"no_coin": 0
 	},
 	{
-		"name" : "Centaur",
-		"id" : 16,
-		"no_coin" : 0
+		"name": "Centaur",
+		"id": 16,
+		"no_coin": 0
 	},
 	{
-		"name" : "Chest",
-		"id" : 378,
-		"no_coin" : 0
+		"name": "Chest",
+		"id": 378,
+		"no_coin": 0
 	},
 	{
-		"name" : "Chokadai",
-		"id" : 356,
-		"no_coin" : 0
+		"name": "Chokadai",
+		"id": 356,
+		"no_coin": 0
 	},
 	{
-		"name" : "Chosen Warrior",
-		"id" : 351,
-		"no_coin" : 0
+		"name": "Chosen Warrior",
+		"id": 351,
+		"no_coin": 0
 	},
 	{
-		"name" : "Chosen Wizard",
-		"id" : 352,
-		"no_coin" : 0
+		"name": "Chosen Wizard",
+		"id": 352,
+		"no_coin": 0
 	},
 	{
-		"name" : "Clam",
-		"id" : 115,
-		"no_coin" : 1
+		"name": "Clam",
+		"id": 115,
+		"no_coin": 1
 	},
 	{
-		"name" : "Clockwork Beetle",
-		"id" : 276,
-		"no_coin" : 0
+		"name": "Clockwork Beetle",
+		"id": 276,
+		"no_coin": 0
 	},
 	{
-		"name" : "Clockwork Brain",
-		"id" : 249,
-		"no_coin" : 0
+		"name": "Clockwork Brain",
+		"id": 249,
+		"no_coin": 0
 	},
 	{
-		"name" : "Clockwork Dragon",
-		"id" : 192,
-		"no_coin" : 1
+		"name": "Clockwork Dragon",
+		"id": 192,
+		"no_coin": 1
 	},
 	{
-		"name" : "Clockwork Gnome",
-		"id" : 88,
-		"no_coin" : 0
+		"name": "Clockwork Gnome",
+		"id": 88,
+		"no_coin": 0
 	},
 	{
-		"name" : "Clockwork Golem",
-		"id" : 248,
-		"no_coin" : 0
+		"name": "Clockwork Golem",
+		"id": 248,
+		"no_coin": 0
 	},
 	{
-		"name" : "Cockatrice",
-		"id" : 96,
-		"no_coin" : 1
+		"name": "Cockatrice",
+		"id": 96,
+		"no_coin": 1
 	},
 	{
-		"name" : "Coffin",
-		"id" : 382,
-		"no_coin" : 0
+		"name": "Coffin",
+		"id": 382,
+		"no_coin": 0
 	},
 	{
-		"name" : "Cold Spectre",
-		"id" : 174,
-		"no_coin" : 0
+		"name": "Cold Spectre",
+		"id": 174,
+		"no_coin": 0
 	},
 	{
-		"name" : "Coldain",
-		"id" : 183,
-		"no_coin" : 0
+		"name": "Coldain",
+		"id": 183,
+		"no_coin": 0
 	},
 	{
-		"name" : "Crab",
-		"id" : 302,
-		"no_coin" : 1
+		"name": "Crab",
+		"id": 302,
+		"no_coin": 1
 	},
 	{
-		"name" : "Crystal Spider",
-		"id" : 327,
-		"no_coin" : 1
+		"name": "Crystal Spider",
+		"id": 327,
+		"no_coin": 1
 	},
 	{
-		"name" : "Daisy Man",
-		"id" : 97,
-		"no_coin" : 0
+		"name": "Daisy Man",
+		"id": 97,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dark Elf",
-		"id" : 6,
-		"no_coin" : 0
+		"name": "Dark Elf",
+		"id": 6,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dark Elf Pirate",
-		"id" : 339,
-		"no_coin" : 0
+		"name": "Dark Elf Pirate",
+		"id": 339,
+		"no_coin": 0
 	},
 	{
-		"name" : "Demi Lich",
-		"id" : 45,
-		"no_coin" : 0
+		"name": "Demi Lich",
+		"id": 45,
+		"no_coin": 0
 	},
 	{
-		"name" : "Denizen",
-		"id" : 99,
-		"no_coin" : 0
+		"name": "Denizen",
+		"id": 99,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dervish",
-		"id" : 100,
-		"no_coin" : 0
+		"name": "Dervish",
+		"id": 100,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dervish New",
-		"id" : 372,
-		"no_coin" : 0
+		"name": "Dervish New",
+		"id": 372,
+		"no_coin": 0
 	},
 	{
-		"name" : "Devourer",
-		"id" : 159,
-		"no_coin" : 0
+		"name": "Devourer",
+		"id": 159,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dire Wolf",
-		"id" : 171,
-		"no_coin" : 1
+		"name": "Dire Wolf",
+		"id": 171,
+		"no_coin": 1
 	},
 	{
-		"name" : "Disease Boss",
-		"id" : 253,
-		"no_coin" : 0
+		"name": "Disease Boss",
+		"id": 253,
+		"no_coin": 0
 	},
 	{
-		"name" : "Djinn",
-		"id" : 126,
-		"no_coin" : 0
+		"name": "Djinn",
+		"id": 126,
+		"no_coin": 0
 	},
 	{
-		"name" : "Doppleganger",
-		"id" : 20,
-		"no_coin" : 1
+		"name": "Doppleganger",
+		"id": 20,
+		"no_coin": 1
 	},
 	{
-		"name" : "Dracnid",
-		"id" : 57,
-		"no_coin" : 0
+		"name": "Dracnid",
+		"id": 57,
+		"no_coin": 0
 	},
 	{
-		"name" : "Draglock",
-		"id" : 132,
-		"no_coin" : 0
+		"name": "Draglock",
+		"id": 132,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dragon Skeleton",
-		"id" : 122,
-		"no_coin" : 0
+		"name": "Dragon Skeleton",
+		"id": 122,
+		"no_coin": 0
 	},
 	{
-		"name" : "Drake",
-		"id" : 89,
-		"no_coin" : 0
+		"name": "Drake",
+		"id": 89,
+		"no_coin": 0
 	},
 	{
-		"name" : "Drixie",
-		"id" : 113,
-		"no_coin" : 0
+		"name": "Drixie",
+		"id": 113,
+		"no_coin": 0
 	},
 	{
-		"name" : "Dwarf",
-		"id" : 8,
-		"no_coin" : 0
+		"name": "Dwarf",
+		"id": 8,
+		"no_coin": 0
 	},
 	{
-		"name" : "Earth Elemental",
-		"id" : 209,
-		"no_coin" : 0
+		"name": "Earth Elemental",
+		"id": 209,
+		"no_coin": 0
 	},
 	{
-		"name" : "Earth Mephit",
-		"id" : 292,
-		"no_coin" : 0
+		"name": "Earth Mephit",
+		"id": 292,
+		"no_coin": 0
 	},
 	{
-		"name" : "Efreeti",
-		"id" : 101,
-		"no_coin" : 0
+		"name": "Efreeti",
+		"id": 101,
+		"no_coin": 0
 	},
 	{
-		"name" : "Elemental",
-		"id" : 75,
-		"no_coin" : 0
+		"name": "Elemental",
+		"id": 75,
+		"no_coin": 0
 	},
 	{
-		"name" : "Elf Vampire",
-		"id" : 98,
-		"no_coin" : 0
+		"name": "Elf Vampire",
+		"id": 98,
+		"no_coin": 0
 	},
 	{
-		"name" : "Enchanted Armor",
-		"id" : 175,
-		"no_coin" : 0
+		"name": "Enchanted Armor",
+		"id": 175,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ent",
-		"id" : 244,
-		"no_coin" : 0
+		"name": "Ent",
+		"id": 244,
+		"no_coin": 0
 	},
 	{
-		"name" : "Erollisi",
-		"id" : 150,
-		"no_coin" : 0
+		"name": "Erollisi",
+		"id": 150,
+		"no_coin": 0
 	},
 	{
-		"name" : "Erudin Citizen",
-		"id" : 78,
-		"no_coin" : 0
+		"name": "Erudin Citizen",
+		"id": 78,
+		"no_coin": 0
 	},
 	{
-		"name" : "Erudite",
-		"id" : 3,
-		"no_coin" : 0
+		"name": "Erudite",
+		"id": 3,
+		"no_coin": 0
 	},
 	{
-		"name" : "Erudite Ghost",
-		"id" : 118,
-		"no_coin" : 0
+		"name": "Erudite Ghost",
+		"id": 118,
+		"no_coin": 0
 	},
 	{
-		"name" : "Erudite Pirate",
-		"id" : 342,
-		"no_coin" : 0
+		"name": "Erudite Pirate",
+		"id": 342,
+		"no_coin": 0
 	},
 	{
-		"name" : "Evan Test",
-		"id" : 204,
-		"no_coin" : 0
+		"name": "Evan Test",
+		"id": 204,
+		"no_coin": 0
 	},
 	{
-		"name" : "Evil Eye",
-		"id" : 21,
-		"no_coin" : 0
+		"name": "Evil Eye",
+		"id": 21,
+		"no_coin": 0
 	},
 	{
-		"name" : "Evil Eye New",
-		"id" : 375,
-		"no_coin" : 0
+		"name": "Evil Eye New",
+		"id": 375,
+		"no_coin": 0
 	},
 	{
-		"name" : "Eye of Zomm",
-		"id" : 108,
-		"no_coin" : 0
+		"name": "Eye of Zomm",
+		"id": 108,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fairy",
-		"id" : 25,
-		"no_coin" : 0
+		"name": "Fairy",
+		"id": 25,
+		"no_coin": 0
 	},
 	{
-		"name" : "Faun",
-		"id" : 182,
-		"no_coin" : 1
+		"name": "Faun",
+		"id": 182,
+		"no_coin": 1
 	},
 	{
-		"name" : "Fay Drake",
-		"id" : 154,
-		"no_coin" : 0
+		"name": "Fay Drake",
+		"id": 154,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fayguard",
-		"id" : 112,
-		"no_coin" : 0
+		"name": "Fayguard",
+		"id": 112,
+		"no_coin": 0
 	},
 	{
-		"name" : "Felguard",
-		"id" : 106,
-		"no_coin" : 0
+		"name": "Felguard",
+		"id": 106,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fennin Ro",
-		"id" : 284,
-		"no_coin" : 0
+		"name": "Fennin Ro",
+		"id": 284,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fiend",
-		"id" : 300,
-		"no_coin" : 0
+		"name": "Fiend",
+		"id": 300,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fire Elemental",
-		"id" : 212,
-		"no_coin" : 0
+		"name": "Fire Elemental",
+		"id": 212,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fire Mephit",
-		"id" : 293,
-		"no_coin" : 0
+		"name": "Fire Mephit",
+		"id": 293,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fish",
-		"id" : 24,
-		"no_coin" : 1
+		"name": "Fish",
+		"id": 24,
+		"no_coin": 1
 	},
 	{
-		"name" : "Fly Man",
-		"id" : 245,
-		"no_coin" : 0
+		"name": "Fly Man",
+		"id": 245,
+		"no_coin": 0
 	},
 	{
-		"name" : "Flying Monkey",
-		"id" : 168,
-		"no_coin" : 1
+		"name": "Flying Monkey",
+		"id": 168,
+		"no_coin": 1
 	},
 	{
-		"name" : "Forest Giant",
-		"id" : 140,
-		"no_coin" : 0
+		"name": "Forest Giant",
+		"id": 140,
+		"no_coin": 0
 	},
 	{
-		"name" : "Freeport Guards",
-		"id" : 44,
-		"no_coin" : 0
+		"name": "Freeport Guards",
+		"id": 44,
+		"no_coin": 0
 	},
 	{
-		"name" : "Froglok",
-		"id" : 330,
-		"no_coin" : 0
+		"name": "Froglok",
+		"id": 330,
+		"no_coin": 0
 	},
 	{
-		"name" : "Froglok Ghost",
-		"id" : 371,
-		"no_coin" : 0
+		"name": "Froglok Ghost",
+		"id": 371,
+		"no_coin": 0
 	},
 	{
-		"name" : "Froglok Mount",
-		"id" : 348,
-		"no_coin" : 0
+		"name": "Froglok Mount",
+		"id": 348,
+		"no_coin": 0
 	},
 	{
-		"name" : "Froglok Skeleton",
-		"id" : 349,
-		"no_coin" : 0
+		"name": "Froglok Skeleton",
+		"id": 349,
+		"no_coin": 0
 	},
 	{
-		"name" : "Frost Giant",
-		"id" : 188,
-		"no_coin" : 0
+		"name": "Frost Giant",
+		"id": 188,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fungal Fiend",
-		"id" : 218,
-		"no_coin" : 0
+		"name": "Fungal Fiend",
+		"id": 218,
+		"no_coin": 0
 	},
 	{
-		"name" : "Fungusman",
-		"id" : 28,
-		"no_coin" : 0
+		"name": "Fungusman",
+		"id": 28,
+		"no_coin": 0
 	},
 	{
-		"name" : "Galorian",
-		"id" : 228,
-		"no_coin" : 0
+		"name": "Galorian",
+		"id": 228,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gargoyle",
-		"id" : 29,
-		"no_coin" : 0
+		"name": "Gargoyle",
+		"id": 29,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gelatinous Cube",
-		"id" : 31,
-		"no_coin" : 0
+		"name": "Gelatinous Cube",
+		"id": 31,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ghost",
-		"id" : 32,
-		"no_coin" : 0
+		"name": "Ghost",
+		"id": 32,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ghost Dragon",
-		"id" : 196,
-		"no_coin" : 0
+		"name": "Ghost Dragon",
+		"id": 196,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ghost Dwarf",
-		"id" : 117,
-		"no_coin" : 0
+		"name": "Ghost Dwarf",
+		"id": 117,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ghost Ship",
-		"id" : 114,
-		"no_coin" : 0
+		"name": "Ghost Ship",
+		"id": 114,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ghoul",
-		"id" : 33,
-		"no_coin" : 0
+		"name": "Ghoul",
+		"id": 33,
+		"no_coin": 0
 	},
 	{
-		"name" : "Giant Bat",
-		"id" : 34,
-		"no_coin" : 1
+		"name": "Giant Bat",
+		"id": 34,
+		"no_coin": 1
 	},
 	{
-		"name" : "Giant Clockwork",
-		"id" : 275,
-		"no_coin" : 0
+		"name": "Giant Clockwork",
+		"id": 275,
+		"no_coin": 0
 	},
 	{
-		"name" : "Giant Eel",
-		"id" : 35,
-		"no_coin" : 1
+		"name": "Giant Eel",
+		"id": 35,
+		"no_coin": 1
 	},
 	{
-		"name" : "Giant Rat",
-		"id" : 36,
-		"no_coin" : 1
+		"name": "Giant Rat",
+		"id": 36,
+		"no_coin": 1
 	},
 	{
-		"name" : "Giant Snake",
-		"id" : 37,
-		"no_coin" : 1
+		"name": "Giant Snake",
+		"id": 37,
+		"no_coin": 1
 	},
 	{
-		"name" : "Giant Spider",
-		"id" : 38,
-		"no_coin" : 1
+		"name": "Giant Spider",
+		"id": 38,
+		"no_coin": 1
 	},
 	{
-		"name" : "Giant/Cyclops",
-		"id" : 18,
-		"no_coin" : 0
+		"name": "Giant/Cyclops",
+		"id": 18,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gnoll",
-		"id" : 39,
-		"no_coin" : 0
+		"name": "Gnoll",
+		"id": 39,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gnome",
-		"id" : 12,
-		"no_coin" : 0
+		"name": "Gnome",
+		"id": 12,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gnome Pirate",
-		"id" : 338,
-		"no_coin" : 0
+		"name": "Gnome Pirate",
+		"id": 338,
+		"no_coin": 0
 	},
 	{
-		"name" : "Goblin",
-		"id" : 40,
-		"no_coin" : 0
+		"name": "Goblin",
+		"id": 40,
+		"no_coin": 0
 	},
 	{
-		"name" : "Goblin New",
-		"id" : 369,
-		"no_coin" : 0
+		"name": "Goblin New",
+		"id": 369,
+		"no_coin": 0
 	},
 	{
-		"name" : "Golem",
-		"id" : 17,
-		"no_coin" : 0
+		"name": "Golem",
+		"id": 17,
+		"no_coin": 0
 	},
 	{
-		"name" : "Golem New",
-		"id" : 374,
-		"no_coin" : 0
+		"name": "Golem New",
+		"id": 374,
+		"no_coin": 0
 	},
 	{
-		"name" : "Goo",
-		"id" : 145,
-		"no_coin" : 0
+		"name": "Goo",
+		"id": 145,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gorgon",
-		"id" : 121,
-		"no_coin" : 0
+		"name": "Gorgon",
+		"id": 121,
+		"no_coin": 0
 	},
 	{
-		"name" : "Gorilla",
-		"id" : 41,
-		"no_coin" : 1
+		"name": "Gorilla",
+		"id": 41,
+		"no_coin": 1
 	},
 	{
-		"name" : "Greater Veksar",
-		"id" : 354,
-		"no_coin" : 0
+		"name": "Greater Veksar",
+		"id": 354,
+		"no_coin": 0
 	},
 	{
-		"name" : "Griffin",
-		"id" : 47,
-		"no_coin" : 0
+		"name": "Griffin",
+		"id": 47,
+		"no_coin": 0
 	},
 	{
-		"name" : "Grimling",
-		"id" : 202,
-		"no_coin" : 0
+		"name": "Grimling",
+		"id": 202,
+		"no_coin": 0
 	},
 	{
-		"name" : "Grobb Citizen",
-		"id" : 92,
-		"no_coin" : 0
+		"name": "Grobb Citizen",
+		"id": 92,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ground Shaker",
-		"id" : 233,
-		"no_coin" : 0
+		"name": "Ground Shaker",
+		"id": 233,
+		"no_coin": 0
 	},
 	{
-		"name" : "Guard of Justice",
-		"id" : 251,
-		"no_coin" : 0
+		"name": "Guard of Justice",
+		"id": 251,
+		"no_coin": 0
 	},
 	{
-		"name" : "Hag",
-		"id" : 185,
-		"no_coin" : 0
+		"name": "Hag",
+		"id": 185,
+		"no_coin": 0
 	},
 	{
-		"name" : "Halas Citizen",
-		"id" : 90,
-		"no_coin" : 0
+		"name": "Halas Citizen",
+		"id": 90,
+		"no_coin": 0
 	},
 	{
-		"name" : "Half-Elf",
-		"id" : 7,
-		"no_coin" : 0
+		"name": "Half-Elf",
+		"id": 7,
+		"no_coin": 0
 	},
 	{
-		"name" : "Halfling",
-		"id" : 11,
-		"no_coin" : 0
+		"name": "Halfling",
+		"id": 11,
+		"no_coin": 0
 	},
 	{
-		"name" : "Harpie",
-		"id" : 111,
-		"no_coin" : 0
+		"name": "Harpie",
+		"id": 111,
+		"no_coin": 0
 	},
 	{
-		"name" : "High Elf",
-		"id" : 5,
-		"no_coin" : 0
+		"name": "High Elf",
+		"id": 5,
+		"no_coin": 0
 	},
 	{
-		"name" : "Highpass Citizen",
-		"id" : 67,
-		"no_coin" : 0
+		"name": "Highpass Citizen",
+		"id": 67,
+		"no_coin": 0
 	},
 	{
-		"name" : "Hippogriff",
-		"id" : 186,
-		"no_coin" : 0
+		"name": "Hippogriff",
+		"id": 186,
+		"no_coin": 0
 	},
 	{
-		"name" : "Horse",
-		"id" : 216,
-		"no_coin" : 1
+		"name": "Horse",
+		"id": 216,
+		"no_coin": 1
 	},
 	{
-		"name" : "Human",
-		"id" : 1,
-		"no_coin" : 0
+		"name": "Human",
+		"id": 1,
+		"no_coin": 0
 	},
 	{
-		"name" : "Human Beggar",
-		"id" : 55,
-		"no_coin" : 0
+		"name": "Human Beggar",
+		"id": 55,
+		"no_coin": 0
 	},
 	{
-		"name" : "Human Pirate",
-		"id" : 341,
-		"no_coin" : 0
+		"name": "Human Pirate",
+		"id": 341,
+		"no_coin": 0
 	},
 	{
-		"name" : "Iksar",
-		"id" : 128,
-		"no_coin" : 0
+		"name": "Iksar",
+		"id": 128,
+		"no_coin": 0
 	},
 	{
-		"name" : "Iksar Citizen",
-		"id" : 139,
-		"no_coin" : 0
+		"name": "Iksar Citizen",
+		"id": 139,
+		"no_coin": 0
 	},
 	{
-		"name" : "Iksar Golem",
-		"id" : 160,
-		"no_coin" : 0
+		"name": "Iksar Golem",
+		"id": 160,
+		"no_coin": 0
 	},
 	{
-		"name" : "Iksar Hand",
-		"id" : 166,
-		"no_coin" : 0
+		"name": "Iksar Hand",
+		"id": 166,
+		"no_coin": 0
 	},
 	{
-		"name" : "Iksar Scorpion",
-		"id" : 149,
-		"no_coin" : 0
+		"name": "Iksar Scorpion",
+		"id": 149,
+		"no_coin": 0
 	},
 	{
-		"name" : "Iksar Skeleton",
-		"id" : 161,
-		"no_coin" : 0
+		"name": "Iksar Skeleton",
+		"id": 161,
+		"no_coin": 0
 	},
 	{
-		"name" : "Imp",
-		"id" : 46,
-		"no_coin" : 0
+		"name": "Imp",
+		"id": 46,
+		"no_coin": 0
 	},
 	{
-		"name" : "Innoruuk",
-		"id" : 123,
-		"no_coin" : 0
+		"name": "Innoruuk",
+		"id": 123,
+		"no_coin": 0
 	},
 	{
-		"name" : "Insect",
-		"id" : 370,
-		"no_coin" : 1
+		"name": "Insect",
+		"id": 370,
+		"no_coin": 1
 	},
 	{
-		"name" : "Invalid",
-		"id" : 0,
-		"no_coin" : 1
+		"name": "Invalid",
+		"id": 0,
+		"no_coin": 1
 	},
 	{
-		"name" : "Invisible Man",
-		"id" : 127,
-		"no_coin" : 0
+		"name": "Invisible Man",
+		"id": 127,
+		"no_coin": 0
 	},
 	{
-		"name" : "Jokester",
-		"id" : 384,
-		"no_coin" : 0
+		"name": "Jokester",
+		"id": 384,
+		"no_coin": 0
 	},
 	{
-		"name" : "Junk Beast",
-		"id" : 273,
-		"no_coin" : 0
+		"name": "Junk Beast",
+		"id": 273,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kahli Shah",
-		"id" : 205,
-		"no_coin" : 0
+		"name": "Kahli Shah",
+		"id": 205,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kaladim Citizen",
-		"id" : 94,
-		"no_coin" : 0
+		"name": "Kaladim Citizen",
+		"id": 94,
+		"no_coin": 0
 	},
 	{
-		"name" : "Karana",
-		"id" : 278,
-		"no_coin" : 0
+		"name": "Karana",
+		"id": 278,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kedge",
-		"id" : 103,
-		"no_coin" : 0
+		"name": "Kedge",
+		"id": 103,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kerra",
-		"id" : 23,
-		"no_coin" : 0
+		"name": "Kerra",
+		"id": 23,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kobold",
-		"id" : 48,
-		"no_coin" : 0
+		"name": "Kobold",
+		"id": 48,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kraken",
-		"id" : 315,
-		"no_coin" : 0
+		"name": "Kraken",
+		"id": 315,
+		"no_coin": 0
 	},
 	{
-		"name" : "Kunark Fish",
-		"id" : 148,
-		"no_coin" : 1
+		"name": "Kunark Fish",
+		"id": 148,
+		"no_coin": 1
 	},
 	{
-		"name" : "Kunark Goblin",
-		"id" : 137,
-		"no_coin" : 0
+		"name": "Kunark Goblin",
+		"id": 137,
+		"no_coin": 0
 	},
 	{
-		"name" : "Launch",
-		"id" : 73,
-		"no_coin" : 0
+		"name": "Launch",
+		"id": 73,
+		"no_coin": 0
 	},
 	{
-		"name" : "Lava Dragon",
-		"id" : 49,
-		"no_coin" : 0
+		"name": "Lava Dragon",
+		"id": 49,
+		"no_coin": 0
 	},
 	{
-		"name" : "Leech",
-		"id" : 104,
-		"no_coin" : 1
+		"name": "Leech",
+		"id": 104,
+		"no_coin": 1
 	},
 	{
-		"name" : "Lightcrawler",
-		"id" : 223,
-		"no_coin" : 0
+		"name": "Lightcrawler",
+		"id": 223,
+		"no_coin": 0
 	},
 	{
-		"name" : "Lion",
-		"id" : 50,
-		"no_coin" : 1
+		"name": "Lion",
+		"id": 50,
+		"no_coin": 1
 	},
 	{
-		"name" : "Lizard Man",
-		"id" : 51,
-		"no_coin" : 0
+		"name": "Lizard Man",
+		"id": 51,
+		"no_coin": 0
 	},
 	{
-		"name" : "Luggald Armored",
-		"id" : 346,
-		"no_coin" : 0
+		"name": "Luggald Armored",
+		"id": 346,
+		"no_coin": 0
 	},
 	{
-		"name" : "Luggald Land",
-		"id" : 345,
-		"no_coin" : 0
+		"name": "Luggald Land",
+		"id": 345,
+		"no_coin": 0
 	},
 	{
-		"name" : "Luggald Robed",
-		"id" : 347,
-		"no_coin" : 0
+		"name": "Luggald Robed",
+		"id": 347,
+		"no_coin": 0
 	},
 	{
-		"name" : "Lujein",
-		"id" : 241,
-		"no_coin" : 0
+		"name": "Lujein",
+		"id": 241,
+		"no_coin": 0
 	},
 	{
-		"name" : "Lycanthrope",
-		"id" : 133,
-		"no_coin" : 0
+		"name": "Lycanthrope",
+		"id": 133,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mammoth",
-		"id" : 107,
-		"no_coin" : 1
+		"name": "Mammoth",
+		"id": 107,
+		"no_coin": 1
 	},
 	{
-		"name" : "Man Eating Plant",
-		"id" : 162,
-		"no_coin" : 1
+		"name": "Man Eating Plant",
+		"id": 162,
+		"no_coin": 1
 	},
 	{
-		"name" : "Manticore",
-		"id" : 172,
-		"no_coin" : 0
+		"name": "Manticore",
+		"id": 172,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mermaid",
-		"id" : 110,
-		"no_coin" : 0
+		"name": "Mermaid",
+		"id": 110,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mimic",
-		"id" : 52,
-		"no_coin" : 0
+		"name": "Mimic",
+		"id": 52,
+		"no_coin": 0
 	},
 	{
-		"name" : "Minotaur",
-		"id" : 53,
-		"no_coin" : 0
+		"name": "Minotaur",
+		"id": 53,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mithaniel Marr",
-		"id" : 296,
-		"no_coin" : 0
+		"name": "Mithaniel Marr",
+		"id": 296,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mosquito",
-		"id" : 134,
-		"no_coin" : 1
+		"name": "Mosquito",
+		"id": 134,
+		"no_coin": 1
 	},
 	{
-		"name" : "Mouths of Insanity",
-		"id" : 281,
-		"no_coin" : 0
+		"name": "Mouths of Insanity",
+		"id": 281,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mummy New",
-		"id" : 368,
-		"no_coin" : 0
+		"name": "Mummy New",
+		"id": 368,
+		"no_coin": 0
 	},
 	{
-		"name" : "Mutant Humanoid",
-		"id" : 235,
-		"no_coin" : 0
+		"name": "Mutant Humanoid",
+		"id": 235,
+		"no_coin": 0
 	},
 	{
-		"name" : "Naiad",
-		"id" : 242,
-		"no_coin" : 0
+		"name": "Naiad",
+		"id": 242,
+		"no_coin": 0
 	},
 	{
-		"name" : "Necro Priest",
-		"id" : 286,
-		"no_coin" : 0
+		"name": "Necro Priest",
+		"id": 286,
+		"no_coin": 0
 	},
 	{
-		"name" : "Neriak Citizen",
-		"id" : 77,
-		"no_coin" : 0
+		"name": "Neriak Citizen",
+		"id": 77,
+		"no_coin": 0
 	},
 	{
-		"name" : "Netherbian",
-		"id" : 229,
-		"no_coin" : 0
+		"name": "Netherbian",
+		"id": 229,
+		"no_coin": 0
 	},
 	{
-		"name" : "New Bertox",
-		"id" : 255,
-		"no_coin" : 0
+		"name": "New Bertox",
+		"id": 255,
+		"no_coin": 0
 	},
 	{
-		"name" : "New Rallos Zek",
-		"id" : 288,
-		"no_coin" : 0
+		"name": "New Rallos Zek",
+		"id": 288,
+		"no_coin": 0
 	},
 	{
-		"name" : "Nightmare",
-		"id" : 287,
-		"no_coin" : 0
+		"name": "Nightmare",
+		"id": 287,
+		"no_coin": 0
 	},
 	{
-		"name" : "Nightmare Gargoyle",
-		"id" : 280,
-		"no_coin" : 0
+		"name": "Nightmare Gargoyle",
+		"id": 280,
+		"no_coin": 0
 	},
 	{
-		"name" : "Nightmare Goblin",
-		"id" : 277,
-		"no_coin" : 0
+		"name": "Nightmare Goblin",
+		"id": 277,
+		"no_coin": 0
 	},
 	{
-		"name" : "Nightmare Mephit",
-		"id" : 294,
-		"no_coin" : 0
+		"name": "Nightmare Mephit",
+		"id": 294,
+		"no_coin": 0
 	},
 	{
-		"name" : "Nymph",
-		"id" : 243,
-		"no_coin" : 0
+		"name": "Nymph",
+		"id": 243,
+		"no_coin": 0
 	},
 	{
-		"name" : "Oggok Citizen",
-		"id" : 93,
-		"no_coin" : 0
+		"name": "Oggok Citizen",
+		"id": 93,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ogre",
-		"id" : 10,
-		"no_coin" : 0
+		"name": "Ogre",
+		"id": 10,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ogre Pirate",
-		"id" : 340,
-		"no_coin" : 0
+		"name": "Ogre Pirate",
+		"id": 340,
+		"no_coin": 0
 	},
 	{
-		"name" : "Old Froglok",
-		"id" : 26,
-		"no_coin" : 0
+		"name": "Old Froglok",
+		"id": 26,
+		"no_coin": 0
 	},
 	{
-		"name" : "Old Froglok Ghoul",
-		"id" : 27,
-		"no_coin" : 0
+		"name": "Old Froglok Ghoul",
+		"id": 27,
+		"no_coin": 0
 	},
 	{
-		"name" : "Old Froglok Tadpole",
-		"id" : 102,
-		"no_coin" : 0
+		"name": "Old Froglok Tadpole",
+		"id": 102,
+		"no_coin": 0
 	},
 	{
-		"name" : "Orc",
-		"id" : 54,
-		"no_coin" : 0
+		"name": "Orc",
+		"id": 54,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ottermen",
-		"id" : 190,
-		"no_coin" : 0
+		"name": "Ottermen",
+		"id": 190,
+		"no_coin": 0
 	},
 	{
-		"name" : "Owlbear",
-		"id" : 206,
-		"no_coin" : 1
+		"name": "Owlbear",
+		"id": 206,
+		"no_coin": 1
 	},
 	{
-		"name" : "Pegasus",
-		"id" : 125,
-		"no_coin" : 0
+		"name": "Pegasus",
+		"id": 125,
+		"no_coin": 0
 	},
 	{
-		"name" : "Phoenix",
-		"id" : 303,
-		"no_coin" : 0
+		"name": "Phoenix",
+		"id": 303,
+		"no_coin": 0
 	},
 	{
-		"name" : "Piranha",
-		"id" : 74,
-		"no_coin" : 1
+		"name": "Piranha",
+		"id": 74,
+		"no_coin": 1
 	},
 	{
-		"name" : "Pirate Boss",
-		"id" : 335,
-		"no_coin" : 0
+		"name": "Pirate Boss",
+		"id": 335,
+		"no_coin": 0
 	},
 	{
-		"name" : "Pirate Dark Shaman",
-		"id" : 336,
-		"no_coin" : 0
+		"name": "Pirate Dark Shaman",
+		"id": 336,
+		"no_coin": 0
 	},
 	{
-		"name" : "Pirate Officer",
-		"id" : 337,
-		"no_coin" : 0
+		"name": "Pirate Officer",
+		"id": 337,
+		"no_coin": 0
 	},
 	{
-		"name" : "Pixie",
-		"id" : 56,
-		"no_coin" : 0
+		"name": "Pixie",
+		"id": 56,
+		"no_coin": 0
 	},
 	{
-		"name" : "Poison Dart Frog",
-		"id" : 343,
-		"no_coin" : 1
+		"name": "Poison Dart Frog",
+		"id": 343,
+		"no_coin": 1
 	},
 	{
-		"name" : "Poison Frog",
-		"id" : 316,
-		"no_coin" : 1
+		"name": "Poison Frog",
+		"id": 316,
+		"no_coin": 1
 	},
 	{
-		"name" : "PoP Bear",
-		"id" : 305,
-		"no_coin" : 0
+		"name": "PoP Bear",
+		"id": 305,
+		"no_coin": 0
 	},
 	{
-		"name" : "PoP Dragon",
-		"id" : 304,
-		"no_coin" : 0
+		"name": "PoP Dragon",
+		"id": 304,
+		"no_coin": 0
 	},
 	{
-		"name" : "PoP Efreeti",
-		"id" : 320,
-		"no_coin" : 0
+		"name": "PoP Efreeti",
+		"id": 320,
+		"no_coin": 0
 	},
 	{
-		"name" : "Prismatic Dragon",
-		"id" : 198,
-		"no_coin" : 0
+		"name": "Prismatic Dragon",
+		"id": 198,
+		"no_coin": 0
 	},
 	{
-		"name" : "Puma",
-		"id" : 76,
-		"no_coin" : 1
+		"name": "Puma",
+		"id": 76,
+		"no_coin": 1
 	},
 	{
-		"name" : "Pusling",
-		"id" : 270,
-		"no_coin" : 0
+		"name": "Pusling",
+		"id": 270,
+		"no_coin": 0
 	},
 	{
-		"name" : "Qeynos Citizen",
-		"id" : 71,
-		"no_coin" : 0
+		"name": "Qeynos Citizen",
+		"id": 71,
+		"no_coin": 0
 	},
 	{
-		"name" : "Queztocoatal",
-		"id" : 317,
-		"no_coin" : 0
+		"name": "Queztocoatal",
+		"id": 317,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rallos Zek",
-		"id" : 66,
-		"no_coin" : 0
+		"name": "Rallos Zek",
+		"id": 66,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rallos Zek Minion",
-		"id" : 325,
-		"no_coin" : 0
+		"name": "Rallos Zek Minion",
+		"id": 325,
+		"no_coin": 0
 	},
 	{
-		"name" : "Raptor",
-		"id" : 163,
-		"no_coin" : 1
+		"name": "Raptor",
+		"id": 163,
+		"no_coin": 1
 	},
 	{
-		"name" : "Ratman",
-		"id" : 156,
-		"no_coin" : 0
+		"name": "Ratman",
+		"id": 156,
+		"no_coin": 0
 	},
 	{
-		"name" : "Reanimated Hand",
-		"id" : 80,
-		"no_coin" : 0
+		"name": "Reanimated Hand",
+		"id": 80,
+		"no_coin": 0
 	},
 	{
-		"name" : "Recuso",
-		"id" : 237,
-		"no_coin" : 0
+		"name": "Recuso",
+		"id": 237,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rhino",
-		"id" : 135,
-		"no_coin" : 1
+		"name": "Rhino",
+		"id": 135,
+		"no_coin": 1
 	},
 	{
-		"name" : "Rhino Beetle",
-		"id" : 207,
-		"no_coin" : 1
+		"name": "Rhino Beetle",
+		"id": 207,
+		"no_coin": 1
 	},
 	{
-		"name" : "Rivervale Citizen",
-		"id" : 81,
-		"no_coin" : 0
+		"name": "Rivervale Citizen",
+		"id": 81,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rock-gem Men",
-		"id" : 178,
-		"no_coin" : 0
+		"name": "Rock-gem Men",
+		"id": 178,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rockhopper",
-		"id" : 200,
-		"no_coin" : 1
+		"name": "Rockhopper",
+		"id": 200,
+		"no_coin": 1
 	},
 	{
-		"name" : "Ronnie Test",
-		"id" : 197,
-		"no_coin" : 0
+		"name": "Ronnie Test",
+		"id": 197,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rujakian Orc",
-		"id" : 361,
-		"no_coin" : 0
+		"name": "Rujakian Orc",
+		"id": 361,
+		"no_coin": 0
 	},
 	{
-		"name" : "Rujakian Orc Elite",
-		"id" : 366,
-		"no_coin" : 0
+		"name": "Rujakian Orc Elite",
+		"id": 366,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sabertooth Cat",
-		"id" : 119,
-		"no_coin" : 1
+		"name": "Sabertooth Cat",
+		"id": 119,
+		"no_coin": 1
 	},
 	{
-		"name" : "Sand Elf",
-		"id" : 364,
-		"no_coin" : 0
+		"name": "Sand Elf",
+		"id": 364,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sarnak",
-		"id" : 131,
-		"no_coin" : 0
+		"name": "Sarnak",
+		"id": 131,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sarnak Golem",
-		"id" : 164,
-		"no_coin" : 0
+		"name": "Sarnak Golem",
+		"id": 164,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sarnak Skeleton",
-		"id" : 155,
-		"no_coin" : 0
+		"name": "Sarnak Skeleton",
+		"id": 155,
+		"no_coin": 0
 	},
 	{
-		"name" : "Saryn",
-		"id" : 283,
-		"no_coin" : 0
+		"name": "Saryn",
+		"id": 283,
+		"no_coin": 0
 	},
 	{
-		"name" : "Scarecrow",
-		"id" : 82,
-		"no_coin" : 0
+		"name": "Scarecrow",
+		"id": 82,
+		"no_coin": 0
 	},
 	{
-		"name" : "Scarlet Cheetah",
-		"id" : 221,
-		"no_coin" : 0
+		"name": "Scarlet Cheetah",
+		"id": 221,
+		"no_coin": 0
 	},
 	{
-		"name" : "Scorpion",
-		"id" : 129,
-		"no_coin" : 0
+		"name": "Scorpion",
+		"id": 129,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sea Horse",
-		"id" : 116,
-		"no_coin" : 1
+		"name": "Sea Horse",
+		"id": 116,
+		"no_coin": 1
 	},
 	{
-		"name" : "Sea Turtle",
-		"id" : 194,
-		"no_coin" : 0
+		"name": "Sea Turtle",
+		"id": 194,
+		"no_coin": 0
 	},
 	{
-		"name" : "Seru",
-		"id" : 236,
-		"no_coin" : 0
+		"name": "Seru",
+		"id": 236,
+		"no_coin": 0
 	},
 	{
-		"name" : "Shade",
-		"id" : 224,
-		"no_coin" : 0
+		"name": "Shade",
+		"id": 224,
+		"no_coin": 0
 	},
 	{
-		"name" : "Shadow Creatue",
-		"id" : 373,
-		"no_coin" : 0
+		"name": "Shadow Creatue",
+		"id": 373,
+		"no_coin": 0
 	},
 	{
-		"name" : "Shark",
-		"id" : 61,
-		"no_coin" : 1
+		"name": "Shark",
+		"id": 61,
+		"no_coin": 1
 	},
 	{
-		"name" : "ShikNar",
-		"id" : 199,
-		"no_coin" : 0
+		"name": "ShikNar",
+		"id": 199,
+		"no_coin": 0
 	},
 	{
-		"name" : "Ship",
-		"id" : 72,
-		"no_coin" : 0
+		"name": "Ship",
+		"id": 72,
+		"no_coin": 0
 	},
 	{
-		"name" : "Shissar",
-		"id" : 217,
-		"no_coin" : 0
+		"name": "Shissar",
+		"id": 217,
+		"no_coin": 0
 	},
 	{
-		"name" : "Shrieker",
-		"id" : 227,
-		"no_coin" : 0
+		"name": "Shrieker",
+		"id": 227,
+		"no_coin": 0
 	},
 	{
-		"name" : "Siren",
-		"id" : 187,
-		"no_coin" : 0
+		"name": "Siren",
+		"id": 187,
+		"no_coin": 0
 	},
 	{
-		"name" : "Skeletal Horse",
-		"id" : 282,
-		"no_coin" : 0
+		"name": "Skeletal Horse",
+		"id": 282,
+		"no_coin": 0
 	},
 	{
-		"name" : "Skeleton",
-		"id" : 60,
-		"no_coin" : 0
+		"name": "Skeleton",
+		"id": 60,
+		"no_coin": 0
 	},
 	{
-		"name" : "Skeleton New",
-		"id" : 367,
-		"no_coin" : 0
+		"name": "Skeleton New",
+		"id": 367,
+		"no_coin": 0
 	},
 	{
-		"name" : "Skunk",
-		"id" : 83,
-		"no_coin" : 1
+		"name": "Skunk",
+		"id": 83,
+		"no_coin": 1
 	},
 	{
-		"name" : "Snake Elemental",
-		"id" : 84,
-		"no_coin" : 0
+		"name": "Snake Elemental",
+		"id": 84,
+		"no_coin": 0
 	},
 	{
-		"name" : "Snow Bunny",
-		"id" : 176,
-		"no_coin" : 1
+		"name": "Snow Bunny",
+		"id": 176,
+		"no_coin": 1
 	},
 	{
-		"name" : "Snow Dervish",
-		"id" : 170,
-		"no_coin" : 0
+		"name": "Snow Dervish",
+		"id": 170,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sol Ro",
-		"id" : 247,
-		"no_coin" : 0
+		"name": "Sol Ro",
+		"id": 247,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sol Ro Guard",
-		"id" : 254,
-		"no_coin" : 0
+		"name": "Sol Ro Guard",
+		"id": 254,
+		"no_coin": 0
 	},
 	{
-		"name" : "Solusek Ro",
-		"id" : 58,
-		"no_coin" : 0
+		"name": "Solusek Ro",
+		"id": 58,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sonic Wolf",
-		"id" : 232,
-		"no_coin" : 1
+		"name": "Sonic Wolf",
+		"id": 232,
+		"no_coin": 1
 	},
 	{
-		"name" : "Spectral Banshee",
-		"id" : 250,
-		"no_coin" : 0
+		"name": "Spectral Banshee",
+		"id": 250,
+		"no_coin": 0
 	},
 	{
-		"name" : "Spectral Iksar",
-		"id" : 147,
-		"no_coin" : 0
+		"name": "Spectral Iksar",
+		"id": 147,
+		"no_coin": 0
 	},
 	{
-		"name" : "Spectral Sarnak",
-		"id" : 146,
-		"no_coin" : 0
+		"name": "Spectral Sarnak",
+		"id": 146,
+		"no_coin": 0
 	},
 	{
-		"name" : "Spectre",
-		"id" : 85,
-		"no_coin" : 0
+		"name": "Spectre",
+		"id": 85,
+		"no_coin": 0
 	},
 	{
-		"name" : "Spectre Pirate Boss",
-		"id" : 334,
-		"no_coin" : 0
+		"name": "Spectre Pirate Boss",
+		"id": 334,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sphinx",
-		"id" : 86,
-		"no_coin" : 0
+		"name": "Sphinx",
+		"id": 86,
+		"no_coin": 0
 	},
 	{
-		"name" : "Spire Spirit",
-		"id" : 231,
-		"no_coin" : 0
+		"name": "Spire Spirit",
+		"id": 231,
+		"no_coin": 0
 	},
 	{
-		"name" : "StoneGrabber",
-		"id" : 220,
-		"no_coin" : 0
+		"name": "StoneGrabber",
+		"id": 220,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Celestial",
-		"id" : 312,
-		"no_coin" : 0
+		"name": "Storm Celestial",
+		"id": 312,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Fire",
-		"id" : 311,
-		"no_coin" : 0
+		"name": "Storm Fire",
+		"id": 311,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Giant",
-		"id" : 189,
-		"no_coin" : 0
+		"name": "Storm Giant",
+		"id": 189,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Kuraaln",
-		"id" : 308,
-		"no_coin" : 0
+		"name": "Storm Kuraaln",
+		"id": 308,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Mana",
-		"id" : 310,
-		"no_coin" : 0
+		"name": "Storm Mana",
+		"id": 310,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Satuur",
-		"id" : 307,
-		"no_coin" : 0
+		"name": "Storm Satuur",
+		"id": 307,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Taarid",
-		"id" : 306,
-		"no_coin" : 0
+		"name": "Storm Taarid",
+		"id": 306,
+		"no_coin": 0
 	},
 	{
-		"name" : "Storm Volaas",
-		"id" : 309,
-		"no_coin" : 0
+		"name": "Storm Volaas",
+		"id": 309,
+		"no_coin": 0
 	},
 	{
-		"name" : "Stormrider",
-		"id" : 272,
-		"no_coin" : 0
+		"name": "Stormrider",
+		"id": 272,
+		"no_coin": 0
 	},
 	{
-		"name" : "Succulent",
-		"id" : 167,
-		"no_coin" : 0
+		"name": "Succulent",
+		"id": 167,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sun Revenant",
-		"id" : 226,
-		"no_coin" : 0
+		"name": "Sun Revenant",
+		"id": 226,
+		"no_coin": 0
 	},
 	{
-		"name" : "Sunflower",
-		"id" : 225,
-		"no_coin" : 1
+		"name": "Sunflower",
+		"id": 225,
+		"no_coin": 1
 	},
 	{
-		"name" : "Swordfish",
-		"id" : 105,
-		"no_coin" : 1
+		"name": "Swordfish",
+		"id": 105,
+		"no_coin": 1
 	},
 	{
-		"name" : "Synarcana",
-		"id" : 363,
-		"no_coin" : 0
+		"name": "Synarcana",
+		"id": 363,
+		"no_coin": 0
 	},
 	{
-		"name" : "Table",
-		"id" : 380,
-		"no_coin" : 1
+		"name": "Table",
+		"id": 380,
+		"no_coin": 1
 	},
 	{
-		"name" : "Tallon Zek",
-		"id" : 290,
-		"no_coin" : 0
+		"name": "Tallon Zek",
+		"id": 290,
+		"no_coin": 0
 	},
 	{
-		"name" : "Tarew Marr",
-		"id" : 246,
-		"no_coin" : 0
+		"name": "Tarew Marr",
+		"id": 246,
+		"no_coin": 0
 	},
 	{
-		"name" : "Tegi",
-		"id" : 215,
-		"no_coin" : 0
+		"name": "Tegi",
+		"id": 215,
+		"no_coin": 0
 	},
 	{
-		"name" : "Teleport Man",
-		"id" : 240,
-		"no_coin" : 0
+		"name": "Teleport Man",
+		"id": 240,
+		"no_coin": 0
 	},
 	{
-		"name" : "Tentacle",
-		"id" : 68,
-		"no_coin" : 1
+		"name": "Tentacle",
+		"id": 68,
+		"no_coin": 1
 	},
 	{
-		"name" : "Test Object",
-		"id" : 301,
-		"no_coin" : 0
+		"name": "Test Object",
+		"id": 301,
+		"no_coin": 0
 	},
 	{
-		"name" : "The Rathe",
-		"id" : 298,
-		"no_coin" : 0
+		"name": "The Rathe",
+		"id": 298,
+		"no_coin": 0
 	},
 	{
-		"name" : "Thought Horror",
-		"id" : 214,
-		"no_coin" : 0
+		"name": "Thought Horror",
+		"id": 214,
+		"no_coin": 0
 	},
 	{
-		"name" : "Tiger",
-		"id" : 63,
-		"no_coin" : 1
+		"name": "Tiger",
+		"id": 63,
+		"no_coin": 1
 	},
 	{
-		"name" : "Tormentor",
-		"id" : 285,
-		"no_coin" : 0
+		"name": "Tormentor",
+		"id": 285,
+		"no_coin": 0
 	},
 	{
-		"name" : "Totem",
-		"id" : 173,
-		"no_coin" : 0
+		"name": "Totem",
+		"id": 173,
+		"no_coin": 0
 	},
 	{
-		"name" : "Trakanon",
-		"id" : 19,
-		"no_coin" : 1
+		"name": "Trakanon",
+		"id": 19,
+		"no_coin": 1
 	},
 	{
-		"name" : "Treant",
-		"id" : 64,
-		"no_coin" : 0
+		"name": "Treant",
+		"id": 64,
+		"no_coin": 0
 	},
 	{
-		"name" : "Tribunal",
-		"id" : 151,
-		"no_coin" : 0
+		"name": "Tribunal",
+		"id": 151,
+		"no_coin": 0
 	},
 	{
-		"name" : "Troll",
-		"id" : 9,
-		"no_coin" : 0
+		"name": "Troll",
+		"id": 9,
+		"no_coin": 0
 	},
 	{
-		"name" : "Troll Buccaneer",
-		"id" : 331,
-		"no_coin" : 0
+		"name": "Troll Buccaneer",
+		"id": 331,
+		"no_coin": 0
 	},
 	{
-		"name" : "Troll Freebooter",
-		"id" : 332,
-		"no_coin" : 0
+		"name": "Troll Freebooter",
+		"id": 332,
+		"no_coin": 0
 	},
 	{
-		"name" : "Troll Sea Rover",
-		"id" : 333,
-		"no_coin" : 0
+		"name": "Troll Sea Rover",
+		"id": 333,
+		"no_coin": 0
 	},
 	{
-		"name" : "Troll Zombie",
-		"id" : 344,
-		"no_coin" : 0
+		"name": "Troll Zombie",
+		"id": 344,
+		"no_coin": 0
 	},
 	{
-		"name" : "Tunare",
-		"id" : 62,
-		"no_coin" : 0
+		"name": "Tunare",
+		"id": 62,
+		"no_coin": 0
 	},
 	{
-		"name" : "Undead Chokadai",
-		"id" : 357,
-		"no_coin" : 0
+		"name": "Undead Chokadai",
+		"id": 357,
+		"no_coin": 0
 	},
 	{
-		"name" : "Undead Footman",
-		"id" : 324,
-		"no_coin" : 0
+		"name": "Undead Footman",
+		"id": 324,
+		"no_coin": 0
 	},
 	{
-		"name" : "Undead Froglok",
-		"id" : 350,
-		"no_coin" : 0
+		"name": "Undead Froglok",
+		"id": 350,
+		"no_coin": 0
 	},
 	{
-		"name" : "Undead Knight",
-		"id" : 297,
-		"no_coin" : 0
+		"name": "Undead Knight",
+		"id": 297,
+		"no_coin": 0
 	},
 	{
-		"name" : "Undead Veksar",
-		"id" : 358,
-		"no_coin" : 0
+		"name": "Undead Veksar",
+		"id": 358,
+		"no_coin": 0
 	},
 	{
-		"name" : "Underbulk",
-		"id" : 201,
-		"no_coin" : 0
+		"name": "Underbulk",
+		"id": 201,
+		"no_coin": 0
 	},
 	{
-		"name" : "Unicorn",
-		"id" : 124,
-		"no_coin" : 1
+		"name": "Unicorn",
+		"id": 124,
+		"no_coin": 1
 	},
 	{
-		"name" : "Unknown 142",
-		"id" : 142,
-		"no_coin" : 0
+		"name": "Unknown 142",
+		"id": 142,
+		"no_coin": 0
 	},
 	{
-		"name" : "Unknown 143",
-		"id" : 143,
-		"no_coin" : 0
+		"name": "Unknown 143",
+		"id": 143,
+		"no_coin": 0
 	},
 	{
-		"name" : "Unknown 179",
-		"id" : 179,
-		"no_coin" : 0
+		"name": "Unknown 179",
+		"id": 179,
+		"no_coin": 0
 	},
 	{
-		"name" : "Unknown 180",
-		"id" : 180,
-		"no_coin" : 0
+		"name": "Unknown 180",
+		"id": 180,
+		"no_coin": 0
 	},
 	{
-		"name" : "Unknown_252",
-		"id" : 252,
-		"no_coin" : 0
+		"name": "Unknown_252",
+		"id": 252,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vacuum Worm",
-		"id" : 203,
-		"no_coin" : 0
+		"name": "Vacuum Worm",
+		"id": 203,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vah Shir",
-		"id" : 130,
-		"no_coin" : 0
+		"name": "Vah Shir",
+		"id": 130,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vah Shir Guard",
-		"id" : 239,
-		"no_coin" : 0
+		"name": "Vah Shir Guard",
+		"id": 239,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vah Shir King",
-		"id" : 238,
-		"no_coin" : 0
+		"name": "Vah Shir King",
+		"id": 238,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vah Shir Skeleton",
-		"id" : 234,
-		"no_coin" : 0
+		"name": "Vah Shir Skeleton",
+		"id": 234,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vallon Zek",
-		"id" : 289,
-		"no_coin" : 0
+		"name": "Vallon Zek",
+		"id": 289,
+		"no_coin": 0
 	},
 	{
-		"name" : "Valorian",
-		"id" : 318,
-		"no_coin" : 0
+		"name": "Valorian",
+		"id": 318,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vampire",
-		"id" : 65,
-		"no_coin" : 0
+		"name": "Vampire",
+		"id": 65,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vampire Elite",
-		"id" : 360,
-		"no_coin" : 0
+		"name": "Vampire Elite",
+		"id": 360,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vampire Lesser",
-		"id" : 359,
-		"no_coin" : 0
+		"name": "Vampire Lesser",
+		"id": 359,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vampire Master",
-		"id" : 365,
-		"no_coin" : 0
+		"name": "Vampire Master",
+		"id": 365,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vampire Volatalis",
-		"id" : 219,
-		"no_coin" : 0
+		"name": "Vampire Volatalis",
+		"id": 219,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vampyre",
-		"id" : 208,
-		"no_coin" : 0
+		"name": "Vampyre",
+		"id": 208,
+		"no_coin": 0
 	},
 	{
-		"name" : "Vase",
-		"id" : 379,
-		"no_coin" : 0
+		"name": "Vase",
+		"id": 379,
+		"no_coin": 0
 	},
 	{
-		"name" : "Veksar",
-		"id" : 353,
-		"no_coin" : 0
+		"name": "Veksar",
+		"id": 353,
+		"no_coin": 0
 	},
 	{
-		"name" : "Veksar Boss",
-		"id" : 355,
-		"no_coin" : 0
+		"name": "Veksar Boss",
+		"id": 355,
+		"no_coin": 0
 	},
 	{
-		"name" : "Velious Dragons",
-		"id" : 184,
-		"no_coin" : 0
+		"name": "Velious Dragons",
+		"id": 184,
+		"no_coin": 0
 	},
 	{
-		"name" : "Walrus",
-		"id" : 177,
-		"no_coin" : 1
+		"name": "Walrus",
+		"id": 177,
+		"no_coin": 1
 	},
 	{
-		"name" : "Walrus Man",
-		"id" : 191,
-		"no_coin" : 0
+		"name": "Walrus Man",
+		"id": 191,
+		"no_coin": 0
 	},
 	{
-		"name" : "War Boar",
-		"id" : 319,
-		"no_coin" : 1
+		"name": "War Boar",
+		"id": 319,
+		"no_coin": 1
 	},
 	{
-		"name" : "War Boar Unarmored",
-		"id" : 321,
-		"no_coin" : 1
+		"name": "War Boar Unarmored",
+		"id": 321,
+		"no_coin": 1
 	},
 	{
-		"name" : "War Wraith",
-		"id" : 313,
-		"no_coin" : 0
+		"name": "War Wraith",
+		"id": 313,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wasp",
-		"id" : 109,
-		"no_coin" : 1
+		"name": "Wasp",
+		"id": 109,
+		"no_coin": 1
 	},
 	{
-		"name" : "Water Dragon",
-		"id" : 165,
-		"no_coin" : 0
+		"name": "Water Dragon",
+		"id": 165,
+		"no_coin": 0
 	},
 	{
-		"name" : "Water Elemental",
-		"id" : 211,
-		"no_coin" : 0
+		"name": "Water Elemental",
+		"id": 211,
+		"no_coin": 0
 	},
 	{
-		"name" : "Weapons Rack",
-		"id" : 381,
-		"no_coin" : 0
+		"name": "Weapons Rack",
+		"id": 381,
+		"no_coin": 0
 	},
 	{
-		"name" : "Were Wolf",
-		"id" : 14,
-		"no_coin" : 0
+		"name": "Were Wolf",
+		"id": 14,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wetfang Minnow",
-		"id" : 213,
-		"no_coin" : 0
+		"name": "Wetfang Minnow",
+		"id": 213,
+		"no_coin": 0
 	},
 	{
-		"name" : "Will O' Wisp",
-		"id" : 69,
-		"no_coin" : 0
+		"name": "Will O' Wisp",
+		"id": 69,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wolf",
-		"id" : 42,
-		"no_coin" : 1
+		"name": "Wolf",
+		"id": 42,
+		"no_coin": 1
 	},
 	{
-		"name" : "Wolf Elemental",
-		"id" : 120,
-		"no_coin" : 0
+		"name": "Wolf Elemental",
+		"id": 120,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wood Elf",
-		"id" : 4,
-		"no_coin" : 0
+		"name": "Wood Elf",
+		"id": 4,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wrulon",
-		"id" : 314,
-		"no_coin" : 0
+		"name": "Wrulon",
+		"id": 314,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wurm",
-		"id" : 158,
-		"no_coin" : 0
+		"name": "Wurm",
+		"id": 158,
+		"no_coin": 0
 	},
 	{
-		"name" : "Wyvern",
-		"id" : 157,
-		"no_coin" : 0
+		"name": "Wyvern",
+		"id": 157,
+		"no_coin": 0
 	},
 	{
-		"name" : "Xalgoz",
-		"id" : 136,
-		"no_coin" : 0
+		"name": "Xalgoz",
+		"id": 136,
+		"no_coin": 0
 	},
 	{
-		"name" : "Xegony",
-		"id" : 299,
-		"no_coin" : 0
+		"name": "Xegony",
+		"id": 299,
+		"no_coin": 0
 	},
 	{
-		"name" : "Yak Man",
-		"id" : 181,
-		"no_coin" : 0
+		"name": "Yak Man",
+		"id": 181,
+		"no_coin": 0
 	},
 	{
-		"name" : "Yeti",
-		"id" : 138,
-		"no_coin" : 0
+		"name": "Yeti",
+		"id": 138,
+		"no_coin": 0
 	},
 	{
-		"name" : "Zeb Cage",
-		"id" : 328,
-		"no_coin" : 0
+		"name": "Zeb Cage",
+		"id": 328,
+		"no_coin": 0
 	},
 	{
-		"name" : "Zebuxoruk",
-		"id" : 295,
-		"no_coin" : 0
+		"name": "Zebuxoruk",
+		"id": 295,
+		"no_coin": 0
 	},
 	{
-		"name" : "Zelniak",
-		"id" : 222,
-		"no_coin" : 0
+		"name": "Zelniak",
+		"id": 222,
+		"no_coin": 0
 	},
 	{
-		"name" : "Zombie",
-		"id" : 70,
-		"no_coin" : 0
+		"name": "Zombie",
+		"id": 70,
+		"no_coin": 0
 	}
 ]
