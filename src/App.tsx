@@ -3,6 +3,9 @@ import CharacterProfile from "./entities/CharacterProfile";
 import { CharacterCreationAttributes } from "./entities/CharacterCreationAttributes";
 import AttributeAllocator from "./components/AttributeAllocator";
 import characterCreationData from "../data/char_create_point_allocations.json";
+import ZoneSelector from "./components/ZoneSelector";
+import Zone from "./entities/Zone";
+import zonesData from "../data/zones.json";
 
 interface Monster {
   health: number;
@@ -85,6 +88,16 @@ function App() {
     setCharacter((prev) => ({ ...prev, name: event.target.value }));
   };
 
+  const [zones, setZones] = useState<Zone[]>(() => {
+    // Cast the imported data to Zone[] and slice the first 10 elements
+    return (zonesData as Zone[]).slice(0, 10);
+  });
+  const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+
+  const handleSelectZone = (zone: Zone) => {
+    setSelectedZone(zone);
+  };
+
   return (
     <>
       <div>
@@ -112,6 +125,16 @@ function App() {
             onAllocationsChange={handleAllocationsChange}
           />
           {/* Other components */}
+        </div>
+
+        <div>
+          <h1>Zone Selector</h1>
+          <ZoneSelector
+            zones={zones}
+            selectedZone={selectedZone}
+            onSelectZone={handleSelectZone}
+          />
+          {selectedZone && <p>Selected Zone: {selectedZone.long_name}</p>}
         </div>
 
         {/* Display current character name */}
