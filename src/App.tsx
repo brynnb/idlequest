@@ -20,10 +20,6 @@ function App() {
     <div>
       <h1>IdleQuest</h1>
       <CharacterCreator character={character} setCharacter={setCharacter} />
-      <ClassSelector
-        selectedClass={selectedClass}
-        onSelectClass={setSelectedClass}
-      />
       <ZoneSelector
         zones={zones}
         selectedZone={selectedZone}

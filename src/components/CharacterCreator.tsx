@@ -26,7 +26,9 @@ const CharacterCreator = () => {
     setSelectedClass(charClass); // Set the selected class in the store
   };
 
-  const handleAttributeChange = (newAttributes: CharacterCreationAttributes) => {
+  const handleAttributeChange = (
+    newAttributes: CharacterCreationAttributes
+  ) => {
     setAttributes(newAttributes); // Update attributes in the store
   };
 
@@ -37,10 +39,7 @@ const CharacterCreator = () => {
         onSelectRace={handleRaceSelect}
         selectedRace={selectedRace}
       />
-      <ClassSelector
-        onSelectClass={handleClassSelect}
-        selectedClass={selectedClass}
-      />
+      <ClassSelector />
       <AttributeAllocator
         attributes={attributes}
         onAttributesChange={handleAttributeChange}
