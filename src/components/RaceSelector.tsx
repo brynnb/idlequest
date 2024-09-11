@@ -1,20 +1,19 @@
-import React from "react";
-import { Race } from "../entities/Race";
+import races from "../../data/races.json";
+import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 
-interface RaceSelectorProps {
-  races: Race[];
-  selectedRace: Race | null;
-  onSelectRace: (race: Race) => void;
-}
+const RaceSelector = () => {
+  const { selectedRace, setSelectedRace } = useCharacterCreatorStore();
 
-const RaceSelector: React.FC<RaceSelectorProps> = ({
-  races,
-  selectedRace,
-  onSelectRace,
-}) => {
+  // Filter races to only include those that are playable
+  const playableRaces = races.filter(race => race.is_playable);
+
+  const onSelectRace = (race) => {
+    setSelectedRace(race);
+  };
+
   return (
     <div>
-      {races.map((race) => (
+      {playableRaces.map((race) => (
         <button
           key={race.id}
           onClick={() => onSelectRace(race)}

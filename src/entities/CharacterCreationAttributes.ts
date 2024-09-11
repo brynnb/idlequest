@@ -6,11 +6,11 @@ export default interface CharacterCreationAttributes {
   base_int: number;
   base_wis: number;
   base_cha: number;
-  alloc_str: number;
-  alloc_sta: number;
-  alloc_dex: number;
-  alloc_agi: number;
-  alloc_int: number;
-  alloc_wis: number;
-  alloc_cha: number;
+  str: number;
+  sta: number;
+  dex: number;
+  agi: number;
+  int: number;
+  wis: number;
+  cha: number;
 }

@@ -43,7 +43,7 @@ export default interface CharacterProfile {
   mana?: number;
   endurance?: number;
   intoxication?: number;
-  stats?: {
+  attributes?: {
     str?: number;
     sta?: number;
     cha?: number;

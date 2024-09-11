@@ -1,52 +1,51 @@
-import React, { useState } from "react";
+import React from "react";
+import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 import AttributeAllocator from "./AttributeAllocator";
-import { CharacterCreationAttributes } from "../types/CharacterCreationAttributes";
-import characterCreationData from "../../data/char_create_point_allocations.json";
+import RaceSelector from "./RaceSelector";
+import ClassSelector from "./ClassSelector";
+import CharacterClass from "../entities/CharacterClass";
+import Race from "../entities/Race";
+import CharacterCreationAttributes from "../entities/CharacterCreationAttributes";
 
-interface CharacterCreatorProps {
-  character: { name: string };
-  setCharacter: React.Dispatch<React.SetStateAction<{ name: string }>>;
-}
+const CharacterCreator = () => {
+  // Access the store state and actions
+  const {
+    selectedRace,
+    selectedClass,
+    attributes,
+    setSelectedRace,
+    setSelectedClass,
+    setAttributes,
+  } = useCharacterCreatorStore();
 
-const CharacterCreator: React.FC<CharacterCreatorProps> = ({
-  character,
-  setCharacter,
-}) => {
-  const initialAttributes =
-    characterCreationData.find((entry) => entry.id === 1) ||
-    characterCreationData[0];
-
-  const [attributes, setAttributes] =
-    useState<CharacterCreationAttributes>(initialAttributes);
-
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCharacter((prev) => ({ ...prev, name: event.target.value }));
+  const handleRaceSelect = (race: Race) => {
+    setSelectedRace(race); // Set the selected race in the store
   };
 
-  const handleAllocationsChange = (
-    newAllocations: CharacterCreationAttributes
-  ) => {
-    setAttributes(newAllocations);
+  const handleClassSelect = (charClass: CharacterClass) => {
+    setSelectedClass(charClass); // Set the selected class in the store
+  };
+
+  const handleAttributeChange = (newAttributes: CharacterCreationAttributes) => {
+    setAttributes(newAttributes); // Update attributes in the store
   };
 
   return (
     <div>
       <h2>Character Creator</h2>
-      <div>
-        <label htmlFor="characterName">Character Name: </label>
-        <input
-          id="characterName"
-          type="text"
-          value={character.name}
-          onChange={handleNameChange}
-          placeholder="Enter character name"
-        />
-      </div>
+      <RaceSelector
+        onSelectRace={handleRaceSelect}
+        selectedRace={selectedRace}
+      />
+      <ClassSelector
+        onSelectClass={handleClassSelect}
+        selectedClass={selectedClass}
+      />
       <AttributeAllocator
         attributes={attributes}
-        totalPoints={25}
-        onAllocationsChange={handleAllocationsChange}
+        onAttributesChange={handleAttributeChange}
       />
+      {/* Additional UI elements for character creation */}
     </div>
   );
 };

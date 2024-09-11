@@ -47,7 +47,8 @@
 	{
 		"name": "Barbarian",
 		"id": 2,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Barrel",
@@ -247,7 +248,8 @@
 	{
 		"name": "Dark Elf",
 		"id": 6,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Dark Elf Pirate",
@@ -327,7 +329,8 @@
 	{
 		"name": "Dwarf",
 		"id": 8,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Earth Elemental",
@@ -377,7 +380,8 @@
 	{
 		"name": "Erudite",
 		"id": 3,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Erudite Ghost",
@@ -597,7 +601,8 @@
 	{
 		"name": "Gnome",
 		"id": 12,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Gnome Pirate",
@@ -682,12 +687,14 @@
 	{
 		"name": "Half-Elf",
 		"id": 7,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Halfling",
 		"id": 11,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Harpie",
@@ -697,7 +704,8 @@
 	{
 		"name": "High Elf",
 		"id": 5,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Highpass Citizen",
@@ -717,7 +725,8 @@
 	{
 		"name": "Human",
 		"id": 1,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Human Beggar",
@@ -732,7 +741,8 @@
 	{
 		"name": "Iksar",
 		"id": 128,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Iksar Citizen",
@@ -1012,7 +1022,8 @@
 	{
 		"name": "Ogre",
 		"id": 10,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Ogre Pirate",
@@ -1547,7 +1558,8 @@
 	{
 		"name": "Troll",
 		"id": 9,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Troll Buccaneer",
@@ -1792,7 +1804,8 @@
 	{
 		"name": "Wood Elf",
 		"id": 4,
-		"no_coin": 0
+		"no_coin": 0,
+		"is_playable": true
 	},
 	{
 		"name": "Wrulon",

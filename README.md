@@ -3,6 +3,10 @@
 Idle / incremental game based on Everquest circa 1999. 
 
 
+## Dev
+
+`pnp run dev`
+
 ## To-Do
 
 1. Character creation: class, race, starting city (simplified logic for now?), point allocation, name
