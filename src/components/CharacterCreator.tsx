@@ -35,10 +35,7 @@ const CharacterCreator = () => {
   return (
     <div>
       <h2>Character Creator</h2>
-      <RaceSelector
-        onSelectRace={handleRaceSelect}
-        selectedRace={selectedRace}
-      />
+      <RaceSelector />
       <ClassSelector />
       <AttributeAllocator
         attributes={attributes}

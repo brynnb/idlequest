@@ -2,6 +2,7 @@ import { create } from "zustand";
 import CharacterCreationAttributes from "../entities/CharacterCreationAttributes";
 import Race from "../entities/Race";
 import CharacterClass from "../entities/CharacterClass";
+import Zone from "../entities/Zone";
 
 interface CharacterCreatorStore {
   selectedRace: Race | null;
@@ -9,12 +10,14 @@ interface CharacterCreatorStore {
   attributes: CharacterCreationAttributes;
   setSelectedRace: (race: Race | null) => void;
   setSelectedClass: (charClass: CharacterClass | null) => void;
+  setSelectedZone: (zone: Zone | null) => void;
   setAttributes: (attributes: CharacterCreationAttributes) => void;
 }
 
 const useCharacterCreatorStore = create<CharacterCreatorStore>((set) => ({
   selectedRace: null,
   selectedClass: null,
+  selectedZone: null,
   attributes: {
     base_str: 0,
     base_sta: 0,
@@ -33,6 +36,7 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set) => ({
   },
   setSelectedRace: (race) => set({ selectedRace: race }),
   setSelectedClass: (charClass) => set({ selectedClass: charClass }),
+  setSelectedZone: (zone) => set({ selectedZone: zone }),
   setAttributes: (attributes) => set({ attributes }),
 }));
 

@@ -26,7 +26,6 @@ function App() {
         onSelectZone={setSelectedZone}
       />
       <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
-      <RaceSelector />
     </div>
   );
 }
