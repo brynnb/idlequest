@@ -7,12 +7,18 @@ import races from "/data/races.json";
 import classes from "/data/classes.json";
 import charCreateCombinations from "/data/char_create_combinations.json";
 import charCreatePointAllocations from "/data/char_create_point_allocations.json";
+import charCreatePointsAvailable from "/data/char_create_points_available.json";
 
 const humanRace = races.find((race: Race) => race.id === 1);
 const warriorClass = classes.find(
   (charClass: CharacterClass) => charClass.id === 1
 );
 const baseAttributeKeys = ["str", "sta", "dex", "agi", "int", "wis", "cha"];
+
+const getAttributePointsForClass = (classId: number): number => {
+  const classPoints = charCreatePointsAvailable.find(c => c.class_id === classId);
+  return classPoints ? classPoints.attribute_points : 0;
+};
 
 const calculateBaseAttributes = (
   race: Race | null,
@@ -84,14 +90,14 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
   selectedRace: humanRace || null,
   selectedClass: warriorClass || null,
   attributes: {
-    base_str: 5,
+    base_str: 0,
     base_sta: 0,
     base_dex: 0,
     base_agi: 0,
     base_int: 0,
     base_wis: 0,
     base_cha: 0,
-    str: 1,
+    str: 0,
     sta: 0,
     dex: 0,
     agi: 0,
@@ -99,7 +105,7 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
     wis: 0,
     cha: 0,
   },
-  attributePoints: 20,
+  attributePoints: warriorClass ? getAttributePointsForClass(warriorClass.id) : 0,
   setSelectedRace: (race) =>
     set((state) => {
       const newState = { selectedRace: race };
@@ -111,7 +117,10 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
     }),
   setSelectedClass: (charClass) =>
     set((state) => {
-      const newState = { selectedClass: charClass };
+      const newState = { 
+        selectedClass: charClass,
+        attributePoints: charClass ? getAttributePointsForClass(charClass.id) : 0
+      };
       const baseAttributes = calculateBaseAttributes(
         state.selectedRace,
         charClass
