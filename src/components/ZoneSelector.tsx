@@ -56,6 +56,7 @@ const ZoneSelector = () => {
 
   return (
     <div>
+      <h2>Starting Zone</h2>
       {availableZones.map((zone) => (
         <button
           key={zone.zoneidnumber}

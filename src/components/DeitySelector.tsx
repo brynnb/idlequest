@@ -35,6 +35,7 @@ const DeitySelector = () => {
 
   return (
     <div>
+        <h2>Deity</h2>
       {deities.map((deity) => (
         <button
           key={deity.id}

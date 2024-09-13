@@ -40,6 +40,7 @@ const ClassSelector = () => {
 
   return (
     <div>
+      <h2>Class</h2>
       {availableClasses.map((classItem) => (
         <button
           key={classItem.id}

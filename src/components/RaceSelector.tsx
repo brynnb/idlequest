@@ -14,6 +14,7 @@ const RaceSelector = () => {
 
   return (
     <div>
+      <h2>Race</h2>
       {playableRaces.map((race) => (
         <button
           key={race.id}
