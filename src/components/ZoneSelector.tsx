@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import zones from "../../data/zones.json";
 import useCharacterStore from "../stores/CharacterCreatorStore";
 import charCreateCombinations from "../../data/char_create_combinations.json";
@@ -7,19 +7,31 @@ const ZoneSelector = () => {
   const { selectedZone, setSelectedZone, selectedRace, selectedClass } =
     useCharacterStore();
 
-  // Filter zones based on the selected race and class
-  const compatibleZones = charCreateCombinations
-    .filter(
-      (combination) =>
-        combination.race === selectedRace?.id &&
-        combination.class === selectedClass?.id // Check both race and class
-    )
-    .map((combination) => combination.start_zone); // Assuming start_zone is the zone ID
+  // Get all unique start zones from the combinations
+  const allStartZones = useMemo(() => {
+    const uniqueZones = new Set(
+      charCreateCombinations.map((c) => c.start_zone)
+    );
+    // Exclude zoneidnumber of 155 for Shar Vahl because cat people aren't classic
+    uniqueZones.delete(155);
+    return Array.from(uniqueZones);
+  }, []);
 
-  // Filter available zones to only include those that have entries in the JSON
-  const availableZones = zones.filter((zone) =>
-    compatibleZones.includes(zone.zoneidnumber)
-  );
+  // Filter zones based on the selected race and class
+  const compatibleZones = useMemo(() => {
+    return charCreateCombinations
+      .filter(
+        (combination) =>
+          combination.race === selectedRace?.id &&
+          combination.class === selectedClass?.id
+      )
+      .map((combination) => combination.start_zone);
+  }, [selectedRace, selectedClass]);
+
+  // Filter available zones to only include those that are in allStartZones
+  const availableZones = useMemo(() => {
+    return zones.filter((zone) => allStartZones.includes(zone.zoneidnumber));
+  }, [allStartZones]);
 
   const onSelectZone = (zoneId: number) => {
     const selectedZone = availableZones.find(
@@ -55,27 +67,27 @@ const ZoneSelector = () => {
         <button
           key={zone.zoneidnumber}
           onClick={() => onSelectZone(zone.zoneidnumber)}
-          disabled={!compatibleZones.includes(zone.zoneidnumber)} // Disable button if not compatible
+          disabled={!compatibleZones.includes(zone.zoneidnumber)}
           style={{
             backgroundColor:
-              selectedZone?.id === zone.zoneidnumber
+              selectedZone?.zoneidnumber === zone.zoneidnumber
                 ? "#007bff"
                 : !compatibleZones.includes(zone.zoneidnumber)
                 ? "#e0e0e0"
-                : "#f8f9fa", // Grey for disabled
+                : "#f8f9fa",
             color:
-              selectedZone?.id === zone.zoneidnumber
+              selectedZone?.zoneidnumber === zone.zoneidnumber
                 ? "white"
                 : !compatibleZones.includes(zone.zoneidnumber)
                 ? "#a0a0a0"
-                : "black", // Darker grey for disabled text
+                : "black",
             margin: "5px",
             padding: "10px",
             border: "1px solid #ced4da",
             borderRadius: "4px",
             cursor: compatibleZones.includes(zone.zoneidnumber)
               ? "pointer"
-              : "not-allowed", // Change cursor for disabled
+              : "not-allowed",
           }}
         >
           {zone.long_name}

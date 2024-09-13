@@ -1,4 +1,4 @@
-//based on eqemu random name generator, not sure how much it matches original game
+//based on eqemu random name generator, output is pretty terrible and i would guess similar to original game
 const useRandomName = () => {
   const generateRandomName = () => {
     const cons = "bcdfghjklmnpqrstvwxyz";
