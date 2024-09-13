@@ -1,27 +1,45 @@
 import React from "react";
-import useCharacterProfileStore from '../stores/PlayerCharacterStore';
+import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 
-const baseAttributes = ['str', 'sta', 'dex', 'agi', 'int', 'wis', 'cha'] as const;
+const baseAttributes = [
+  "str",
+  "sta",
+  "dex",
+  "agi",
+  "int",
+  "wis",
+  "cha",
+] as const;
 
 const AttributeAllocator: React.FC = () => {
-  const { characterProfile, incrementAttribute, decrementAttribute } = useCharacterProfileStore();
+  const { attributes, setAttributes, attributePoints } = useCharacterCreatorStore();
+
+  const incrementAttribute = (attr: string) => {
+    if (attributePoints > 0) {
+      setAttributes({ ...attributes, [attr]: attributes[attr] + 1 });
+    }
+  };
+
+  const decrementAttribute = (attr: string) => {
+    if (attributes[attr] > 0) {
+      setAttributes({ ...attributes, [attr]: attributes[attr] - 1 });
+    }
+  };
 
   return (
     <div>
       <h2>Attribute Allocator</h2>
-      {baseAttributes.map((attr) => {
-        const baseAttr = `base_${attr}` as keyof CharacterCreationAttributes;
-        return (
-          <div key={attr}>
-            <span>
-              {attr.toUpperCase()}: {characterProfile.attributes[baseAttr]}
-            </span>
-            <button onClick={() => decrementAttribute(baseAttr)}>-</button>
-            
-            <button onClick={() => incrementAttribute(baseAttr)}>+</button>
-          </div>
-        );
-      })}
+      <div>
+        <span>Attribute Points: {attributePoints}</span>
+      </div>
+      {baseAttributes.map((attr) => (
+        <div key={attr}>
+          <span>{attr.toUpperCase()}:</span>
+          <button onClick={() => decrementAttribute(attr)}>-</button>
+          <span>{attributes[`base_${attr}`] + attributes[attr]}</span>
+          <button onClick={() => incrementAttribute(attr)}>+</button>
+        </div>
+      ))}
     </div>
   );
 };
