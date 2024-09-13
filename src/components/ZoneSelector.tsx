@@ -42,9 +42,9 @@ const ZoneSelector = () => {
     }
   };
 
-  // Effect to reset selected zone if incompatible with new race or class
+  // Effect to set the first available compatible zone
   useEffect(() => {
-    if (selectedZone && !compatibleZones.includes(selectedZone.zoneidnumber)) {
+    if (!selectedZone || !compatibleZones.includes(selectedZone.zoneidnumber)) {
       const firstCompatibleZone = availableZones.find((zoneItem) =>
         compatibleZones.includes(zoneItem.zoneidnumber)
       );
@@ -52,14 +52,7 @@ const ZoneSelector = () => {
         setSelectedZone(firstCompatibleZone);
       }
     }
-  }, [
-    selectedRace,
-    selectedClass,
-    compatibleZones,
-    selectedZone,
-    setSelectedZone,
-    availableZones,
-  ]);
+  }, [compatibleZones, availableZones, selectedZone, setSelectedZone]);
 
   return (
     <div>

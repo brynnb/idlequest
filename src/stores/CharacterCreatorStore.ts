@@ -3,6 +3,80 @@ import CharacterCreationAttributes from "../entities/CharacterCreationAttributes
 import Race from "../entities/Race";
 import CharacterClass from "../entities/CharacterClass";
 import Zone from "../entities/Zone";
+import races from "/data/races.json";
+import classes from "/data/classes.json";
+import charCreateCombinations from "/data/char_create_combinations.json";
+import charCreatePointAllocations from "/data/char_create_point_allocations.json";
+
+const humanRace = races.find((race: Race) => race.id === 1);
+const warriorClass = classes.find(
+  (charClass: CharacterClass) => charClass.id === 1
+);
+const baseAttributeKeys = ["str", "sta", "dex", "agi", "int", "wis", "cha"];
+
+const calculateBaseAttributes = (
+  race: Race | null,
+  charClass: CharacterClass | null
+) => {
+  //   console.log("Calculating base attributes for:", { race, charClass });
+
+  const baseAttributes = baseAttributeKeys.reduce((acc, attr) => {
+    acc[`base_${attr}`] = 0;
+    acc[attr] = 0;
+    return acc;
+  }, {} as CharacterCreationAttributes);
+
+  if (race && charClass) {
+    // console.log("Looking for combination with race ID:", race.id, "and class ID:", charClass.id);
+    const combination = charCreateCombinations.find(
+      (combo) => combo.race === race.id && combo.class === charClass.id
+    );
+
+    if (combination) {
+    //   console.log("Found combination:", combination);
+      const allocationId = combination.allocation_id;
+    //   console.log("Allocation ID:", allocationId);
+      const attributeSet = charCreatePointAllocations.find(
+        (attr) => attr.id === allocationId
+      );
+
+      if (attributeSet) {
+        // console.log("Found attribute set:", attributeSet);
+        baseAttributeKeys.forEach((attr) => {
+          baseAttributes[`base_${attr}`] = attributeSet[`base_${attr}`] || 0;
+          baseAttributes[attr] = attributeSet[`alloc_${attr}`] || 0;
+        });
+      } else {
+        // console.log("No attribute set found for allocation ID:", allocationId);
+      }
+    } else {
+      //   console.log("No combination found for race ID:", race.id, "and class ID:", charClass.id);
+    }
+  }
+
+  //   console.log("Final base attributes:", baseAttributes);
+
+  // Apply race and class modifiers
+  if (race) {
+    baseAttributeKeys.forEach((attr) => {
+      if (attr in race) {
+        baseAttributes[`base_${attr}`] += race[attr as keyof Race] as number;
+      }
+    });
+  }
+
+  if (charClass) {
+    baseAttributeKeys.forEach((attr) => {
+      if (attr in charClass) {
+        baseAttributes[`base_${attr}`] += charClass[
+          attr as keyof CharacterClass
+        ] as number;
+      }
+    });
+  }
+
+  return baseAttributes;
+};
 
 interface CharacterCreatorStore {
   selectedRace: Race | null;
@@ -15,12 +89,13 @@ interface CharacterCreatorStore {
   setAttributes: (attributes: CharacterCreationAttributes) => void;
   setAttributePoints: (points: number) => void;
   attributePoints: number;
+  updateBaseAttributes: () => void;
 }
 
-const useCharacterCreatorStore = create<CharacterCreatorStore>((set) => ({
+const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
   selectedZone: null,
-  selectedRace: null,
-  selectedClass: null,
+  selectedRace: humanRace || null,
+  selectedClass: warriorClass || null,
   attributes: {
     base_str: 5,
     base_sta: 0,
@@ -38,18 +113,47 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set) => ({
     cha: 0,
   },
   attributePoints: 20,
-  setSelectedRace: (race) => set({ selectedRace: race }),
-  setSelectedClass: (charClass) => set({ selectedClass: charClass }),
+  setSelectedRace: (race) =>
+    set((state) => {
+      const newState = { selectedRace: race };
+      const baseAttributes = calculateBaseAttributes(race, state.selectedClass);
+      return {
+        ...newState,
+        attributes: { ...state.attributes, ...baseAttributes },
+      };
+    }),
+  setSelectedClass: (charClass) =>
+    set((state) => {
+      const newState = { selectedClass: charClass };
+      const baseAttributes = calculateBaseAttributes(
+        state.selectedRace,
+        charClass
+      );
+      return {
+        ...newState,
+        attributes: { ...state.attributes, ...baseAttributes },
+      };
+    }),
   setSelectedZone: (zone) => set({ selectedZone: zone }),
-  setAttributes: (attributes) => set((state) => {
-    const totalAllocated = Object.values(attributes).reduce((sum, value) => sum + value, 0) -
-      Object.values(state.attributes).reduce((sum, value) => sum + value, 0);
-    return {
-      attributes,
-      attributePoints: state.attributePoints - totalAllocated
-    };
-  }),
+  setAttributes: (attributes) =>
+    set((state) => {
+      const totalAllocated =
+        Object.values(attributes).reduce((sum, value) => sum + value, 0) -
+        Object.values(state.attributes).reduce((sum, value) => sum + value, 0);
+      return {
+        attributes,
+        attributePoints: state.attributePoints - totalAllocated,
+      };
+    }),
   setAttributePoints: (points) => set({ attributePoints: points }),
+  updateBaseAttributes: () =>
+    set((state) => {
+      const baseAttributes = calculateBaseAttributes(
+        state.selectedRace,
+        state.selectedClass
+      );
+      return { attributes: { ...state.attributes, ...baseAttributes } };
+    }),
 }));
 
 export default useCharacterCreatorStore;

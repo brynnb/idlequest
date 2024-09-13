@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 
 const baseAttributes = [
@@ -12,15 +12,20 @@ const baseAttributes = [
 ] as const;
 
 const AttributeAllocator: React.FC = () => {
-  const { attributes, setAttributes, attributePoints } = useCharacterCreatorStore();
+  const { attributes, setAttributes, attributePoints, updateBaseAttributes } =
+    useCharacterCreatorStore();
 
-  const incrementAttribute = (attr: string) => {
+  useEffect(() => {
+    updateBaseAttributes();
+  }, []);
+
+  const incrementAttribute = (attr: keyof typeof attributes) => {
     if (attributePoints > 0) {
       setAttributes({ ...attributes, [attr]: attributes[attr] + 1 });
     }
   };
 
-  const decrementAttribute = (attr: string) => {
+  const decrementAttribute = (attr: keyof typeof attributes) => {
     if (attributes[attr] > 0) {
       setAttributes({ ...attributes, [attr]: attributes[attr] - 1 });
     }
