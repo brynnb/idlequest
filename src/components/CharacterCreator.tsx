@@ -1,4 +1,3 @@
-import React from "react";
 import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 import AttributeAllocator from "./AttributeAllocator";
 import RaceSelector from "./RaceSelector";
@@ -6,12 +5,15 @@ import ClassSelector from "./ClassSelector";
 import CharacterClass from "../entities/CharacterClass";
 import Race from "../entities/Race";
 import CharacterCreationAttributes from "../entities/CharacterCreationAttributes";
+import DeitySelector from "./DeitySelector";
 
 const CharacterCreator = () => {
   // Access the store state and actions
   const {
     selectedRace,
     selectedClass,
+    selectedDeity,
+    setSelectedDeity,
     attributes,
     setSelectedRace,
     setSelectedClass,
@@ -41,7 +43,7 @@ const CharacterCreator = () => {
         attributes={attributes}
         onAttributesChange={handleAttributeChange}
       />
-      {/* Additional UI elements for character creation */}
+      <DeitySelector />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import CharacterCreationAttributes from "../entities/CharacterCreationAttributes
 import Race from "../entities/Race";
 import CharacterClass from "../entities/CharacterClass";
 import Zone from "../entities/Zone";
+import Deity from "../entities/Deity";
 import races from "/data/races.json";
 import classes from "/data/classes.json";
 import charCreateCombinations from "/data/char_create_combinations.json";
@@ -83,6 +84,8 @@ interface CharacterCreatorStore {
   setAttributePoints: (points: number) => void;
   attributePoints: number;
   updateBaseAttributes: () => void;
+  selectedDeity: Deity | null;
+  setSelectedDeity: (deity: Deity | null) => void;
 }
 
 const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
@@ -150,6 +153,8 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
       );
       return { attributes: { ...state.attributes, ...baseAttributes } };
     }),
+  selectedDeity: null,
+  setSelectedDeity: (deity) => set({ selectedDeity: deity }),
 }));
 
 export default useCharacterCreatorStore;
