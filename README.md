@@ -1,6 +1,6 @@
 # IdleQuest
 
-Idle / incremental game based on Everquest circa 1999. 
+Idle / incremental game based on EverQuest circa 1999. Lots of features to be determined. Overall idea is to have data be as close as feasibly possible to classic EverQuest. As one example, all of the race/class/diety/starting zone/point allocations are from the actual EQEmu database, which presumably either matches classic or is pretty close and good enough. I also intend to have the same mobs in the same zones dropping the same loot and providing the same level of experience. I may adjust combat to be influenced more by weapons
 
 
 ## Dev

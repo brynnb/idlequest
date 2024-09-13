@@ -1,66 +1,104 @@
 [
 	{
-		"id" : 1,
-		"name" : "Bertoxxulos"
+		"id": 140,
+		"name": "Agnostic",
+		"bitmask": 1,
+		"spells_id": null
 	},
 	{
-		"id" : 2,
-		"name" : "Brell Serilis"
+		"id": 201,
+		"name": "Bertoxxulous",
+		"bitmask": 2,
+		"spells_id": 1
 	},
 	{
-		"id" : 3,
-		"name" : "Cazic Thule"
+		"id": 202,
+		"name": "Brell Serilis",
+		"bitmask": 4,
+		"spells_id": 2
 	},
 	{
-		"id" : 4,
-		"name" : "Erollisi Marr"
+		"id": 203,
+		"name": "Cazic Thule",
+		"bitmask": 8,
+		"spells_id": 3
 	},
 	{
-		"id" : 5,
-		"name" : "Bristlebane"
+		"id": 204,
+		"name": "Erollsi Marr",
+		"bitmask": 16,
+		"spells_id": 4
 	},
 	{
-		"id" : 6,
-		"name" : "Innoruuk"
+		"id": 205,
+		"name": "Bristlebane",
+		"bitmask": 32,
+		"spells_id": 5
 	},
 	{
-		"id" : 7,
-		"name" : "Karana"
+		"id": 206,
+		"name": "Innoruuk",
+		"bitmask": 64,
+		"spells_id": 6
 	},
 	{
-		"id" : 8,
-		"name" : "Mithaniel Marr"
+		"id": 207,
+		"name": "Karana",
+		"bitmask": 128,
+		"spells_id": 7
 	},
 	{
-		"id" : 9,
-		"name" : "Prexus"
+		"id": 208,
+		"name": "Mithaniel Marr",
+		"bitmask": 256,
+		"spells_id": 8
 	},
 	{
-		"id" : 10,
-		"name" : "Quellious"
+		"id": 209,
+		"name": "Prexus",
+		"bitmask": 512,
+		"spells_id": 9
 	},
 	{
-		"id" : 11,
-		"name" : "Rallos Zek"
+		"id": 210,
+		"name": "Quellious",
+		"bitmask": 1024,
+		"spells_id": 10
 	},
 	{
-		"id" : 12,
-		"name" : "Rodcet Nife"
+		"id": 211,
+		"name": "Rallos Zek",
+		"bitmask": 2048,
+		"spells_id": 11
 	},
 	{
-		"id" : 13,
-		"name" : "Solusek Ro"
+		"id": 212,
+		"name": "Rodcet Nife",
+		"bitmask": 4096,
+		"spells_id": 12
 	},
 	{
-		"id" : 14,
-		"name" : "The Tribunal"
+		"id": 213,
+		"name": "Solusek Ro",
+		"bitmask": 8192,
+		"spells_id": 13
 	},
 	{
-		"id" : 15,
-		"name" : "Tunare"
+		"id": 214,
+		"name": "The Tribunal",
+		"bitmask": 16384,
+		"spells_id": 14
 	},
 	{
-		"id" : 16,
-		"name" : "Veeshan"
+		"id": 215,
+		"name": "Tunare",
+		"bitmask": 32768,
+		"spells_id": 15
+	},
+	{
+		"id": 216,
+		"name": "Veeshan",
+		"bitmask": 65536,
+		"spells_id": 16
 	}
 ]
