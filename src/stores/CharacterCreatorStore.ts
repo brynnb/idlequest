@@ -18,8 +18,6 @@ const calculateBaseAttributes = (
   race: Race | null,
   charClass: CharacterClass | null
 ) => {
-  //   console.log("Calculating base attributes for:", { race, charClass });
-
   const baseAttributes = baseAttributeKeys.reduce((acc, attr) => {
     acc[`base_${attr}`] = 0;
     acc[attr] = 0;
@@ -27,34 +25,23 @@ const calculateBaseAttributes = (
   }, {} as CharacterCreationAttributes);
 
   if (race && charClass) {
-    // console.log("Looking for combination with race ID:", race.id, "and class ID:", charClass.id);
     const combination = charCreateCombinations.find(
       (combo) => combo.race === race.id && combo.class === charClass.id
     );
 
     if (combination) {
-    //   console.log("Found combination:", combination);
       const allocationId = combination.allocation_id;
-    //   console.log("Allocation ID:", allocationId);
       const attributeSet = charCreatePointAllocations.find(
         (attr) => attr.id === allocationId
       );
 
       if (attributeSet) {
-        // console.log("Found attribute set:", attributeSet);
         baseAttributeKeys.forEach((attr) => {
           baseAttributes[`base_${attr}`] = attributeSet[`base_${attr}`] || 0;
-          baseAttributes[attr] = attributeSet[`alloc_${attr}`] || 0;
         });
-      } else {
-        // console.log("No attribute set found for allocation ID:", allocationId);
       }
-    } else {
-      //   console.log("No combination found for race ID:", race.id, "and class ID:", charClass.id);
     }
   }
-
-  //   console.log("Final base attributes:", baseAttributes);
 
   // Apply race and class modifiers
   if (race) {

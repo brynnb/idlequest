@@ -26,7 +26,8 @@ const AttributeAllocator: React.FC = () => {
   };
 
   const decrementAttribute = (attr: keyof typeof attributes) => {
-    if (attributes[attr] > 0) {
+    const baseValue = attributes[`base_${attr}`];
+    if (attributes[attr] > 0 && (attributes[`base_${attr}`] + attributes[attr]) > baseValue) {
       setAttributes({ ...attributes, [attr]: attributes[attr] - 1 });
     }
   };
@@ -40,9 +41,16 @@ const AttributeAllocator: React.FC = () => {
       {baseAttributes.map((attr) => (
         <div key={attr}>
           <span>{attr.toUpperCase()}:</span>
-          <button onClick={() => decrementAttribute(attr)}>-</button>
+          <button 
+            onClick={() => decrementAttribute(attr)}
+            disabled={attributes[attr] === 0 || (attributes[`base_${attr}`] + attributes[attr]) <= attributes[`base_${attr}`]}
+          >
+            -
+          </button>
           <span>{attributes[`base_${attr}`] + attributes[attr]}</span>
-          <button onClick={() => incrementAttribute(attr)}>+</button>
+          <button onClick={() => incrementAttribute(attr)} disabled={attributePoints === 0}>
+            +
+          </button>
         </div>
       ))}
     </div>
