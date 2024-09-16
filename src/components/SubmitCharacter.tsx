@@ -10,8 +10,11 @@ const SubmitCharacter: React.FC = () => {
     selectedDeity,
     selectedZone,
     attributes,
+    allPointsAllocated,
   } = useCharacterCreatorStore();
-  const setCharacterProfile = usePlayerCharacterStore((state) => state.setCharacterProfile);
+  const setCharacterProfile = usePlayerCharacterStore(
+    (state) => state.setCharacterProfile
+  );
 
   const handleSubmit = () => {
     const newCharacterProfile = {
@@ -32,7 +35,7 @@ const SubmitCharacter: React.FC = () => {
     };
 
     setCharacterProfile(newCharacterProfile);
-    alert("Character created successfully!"); // You can replace this with a more user-friendly notification
+    console.log("Character created successfully!");
   };
 
   return (
@@ -43,7 +46,8 @@ const SubmitCharacter: React.FC = () => {
         !selectedRace ||
         !selectedClass ||
         !selectedDeity ||
-        !selectedZone
+        !selectedZone ||
+        !allPointsAllocated
       }
     >
       Create Character

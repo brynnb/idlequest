@@ -2,7 +2,6 @@
 
 Idle / incremental game based on EverQuest circa 1999. Lots of features to be determined. Overall idea is to have data be as close as feasibly possible to classic EverQuest. As one example, all of the race/class/diety/starting zone/point allocations are from the actual EQEmu database, which presumably either matches classic or is pretty close and good enough. I also intend to have the same mobs in the same zones dropping the same loot and providing the same level of experience. I may adjust combat to be influenced more by weapons
 
-
 ## Dev
 
 `pnp run dev`
@@ -13,27 +12,17 @@ Idle / incremental game based on EverQuest circa 1999. Lots of features to be de
 2. Separate character creation into its own page
 3. Add character starting inventory/display it
 4. Incremental/idle combat engine
+5. Lots more
 
 ## Backlog
 
-* The race/class/deity combinations pull in descriptions from eqstr_us.txt. Some of these are already organized into JSON but there are so many possible combinations and not all of them have organized. This is a low priority nice-to-have so putting it off for now.
+- The race/class/deity combinations pull in descriptions from eqstr_us.txt. Some of these are already organized into JSON but there are so many possible combinations and not all of them have organized. This is a low priority nice-to-have so putting it off for now.
 
-Entities:
-* Player
-* NPC
-* Classes
-* Races
-* Cities
-* Zones
-* Stats
+## Resources
 
-### Thoughts
-
-* Don't use external API for large data - lots of extra work. KISS
-* Convert MariaDB to SQLite so I can use it with React without having to run a database process/server
-* Long term move to external API... but also an EQ API sounds fun.. hmm..
-* Start with just hardcoding to get actual features in with limited data then move on to harder challenge. Get something fun to show first. Fun proof of concept first. 
-
+* https://docs.eqemu.io/schema/characters/char_create_combinations/ (and other pages)
+* https://github.com/EQEmu/Server
+* UI examples for classic character creation: https://www.youtube.com/watch?v=EjWDRHu9mhU
 
 # React + TypeScript + Vite
 
@@ -55,11 +44,11 @@ export default tseslint.config({
   languageOptions: {
     // other options...
     parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
       tsconfigRootDir: import.meta.dirname,
     },
   },
-})
+});
 ```
 
 - Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
@@ -68,11 +57,11 @@ export default tseslint.config({
 
 ```js
 // eslint.config.js
-import react from 'eslint-plugin-react'
+import react from "eslint-plugin-react";
 
 export default tseslint.config({
   // Set the react version
-  settings: { react: { version: '18.3' } },
+  settings: { react: { version: "18.3" } },
   plugins: {
     // Add the react plugin
     react,
@@ -81,7 +70,7 @@ export default tseslint.config({
     // other rules...
     // Enable its recommended rules
     ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
+    ...react.configs["jsx-runtime"].rules,
   },
-})
+});
 ```
