@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
+import AttributeAutoAllocatorButton from "./AttributeAutoAllocatorButton";
 
 const baseAttributes = [
   "str",
@@ -50,6 +51,7 @@ const AttributeAllocator: React.FC = () => {
       <div>
         <span>Attribute Points Remaining: {attributePoints}</span>
       </div>
+      <AttributeAutoAllocatorButton />
       {baseAttributes.map((attr) => (
         <div key={attr}>
           <span>{attr.toUpperCase()}:</span>
