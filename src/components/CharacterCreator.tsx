@@ -5,6 +5,7 @@ import DeitySelector from "./DeitySelector";
 import NameInput from "./NameInput";
 import ZoneSelector from "./ZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
+import CharacterDescription from "./CharacterSelectionDescription";
 
 const CharacterCreator = () => {
   return (
@@ -16,6 +17,7 @@ const CharacterCreator = () => {
       <AttributeAllocator />
       <DeitySelector />
       <ZoneSelector />
+      <CharacterDescription />
       <SubmitCharacter />
     </div>
   );

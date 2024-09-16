@@ -9,10 +9,14 @@ Idle / incremental game based on EverQuest circa 1999. Lots of features to be de
 
 ## To-Do
 
-1. Character creation: class, race, starting city (simplified logic for now?), point allocation, name
-2. Create player class: health, mana, stamina
-3. Display all of the above on webpage part of app (not console)
-4. Add incremental/idle combat against a bat or rat
+1. Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
+2. Separate character creation into its own page
+3. Add character starting inventory/display it
+4. Incremental/idle combat engine
+
+## Backlog
+
+* The race/class/deity combinations pull in descriptions from eqstr_us.txt. Some of these are already organized into JSON but there are so many possible combinations and not all of them have organized. This is a low priority nice-to-have so putting it off for now.
 
 Entities:
 * Player

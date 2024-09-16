@@ -3,4 +3,5 @@ export default interface Deity {
   name: string;
   bitmask: number;
   spells_id: number | null;
+  description: string;
 }
