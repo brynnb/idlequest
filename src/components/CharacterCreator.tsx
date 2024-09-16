@@ -3,6 +3,8 @@ import RaceSelector from "./RaceSelector";
 import ClassSelector from "./ClassSelector";
 import DeitySelector from "./DeitySelector";
 import NameInput from "./NameInput";
+import ZoneSelector from "./ZoneSelector";
+import SubmitCharacter from "./SubmitCharacter";
 
 const CharacterCreator = () => {
   return (
@@ -13,6 +15,8 @@ const CharacterCreator = () => {
       <ClassSelector />
       <AttributeAllocator />
       <DeitySelector />
+      <ZoneSelector />
+      <SubmitCharacter />
     </div>
   );
 };

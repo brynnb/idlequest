@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 import CharacterCreationAttributes from "../entities/CharacterCreationAttributes";
 import Race from "../entities/Race";
 import CharacterClass from "../entities/CharacterClass";
@@ -92,79 +93,89 @@ interface CharacterCreatorStore {
   characterName: string;
 }
 
-const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
-  selectedZone: null,
-  selectedRace: humanRace || null,
-  selectedClass: warriorClass || null,
-  attributes: {
-    base_str: 0,
-    base_sta: 0,
-    base_dex: 0,
-    base_agi: 0,
-    base_int: 0,
-    base_wis: 0,
-    base_cha: 0,
-    str: 0,
-    sta: 0,
-    dex: 0,
-    agi: 0,
-    int: 0,
-    wis: 0,
-    cha: 0,
-  },
-  attributePoints: warriorClass
-    ? getAttributePointsForClass(warriorClass.id)
-    : 0,
-  setSelectedRace: (race) =>
-    set((state) => {
-      const newState = { selectedRace: race };
-      const baseAttributes = calculateBaseAttributes(race, state.selectedClass);
-      return {
-        ...newState,
-        attributes: { ...state.attributes, ...baseAttributes },
-      };
-    }),
-  setSelectedClass: (charClass) =>
-    set((state) => {
-      const newState = {
-        selectedClass: charClass,
-        attributePoints: charClass
-          ? getAttributePointsForClass(charClass.id)
+const useCharacterCreatorStore = create(
+  devtools(
+    persist(
+      (set, get) => ({
+        selectedZone: null,
+        selectedRace: humanRace || null,
+        selectedClass: warriorClass || null,
+        attributes: {
+          base_str: 0,
+          base_sta: 0,
+          base_dex: 0,
+          base_agi: 0,
+          base_int: 0,
+          base_wis: 0,
+          base_cha: 0,
+          str: 0,
+          sta: 0,
+          dex: 0,
+          agi: 0,
+          int: 0,
+          wis: 0,
+          cha: 0,
+        },
+        attributePoints: warriorClass
+          ? getAttributePointsForClass(warriorClass.id)
           : 0,
-      };
-      const baseAttributes = calculateBaseAttributes(
-        state.selectedRace,
-        charClass
-      );
-      return {
-        ...newState,
-        attributes: { ...state.attributes, ...baseAttributes },
-      };
-    }),
-  setSelectedZone: (zone) => set({ selectedZone: zone }),
-  setAttributes: (attributes) =>
-    set((state) => {
-      const totalAllocated =
-        Object.values(attributes).reduce((sum, value) => sum + value, 0) -
-        Object.values(state.attributes).reduce((sum, value) => sum + value, 0);
-      return {
-        attributes,
-        attributePoints: state.attributePoints - totalAllocated,
-      };
-    }),
-  setAttributePoints: (points) => set({ attributePoints: points }),
-  updateBaseAttributes: () =>
-    set((state) => {
-      const baseAttributes = calculateBaseAttributes(
-        state.selectedRace,
-        state.selectedClass
-      );
-      return { attributes: { ...state.attributes, ...baseAttributes } };
-    }),
-  selectedDeity: null,
-  setSelectedDeity: (deity) => set({ selectedDeity: deity }),
-  setCharacterName: (name) => set({ characterName: name }),
-  characterName: "",
-}));
+        setSelectedRace: (race) =>
+          set((state) => {
+            const newState = { selectedRace: race };
+            const baseAttributes = calculateBaseAttributes(race, state.selectedClass);
+            return {
+              ...newState,
+              attributes: { ...state.attributes, ...baseAttributes },
+            };
+          }),
+        setSelectedClass: (charClass) =>
+          set((state) => {
+            const newState = {
+              selectedClass: charClass,
+              attributePoints: charClass
+                ? getAttributePointsForClass(charClass.id)
+                : 0,
+            };
+            const baseAttributes = calculateBaseAttributes(
+              state.selectedRace,
+              charClass
+            );
+            return {
+              ...newState,
+              attributes: { ...state.attributes, ...baseAttributes },
+            };
+          }),
+        setSelectedZone: (zone) => set({ selectedZone: zone }),
+        setAttributes: (attributes) =>
+          set((state) => {
+            const totalAllocated =
+              Object.values(attributes).reduce((sum, value) => sum + value, 0) -
+              Object.values(state.attributes).reduce((sum, value) => sum + value, 0);
+            return {
+              attributes,
+              attributePoints: state.attributePoints - totalAllocated,
+            };
+          }),
+        setAttributePoints: (points) => set({ attributePoints: points }),
+        updateBaseAttributes: () =>
+          set((state) => {
+            const baseAttributes = calculateBaseAttributes(
+              state.selectedRace,
+              state.selectedClass
+            );
+            return { attributes: { ...state.attributes, ...baseAttributes } };
+          }),
+        selectedDeity: null,
+        setSelectedDeity: (deity) => set({ selectedDeity: deity }),
+        setCharacterName: (name) => set({ characterName: name }),
+        characterName: "",
+      }),
+      {
+        name: "character-creator-storage", // unique name for localStorage key
+      }
+    ),
+    { name: 'Character Creator Store' } // This name will appear in the DevTools
+  )
+);
 
 export default useCharacterCreatorStore;
