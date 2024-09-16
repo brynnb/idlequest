@@ -41,6 +41,7 @@ interface CharacterCreatorStore {
   allPointsAllocated: boolean;
   setAllPointsAllocated: (allocated: boolean) => void;
   resetStore: () => void;
+  resetAttributes: () => void;
 }
 
 const useCharacterCreatorStore = create(
@@ -60,7 +61,10 @@ const useCharacterCreatorStore = create(
             const baseAttributes = calculateBaseAttributes(race, state.selectedClass);
             return {
               ...newState,
-              attributes: { ...state.attributes, ...baseAttributes },
+              attributes: { ...baseAttributes },
+              attributePoints: state.selectedClass
+                ? getAttributePointsForClass(state.selectedClass.id)
+                : 0,
             };
           }),
         setSelectedClass: (charClass) =>
@@ -77,7 +81,7 @@ const useCharacterCreatorStore = create(
             );
             return {
               ...newState,
-              attributes: { ...state.attributes, ...baseAttributes },
+              attributes: { ...baseAttributes },
             };
           }),
         setSelectedZone: (zone) => set({ selectedZone: zone }),
@@ -125,6 +129,16 @@ const useCharacterCreatorStore = create(
           // Call updateBaseAttributes after resetting
           get().updateBaseAttributes();
         },
+        resetAttributes: () =>
+          set((state) => {
+            const baseAttributes = calculateBaseAttributes(state.selectedRace, state.selectedClass);
+            return {
+              attributes: { ...baseAttributes },
+              attributePoints: state.selectedClass
+                ? getAttributePointsForClass(state.selectedClass.id)
+                : 0,
+            };
+          }),
       }),
       {
         name: "character-creator-storage",
