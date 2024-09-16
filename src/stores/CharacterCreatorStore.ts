@@ -17,7 +17,9 @@ const warriorClass = classes.find(
 const baseAttributeKeys = ["str", "sta", "dex", "agi", "int", "wis", "cha"];
 
 const getAttributePointsForClass = (classId: number): number => {
-  const classPoints = charCreatePointsAvailable.find(c => c.class_id === classId);
+  const classPoints = charCreatePointsAvailable.find(
+    (c) => c.class_id === classId
+  );
   return classPoints ? classPoints.attribute_points : 0;
 };
 
@@ -86,6 +88,8 @@ interface CharacterCreatorStore {
   updateBaseAttributes: () => void;
   selectedDeity: Deity | null;
   setSelectedDeity: (deity: Deity | null) => void;
+  setCharacterName: (name: string) => void;
+  characterName: string;
 }
 
 const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
@@ -108,7 +112,9 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
     wis: 0,
     cha: 0,
   },
-  attributePoints: warriorClass ? getAttributePointsForClass(warriorClass.id) : 0,
+  attributePoints: warriorClass
+    ? getAttributePointsForClass(warriorClass.id)
+    : 0,
   setSelectedRace: (race) =>
     set((state) => {
       const newState = { selectedRace: race };
@@ -120,9 +126,11 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
     }),
   setSelectedClass: (charClass) =>
     set((state) => {
-      const newState = { 
+      const newState = {
         selectedClass: charClass,
-        attributePoints: charClass ? getAttributePointsForClass(charClass.id) : 0
+        attributePoints: charClass
+          ? getAttributePointsForClass(charClass.id)
+          : 0,
       };
       const baseAttributes = calculateBaseAttributes(
         state.selectedRace,
@@ -155,6 +163,8 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>((set, get) => ({
     }),
   selectedDeity: null,
   setSelectedDeity: (deity) => set({ selectedDeity: deity }),
+  setCharacterName: (name) => set({ characterName: name }),
+  characterName: "",
 }));
 
 export default useCharacterCreatorStore;
