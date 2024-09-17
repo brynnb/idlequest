@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import CharacterProfile from "../entities/CharacterProfile";
 
 interface PlayerCharacterStore {
@@ -9,25 +9,33 @@ interface PlayerCharacterStore {
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
   devtools(
-    (set) => ({
-      characterProfile: {
-        name: "",
-        race: null,
-        class: null,
-        deity: null,
-        startingZone: null,
-        attributes: {
-          str: 0,
-          sta: 0,
-          cha: 0,
-          dex: 0,
-          int: 0,
-          agi: 0,
-          wis: 0,
+    persist(
+      (set) => ({
+        characterProfile: {
+          name: "",
+          race: null,
+          class: null,
+          deity: null,
+          startingZone: null,
+          attributes: {
+            str: 0,
+            sta: 0,
+            cha: 0,
+            dex: 0,
+            int: 0,
+            agi: 0,
+            wis: 0,
+          },
+          inventory: [],
         },
-      },
-      setCharacterProfile: (profile) => set({ characterProfile: profile }),
-    }),
+        setCharacterProfile: (profile) => set({ characterProfile: profile }),
+        // Add a specific action for inventory
+        setInventory: (inventory) => set((state) => ({
+          characterProfile: { ...state.characterProfile, inventory }
+        })),
+      }),
+      { name: "player-character-storage" }
+    ),
     { name: "Player Character Store" }
   )
 );

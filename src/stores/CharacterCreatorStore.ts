@@ -5,6 +5,7 @@ import Race from "../entities/Race";
 import CharacterClass from "../entities/CharacterClass";
 import Zone from "../entities/Zone";
 import Deity from "../entities/Deity";
+import { InventoryItem } from "../entities/InventoryItem";
 import races from "/data/races.json";
 import classes from "/data/classes.json";
 import charCreatePointsAvailable from "/data/char_create_points_available.json";
@@ -42,6 +43,8 @@ interface CharacterCreatorStore {
   setAllPointsAllocated: (allocated: boolean) => void;
   resetStore: () => void;
   resetAttributes: () => void;
+  inventory: InventoryItem[];
+  setInventory: (items: InventoryItem[]) => void;
 }
 
 const useCharacterCreatorStore = create(
@@ -58,7 +61,10 @@ const useCharacterCreatorStore = create(
         setSelectedRace: (race) =>
           set((state) => {
             const newState = { selectedRace: race };
-            const baseAttributes = calculateBaseAttributes(race, state.selectedClass);
+            const baseAttributes = calculateBaseAttributes(
+              race,
+              state.selectedClass
+            );
             return {
               ...newState,
               attributes: { ...baseAttributes },
@@ -89,7 +95,10 @@ const useCharacterCreatorStore = create(
           set((state) => {
             const totalAllocated =
               Object.values(attributes).reduce((sum, value) => sum + value, 0) -
-              Object.values(state.attributes).reduce((sum, value) => sum + value, 0);
+              Object.values(state.attributes).reduce(
+                (sum, value) => sum + value,
+                0
+              );
             return {
               attributes,
               attributePoints: state.attributePoints - totalAllocated,
@@ -109,21 +118,28 @@ const useCharacterCreatorStore = create(
         setCharacterName: (name) => set({ characterName: name }),
         characterName: "",
         allPointsAllocated: false,
-        setAllPointsAllocated: (allocated) => set({ allPointsAllocated: allocated }),
+        setAllPointsAllocated: (allocated) =>
+          set({ allPointsAllocated: allocated }),
         resetStore: () => {
           const defaultRace = humanRace || null;
           const defaultClass = warriorClass || null;
-          const defaultAttributes = calculateBaseAttributes(defaultRace, defaultClass);
-          
+          const defaultAttributes = calculateBaseAttributes(
+            defaultRace,
+            defaultClass
+          );
+
           set({
             selectedZone: null,
             selectedRace: defaultRace,
             selectedClass: defaultClass,
             attributes: defaultAttributes,
-            attributePoints: defaultClass ? getAttributePointsForClass(defaultClass.id) : 0,
+            attributePoints: defaultClass
+              ? getAttributePointsForClass(defaultClass.id)
+              : 0,
             selectedDeity: null,
             characterName: "",
             allPointsAllocated: false,
+            inventory: [],
           });
 
           // Call updateBaseAttributes after resetting
@@ -131,7 +147,10 @@ const useCharacterCreatorStore = create(
         },
         resetAttributes: () =>
           set((state) => {
-            const baseAttributes = calculateBaseAttributes(state.selectedRace, state.selectedClass);
+            const baseAttributes = calculateBaseAttributes(
+              state.selectedRace,
+              state.selectedClass
+            );
             return {
               attributes: { ...baseAttributes },
               attributePoints: state.selectedClass
@@ -139,12 +158,13 @@ const useCharacterCreatorStore = create(
                 : 0,
             };
           }),
+        setInventory: (items) => set({ inventory: items }),
       }),
       {
         name: "character-creator-storage",
       }
     ),
-    { name: 'Character Creator Store' }
+    { name: "Character Creator Store" }
   )
 );
 

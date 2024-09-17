@@ -27,6 +27,7 @@ const ResetGameButton: React.FC = () => {
         agi: 0,
         wis: 0,
       },
+      inventory: [], // Reset inventory to an empty array
     });
 
     // Reset CharacterCreatorStore

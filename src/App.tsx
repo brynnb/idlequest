@@ -2,6 +2,8 @@ import { useState } from "react";
 import CharacterCreator from "./components/CharacterCreator";
 import GameEngine from "./components/GameEngine";
 import ResetGameButton from "./components/ResetGameButton";
+import StoreDebugger from "./components/StoreDebugger";
+import GeneralInventorySlots from "./components/GeneralInventorySlots";
 
 function App() {
   const [isRunning, setIsRunning] = useState(false);
@@ -13,7 +15,8 @@ function App() {
       <CharacterCreator />
 
       <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
-      {/* <StoreDebugger /> */}
+      <GeneralInventorySlots />
+      <StoreDebugger />
     </div>
   );
 }

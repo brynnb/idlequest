@@ -1,6 +1,7 @@
 import React from "react";
 import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
+import useInventoryCreator from "../hooks/useInventoryCreator";
 
 const SubmitCharacter: React.FC = () => {
   const {
@@ -12,11 +13,17 @@ const SubmitCharacter: React.FC = () => {
     attributes,
     allPointsAllocated,
   } = useCharacterCreatorStore();
+
   const setCharacterProfile = usePlayerCharacterStore(
     (state) => state.setCharacterProfile
   );
+  const setInventory = usePlayerCharacterStore(
+    (state) => state.setInventory
+  );
 
-  const handleSubmit = () => {
+  const { createInventory, loading } = useInventoryCreator();
+
+  const handleSubmit = async () => {
     const newCharacterProfile = {
       name: characterName,
       race: selectedRace,
@@ -31,10 +38,19 @@ const SubmitCharacter: React.FC = () => {
         int: attributes.int + attributes.base_int,
         agi: attributes.agi + attributes.base_agi,
         wis: attributes.wis + attributes.base_wis,
-      },
+      }
     };
 
     setCharacterProfile(newCharacterProfile);
+
+    const inventory = await createInventory(
+      selectedRace.id,
+      selectedClass.id,
+      selectedDeity.id,
+      selectedZone.id
+    );
+    setInventory(inventory);
+
     console.log("Character created successfully!");
   };
 
@@ -47,7 +63,8 @@ const SubmitCharacter: React.FC = () => {
         !selectedClass ||
         !selectedDeity ||
         !selectedZone ||
-        !allPointsAllocated
+        !allPointsAllocated ||
+        loading
       }
     >
       Create Character
