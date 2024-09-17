@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
 import startingItemsData from "../../data/starting_items.json";
 import { InventoryItem } from "../entities/InventoryItem";
-import { useDatabase } from "./useDatabase";
 
 const useInventoryCreator = () => {
-  const { getById } = useDatabase<"items">();
   const [loading, setLoading] = useState(false);
 
   const createInventory = useCallback(async (race: string, characterClass: string, deity: string, zone: string) => {
@@ -18,28 +16,22 @@ const useInventoryCreator = () => {
         (item.zoneid === zone || item.zoneid === 0)
     );
 
-    const inventoryItems = await Promise.all(
-      matchingStartingItems.map(async (startingItem) => {
-        const item = await getById("items", startingItem.itemid);
-        if (item) {
-          return {
-            ...item,
-            slotid: startingItem.slot || -1,
-            charges: startingItem.item_charges || 0,
-          };
-        } else {
-          return null;
-        }
-      })
-    );
+    let currentSlot = 23;
+    const inventoryItems: InventoryItem[] = matchingStartingItems.slice(0, 8).map((startingItem) => {
+      if (currentSlot > 30) return null;
 
-    const filteredInventory = inventoryItems.filter(
-      (item): item is InventoryItem => item !== null
-    );
+      const inventoryItem: InventoryItem = {
+        slotid: currentSlot,
+        itemid: startingItem.itemid,
+        charges: startingItem.item_charges || 0,
+      };
+      currentSlot++;
+      return inventoryItem;
+    }).filter((item): item is InventoryItem => item !== null);
 
     setLoading(false);
-    return filteredInventory;
-  }, [getById]);
+    return inventoryItems;
+  }, []);
 
   return { createInventory, loading };
 };

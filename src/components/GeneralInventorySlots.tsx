@@ -9,10 +9,17 @@ const GeneralInventorySlots: React.FC = () => {
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
   const getItemForSlot = (slotId: number): Item | undefined => {
-    if (!characterProfile?.inventory || !Array.isArray(characterProfile.inventory)) {
+    if (
+      !characterProfile?.inventory ||
+      !Array.isArray(characterProfile.inventory)
+    ) {
+      console.log("No inventory found");
       return undefined;
     }
-    return characterProfile.inventory.find((item) => item.slotid === slotId);
+
+    const item = characterProfile.inventory.find((item) => item.slotid === slotId);
+    console.log(`Item for slot ${slotId}: ${item}`);
+    return item;
   };
 
   return (
