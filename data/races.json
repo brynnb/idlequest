@@ -48,7 +48,9 @@
 		"name": "Barbarian",
 		"id": 2,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "BAR",
+		"bitmask": 2
 	},
 	{
 		"name": "Barrel",
@@ -249,7 +251,9 @@
 		"name": "Dark Elf",
 		"id": 6,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "DEF",
+		"bitmask": 32
 	},
 	{
 		"name": "Dark Elf Pirate",
@@ -330,7 +334,9 @@
 		"name": "Dwarf",
 		"id": 8,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "DWF",
+		"bitmask": 128
 	},
 	{
 		"name": "Earth Elemental",
@@ -381,7 +387,9 @@
 		"name": "Erudite",
 		"id": 3,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "ERU",
+		"bitmask": 4
 	},
 	{
 		"name": "Erudite Ghost",
@@ -602,7 +610,9 @@
 		"name": "Gnome",
 		"id": 12,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "GNM",
+		"bitmask": 2048
 	},
 	{
 		"name": "Gnome Pirate",
@@ -688,13 +698,17 @@
 		"name": "Half-Elf",
 		"id": 7,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "HEF",
+		"bitmask": 64
 	},
 	{
 		"name": "Halfling",
 		"id": 11,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "HFL",
+		"bitmask": 1024
 	},
 	{
 		"name": "Harpie",
@@ -705,7 +719,9 @@
 		"name": "High Elf",
 		"id": 5,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "HIE",
+		"bitmask": 16
 	},
 	{
 		"name": "Highpass Citizen",
@@ -726,7 +742,9 @@
 		"name": "Human",
 		"id": 1,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "HUM",
+		"bitmask": 1
 	},
 	{
 		"name": "Human Beggar",
@@ -742,7 +760,9 @@
 		"name": "Iksar",
 		"id": 128,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "IKS",
+		"bitmask": 4096
 	},
 	{
 		"name": "Iksar Citizen",
@@ -1023,7 +1043,9 @@
 		"name": "Ogre",
 		"id": 10,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "OGR",
+		"bitmask": 512
 	},
 	{
 		"name": "Ogre Pirate",
@@ -1559,7 +1581,9 @@
 		"name": "Troll",
 		"id": 9,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "TRL",
+		"bitmask": 256
 	},
 	{
 		"name": "Troll Buccaneer",
@@ -1805,7 +1829,9 @@
 		"name": "Wood Elf",
 		"id": 4,
 		"no_coin": 0,
-		"is_playable": true
+		"is_playable": true,
+		"short_name": "ELF",
+		"bitmask": 8
 	},
 	{
 		"name": "Wrulon",

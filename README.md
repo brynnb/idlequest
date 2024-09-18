@@ -8,11 +8,12 @@ Idle / incremental game based on EverQuest circa 1999. Lots of features to be de
 
 ## To-Do
 
-1. Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
-2. Separate character creation into its own page
-3. Add character starting inventory/display it
-4. Incremental/idle combat engine
-5. Lots more
+* Double check ALL for races on items is working as intended, make sure race-specific item is also only showing that one race
+* Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
+* Separate character creation into its own page
+* Add character starting inventory/display it
+* Incremental/idle combat engine
+* Lots more
 
 ## Backlog
 
