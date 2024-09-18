@@ -7,6 +7,7 @@ import classesData from "/data/classes.json";
 import styles from "./ItemInformationDisplay.module.css";
 import racesData from "/data/races.json";
 import Race from "../entities/Race";
+import { useDatabase } from "../hooks/useDatabase";
 
 interface ItemDisplayProps {
   item: Item | null;
@@ -14,6 +15,23 @@ interface ItemDisplayProps {
 }
 
 const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
+  const { getById } = useDatabase();
+  const [spellInfo, setSpellInfo] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const fetchSpellInfo = async () => {
+      if (item && item.itemtype === "20" && item.scrolleffect) {
+        const spell = await getById("spells", Number(item.scrolleffect));
+        if (spell) {
+          const description = await getById("eqstr_us", Number(spell.descnum));
+          setSpellInfo({ spell, description: description?.value });
+        }
+      }
+    };
+
+    fetchSpellInfo();
+  }, [item, getById]);
+
   if (!item || !isVisible) return null;
 
   const weaponTypes = ['0', '1', '2', '3', '4', '35', '45'];
@@ -80,13 +98,27 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
     ].filter(Boolean);
     return stats.join(" ");
 
-
     // Split stats into two lines
     const midpoint = Math.ceil(stats.length / 2);
     return [
       stats.slice(0, midpoint).join(" "),
       stats.slice(midpoint).join(" "),
     ];
+  };
+
+  const getSpellLevels = (spell: any) => {
+    if (!spell) return "";
+    const classes = classesData.slice(0, 14); // Get first 14 classes bc we don't want non-classic / kunark ones
+    const levels = classes
+      .map((c, index) => {
+        const level = spell[`classes${index + 1}`];
+        return level > 0 && level < 255 ? { shortName: c.short_name, level } : null;
+      })
+      .filter((item): item is { shortName: string; level: number } => item !== null)
+      .sort((a, b) => a.level - b.level)
+      .map(item => `${item.shortName}(${item.level})`);
+
+    return levels.length > 0 ? `Level Needed: ${levels.join(" ")}` : "";
   };
 
   const slotNames = getSlotNames(item.slots);
@@ -118,6 +150,13 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
         </p>
         <p>Class: {getClassNames(item.classes)}</p>
         <p>Race: {getRaceNames(item.races)}</p>
+        
+        {item.itemtype === "20" && spellInfo && (
+          <>
+            <p>{getSpellLevels(spellInfo.spell)}</p>
+            <p>{spellInfo.description}</p>
+          </>
+        )}
       </div>
     </div>
   );
