@@ -9,6 +9,8 @@ Idle / incremental game based on EverQuest circa 1999. Lots of features to be de
 ## To-Do
 
 * Double check ALL for races on items is working as intended, make sure race-specific item is also only showing that one race
+* Make sure an item with stats is showing relevant stats
+* Fix display of fire and magic and etc resists on items
 * Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
 * Separate character creation into its own page
 * Add character starting inventory/display it

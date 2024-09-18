@@ -45,10 +45,13 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
     if (races === undefined) return "UNKNOWN";
     if (races === "16383") return "ALL"; //16383 is the value for all races
 
-    const playableRaces = racesData.filter((race: Race) => race.is_playable && race.short_name && race.bitmask !== undefined);
+    const playableRaces = racesData.filter(
+      (race: Race) =>
+        race.is_playable && race.short_name && race.bitmask !== undefined
+    );
     const raceNames = playableRaces
-      .filter(race => race.bitmask !== undefined && (races & race.bitmask))
-      .map(race => race.short_name)
+      .filter((race) => race.bitmask !== undefined && races & race.bitmask)
+      .map((race) => race.short_name)
       .filter((name): name is string => name !== undefined);
 
     return raceNames.length > 0 ? raceNames.join(" ") : "NONE";
@@ -56,13 +59,26 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
 
   const getStatString = (item: Item) => {
     const stats = [
-      item.astr !== undefined && `STR +${item.astr}`,
-      item.awis !== undefined && `WIS +${item.awis}`,
-      item.fr !== undefined && `SV FIRE +${item.fr}`,
-      item.dr !== undefined && `SV DISEASE +${item.dr}`,
-      item.cr !== undefined && `SV COLD +${item.cr}`,
-      item.mr !== undefined && `SV MAGIC +${item.mr}`,
+      parseInt(item.astr as string) && `STR +${item.astr}`,
+      parseInt(item.asta as string) && `STA +${item.asta}`,
+      parseInt(item.aagi as string) && `AGI +${item.aagi}`,
+      parseInt(item.adex as string) && `DEX +${item.adex}`,
+      parseInt(item.awis as string) && `WIS +${item.awis}`,
+      parseInt(item.aint as string) && `INT +${item.aint}`,
+      parseInt(item.acha as string) && `CHA +${item.acha}`,
+      parseInt(item.ac as string) && `AC +${item.ac}`,
+      parseInt(item.hp as string) && `HP +${item.hp}`,
+      parseInt(item.mana as string) && `MANA +${item.mana}`,
+      parseInt(item.endur as string) && `ENDUR +${item.endur}`,
+      parseInt(item.fr as string) && `FR +${item.fr}`,
+      parseInt(item.cr as string) && `CR +${item.cr}`,
+      parseInt(item.dr as string) && `DR +${item.dr}`,
+      parseInt(item.pr as string) && `PR +${item.pr}`,
+      parseInt(item.mr as string) && `MR +${item.mr}`,
+      parseInt(item.svcorrup as string) && `SV CORRUPT +${item.svcorrup}`,
     ].filter(Boolean);
+    return stats.join(" ");
+
 
     // Split stats into two lines
     const midpoint = Math.ceil(stats.length / 2);
@@ -91,8 +107,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
           Type: {getItemTypeNameWrapper(item.itemtype)} Atk Delay: {item.delay}
         </p>
         <p>DMG: {item.damage}</p>
-        <p>{statLines[0]}</p>
-        <p>{statLines[1]}</p>
+        <p>{getStatString(item)}</p>
+
         <p>
           WT: {(item.weight || 0) / 10} Size:{" "}
           {getItemSizeName(item.size as ItemSize)}
