@@ -47,6 +47,27 @@ export enum ItemType {
   NewCurrencies = 63,
 }
 
+export const EQUIPPABLE_ITEM_TYPES = [
+  ItemType.OneHandSlashing,
+  ItemType.TwoHandSlashing,
+  ItemType.OneHandPiercing,
+  ItemType.OneHandBlunt,
+  ItemType.TwoHandBlunt,
+  ItemType.Archery,
+  ItemType.Throwing,
+  ItemType.Shield,
+  ItemType.Armor,
+  ItemType.WindInstruments,
+  ItemType.StringedInstruments,
+  ItemType.BrassInstruments,
+  ItemType.PercussionInstruments,
+  ItemType.Ammo,
+  ItemType.Jewelry,
+  ItemType.TwoHandPiercing,
+  ItemType.FishingPoles,
+  ItemType.HandToHand,
+];
+
 export function getItemTypeName(type: ItemType): string {
   const names: Record<ItemType, string> = {
     [ItemType.OneHandSlashing]: "1H Slashing",

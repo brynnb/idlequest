@@ -2,7 +2,7 @@ import React from "react";
 import { Item } from "../entities/Item";
 import { ItemSize, getItemSizeName } from "../entities/ItemSize";
 import { getInventorySlotNames } from "../entities/InventorySlot";
-import { ItemType, getItemTypeName } from "../entities/ItemType";
+import { ItemType, getItemTypeName, EQUIPPABLE_ITEM_TYPES } from "../entities/ItemType";
 import classesData from "/data/classes.json";
 import styles from "./ItemInformationDisplay.module.css";
 import racesData from "/data/races.json";
@@ -123,6 +123,9 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
 
   const slotNames = getSlotNames(item.slots);
 
+  const isEquippable = item && item.itemclass === "0" && EQUIPPABLE_ITEM_TYPES.includes(Number(item.itemtype) as ItemType);
+  const isSpell = item && item.itemtype === "20";
+
   return (
     <div className={styles.itemDisplay}>
       <div className={styles.itemDisplayContent}>
@@ -136,22 +139,27 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
           {item.norent === 0 && "NO RENT "}
         </p>
         {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
-        {showWeaponStats && (
+        {showWeaponStats && item.itemclass === "0"  && (
           <p>
-            Type: {getItemTypeNameWrapper(item.itemtype)} Atk Delay: {item.delay}
+            {`Type: ${getItemTypeName(Number(item.itemtype) as ItemType)} `}
+            Atk Delay: {item.delay}
           </p>
         )}
-        {showWeaponStats && <p>DMG: {item.damage}</p>}
+        {showWeaponStats && item.itemclass === "0"&& <p>DMG: {item.damage}</p>}
         <p>{getStatString(item)}</p>
 
         <p>
           WT: {(item.weight || 0) / 10} Size:{" "}
           {getItemSizeName(item.size as ItemSize)}
         </p>
-        <p>Class: {getClassNames(item.classes)}</p>
-        <p>Race: {getRaceNames(item.races)}</p>
+        {(isEquippable || isSpell) && (
+          <>
+            <p>Class: {getClassNames(item.classes)}</p>
+            <p>Race: {getRaceNames(item.races)}</p>
+          </>
+        )}
         
-        {item.itemtype === "20" && spellInfo && (
+        {isSpell && spellInfo && (
           <>
             <p>{getSpellLevels(spellInfo.spell)}</p>
             <p>{spellInfo.description}</p>
