@@ -1,5 +1,8 @@
 import React from "react";
 import { Item } from "../entities/Item";
+import { ItemSize, getItemSizeName } from "../entities/ItemSize";
+import { getInventorySlotNames } from "../entities/InventorySlot";
+import { ItemType, getItemTypeName as getItemTypeNameFromEnum } from "../entities/ItemType";
 import styles from "./ItemInformationDisplay.module.css";
 
 interface ItemDisplayProps {
@@ -10,14 +13,15 @@ interface ItemDisplayProps {
 const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
   if (!item || !isVisible) return null;
 
-  const getSlotName = (slots: number | undefined) => {
-    // This is a simplified example. You'd need to implement the actual slot mapping logic.
-    return slots === 1 ? "PRIMARY" : "UNKNOWN";
+  const getSlotNames = (slots: number | undefined) => {
+    if (slots === undefined) return "NONE";
+    const slotNames = getInventorySlotNames(slots);
+    return slotNames.length > 0 ? slotNames.join("/") : "NONE";
   };
 
-  const getSkillName = (itemtype: number | undefined) => {
-    // Implement the actual skill mapping logic
-    return itemtype === 1 ? "2H Piercing" : "UNKNOWN";
+  const getItemTypeNameWrapper = (itemtype: number | undefined) => {
+    if (itemtype === undefined) return "UNKNOWN";
+    return getItemTypeNameFromEnum(itemtype as ItemType);
   };
 
   const getClassNames = (classes: number | undefined) => {
@@ -70,15 +74,15 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
           {item.nodrop < 1 && "NO DROP "}
           {item.norent === 0 && "NO RENT "}
         </p>
-        <p>Slot: {getSlotName(item.slots)}</p>
+        <p>Slot: {getSlotNames(item.slots)}</p>
         <p>
-          Skill: {getSkillName(item.itemtype)} Atk Delay: {item.delay}
+          Type: {getItemTypeNameWrapper(item.itemtype)} Atk Delay: {item.delay}
         </p>
         <p>DMG: {item.damage}</p>
         <p>{statLines[0]}</p>
         <p>{statLines[1]}</p>
         <p>
-          WT: {(item.weight || 0) / 10} Size: {item.size}
+          WT: {(item.weight || 0) / 10} Size: {getItemSizeName(item.size as ItemSize)}
         </p>
         <p>Class: {getClassNames(item.classes)}</p>
         <p>Race: {getRaceNames(item.races)}</p>
