@@ -10,6 +10,7 @@ interface PlayerCharacterStore {
   setInventory: (inventory: InventoryItem[]) => Promise<void>;
   addInventoryItem: (item: InventoryItem) => Promise<void>;
   removeInventoryItem: (slotId: number) => void;
+  clearInventory: () => void;  // New function
   loadItemDetails: () => Promise<void>;
 }
 
@@ -48,6 +49,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           characterProfile: {
             ...state.characterProfile,
             inventory: state.characterProfile.inventory.filter(item => item.slotid !== slotId),
+          }
+        })),
+        clearInventory: () => set((state) => ({
+          characterProfile: {
+            ...state.characterProfile,
+            inventory: [],
           }
         })),
         loadItemDetails: async () => {

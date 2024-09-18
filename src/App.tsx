@@ -5,6 +5,7 @@ import ResetGameButton from "./components/ResetGameButton";
 import StoreDebugger from "./components/StoreDebugger";
 import GeneralInventorySlots from "./components/GeneralInventorySlots";
 import AddInventoryItem from "./components/AddInventoryItem";
+import DeleteAllInventory from "./components/DeleteAllInventory";
 
 function App() {
   const [isRunning, setIsRunning] = useState(false);
@@ -18,6 +19,7 @@ function App() {
       <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
       <GeneralInventorySlots />
       <AddInventoryItem />
+      <DeleteAllInventory />
       <StoreDebugger />
     </div>
   );
