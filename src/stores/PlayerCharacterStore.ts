@@ -38,6 +38,10 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         },
         addInventoryItem: async (item: InventoryItem) => {
           const itemDetails = await getItemById(item.itemid);
+          if (!itemDetails) {
+            console.error(`Item with ID ${item.itemid} not found in the database.`);
+            return;
+          }; // Prevent adding if item not found
           const newItem = { ...item, itemDetails };
           
           set((state) => ({

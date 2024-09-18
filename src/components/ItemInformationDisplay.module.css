@@ -19,6 +19,8 @@
     right: 60px;
     bottom: 60px;
     overflow: auto; /* In case content overflows */
+    word-wrap: break-word;
+    white-space: pre-wrap;
   }
   
   .itemDisplay h2 {
