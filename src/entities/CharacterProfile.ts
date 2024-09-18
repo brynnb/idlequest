@@ -1,3 +1,5 @@
+import { InventoryItem } from "./InventoryItem";
+
 export default interface CharacterProfile {
   id?: number;
   accountId?: number;
@@ -69,4 +71,5 @@ export default interface CharacterProfile {
   isDeleted?: number;
   showHelm?: number;
   fatigue?: number;
+  inventory?: InventoryItem[];
 }

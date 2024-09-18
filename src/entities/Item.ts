@@ -80,7 +80,7 @@ export interface Item {
   regen?: number; // Health Regeneration
   icon?: number; // Icon
   idfile?: string; // Item Texture
-  itemclass?: number; // Item Class
+  itemclass?: string; // Item Class
   itemtype?: number; // Item Type
   ldonprice?: number; // LDoN Price
   ldontheme?: number; // LDoN Theme
