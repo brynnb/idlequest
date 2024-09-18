@@ -2,10 +2,7 @@ import React from "react";
 import { Item } from "../entities/Item";
 import { ItemSize, getItemSizeName } from "../entities/ItemSize";
 import { getInventorySlotNames } from "../entities/InventorySlot";
-import {
-  ItemType,
-  getItemTypeName as getItemTypeNameFromEnum,
-} from "../entities/ItemType";
+import { ItemType, getItemTypeName } from "../entities/ItemType";
 import classesData from "/data/classes.json";
 import styles from "./ItemInformationDisplay.module.css";
 import racesData from "/data/races.json";
@@ -19,19 +16,23 @@ interface ItemDisplayProps {
 const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
   if (!item || !isVisible) return null;
 
+  const weaponTypes = ['0', '1', '2', '3', '4', '35', '45'];
+  const showWeaponStats = weaponTypes.includes(item.itemtype as string);
+
   const getSlotNames = (slots: number | undefined) => {
     if (slots === undefined) return "NONE";
     const slotNames = getInventorySlotNames(slots);
     return slotNames.length > 0 ? slotNames.join(" ") : "NONE";
   };
 
-  const getItemTypeNameWrapper = (itemtype: number | undefined) => {
+  const getItemTypeNameWrapper = (itemtype: string | undefined) => {
     if (itemtype === undefined) return "UNKNOWN";
-    return getItemTypeNameFromEnum(itemtype as ItemType);
+    return getItemTypeName(parseInt(itemtype) as ItemType);
   };
 
   const getClassNames = (classes: number | undefined) => {
     if (classes === undefined) return "UNKNOWN";
+    if (classes === "32767") return "ALL"; // 32767 is the bitmask for all classes
 
     const playableClasses = classesData.slice(0, 14); // Get only the first 14 classes
     const classNames = playableClasses
@@ -43,7 +44,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
 
   const getRaceNames = (races: number | undefined) => {
     if (races === undefined) return "UNKNOWN";
-    if (races === "16383") return "ALL"; //16383 is the value for all races
+    if (races === "16383") return "ALL"; //16383  the value for all races
 
     const playableRaces = racesData.filter(
       (race: Race) =>
@@ -88,7 +89,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
     ];
   };
 
-  const statLines = getStatString(item);
+  const slotNames = getSlotNames(item.slots);
 
   return (
     <div className={styles.itemDisplay}>
@@ -102,11 +103,13 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
           {item.nodrop < 1 && "NO DROP "}
           {item.norent === 0 && "NO RENT "}
         </p>
-        <p>Slot: {getSlotNames(item.slots)}</p>
-        <p>
-          Type: {getItemTypeNameWrapper(item.itemtype)} Atk Delay: {item.delay}
-        </p>
-        <p>DMG: {item.damage}</p>
+        {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
+        {showWeaponStats && (
+          <p>
+            Type: {getItemTypeNameWrapper(item.itemtype)} Atk Delay: {item.delay}
+          </p>
+        )}
+        {showWeaponStats && <p>DMG: {item.damage}</p>}
         <p>{getStatString(item)}</p>
 
         <p>
