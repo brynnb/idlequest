@@ -1,0 +1,36 @@
+.itemDisplay {
+    width: 898px;
+    height: 357px;
+    border: 1px solid #ccc;
+    background-image: url('/images/ui/chatbg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: Arial, sans-serif;
+    color: black;
+    position: relative; /* This allows absolute positioning of the inner content */
+    font-weight: bold;
+  }
+  
+  .itemDisplayContent {
+    position: absolute;
+    top: 40px;
+    left: 100px;
+    right: 60px;
+    bottom: 60px;
+    overflow: auto; /* In case content overflows */
+  }
+  
+  .itemDisplay h2 {
+    margin: 0 0 10px 0;
+    color: black;
+    font-weight: 700;
+  }
+  
+  .itemDisplay p {
+    margin: 5px 0;
+    font-size: 16px;
+    line-height: 1.2;
+    color: black;
+    font-weight: 600;
+  }
