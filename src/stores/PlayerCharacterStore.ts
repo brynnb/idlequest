@@ -36,14 +36,16 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           }));
           await get().loadItemDetails();
         },
-        addInventoryItem: async (item) => {
+        addInventoryItem: async (item: InventoryItem) => {
+          const itemDetails = await getItemById(item.itemid);
+          const newItem = { ...item, itemDetails };
+          
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              inventory: [...state.characterProfile.inventory, item],
+              inventory: [...state.characterProfile.inventory, newItem],
             }
           }));
-          await get().loadItemDetails();
         },
         removeInventoryItem: (slotId) => set((state) => ({
           characterProfile: {

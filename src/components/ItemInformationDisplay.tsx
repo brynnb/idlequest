@@ -149,7 +149,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
         <p>{getStatString(item)}</p>
 
         <p>
-          WT: {(item.weight || 0) / 10} Size:{" "}
+          WT: {((item.weight || 0) / 10).toFixed(1)} Size:{" "}
           {getItemSizeName(item.size as ItemSize)}
         </p>
         {(isEquippable || isSpell) && (
