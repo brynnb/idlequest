@@ -2,56 +2,55 @@ import csv
 import sqlite3
 import os
 
-# Get the current directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Path to your CSV file and SQLite database
-csv_file = os.path.join(current_dir, '', 'spells.csv')
+csv_file = os.path.join(current_dir, '', 'npc_types.csv')
 db_file = os.path.join(current_dir, 'eq_data.db')
+table_name = os.path.splitext(os.path.basename(csv_file))[0]
 
-# Check if the CSV file exists, if not, prompt for the correct path
 if not os.path.exists(csv_file):
     print(f"Error: {csv_file} not found.")
-    csv_file = input("Please enter the correct path to spells.csv: ")
+    csv_file = input(f"Please enter the correct path to {table_name}.csv: ")
     if not os.path.exists(csv_file):
         print(f"Error: {csv_file} not found. Exiting.")
         exit(1)
 
-# Connect to the SQLite database
 conn = sqlite3.connect(db_file)
 cursor = conn.cursor()
 
-# Read the CSV file to get column names
 with open(csv_file, 'r') as file:
     csv_reader = csv.reader(file)
     headers = next(csv_reader)
 
-# Drop the spells table if it exists
-cursor.execute("DROP TABLE IF EXISTS spells")
+cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
-# Create the spells table
 create_table_query = f"""
-CREATE TABLE spells (
+CREATE TABLE {table_name} (
     {', '.join([f'"{header}" TEXT' for header in headers])}
 )
 """
 cursor.execute(create_table_query)
 
-# Prepare the INSERT query
 insert_query = f"""
-INSERT INTO spells ({', '.join([f'"{header}"' for header in headers])})
+INSERT INTO {table_name} ({', '.join([f'"{header}"' for header in headers])})
 VALUES ({', '.join(['?' for _ in headers])})
 """
 
-# Read and insert data from the CSV file
+print(f"Number of headers: {len(headers)}")
+
 with open(csv_file, 'r') as file:
     csv_reader = csv.reader(file)
-    next(csv_reader)  # Skip the header row
-    for row in csv_reader:
-        cursor.execute(insert_query, row)
+    next(csv_reader)  # Skip header row
+    for line_number, row in enumerate(csv_reader, start=2):  # Start at 2 because we skipped the header
+        print(f"Line {line_number}: Number of values in this row: {len(row)}")
+        try:
+            cursor.execute(insert_query, row)
+        except sqlite3.Error as e:
+            print(f"Error on line {line_number}: {e}")
+            print(f"Problematic row: {row}")
+            break  # Stop processing after the first error
 
-# Commit the changes and close the connection
 conn.commit()
 conn.close()
 
-print("Spells data has been successfully added to the database.")
+print(f"{table_name} data has been successfully added to the database.")
