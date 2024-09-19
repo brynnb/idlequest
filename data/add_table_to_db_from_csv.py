@@ -26,9 +26,12 @@ with open(csv_file, 'r') as file:
     csv_reader = csv.reader(file)
     headers = next(csv_reader)
 
+# Drop the spells table if it exists
+cursor.execute("DROP TABLE IF EXISTS spells")
+
 # Create the spells table
 create_table_query = f"""
-CREATE TABLE IF NOT EXISTS spells (
+CREATE TABLE spells (
     {', '.join([f'"{header}" TEXT' for header in headers])}
 )
 """

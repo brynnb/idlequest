@@ -10,6 +10,7 @@ Idle / incremental game based on EverQuest circa 1999. Lots of features to be de
 
 * Double check ALL for races on items is working as intended, make sure race-specific item is also only showing that one race
 * Make sure an item with stats is showing relevant stats
+* Figure out system for replacing varibles in dbstr/eqstr stuff with values. So far no luck in finding relevant eqmu code
 * Fix display of fire and magic and etc resists on items
 * Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
 * Separate character creation into its own page
