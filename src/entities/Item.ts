@@ -87,8 +87,8 @@ export interface Item {
   ldontheme?: number; // LDoN Theme
   ldonsold?: number; // LDoN Sold: 0 = False, 1 = True
   light?: number; // Light
-  lore?: string; // Lore Description
-  loregroup?: number; // Lore Group
+  lore?: string; // Lore Description, starts with a "*" if it's lore
+  loregroup?: number; // Lore Group - this seems to be missing from the alkabor database i'm getting my data from, can't find any reason online why this would be the case
   magic?: number; // Magic: 0 = False, 1 = True
   mana?: number; // Mana
   manaregen?: number; // Mana Regeneration

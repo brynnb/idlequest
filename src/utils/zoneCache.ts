@@ -13,7 +13,9 @@ class ZoneCache {
     if (!db) throw new Error("Database not initialized");
 
     try {
-      const result = db.exec("SELECT zoneidnumber, short_name, long_name FROM zone");
+      const result = db.exec(
+        "SELECT zoneidnumber, short_name, long_name FROM zone"
+      );
       if (result.length > 0) {
         this.idToName.clear();
         this.nameToId.clear();
@@ -24,7 +26,6 @@ class ZoneCache {
           this.nameToId.set(name as string, id);
           this.idToLongName.set(id, longName as string);
         });
-        console.log(`Total zones loaded: ${this.idToName.size}`);
       } else {
         console.warn("Zone table is empty or not found");
       }

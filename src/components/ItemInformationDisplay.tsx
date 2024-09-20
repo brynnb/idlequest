@@ -28,8 +28,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
   const getItemFlags = (item: Item): string[] => {
     const flags: string[] = [];
     if (item.magic === 1) flags.push("MAGIC ITEM ");
-    if (item.loregroup !== 0) flags.push("LORE ITEM ");
-    if (item.nodrop !== undefined && item.nodrop < 1) flags.push("NO DROP ");
+    if (item.lore && item.lore.startsWith('*')) flags.push("LORE ITEM ");
+    if (item.nodrop !== undefined && item.nodrop == 0) flags.push("NO DROP ");
     if (item.norent !== undefined && item.norent === 0) flags.push("NO RENT");
     return flags;
   };

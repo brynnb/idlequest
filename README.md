@@ -42,6 +42,7 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 * Item durabiity may be fun since using a variety of weapons and gear adds more to gameplay. Maybe magic items never break but need time to recharge periodically. Non-magic can be repaired a certain number of times, maybe with slightly diminished stats each time
 * Item durability goes hand in hand with a concept I've always liked, which is that most NPCs would drop armor and weapons in a more realistic world, so stuff breaking constantly isn't a big deal because there's always fresh loot to replace it.
 * A journal to show a to-do list for the character. For example if you turn level 8 and are missing spells because you can't afford them yet, getting those spells and scribing them may be on the list.
+* Groups. Bots, maybe. Or multiplayer with other people. Since a lot of classes can't realistically solo. 
 
 ## Looting System Breakdown
 
