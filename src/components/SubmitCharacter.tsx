@@ -30,6 +30,7 @@ const SubmitCharacter: React.FC = () => {
       class: selectedClass,
       deity: selectedDeity,
       startingZone: selectedZone,
+      zoneId: selectedZone.zoneidnumber,
       attributes: {
         str: attributes.str + attributes.base_str,
         sta: attributes.sta + attributes.base_sta,

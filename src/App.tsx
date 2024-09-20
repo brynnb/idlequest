@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { zoneCache } from "./utils/zoneCache";
 import CharacterCreator from "./components/CharacterCreator";
 import GameEngine from "./components/GameEngine";
 import ResetGameButton from "./components/ResetGameButton";
@@ -8,6 +9,10 @@ import AddInventoryItem from "./components/AddInventoryItem";
 import DeleteAllInventory from "./components/DeleteAllInventory";
 
 function App() {
+  useEffect(() => {
+    zoneCache.initialize();
+  }, []);
+
   const [isRunning, setIsRunning] = useState(false);
   return (
     <div>

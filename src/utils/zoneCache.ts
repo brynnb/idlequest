@@ -3,6 +3,7 @@ import { initDatabase, getDatabase } from "./databaseOperations";
 class ZoneCache {
   private idToName: Map<number, string> = new Map();
   private nameToId: Map<string, number> = new Map();
+  private idToLongName: Map<number, string> = new Map();
 
   async initialize(forceReload = false) {
     if (!forceReload && this.idToName.size > 0) return;
@@ -12,15 +13,16 @@ class ZoneCache {
     if (!db) throw new Error("Database not initialized");
 
     try {
-      const result = db.exec("SELECT zoneidnumber, short_name FROM zone");
+      const result = db.exec("SELECT zoneidnumber, short_name, long_name FROM zone");
       if (result.length > 0) {
         this.idToName.clear();
         this.nameToId.clear();
-        result[0].values.forEach(([zoneidnumber, name]) => {
-          const id = Number(zoneidnumber); // Convert to number
+        this.idToLongName.clear();
+        result[0].values.forEach(([zoneidnumber, name, longName]) => {
+          const id = Number(zoneidnumber);
           this.idToName.set(id, name as string);
           this.nameToId.set(name as string, id);
-    
+          this.idToLongName.set(id, longName as string);
         });
         console.log(`Total zones loaded: ${this.idToName.size}`);
       } else {
@@ -38,6 +40,10 @@ class ZoneCache {
 
   getIdByName(name: string): number | undefined {
     return this.nameToId.get(name);
+  }
+
+  getLongNameById(id: number): string | undefined {
+    return this.idToLongName.get(id);
   }
 }
 

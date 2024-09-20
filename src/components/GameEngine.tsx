@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
+import { zoneCache } from "../utils/zoneCache";
 
 interface Monster {
   health: number;
@@ -17,6 +19,7 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
   });
   const [tick, setTick] = useState(0);
   const loggedRef = useRef(false);
+  const { characterProfile } = usePlayerCharacterStore();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -62,6 +65,10 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
 
   const toggleRunning = () => setIsRunning((prev) => !prev);
 
+  const currentZoneName = characterProfile.zoneId
+    ? zoneCache.getLongNameById(characterProfile.zoneId) || "Unknown"
+    : "Unknown";
+
   return (
     <div>
       <h2>Game Engine</h2>
@@ -70,6 +77,7 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
         {isRunning ? "Pause" : "Resume"}
       </button>
       <div>Monster Health: {monster.health.toFixed(2)} / {monster.maxHealth}</div>
+      <div>Current Zone: {currentZoneName}</div>
     </div>
   );
 };
