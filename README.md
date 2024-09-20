@@ -22,7 +22,8 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 
 ## Backlog
 
-- The race/class/deity combinations pull in descriptions from eqstr_us.txt. Some of these are already organized into JSON but there are so many possible combinations and not all of them have organized. This is a low priority nice-to-have so putting it off for now.
+* The race/class/deity combinations pull in descriptions from eqstr_us.txt. Some of these are already organized into JSON but there are so many possible combinations and not all of them have organized. This is a low priority nice-to-have so putting it off for now.
+* Sqlite database I'm importing data into it using TEXT type for every field, I should probably import the actual table structures, which might also require some code updates because there are places that accommdated stuff being string which I thought was an artifact of legacy code but it may have possibly just been my mistake. 
 
 ## Resources
 
@@ -48,20 +49,20 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 
 1. **NPCs**: Characters not controlled by players. Each has a `loottable_id` determining potential item drops.
 
-2. **eq_loottable**: Lists possible item sets an NPC can drop. Each row is a unique set identified by an id.
+2. **loottable**: Lists possible item sets an NPC can drop. Each row is a unique set identified by an id.
 
-3. **eq_loottable_entries**: Links loot tables to items. Each row represents a possible item drop, connecting `loottable_id` to `lootdrop_id`.
+3. **loottable_entries**: Links loot tables to items. Each row represents a possible item drop, connecting `loottable_id` to `lootdrop_id`.
 
-4. **eq_lootdrop**: Represents collections of items that can be dropped together. Each row is a unique collection.
+4. **lootdrop**: Represents collections of items that can be dropped together. Each row is a unique collection.
 
-5. **eq_lootdrop_entries**: Links loot drops to actual items. Each row represents an item in a loot drop, connecting `lootdrop_id` to `item_id`.
+5. **lootdrop_entries**: Links loot drops to actual items. Each row represents an item in a loot drop, connecting `lootdrop_id` to `item_id`.
 
 ### Loot Determination Process:
 
 1. Check NPC's `loottable_id`
-2. Find matching rows in `eq_loottable_entries`
+2. Find matching rows in `loottable_entries`
 3. For each row, check `lootdrop_id`
-4. Find matching rows in `eq_lootdrop_entries`
+4. Find matching rows in `lootdrop_entries`
 5. Use `item_id` to identify actual items
 
 This structure allows for flexibility, enabling multiple NPCs to share loot tables and multiple loot tables to include the same loot drops.

@@ -4,7 +4,7 @@ import os
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-csv_file = os.path.join(current_dir, '', 'npc_types.csv')
+csv_file = os.path.join(current_dir, '', 'zone.csv')
 db_file = os.path.join(current_dir, 'eq_data.db')
 table_name = os.path.splitext(os.path.basename(csv_file))[0]
 
@@ -42,7 +42,7 @@ with open(csv_file, 'r') as file:
     csv_reader = csv.reader(file)
     next(csv_reader)  # Skip header row
     for line_number, row in enumerate(csv_reader, start=2):  # Start at 2 because we skipped the header
-        print(f"Line {line_number}: Number of values in this row: {len(row)}")
+        # print(f"Line {line_number}: Number of values in this row: {len(row)}")
         try:
             cursor.execute(insert_query, row)
         except sqlite3.Error as e:

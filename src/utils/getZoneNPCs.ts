@@ -1,10 +1,22 @@
-import { initDatabase, getDatabase } from './databaseOperations';
-import { NPCType } from '../entities/NPCType';
+import { initDatabase, getDatabase } from "./databaseOperations";
+import { NPCType } from "../entities/NPCType";
+import { zoneCache } from "./zoneCache";
 
-export const getZoneNPCs = async (zoneName: string): Promise<NPCType[]> => {
+export const getZoneNPCs = async (zoneIDOrName: number | string): Promise<NPCType[]> => {
   await initDatabase();
   const db = getDatabase();
   if (!db) throw new Error("Database not initialized");
+
+  let zoneName: string | undefined;
+
+  if (typeof zoneIDOrName === 'number') {
+    zoneName = zoneCache.getNameById(zoneIDOrName);
+    if (!zoneName) throw new Error(`Zone with ID ${zoneIDOrName} not found`);
+  } else {
+    const zoneID = zoneCache.getIdByName(zoneIDOrName);
+    if (!zoneID) throw new Error(`Zone with name ${zoneIDOrName} not found`);
+    zoneName = zoneIDOrName;
+  }
 
   const query = `
     SELECT DISTINCT nt.*
@@ -19,7 +31,7 @@ export const getZoneNPCs = async (zoneName: string): Promise<NPCType[]> => {
     if (result.length === 0) return [];
 
     const columns = result[0].columns;
-    return result[0].values.map(row => {
+    return result[0].values.map((row) => {
       const npc: Partial<NPCType> = {};
       columns.forEach((col, index) => {
         npc[col as keyof NPCType] = row[index] as any;

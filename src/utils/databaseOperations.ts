@@ -44,16 +44,15 @@ export const initDatabase = async (isTest = false) => {
   }
 };
 
+
 export const getDatabase = () => db;
 
 export const setDatabase = (database: Database) => {
   db = database;
 };
-
 export const getItemById = async (id: number): Promise<any | undefined> => {
   await initDatabase();
   if (!db) throw new Error("Database not initialized");
-
 
   const result = db.exec(`SELECT * FROM items WHERE id = ${id}`);
   if (result.length === 0 || result[0].values.length === 0) return undefined;
@@ -65,4 +64,5 @@ export const getItemById = async (id: number): Promise<any | undefined> => {
     return obj;
   }, {} as any);
 
-  return item;};
+  return item;
+};
