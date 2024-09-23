@@ -10,14 +10,15 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px;
+  padding-top: 35px;
+  padding-bottom: 35px;
   box-sizing: border-box;
 }
 
 .row {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 29px;
 }
 
 .slot {
