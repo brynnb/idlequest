@@ -1,19 +1,21 @@
 import { initDatabase, getDatabase } from "./databaseOperations";
 import { NPCType } from "../entities/NPCType";
-import { zoneCache } from "./zoneCache";
+import useGameStatusStore from "../stores/GameStatusStore";
 
 export const getZoneNPCs = async (zoneIDOrName: number | string): Promise<NPCType[]> => {
   await initDatabase();
   const db = getDatabase();
   if (!db) throw new Error("Database not initialized");
 
+  const { getZoneNameById, getZoneIdByName } = useGameStatusStore.getState();
+
   let zoneName: string | undefined;
 
   if (typeof zoneIDOrName === 'number') {
-    zoneName = zoneCache.getNameById(zoneIDOrName);
+    zoneName = getZoneNameById(zoneIDOrName);
     if (!zoneName) throw new Error(`Zone with ID ${zoneIDOrName} not found`);
   } else {
-    const zoneID = zoneCache.getIdByName(zoneIDOrName);
+    const zoneID = getZoneIdByName(zoneIDOrName);
     if (!zoneID) throw new Error(`Zone with name ${zoneIDOrName} not found`);
     zoneName = zoneIDOrName;
   }
@@ -39,7 +41,6 @@ export const getZoneNPCs = async (zoneIDOrName: number | string): Promise<NPCTyp
       return npc as NPCType;
     });
   } catch (error) {
-    console.error("Error fetching NPCs for zone:", error);
     return [];
   }
 };

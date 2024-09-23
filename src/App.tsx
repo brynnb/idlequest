@@ -38,6 +38,7 @@ function App() {
       <ItemInformationDisplay 
         item={hoveredItem} 
         isVisible={hoveredItem !== null}
+        // isVisible={true}
       />
       <StoreDebugger />
     </div>

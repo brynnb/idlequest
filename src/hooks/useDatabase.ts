@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import initSqlJs, { Database } from "sql.js";
+import Zone from "../entities/Zone";
 
 type TableTypes = {
   items: Item;
-  // Add more table types here as needed
+  zone: Zone;
 };
 
 export const useDatabase = <T extends keyof TableTypes>() => {
@@ -46,5 +47,24 @@ export const useDatabase = <T extends keyof TableTypes>() => {
     [db]
   );
 
-  return { getById, loading };
+  const getAllFromTable = useCallback(
+    async (table: T): Promise<TableTypes[T][]> => {
+      if (!db) return [];
+
+      const result = db.exec(`SELECT * FROM ${table}`);
+      if (result.length === 0) return [];
+
+      const columns = result[0].columns;
+      return result[0].values.map((row) => {
+        const item = columns.reduce((obj, col, index) => {
+          obj[col] = row[index];
+          return obj;
+        }, {} as any);
+        return item as TableTypes[T];
+      });
+    },
+    [db]
+  );
+
+  return { getById, getAllFromTable, loading };
 };

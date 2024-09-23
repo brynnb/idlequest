@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { initDatabase, getDatabase } from "../utils/databaseOperations";
 import { NPCType } from "../entities/NPCType";
 import { getZoneNPCs } from "../utils/getZoneNPCs";
 import Zone from "../entities/Zone";
+import { useDatabase } from "../hooks/useDatabase";
 
 interface GameStatusStore {
   zones: Zone[];
@@ -30,24 +30,12 @@ const useGameStatusStore = create<GameStatusStore>()(
           const { zones } = get();
           if (!forceReload && zones.length > 0) return;
 
-          await initDatabase();
-          const db = getDatabase();
-          if (!db) throw new Error("Database not initialized");
+          const { getAllFromTable, loading } = useDatabase<'zone'>();
+          if (loading) return;
 
           try {
-            const result = db.exec("SELECT * FROM zone");
-            if (result.length > 0) {
-              const newZones = result[0].values.map((row) => {
-                const zone: Zone = {} as Zone;
-                result[0].columns.forEach((col, index) => {
-                  (zone as any)[col] = row[index];
-                });
-                return zone;
-              });
-              set({ zones: newZones });
-            } else {
-              console.warn("Zone table is empty or not found");
-            }
+            const newZones = await getAllFromTable('zone');
+            set({ zones: newZones });
           } catch (error) {
             console.error("Error initializing zones:", error);
             throw new Error("Failed to initialize zones");
@@ -55,22 +43,17 @@ const useGameStatusStore = create<GameStatusStore>()(
         },
 
         getZoneNameById: (id) => {
-          const zone = get().zones.find(z => z.zoneidnumber === id);
+          const zone = get().zones.find(z => z.zoneidnumber == id);
           return zone?.short_name;
         },
 
         getZoneIdByName: (name) => {
-          const zone = get().zones.find(z => z.short_name === name);
+          const zone = get().zones.find(z => z.short_name == name);
           return zone?.zoneidnumber;
         },
 
         getZoneLongNameById: (id) => {
-          const zone = get().zones.find(z => z.zoneidnumber === id);
-          console.log("zone", zone);
-          console.log("id", id);
-          console.log("zone?.long_name", zone?.long_name);
-          //console log zones
-          console.log("zones", get().zones);
+          const zone = get().zones.find(z => z.zoneidnumber == id);
           return zone?.long_name;
         },
 
@@ -90,7 +73,11 @@ const useGameStatusStore = create<GameStatusStore>()(
               } catch (error) {
                 console.error("Failed to update current zone NPCs:", error);
               }
+            } else {
+              console.error("Zone name not found for current zone:", currentZone);
             }
+          } else {
+            console.error("Current zone is null");
           }
         },
       }),
