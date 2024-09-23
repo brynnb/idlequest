@@ -11,12 +11,15 @@ import DeleteAllInventory from "./components/DeleteAllInventory";
 import EquippedItemsInventory from "./components/EquippedItemsInventory";
 import EquipAllItems from "./components/EquipAllItems";
 import ItemInformationDisplay from "./components/ItemInformationDisplay";
+import useGameStatusStore from "./stores/GameStatusStore";
 
 function App() {
   const { hoveredItem } = usePlayerCharacterStore();
+  const { initializeZones } = useGameStatusStore();
+
 
   useEffect(() => {
-    zoneCache.initialize();
+    initializeZones();
   }, []);
 
   const [isRunning, setIsRunning] = useState(false);

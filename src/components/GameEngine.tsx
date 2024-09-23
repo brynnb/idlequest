@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import { zoneCache } from "../utils/zoneCache";
-
-interface Monster {
-  health: number;
-  maxHealth: number;
-}
+import useGameStatusStore from "../stores/GameStatusStore";
+import { NPCType } from "../entities/NPCType";
 
 interface GameEngineProps {
   isRunning: boolean;
@@ -13,29 +9,59 @@ interface GameEngineProps {
 }
 
 const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
-  const [monster, setMonster] = useState<Monster>({
-    health: 100,
-    maxHealth: 100,
-  });
+  const [monster, setMonster] = useState<NPCType | null>(null);
   const [tick, setTick] = useState(0);
   const loggedRef = useRef(false);
   const { characterProfile } = usePlayerCharacterStore();
+  const { 
+    initializeZones, 
+    getZoneLongNameById, 
+    currentZoneNPCs, 
+    setCurrentZone, 
+    updateCurrentZoneNPCs 
+  } = useGameStatusStore();
+
+  useEffect(() => {
+    initializeZones();
+  }, [initializeZones]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTick((prevTick) => prevTick + 1);
-    }, 1000); // Update every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (!isRunning) return; // Exit early if the game is paused
+    const fetchAndSetMonster = async () => {
+      if (!characterProfile.zoneId) return;
+
+      await setCurrentZone(characterProfile.zoneId);
+      await updateCurrentZoneNPCs();
+
+      if (currentZoneNPCs.length === 0) return;
+
+      const playerLevel = characterProfile.level || 1;
+      const closestNPC = currentZoneNPCs.reduce((closest, npc) => {
+        const currentDiff = Math.abs(npc.level - playerLevel);
+        const closestDiff = Math.abs(closest.level - playerLevel);
+        return currentDiff < closestDiff ? npc : closest;
+      });
+
+      setMonster(closestNPC);
+    };
+
+    fetchAndSetMonster();
+  }, [characterProfile.zoneId, characterProfile.level, setCurrentZone, updateCurrentZoneNPCs, currentZoneNPCs]);
+
+  useEffect(() => {
+    if (!isRunning || !monster) return;
 
     if (tick % 15 === 0 && tick !== 0) {
       setMonster((prevMonster) => ({
-        ...prevMonster,
-        health: prevMonster.maxHealth,
+        ...prevMonster!,
+        hp: prevMonster!.hp,
       }));
       if (!loggedRef.current) {
         console.log("Monster attacked! Health reset to full.");
@@ -43,17 +69,15 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
       }
     } else {
       setMonster((prevMonster) => {
-        const newHealth = Math.max(
-          prevMonster.health - prevMonster.maxHealth / 15,
-          0
-        );
+        if (!prevMonster) return null;
+        const newHealth = Math.max(prevMonster.hp - prevMonster.hp / 15, 0);
         if (!loggedRef.current) {
           console.log(`Monster health: ${newHealth.toFixed(2)}`);
           loggedRef.current = true;
         }
         return {
           ...prevMonster,
-          health: newHealth,
+          hp: newHealth,
         };
       });
     }
@@ -61,12 +85,12 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     return () => {
       loggedRef.current = false;
     };
-  }, [tick, isRunning]);
+  }, [tick, isRunning, monster, setCurrentZone, updateCurrentZoneNPCs, currentZoneNPCs]);
 
   const toggleRunning = () => setIsRunning((prev) => !prev);
 
   const currentZoneName = characterProfile.zoneId
-    ? zoneCache.getLongNameById(characterProfile.zoneId) || "Unknown"
+    ? getZoneLongNameById(characterProfile.zoneId) || "Unknown"
     : "Unknown";
 
   return (
@@ -76,7 +100,13 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
       <button onClick={toggleRunning}>
         {isRunning ? "Pause" : "Resume"}
       </button>
-      <div>Monster Health: {monster.health.toFixed(2)} / {monster.maxHealth}</div>
+      {monster && (
+        <div>
+          <div>Monster: {monster.name}</div>
+          <div>Level: {monster.level}</div>
+          <div>Health: {monster.hp.toFixed(2)} / {monster.hp}</div>
+        </div>
+      )}
       <div>Current Zone: {currentZoneName}</div>
     </div>
   );

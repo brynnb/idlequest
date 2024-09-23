@@ -22,14 +22,14 @@ with open(csv_file, 'r') as file:
     csv_reader = csv.reader(file)
     headers = next(csv_reader)
 
-cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+# cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
-create_table_query = f"""
-CREATE TABLE {table_name} (
-    {', '.join([f'"{header}" TEXT' for header in headers])}
-)
-"""
-cursor.execute(create_table_query)
+# create_table_query = f"""
+# CREATE TABLE {table_name} (
+#     {', '.join([f'"{header}" TEXT' for header in headers])}
+# )
+# """
+# cursor.execute(create_table_query)
 
 insert_query = f"""
 INSERT INTO {table_name} ({', '.join([f'"{header}"' for header in headers])})

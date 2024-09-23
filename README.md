@@ -8,6 +8,8 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 
 `pnp run dev`
 
+`python ./data/add_table_to_db_from_csv.py` as needed, but also don't do this bc it makes all fields text values
+
 ## To-Do
 
 * Double check ALL for races on items is working as intended, make sure race-specific item is also only showing that one race

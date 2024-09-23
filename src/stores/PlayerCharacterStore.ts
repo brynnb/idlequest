@@ -15,6 +15,7 @@ interface PlayerCharacterStore {
   loadItemDetails: () => Promise<void>;
   hoveredItem: Item | null;
   setHoveredItem: (item: Item | null) => void;
+  setCharacterZone: (zoneId: number) => void;  // New method
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -95,6 +96,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         },
         hoveredItem: null,
         setHoveredItem: (item) => set({ hoveredItem: item }),
+        setCharacterZone: (zoneId) => set((state) => ({
+          characterProfile: {
+            ...state.characterProfile,
+            startingZone: zoneId,
+          }
+        })),
       }),
       { name: "player-character-storage" }
     ),
