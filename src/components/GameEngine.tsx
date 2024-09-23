@@ -24,14 +24,17 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
 
     const playerLevel = characterProfile.level || 1;
-    const closestNPC = currentZoneNPCs.reduce((closest, npc) => {
-      const currentDiff = Math.abs(npc.level - playerLevel);
-      const closestDiff = Math.abs(closest.level - playerLevel);
-      return currentDiff < closestDiff ? npc : closest;
-    });
+    const eligibleNPCs = currentZoneNPCs.filter(npc => 
+      Math.abs(npc.level - playerLevel) <= 3 && npc.id !== targetNPC?.id
+    );
 
-    setTargetNPC(closestNPC);
-    setCurrentHealth(Number(closestNPC.hp) || 0);
+    if (eligibleNPCs.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * eligibleNPCs.length);
+    const newTargetNPC = eligibleNPCs[randomIndex];
+
+    setTargetNPC(newTargetNPC);
+    setCurrentHealth(Number(newTargetNPC.hp) || 0);
   };
 
   useEffect(() => {
