@@ -3,6 +3,7 @@ import { devtools, persist } from "zustand/middleware";
 import CharacterProfile from "../entities/CharacterProfile";
 import { InventoryItem } from "../entities/InventoryItem";
 import { getItemById } from "../utils/databaseOperations";
+import { Item } from "../entities/Item";
 
 interface PlayerCharacterStore {
   characterProfile: CharacterProfile;
@@ -12,6 +13,8 @@ interface PlayerCharacterStore {
   removeInventoryItem: (slotId: number) => void;
   clearInventory: () => void;  // New function
   loadItemDetails: () => Promise<void>;
+  hoveredItem: Item | null;
+  setHoveredItem: (item: Item | null) => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -90,6 +93,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             }
           }));
         },
+        hoveredItem: null,
+        setHoveredItem: (item) => set({ hoveredItem: item }),
       }),
       { name: "player-character-storage" }
     ),

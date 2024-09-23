@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import styles from "./EquippedItemsInventory.module.css";
 import playerInventoryBackground from "/images/ui/playerinventorybackground.png";
@@ -7,8 +7,7 @@ import { Item } from "../entities/Item";
 import { InventorySlot } from "../entities/InventorySlot";
 
 const EquippedItemsInventory: React.FC = () => {
-  const { characterProfile } = usePlayerCharacterStore();
-  const [hoveredItem, setHoveredItem] = useState<Item | null>(null);
+  const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
 
   const equippedSlots = [
     [InventorySlot.Ear1, InventorySlot.Neck, InventorySlot.Face, InventorySlot.Head, InventorySlot.Ear2],
@@ -51,10 +50,6 @@ const EquippedItemsInventory: React.FC = () => {
           </div>
         ))}
       </div>
-      <ItemInformationDisplay 
-        item={hoveredItem} 
-        isVisible={hoveredItem !== null}
-      />
     </div>
   );
 };
