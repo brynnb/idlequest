@@ -56,7 +56,7 @@ export function getInventorySlotNames(slotBitmask: number): string[] {
   // Check the bitmask
   for (const [key, value] of Object.entries(SlotBitmasks)) {
     if ((slotBitmask & value) !== 0) {
-      slotNames.push(InventorySlot[Number(key)].replace(/\d+/g, '').toUpperCase());
+      slotNames.push(InventorySlot[Number(key)].replace(/\d+/g, '').toUpperCase());      
     }
   }
   

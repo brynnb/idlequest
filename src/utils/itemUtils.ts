@@ -4,6 +4,9 @@ import { getInventorySlotNames } from "../entities/InventorySlot";
 import classesData from "/data/classes.json";
 import racesData from "/data/races.json";
 import Race from "../entities/Race";
+import { useDatabase } from "../hooks/useDatabase";
+
+
 
 export const getSlotNames = (slots: number | undefined) => {
   if (slots === undefined) return "NONE";

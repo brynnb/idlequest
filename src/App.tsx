@@ -7,6 +7,8 @@ import StoreDebugger from "./components/StoreDebugger";
 import GeneralInventorySlots from "./components/GeneralInventorySlots";
 import AddInventoryItem from "./components/AddInventoryItem";
 import DeleteAllInventory from "./components/DeleteAllInventory";
+import EquippedItemsInventory from "./components/EquippedItemsInventory";
+import EquipAllItems from "./components/EquipAllItems";
 
 function App() {
   useEffect(() => {
@@ -23,8 +25,10 @@ function App() {
 
       <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
       <GeneralInventorySlots />
+      <EquippedItemsInventory />
       <AddInventoryItem />
       <DeleteAllInventory />
+      <EquipAllItems />
       <StoreDebugger />
     </div>
   );
