@@ -120,3 +120,34 @@ export const getZoneNPCs = async (zoneName: string): Promise<NPCType[]> => {
     return [];
   }
 };
+
+export const getNPCLoot = async (npcId: number): Promise<Item[]> => {
+  await initDatabase();
+  if (!db) throw new Error("Database not initialized");
+
+  const query = `
+    SELECT DISTINCT i.*
+    FROM items i
+    JOIN lootdrop_entries lde ON i.id = lde.item_id
+    JOIN loottable_entries lte ON lde.lootdrop_id = lte.lootdrop_id
+    JOIN npc_types nt ON lte.loottable_id = nt.loottable_id
+    WHERE nt.id = ?
+  `;
+
+  try {
+    const result = db.exec(query, [npcId]);
+    if (result.length === 0) return [];
+
+    const columns = result[0].columns;
+    return result[0].values.map((row) => {
+      const item: Partial<Item> = {};
+      columns.forEach((col, index) => {
+        item[col as keyof Item] = row[index] as any;
+      });
+      return item as Item;
+    });
+  } catch (error) {
+    console.error("Error fetching loot for NPC:", error);
+    return [];
+  }
+};

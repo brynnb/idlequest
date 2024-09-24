@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import useGameStatusStore from "../stores/GameStatusStore";
 import { NPCType } from "../entities/NPCType";
+import { getNPCLoot } from "../utils/getNPCLoot";
 
 interface GameEngineProps {
   isRunning: boolean;
@@ -68,10 +69,21 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
       if (tick % 15 === 0 && tick !== 0) {
         return Number(targetNPC.hp) || 0;
       } else {
-        return Math.max(prevHealth - (Number(targetNPC.hp) || 0) / 15, 0);
+        const newHealth = Math.max(prevHealth - (Number(targetNPC.hp) || 0) / 15, 0);
+        if (newHealth === 0) {
+          // NPC defeated, fetch and log loot
+          getNPCLoot(characterProfile.zoneId!)
+            .then(loot => {
+              console.log("NPC Defeated! Loot:", loot);
+            })
+            .catch(error => {
+              console.error("Error fetching NPC loot:", error);
+            });
+        }
+        return newHealth;
       }
     });
-  }, [tick, isRunning, targetNPC]);
+  }, [tick, isRunning, targetNPC, characterProfile.zoneId]);
 
   const toggleRunning = () => setIsRunning(prev => !prev);
 
