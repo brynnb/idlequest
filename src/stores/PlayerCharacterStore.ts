@@ -4,6 +4,7 @@ import CharacterProfile from "../entities/CharacterProfile";
 import { InventoryItem } from "../entities/InventoryItem";
 import { getItemById } from "../utils/databaseOperations";
 import { Item } from "../entities/Item";
+import { InventorySlot } from '../entities/InventorySlot';
 
 interface PlayerCharacterStore {
   characterProfile: CharacterProfile;
@@ -11,11 +12,12 @@ interface PlayerCharacterStore {
   setInventory: (inventory: InventoryItem[]) => Promise<void>;
   addInventoryItem: (item: InventoryItem) => Promise<void>;
   removeInventoryItem: (slotId: number) => void;
-  clearInventory: () => void;  // New function
+  clearInventory: () => void;  
   loadItemDetails: () => Promise<void>;
   hoveredItem: Item | null;
   setHoveredItem: (item: Item | null) => void;
-  setCharacterZone: (zoneId: number) => void;  // New method
+  setCharacterZone: (zoneId: number) => void; 
+  moveItemToSlot: (itemId: number, newSlot: InventorySlot) => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -102,6 +104,23 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             startingZone: zoneId,
           }
         })),
+        moveItemToSlot: (itemId, newSlot) => set((state) => {
+          if (!state.characterProfile) return state;
+
+          const updatedInventory = state.characterProfile?.inventory?.map((invItem) => {
+            if (invItem.id === itemId) {
+              return { ...invItem, slotid: newSlot };
+            }
+            return invItem;
+          });
+
+          return {
+            characterProfile: {
+              ...state.characterProfile,
+              inventory: updatedInventory,
+            },
+          };
+        }),
       }),
       { name: "player-character-storage" }
     ),

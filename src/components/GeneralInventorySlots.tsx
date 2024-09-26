@@ -2,14 +2,22 @@ import React from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import styles from "./GeneralInventorySlots.module.css";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
+import { InventorySlot } from "../entities/InventorySlot";
 
 const GeneralInventorySlots: React.FC = () => {
-  const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
+  const { characterProfile, setHoveredItem, moveItemToSlot } = usePlayerCharacterStore();
 
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
   const getInventoryItemForSlot = (slotId: number) => {
     return characterProfile?.inventory?.find((item) => item.slotid === slotId);
+  };
+
+  const handleItemClick = (slotId: number) => {
+    const item = getInventoryItemForSlot(slotId);
+    if (item) {
+      moveItemToSlot(item.id, InventorySlot.Cursor);
+    }
   };
 
   return (
@@ -41,15 +49,16 @@ const GeneralInventorySlots: React.FC = () => {
               }}
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => handleItemClick(slot)}
             >
-              {itemDetails ? (
+              {itemDetails && (
                 <img
                   src={`/icons/${itemDetails.icon}.gif`}
                   alt={itemDetails.Name}
                   title={itemDetails.Name}
                   className={styles.itemIcon}
                 />
-              ) : null}
+              )}
             </div>
           );
         })}

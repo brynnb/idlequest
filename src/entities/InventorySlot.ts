@@ -22,6 +22,7 @@ export enum InventorySlot {
   Waist = 20,
   PowerSource = 21,
   Ammo = 22,
+  Cursor = 31
 }
 
 const SlotBitmasks: { [key in InventorySlot]: number } = {
@@ -48,6 +49,7 @@ const SlotBitmasks: { [key in InventorySlot]: number } = {
   [InventorySlot.Waist]: 1048576,
   [InventorySlot.PowerSource]: 2097152,
   [InventorySlot.Ammo]: 4194304,
+  [InventorySlot.Cursor]: 8388608
 };
 
 export function getInventorySlotNames(slotBitmask: number): string[] {
