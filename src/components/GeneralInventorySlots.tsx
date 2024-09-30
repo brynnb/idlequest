@@ -14,10 +14,7 @@ const GeneralInventorySlots: React.FC = () => {
   };
 
   const handleItemClick = (slotId: number) => {
-    const item = getInventoryItemForSlot(slotId);
-    if (item) {
-      moveItemToSlot(item.id, InventorySlot.Cursor);
-    }
+    moveItemToSlot(slotId, InventorySlot.Cursor);
   };
 
   return (

@@ -17,7 +17,7 @@ interface PlayerCharacterStore {
   hoveredItem: Item | null;
   setHoveredItem: (item: Item | null) => void;
   setCharacterZone: (zoneId: number) => void; 
-  moveItemToSlot: (itemId: number, newSlot: InventorySlot) => void;
+  moveItemToSlot: (fromSlot: number, toSlot: number) => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -104,12 +104,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             startingZone: zoneId,
           }
         })),
-        moveItemToSlot: (itemId, newSlot) => set((state) => {
+        moveItemToSlot: (fromSlot, toSlot) => set((state) => {
           if (!state.characterProfile) return state;
 
-          const updatedInventory = state.characterProfile?.inventory?.map((invItem) => {
-            if (invItem.id === itemId) {
-              return { ...invItem, slotid: newSlot };
+          const updatedInventory = state.characterProfile.inventory.map((invItem) => {
+            if (invItem.slotid === fromSlot) {
+              return { ...invItem, slotid: toSlot };
             }
             return invItem;
           });
