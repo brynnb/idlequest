@@ -6,6 +6,7 @@ import NameInput from "./NameInput";
 import ZoneSelector from "./ZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
 import CharacterDescription from "./CharacterSelectionDescription";
+import { Link } from "react-router-dom";
 
 const CharacterCreator = () => {
   return (
@@ -18,7 +19,9 @@ const CharacterCreator = () => {
       <DeitySelector />
       <ZoneSelector />
       <CharacterDescription />
-      <SubmitCharacter />
+      <Link to="/">
+        <SubmitCharacter />
+      </Link>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { zoneCache } from "./utils/zoneCache";
 import usePlayerCharacterStore from "./stores/PlayerCharacterStore";
 import CharacterCreator from "./components/CharacterCreator";
 import GameEngine from "./components/GameEngine";
@@ -14,33 +13,12 @@ import ItemInformationDisplay from "./components/ItemInformationDisplay";
 import useGameStatusStore from "./stores/GameStatusStore";
 
 function App() {
-  const { hoveredItem } = usePlayerCharacterStore();
-  const { initializeZones } = useGameStatusStore();
 
-
-  useEffect(() => {
-    initializeZones();
-  }, []);
-
-  const [isRunning, setIsRunning] = useState(false);
 
   return (
     <div>
-      <h1>IdleQuest</h1>
-      <ResetGameButton />
-      <CharacterCreator />
-      <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
-      <GeneralInventorySlots />
-      <EquippedItemsInventory />
-      <AddInventoryItem />
-      <DeleteAllInventory />
-      <EquipAllItems />
-      <ItemInformationDisplay 
-        item={hoveredItem} 
-        isVisible={hoveredItem !== null}
-        // isVisible={true}
-      />
-      <StoreDebugger />
+
+
     </div>
   );
 }
