@@ -10,10 +10,17 @@ interface GameEngineProps {
 }
 
 const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
+  const { characterProfile } = usePlayerCharacterStore((state) => ({
+    characterProfile: state?.characterProfile
+  })) || { characterProfile: null };
+
+  if (!characterProfile) {
+    return <div>Loading character profile...</div>;
+  }
+
   const [targetNPC, setTargetNPC] = useState<NPCType | null>(null);
   const [currentHealth, setCurrentHealth] = useState<number | null>(null);
   const [tick, setTick] = useState(0);
-  const { characterProfile } = usePlayerCharacterStore();
   const { 
     getZoneLongNameById, 
     setCurrentZone, 

@@ -5,7 +5,8 @@ import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
 import { InventorySlot } from "../entities/InventorySlot";
 
 const GeneralInventorySlots: React.FC = () => {
-  const { characterProfile, setHoveredItem, moveItemToSlot } = usePlayerCharacterStore();
+  const { characterProfile, setHoveredItem, moveItemToSlot, swapItems } =
+    usePlayerCharacterStore();
 
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -14,7 +15,15 @@ const GeneralInventorySlots: React.FC = () => {
   };
 
   const handleItemClick = (slotId: number) => {
-    moveItemToSlot(slotId, InventorySlot.Cursor);
+    const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
+    const currentSlotItem = getInventoryItemForSlot(slotId);
+    if (currentSlotItem && cursorItem) {
+      swapItems(currentSlotItem.slotid, cursorItem.slotid);
+    } else if (cursorItem) {
+      moveItemToSlot(InventorySlot.Cursor, slotId);
+    } else {
+      moveItemToSlot(slotId, InventorySlot.Cursor);
+    }
   };
 
   return (

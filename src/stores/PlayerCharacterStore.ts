@@ -4,7 +4,7 @@ import CharacterProfile from "../entities/CharacterProfile";
 import { InventoryItem } from "../entities/InventoryItem";
 import { getItemById } from "../utils/databaseOperations";
 import { Item } from "../entities/Item";
-import { InventorySlot } from '../entities/InventorySlot';
+import { InventorySlot } from "../entities/InventorySlot";
 
 interface PlayerCharacterStore {
   characterProfile: CharacterProfile;
@@ -12,12 +12,13 @@ interface PlayerCharacterStore {
   setInventory: (inventory: InventoryItem[]) => Promise<void>;
   addInventoryItem: (item: InventoryItem) => Promise<void>;
   removeInventoryItem: (slotId: number) => void;
-  clearInventory: () => void;  
+  clearInventory: () => void;
   loadItemDetails: () => Promise<void>;
   hoveredItem: Item | null;
   setHoveredItem: (item: Item | null) => void;
-  setCharacterZone: (zoneId: number) => void; 
+  setCharacterZone: (zoneId: number) => void;
   moveItemToSlot: (fromSlot: number, toSlot: number) => void;
+  swapItems: (fromSlot: number, toSlot: number) => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -31,48 +32,62 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           deity: null,
           startingZone: null,
           attributes: {
-            str: 0, sta: 0, cha: 0, dex: 0, int: 0, agi: 0, wis: 0,
+            str: 0,
+            sta: 0,
+            cha: 0,
+            dex: 0,
+            int: 0,
+            agi: 0,
+            wis: 0,
           },
           inventory: [],
         },
         setCharacterProfile: (profile) => set({ characterProfile: profile }),
         setInventory: async (inventory) => {
           set((state) => ({
-            characterProfile: { ...state.characterProfile, inventory }
+            characterProfile: { ...state.characterProfile, inventory },
           }));
           await get().loadItemDetails();
         },
         addInventoryItem: async (item: InventoryItem) => {
-          const itemDetails = await getItemById(item.itemid);
+          const itemDetails = await getItemById(item.itemid || 0);
           if (!itemDetails) {
-            console.error(`Item with ID ${item.itemid} not found in the database.`);
+            console.error(
+              `Item with ID ${item.itemid} not found in the database.`
+            );
             return;
-          }; // Prevent adding if item not found
+          } // Prevent adding if item not found
           const newItem = { ...item, itemDetails };
-          
+
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
               inventory: [...state.characterProfile.inventory, newItem],
-            }
+            },
           }));
         },
-        removeInventoryItem: (slotId) => set((state) => ({
-          characterProfile: {
-            ...state.characterProfile,
-            inventory: state.characterProfile.inventory.filter(item => item.slotid !== slotId),
-          }
-        })),
-        clearInventory: () => set((state) => ({
-          characterProfile: {
-            ...state.characterProfile,
-            inventory: [],
-          }
-        })),
+        removeInventoryItem: (slotId) =>
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              inventory: state.characterProfile?.inventory?.filter(
+                (item) => item.slotid !== slotId
+              ),
+            },
+          })),
+        clearInventory: () =>
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              inventory: [],
+            },
+          })),
         loadItemDetails: async () => {
           const { characterProfile } = get();
-          const itemsToLoad = characterProfile.inventory.filter(item => !item.itemDetails);
-          
+          const itemsToLoad = characterProfile?.inventory?.filter(
+            (item) => !item.itemDetails
+          );
+
           if (itemsToLoad.length === 0) return;
 
           const loadedItems = await Promise.all(
@@ -81,7 +96,10 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 const itemDetails = await getItemById(item.itemid);
                 return { ...item, itemDetails };
               } catch (error) {
-                console.error(`Failed to load details for item ${item.itemid}:`, error);
+                console.error(
+                  `Failed to load details for item ${item.itemid}:`,
+                  error
+                );
                 return item;
               }
             })
@@ -90,37 +108,65 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              inventory: state.characterProfile.inventory.map(
-                item => loadedItems.find(loadedItem => loadedItem.slotid === item.slotid) || item
+              inventory: state.characterProfile?.inventory?.map(
+                (item) =>
+                  loadedItems.find(
+                    (loadedItem) => loadedItem.slotid === item.slotid
+                  ) || item
               ),
-            }
+            },
           }));
         },
         hoveredItem: null,
         setHoveredItem: (item) => set({ hoveredItem: item }),
-        setCharacterZone: (zoneId) => set((state) => ({
-          characterProfile: {
-            ...state.characterProfile,
-            startingZone: zoneId,
-          }
-        })),
-        moveItemToSlot: (fromSlot, toSlot) => set((state) => {
-          if (!state.characterProfile) return state;
-
-          const updatedInventory = state.characterProfile.inventory.map((invItem) => {
-            if (invItem.slotid === fromSlot) {
-              return { ...invItem, slotid: toSlot };
-            }
-            return invItem;
-          });
-
-          return {
+        setCharacterZone: (zoneId) =>
+          set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              inventory: updatedInventory,
+              startingZone: zoneId,
             },
-          };
-        }),
+          })),
+        swapItems: (fromSlot: number, toSlot: number) =>
+          set((state) => {
+            const updatedInventory = state.characterProfile?.inventory?.map(
+              (item) => {
+                if (item.slotid === fromSlot) {
+                  return { ...item, slotid: toSlot };
+                }
+                if (item.slotid === toSlot) {
+                  return { ...item, slotid: fromSlot };
+                }
+                return item;
+              }
+            );
+
+            return {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: updatedInventory,
+              },
+            };
+          }),
+        moveItemToSlot: (fromSlot: number, toSlot: number) =>
+          set((state) => {
+            if (!state.characterProfile) return state;
+
+            const updatedInventory = state.characterProfile.inventory.map(
+              (item) => {
+                if (item.slotid === fromSlot) {
+                  return { ...item, slotid: toSlot };
+                }
+                return item;
+              }
+            );
+
+            return {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: updatedInventory,
+              },
+            };
+          }),
       }),
       { name: "player-character-storage" }
     ),

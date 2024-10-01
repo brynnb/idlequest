@@ -4,7 +4,7 @@ import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
 
 const ResetGameButton: React.FC = () => {
   const resetPlayerCharacter = usePlayerCharacterStore(
-    (state) => state.setCharacterProfile
+    (state) => state?.setCharacterProfile
   );
   const resetCharacterCreator = useCharacterCreatorStore(
     (state) => state.resetStore

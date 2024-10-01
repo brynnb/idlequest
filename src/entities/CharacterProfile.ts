@@ -72,4 +72,5 @@ export default interface CharacterProfile {
   showHelm?: number;
   fatigue?: number;
   inventory?: InventoryItem[];
+  startingZone?: number;
 }
