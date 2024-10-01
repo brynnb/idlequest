@@ -4,12 +4,12 @@ import {
   getItemTypeName,
   EQUIPPABLE_ITEM_TYPES,
 } from "../entities/ItemType";
-import { getInventorySlotNames } from "../entities/InventorySlot";
+import { InventorySlot, SlotBitmasks, getInventorySlotNames } from "../entities/InventorySlot";
 import classesData from "/data/classes.json";
 import racesData from "/data/races.json";
 import Race from "../entities/Race";
-import { InventorySlot } from "../entities/InventorySlot";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
+import { InventoryItem } from "../entities/InventoryItem";
 
 export const handleItemClick = (slotId: InventorySlot) => {
   const { characterProfile, swapItems, moveItemToSlot } =
@@ -22,10 +22,21 @@ export const handleItemClick = (slotId: InventorySlot) => {
   const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
   const currentSlotItem = getInventoryItemForSlot(slotId);
 
+  const isItemAllowedInSlot = (item: InventoryItem, slot: InventorySlot) => {
+    if (slot === InventorySlot.Cursor || slot >= 23) return true;
+    if (!item.itemDetails || item.itemDetails.slots === undefined) return false;
+    const itemSlots = parseInt(item.itemDetails.slots);
+    return (itemSlots & SlotBitmasks[slot]) !== 0;
+  };
+
   if (currentSlotItem && cursorItem) {
-    swapItems(currentSlotItem.slotid, cursorItem.slotid);
+    if (isItemAllowedInSlot(cursorItem, slotId)) {
+      swapItems(currentSlotItem.slotid, cursorItem.slotid);
+    }
   } else if (cursorItem) {
-    moveItemToSlot(InventorySlot.Cursor, slotId);
+    if (isItemAllowedInSlot(cursorItem, slotId)) {
+      moveItemToSlot(InventorySlot.Cursor, slotId);
+    }
   } else if (currentSlotItem) {
     moveItemToSlot(slotId, InventorySlot.Cursor);
   }

@@ -25,7 +25,7 @@ export enum InventorySlot {
   Cursor = 31
 }
 
-const SlotBitmasks: { [key in InventorySlot]: number } = {
+export const SlotBitmasks: { [key in InventorySlot]: number } = {
   [InventorySlot.Charm]: 1,
   [InventorySlot.Ear1]: 2,
   [InventorySlot.Head]: 4,
