@@ -11,7 +11,7 @@ interface GameEngineProps {
 
 const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
   const { characterProfile } = usePlayerCharacterStore((state) => ({
-    characterProfile: state?.characterProfile
+    characterProfile: state?.characterProfile,
   })) || { characterProfile: null };
 
   if (!characterProfile) {
@@ -21,19 +21,17 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
   const [targetNPC, setTargetNPC] = useState<NPCType | null>(null);
   const [currentHealth, setCurrentHealth] = useState<number | null>(null);
   const [tick, setTick] = useState(0);
-  const { 
-    getZoneLongNameById, 
-    setCurrentZone, 
-    updateCurrentZoneNPCs 
-  } = useGameStatusStore();
+  const { getZoneLongNameById, setCurrentZone, updateCurrentZoneNPCs } =
+    useGameStatusStore();
 
   const fetchAndSetTargetNPC = async () => {
     const { currentZoneNPCs } = useGameStatusStore.getState();
     if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
 
     const playerLevel = characterProfile.level || 1;
-    const eligibleNPCs = currentZoneNPCs.filter(npc => 
-      Math.abs(npc.level - playerLevel) <= 3 && npc.id !== targetNPC?.id
+    const eligibleNPCs = currentZoneNPCs.filter(
+      (npc) =>
+        Math.abs(npc.level - playerLevel) <= 3 && npc.id !== targetNPC?.id
     );
 
     if (eligibleNPCs.length === 0) return;
@@ -43,6 +41,35 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
 
     setTargetNPC(newTargetNPC);
     setCurrentHealth(Number(newTargetNPC.hp) || 0);
+  };
+
+  const handleNPCDefeat = (npcName: string) => {
+    if (!targetNPC || !targetNPC.id) {
+      console.error("No target NPC or NPC ID when attempting to get loot");
+      return;
+    }
+
+    const npcId = Number(targetNPC.id);
+
+    if (isNaN(npcId)) {
+      console.error(`Invalid NPC ID: ${targetNPC.id}`);
+      return;
+    }
+
+    getNPCLoot(npcId)
+      .then((loot) => {
+        // console.log(
+        //   `NPC Defeated! Name: ${npcName}, Loot:`,
+        //   loot,
+        //   `NPC ID: ${npcId}`
+        // );
+      })
+      .catch((error) => {
+        console.error("Error fetching NPC loot:", error);
+      })
+      .finally(() => {
+        fetchAndSetTargetNPC();
+      });
   };
 
   useEffect(() => {
@@ -62,7 +89,7 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     let interval: NodeJS.Timeout;
     if (isRunning) {
       interval = setInterval(() => {
-        setTick(prevTick => prevTick + 1);
+        setTick((prevTick) => prevTick + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -71,28 +98,31 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
   useEffect(() => {
     if (!isRunning || !targetNPC || currentHealth === null) return;
 
-    setCurrentHealth(prevHealth => {
+    setCurrentHealth((prevHealth) => {
       if (prevHealth === null) return null;
       if (tick % 15 === 0 && tick !== 0) {
         return Number(targetNPC.hp) || 0;
       } else {
-        const newHealth = Math.max(prevHealth - (Number(targetNPC.hp) || 0) / 15, 0);
+        const newHealth = Math.max(
+          prevHealth - (Number(targetNPC.hp) || 0) / 15,
+          0
+        );
         if (newHealth === 0) {
-          // NPC defeated, fetch and log loot
-          getNPCLoot(characterProfile.zoneId!)
-            .then(loot => {
-              console.log("NPC Defeated! Loot:", loot);
-            })
-            .catch(error => {
-              console.error("Error fetching NPC loot:", error);
-            });
+          handleNPCDefeat(targetNPC.name);
         }
         return newHealth;
       }
     });
   }, [tick, isRunning, targetNPC, characterProfile.zoneId]);
 
-  const toggleRunning = () => setIsRunning(prev => !prev);
+  const toggleRunning = () => setIsRunning((prev) => !prev);
+
+  const instantKillNPC = () => {
+    if (targetNPC && currentHealth !== null) {
+      setCurrentHealth(0);
+      handleNPCDefeat(targetNPC.name);
+    }
+  };
 
   const currentZoneName = characterProfile.zoneId
     ? getZoneLongNameById(characterProfile.zoneId) || "Unknown"
@@ -102,14 +132,16 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     <div>
       <h2>Game Engine</h2>
       <div>Idle Game Running</div>
-      <button onClick={toggleRunning}>
-        {isRunning ? "Pause" : "Resume"}
-      </button>
+      <button onClick={toggleRunning}>{isRunning ? "Pause" : "Resume"}</button>
       {targetNPC && currentHealth !== null && (
         <div>
           <div>Target NPC: {targetNPC.name}</div>
           <div>Level: {targetNPC.level}</div>
-          <div>Health: {currentHealth.toFixed(2)} / {Number(targetNPC.hp).toFixed(2)}</div>
+          <div>
+            Health: {currentHealth.toFixed(2)} /{" "}
+            {Number(targetNPC.hp).toFixed(2)}
+          </div>
+          <button onClick={instantKillNPC}>Instant Kill</button>
         </div>
       )}
       <div>Current Zone: {currentZoneName}</div>

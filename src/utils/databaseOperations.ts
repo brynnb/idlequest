@@ -121,12 +121,19 @@ export const getZoneNPCs = async (zoneName: string): Promise<NPCType[]> => {
   }
 };
 
-export const getNPCLoot = async (npcId: number): Promise<Item[]> => {
+export const getNPCLoot = async (npcId: number | string): Promise<Item[]> => {
+  const numericNpcId = typeof npcId === 'string' ? parseInt(npcId, 10) : npcId;
+
+  if (typeof numericNpcId !== 'number' || isNaN(numericNpcId)) {
+    console.error(`Invalid npcId: ${npcId}. Expected a number or numeric string.`);
+    return [];
+  }
+
   await initDatabase();
   if (!db) throw new Error("Database not initialized");
 
   const query = `
-    SELECT DISTINCT i.*
+    SELECT DISTINCT i.*, lde.chance
     FROM items i
     JOIN lootdrop_entries lde ON i.id = lde.item_id
     JOIN loottable_entries lte ON lde.lootdrop_id = lte.lootdrop_id
@@ -135,17 +142,31 @@ export const getNPCLoot = async (npcId: number): Promise<Item[]> => {
   `;
 
   try {
-    const result = db.exec(query, [npcId]);
-    if (result.length === 0) return [];
+    const result = db.exec(query, [numericNpcId]);
+
+    if (result.length === 0 || result[0].values.length === 0) {
+      return [];
+    }
 
     const columns = result[0].columns;
-    return result[0].values.map((row) => {
+    const loot = result[0].values.map(row => {
       const item: Partial<Item> = {};
+      let dropChance = 0;
       columns.forEach((col, index) => {
-        item[col as keyof Item] = row[index] as any;
+        if (col === 'chance') {
+          dropChance = row[index] as number;
+        } else {
+          item[col as keyof Item] = row[index] as any;
+        }
       });
-      return item as Item;
+      return { item, dropChance };
     });
+
+    const finalLoot = loot.filter(({ dropChance }) => {
+      return Math.random() * 100 < dropChance;
+    }).map(({ item }) => item as Item);
+
+    return finalLoot;
   } catch (error) {
     console.error("Error fetching loot for NPC:", error);
     return [];
