@@ -1,12 +1,35 @@
 import { Item } from "../entities/Item";
-import { ItemType, getItemTypeName, EQUIPPABLE_ITEM_TYPES } from "../entities/ItemType";
+import {
+  ItemType,
+  getItemTypeName,
+  EQUIPPABLE_ITEM_TYPES,
+} from "../entities/ItemType";
 import { getInventorySlotNames } from "../entities/InventorySlot";
 import classesData from "/data/classes.json";
 import racesData from "/data/races.json";
 import Race from "../entities/Race";
-import { useDatabase } from "../hooks/useDatabase";
+import { InventorySlot } from "../entities/InventorySlot";
+import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 
+export const handleItemClick = (slotId: InventorySlot) => {
+  const { characterProfile, swapItems, moveItemToSlot } =
+    usePlayerCharacterStore.getState();
 
+  const getInventoryItemForSlot = (slot: InventorySlot) => {
+    return characterProfile?.inventory?.find((item) => item.slotid === slot);
+  };
+
+  const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
+  const currentSlotItem = getInventoryItemForSlot(slotId);
+
+  if (currentSlotItem && cursorItem) {
+    swapItems(currentSlotItem.slotid, cursorItem.slotid);
+  } else if (cursorItem) {
+    moveItemToSlot(InventorySlot.Cursor, slotId);
+  } else if (currentSlotItem) {
+    moveItemToSlot(slotId, InventorySlot.Cursor);
+  }
+};
 
 export const getSlotNames = (slots: number | undefined) => {
   if (slots === undefined) return "NONE";
@@ -71,7 +94,10 @@ export const getStatString = (item: Item) => {
 };
 
 export const isEquippableItem = (item: Item): boolean => {
-  return item.itemclass === "0" && EQUIPPABLE_ITEM_TYPES.includes(Number(item.itemtype) as ItemType);
+  return (
+    item.itemclass === "0" &&
+    EQUIPPABLE_ITEM_TYPES.includes(Number(item.itemtype) as ItemType)
+  );
 };
 
 export const isSpellItem = (item: Item): boolean => {

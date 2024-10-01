@@ -3,27 +3,16 @@ import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import styles from "./GeneralInventorySlots.module.css";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
 import { InventorySlot } from "../entities/InventorySlot";
+import { handleItemClick } from "../utils/itemUtils";
 
 const GeneralInventorySlots: React.FC = () => {
-  const { characterProfile, setHoveredItem, moveItemToSlot, swapItems } =
-    usePlayerCharacterStore();
+  const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
 
+  // General inventory slots start at 23 (after equipped slots)
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
   const getInventoryItemForSlot = (slotId: number) => {
     return characterProfile?.inventory?.find((item) => item.slotid === slotId);
-  };
-
-  const handleItemClick = (slotId: number) => {
-    const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
-    const currentSlotItem = getInventoryItemForSlot(slotId);
-    if (currentSlotItem && cursorItem) {
-      swapItems(currentSlotItem.slotid, cursorItem.slotid);
-    } else if (cursorItem) {
-      moveItemToSlot(InventorySlot.Cursor, slotId);
-    } else {
-      moveItemToSlot(slotId, InventorySlot.Cursor);
-    }
   };
 
   return (
@@ -41,7 +30,7 @@ const GeneralInventorySlots: React.FC = () => {
 
           return (
             <div
-              key={slot}
+              key={`general-slot-${slot}`}
               className={styles.slot}
               style={{
                 position: "absolute",

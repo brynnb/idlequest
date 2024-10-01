@@ -2,9 +2,8 @@ import React from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import styles from "./EquippedItemsInventory.module.css";
 import playerInventoryBackground from "/images/ui/playerinventorybackground.png";
-import ItemInformationDisplay from "./ItemInformationDisplay";
-import { Item } from "../entities/Item";
 import { InventorySlot } from "../entities/InventorySlot";
+import { handleItemClick } from "../utils/itemUtils";
 
 const EquippedItemsInventory: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
@@ -16,7 +15,7 @@ const EquippedItemsInventory: React.FC = () => {
     [InventorySlot.Primary, InventorySlot.Secondary, InventorySlot.Range, InventorySlot.Ammo]
   ];
 
-  const getInventoryItemForSlot = (slotId: number) => {
+  const getInventoryItemForSlot = (slotId: InventorySlot) => {
     return characterProfile?.inventory?.find((item) => item.slotid === slotId);
   };
 
@@ -35,15 +34,16 @@ const EquippedItemsInventory: React.FC = () => {
                   className={styles.slot}
                   onMouseEnter={() => setHoveredItem(itemDetails || null)}
                   onMouseLeave={() => setHoveredItem(null)}
+                  onClick={() => handleItemClick(slot)}
                 >
-                  {itemDetails ? (
+                  {itemDetails && (
                     <img
                       src={`/icons/${itemDetails.icon}.gif`}
                       alt={itemDetails.Name}
                       title={itemDetails.Name}
                       className={styles.itemIcon}
                     />
-                  ) : null}
+                  )}
                 </div>
               );
             })}
