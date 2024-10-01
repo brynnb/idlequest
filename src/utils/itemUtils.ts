@@ -114,3 +114,46 @@ export const isEquippableItem = (item: Item): boolean => {
 export const isSpellItem = (item: Item): boolean => {
   return item.itemtype === "20";
 };
+
+export const handleLoot = (loot: Item[]) => {
+  const { addInventoryItem, characterProfile } = usePlayerCharacterStore.getState();
+
+  loot.forEach((item) => {
+    if (isEquippableItem(item)) {
+      const itemSlots = parseInt(item.slots);
+      const availableSlot = Object.entries(SlotBitmasks).find(([slot, bitmask]) => {
+        const slotId = parseInt(slot);
+        return (
+          slotId < 23 && // Only consider equipment slots
+          (itemSlots & bitmask) !== 0 && // Item can be equipped in this slot
+          !characterProfile.inventory.some(invItem => invItem.slotid === slotId) // Slot is empty
+        );
+      });
+
+      if (availableSlot) {
+        addInventoryItem({
+          itemid: item.id,
+          slotid: parseInt(availableSlot[0]),
+          charges: 1,
+          itemDetails: item,
+        });
+        return;
+      }
+    }
+
+    // If not equippable or no available equipment slot, add to general inventory
+    const firstAvailableSlot = Array.from({ length: 8 }, (_, i) => i + 23)
+      .find(slot => !characterProfile.inventory.some(invItem => invItem.slotid === slot));
+
+    if (firstAvailableSlot !== undefined) {
+      addInventoryItem({
+        itemid: item.id,
+        slotid: firstAvailableSlot,
+        charges: 1,
+        itemDetails: item,
+      });
+    } else {
+      console.log("Inventory full, item dropped:", item.name);
+    }
+  });
+};

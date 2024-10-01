@@ -132,7 +132,17 @@ I've renamed "spawn2" to "spawnlocation" because the name makes much more sense.
 - `pathgrid` in spawnlocation sets a movement path for spawned NPCs.
 - `timeleft` in spawnlocation is used by the game to track respawn timers.
 
+### Automated Progression Steps
 
+These are steps I would have the automated system prioritize:
+
+* Equip all items, initiate combat (risk tolerance slider? when higher risk, will try harder mobs), collect loot, replace low value loot with high value when out of spots
+* Save up for backpacks to carry more loot
+* Buy missing and useful spells first, buy less useful ones secondary
+* Train new skills as they become available (e.g. meditate at level 8)
+* Maybe have a "grind versus adventure" slider - adventure makes the bot focus on quests to get better gear, grind means stick with what you got and upgrade when something drops
+* Have have a "quest selector" for the user to say which quests to focus on for specific items of gear they want. 
+* Have a travel risk meter - when having to go to new zones for quests, how slow you move versus how much risk you take. Higher risk, higher movement speed. 
 
 ### Boilerplate Notes
 

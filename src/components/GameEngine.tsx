@@ -3,6 +3,7 @@ import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import useGameStatusStore from "../stores/GameStatusStore";
 import { NPCType } from "../entities/NPCType";
 import { getNPCLoot } from "../utils/getNPCLoot";
+import { handleLoot } from "../utils/itemUtils";
 
 interface GameEngineProps {
   isRunning: boolean;
@@ -23,6 +24,9 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
   const [tick, setTick] = useState(0);
   const { getZoneLongNameById, setCurrentZone, updateCurrentZoneNPCs } =
     useGameStatusStore();
+
+  const { addInventoryItem, characterProfile: playerCharacterProfile } =
+    usePlayerCharacterStore();
 
   const fetchAndSetTargetNPC = async () => {
     const { currentZoneNPCs } = useGameStatusStore.getState();
@@ -58,11 +62,7 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
 
     getNPCLoot(npcId)
       .then((loot) => {
-        // console.log(
-        //   `NPC Defeated! Name: ${npcName}, Loot:`,
-        //   loot,
-        //   `NPC ID: ${npcId}`
-        // );
+        handleLoot(loot);
       })
       .catch((error) => {
         console.error("Error fetching NPC loot:", error);
