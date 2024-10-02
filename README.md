@@ -18,6 +18,7 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 * Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
 * Add item stack, fix quantities for starting item food/drink
 * Make useRandomName a util and not a hook
+* Need to engage with NPCs given their rarity of spawning, otherwise when in Karnor's we're killin Venril all the time and getting way too much good loot. Maybe need to incorporate spawn timers too. 
 * Lots more
 
 ## Backlog

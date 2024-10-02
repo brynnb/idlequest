@@ -3,7 +3,7 @@ import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import { Item } from "../entities/Item";
 
 const isSellable = (item: Item): boolean => {
-  return !!item.price && item.price > 0 && item.nodrop != 0 && item.norent != 0;
+  return item.nodrop != 0 && item.norent != 0;
 };
 
 const SellGeneralInventory: React.FC = () => {

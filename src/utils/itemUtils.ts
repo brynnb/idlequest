@@ -115,25 +115,59 @@ export const isSpellItem = (item: Item): boolean => {
   return item.itemtype === "20";
 };
 
+export const formatPrice = (copperPrice: number): string => {
+  const platinum = Math.floor(copperPrice / 1000);
+  const gold = Math.floor((copperPrice % 1000) / 100);
+  const silver = Math.floor((copperPrice % 100) / 10);
+  const copper = copperPrice % 10;
+
+  return `${platinum}p ${gold}g ${silver}s ${copper}c`;
+};
+
 export const handleLoot = (loot: Item[]) => {
-  const { addInventoryItem, characterProfile } = usePlayerCharacterStore.getState();
+  const { addInventoryItem, characterProfile, removeInventoryItem } = usePlayerCharacterStore.getState();
 
   loot.forEach((item) => {
     if (isEquippableItem(item)) {
       const itemSlots = parseInt(item.slots);
       const availableSlot = Object.entries(SlotBitmasks).find(([slot, bitmask]) => {
         const slotId = parseInt(slot);
-        return (
-          slotId < 23 && // Only consider equipment slots
-          (itemSlots & bitmask) !== 0 && // Item can be equipped in this slot
-          !characterProfile.inventory.some(invItem => invItem.slotid === slotId) // Slot is empty
-        );
+        if (slotId >= 23 || (itemSlots & bitmask) === 0) return false;
+
+        const existingItem = characterProfile.inventory.find(invItem => invItem.slotid === slotId);
+        if (!existingItem) return true;
+
+        const newItemPrice = item.price || 0;
+        const existingItemPrice = existingItem.itemDetails?.price || 0;
+        return newItemPrice > existingItemPrice;
       });
 
       if (availableSlot) {
+        const slotId = parseInt(availableSlot[0]);
+        const existingItem = characterProfile.inventory.find(invItem => invItem.slotid === slotId);
+
+        if (existingItem) {
+          console.log("Upgrade found:");
+          console.log("Old item:", existingItem.itemDetails?.name, "Price:", formatPrice(existingItem.itemDetails?.price || 0));
+          console.log("New item:", item.name, "Price:", formatPrice(item.price || 0));
+
+          removeInventoryItem(existingItem.slotid);
+          const firstAvailableSlot = Array.from({ length: 8 }, (_, i) => i + 23)
+            .find(slot => !characterProfile.inventory.some(invItem => invItem.slotid === slot));
+
+          if (firstAvailableSlot !== undefined) {
+            addInventoryItem({
+              ...existingItem,
+              slotid: firstAvailableSlot,
+            });
+          } else {
+            console.log("Inventory full, item dropped:", existingItem.itemDetails?.name);
+          }
+        }
+
         addInventoryItem({
           itemid: item.id,
-          slotid: parseInt(availableSlot[0]),
+          slotid: slotId,
           charges: 1,
           itemDetails: item,
         });
@@ -153,7 +187,7 @@ export const handleLoot = (loot: Item[]) => {
         itemDetails: item,
       });
     } else {
-      console.log("Inventory full, item dropped:", item.name);
+      console.log("Inventory full, item dropped:", item.Name);
     }
   });
 };
