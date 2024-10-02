@@ -19,6 +19,7 @@ interface PlayerCharacterStore {
   setCharacterZone: (zoneId: number) => void;
   moveItemToSlot: (fromSlot: number, toSlot: number) => void;
   swapItems: (fromSlot: number, toSlot: number) => void;
+  deleteItemOnCursor: () => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -167,6 +168,14 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               },
             };
           }),
+        deleteItemOnCursor: () => set((state) => ({
+          characterProfile: {
+            ...state.characterProfile,
+            inventory: state.characterProfile.inventory.filter(
+              (item) => item.slotid !== InventorySlot.Cursor
+            ),
+          },
+        })),
       }),
       { name: "player-character-storage" }
     ),

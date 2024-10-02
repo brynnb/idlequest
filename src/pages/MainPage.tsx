@@ -9,6 +9,7 @@ import ItemInformationDisplay from "../components/ItemInformationDisplay";
 import useGameStatusStore from "../stores/GameStatusStore";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import CursorInventorySlot from "../components/CursorInventorySlot";
+import DeleteItemOnCursorButton from "../components/DeleteItemOnCursorButton";
 
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
@@ -29,6 +30,7 @@ const MainPage: React.FC = () => {
       <AddInventoryItem />
       <DeleteAllInventory />
       <EquipAllItems />
+      <DeleteItemOnCursorButton />
       <CursorInventorySlot />
       <ItemInformationDisplay
         item={hoveredItem}
