@@ -38,7 +38,10 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
         Math.abs(npc.level - playerLevel) <= 3 && npc.id !== targetNPC?.id
     );
 
-    if (eligibleNPCs.length === 0) return;
+    if (eligibleNPCs.length === 0) {
+      console.log("No eligible NPCs found, try changing zones");
+      return;
+    }
 
     const randomIndex = Math.floor(Math.random() * eligibleNPCs.length);
     const newTargetNPC = eligibleNPCs[randomIndex];
@@ -72,6 +75,8 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
       });
   };
 
+  const [quickMode, setQuickMode] = useState(true);
+
   useEffect(() => {
     if (characterProfile.zoneId) {
       setCurrentZone(characterProfile.zoneId);
@@ -100,8 +105,15 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
 
     setCurrentHealth((prevHealth) => {
       if (prevHealth === null) return null;
-      if (tick % 15 === 0 && tick !== 0) {
-        return Number(targetNPC.hp) || 0;
+      if (quickMode || (tick % 15 === 0 && tick !== 0)) {
+        const newHealth = Math.max(
+          prevHealth - (Number(targetNPC.hp) || 0) / 2,
+          0
+        );
+        if (newHealth === 0) {
+          handleNPCDefeat(targetNPC.name);
+        }
+        return newHealth;
       } else {
         const newHealth = Math.max(
           prevHealth - (Number(targetNPC.hp) || 0) / 15,
@@ -113,7 +125,7 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
         return newHealth;
       }
     });
-  }, [tick, isRunning, targetNPC, characterProfile.zoneId]);
+  }, [tick, isRunning, targetNPC, characterProfile.zoneId, quickMode]);
 
   const toggleRunning = () => setIsRunning((prev) => !prev);
 
@@ -124,6 +136,8 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     }
   };
 
+  const toggleQuickMode = () => setQuickMode((prev) => !prev);
+
   const currentZoneName = characterProfile.zoneId
     ? getZoneLongNameById(characterProfile.zoneId) || "Unknown"
     : "Unknown";
@@ -133,6 +147,10 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
       <h2>Game Engine</h2>
       <div>Idle Game Running</div>
       <button onClick={toggleRunning}>{isRunning ? "Pause" : "Resume"}</button>
+      <label>
+        <input type="checkbox" checked={quickMode} onChange={toggleQuickMode} />
+        Quick Mode
+      </label>
       {targetNPC && currentHealth !== null && (
         <div>
           <div>Target NPC: {targetNPC.name}</div>
