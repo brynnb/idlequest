@@ -81,6 +81,10 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             characterProfile: {
               ...state.characterProfile,
               inventory: [],
+              platinum: 0,
+              gold: 0,
+              silver: 0,
+              copper: 0,
             },
           })),
         loadItemDetails: async () => {
@@ -168,14 +172,15 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               },
             };
           }),
-        deleteItemOnCursor: () => set((state) => ({
-          characterProfile: {
-            ...state.characterProfile,
-            inventory: state.characterProfile.inventory.filter(
-              (item) => item.slotid !== InventorySlot.Cursor
-            ),
-          },
-        })),
+        deleteItemOnCursor: () =>
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              inventory: state.characterProfile.inventory.filter(
+                (item) => item.slotid !== InventorySlot.Cursor
+              ),
+            },
+          })),
       }),
       { name: "player-character-storage" }
     ),

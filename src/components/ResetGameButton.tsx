@@ -27,6 +27,10 @@ const ResetGameButton: React.FC = () => {
         agi: 0,
         wis: 0,
       },
+      platinum: 0,
+      gold: 0,
+      silver: 0,
+      copper: 0,
       inventory: [], // Reset inventory to an empty array
     });
 

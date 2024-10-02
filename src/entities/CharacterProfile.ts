@@ -73,4 +73,8 @@ export default interface CharacterProfile {
   fatigue?: number;
   inventory?: InventoryItem[];
   startingZone?: number;
+  platinum?: number;
+  gold?: number;
+  silver?: number;
+  copper?: number;
 }

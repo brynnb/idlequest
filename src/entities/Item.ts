@@ -107,7 +107,7 @@ export interface Item {
   reclevel?: number; // Recommended Level
   recskill?: number; // Recommended Skill Level
   reqlevel?: number; // Required Level
-  sellrate?: number; // Sell Rate
+  sellrate?: number; // Sell Rate - this is multipled times the price for when a vendor is selling the item, but not a player is selling to a vendor. Used to ensure players couldn't make money in automated ways, or for balance reasons
   shielding?: number; // Shielding: 5 = 5%, 20 = 20%, 50 = 50%
   size?: number; // Size
   skillmodtype?: number; // Skill Modifier Type
