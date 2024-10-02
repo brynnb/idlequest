@@ -1,4 +1,5 @@
 import { InventoryItem } from "./InventoryItem";
+import Zone from "./Zone";
 
 export default interface CharacterProfile {
   id?: number;
@@ -72,7 +73,7 @@ export default interface CharacterProfile {
   showHelm?: number;
   fatigue?: number;
   inventory?: InventoryItem[];
-  startingZone?: number;
+  startingZone?: Zone;
   platinum?: number;
   gold?: number;
   silver?: number;

@@ -116,7 +116,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              startingZone: zoneId,
+              zoneId: zoneId,
             },
           })),
         swapItems: (fromSlot: number, toSlot: number) =>

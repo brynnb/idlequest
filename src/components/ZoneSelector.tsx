@@ -1,92 +1,38 @@
-import { useEffect, useMemo } from "react";
-import zones from "../../data/zones.json";
-import useCharacterStore from "../stores/CharacterCreatorStore";
-import charCreateCombinations from "../../data/char_create_combinations.json";
+import React, { useEffect, useState, useCallback } from 'react';
+import usePlayerCharacterStore from '../stores/PlayerCharacterStore';
+import { getAdjacentZones } from '../utils/zoneUtils';
+import Zone from '../entities/Zone';
 
-const ZoneSelector = () => {
-  const { selectedZone, setSelectedZone, selectedRace, selectedClass } =
-    useCharacterStore();
+const ZoneSelector: React.FC = () => {
+  const [adjacentZones, setAdjacentZones] = useState<Zone[]>([]);
+  const { characterProfile, setCharacterZone } = usePlayerCharacterStore();
 
-  // Get all unique start zones from the combinations
-  const allStartZones = useMemo(() => {
-    const uniqueZones = new Set(
-      charCreateCombinations.map((c) => c.start_zone)
-    );
-    // Exclude zoneidnumber of 155 for Shar Vahl because cat people aren't classic
-    uniqueZones.delete(155);
-    return Array.from(uniqueZones);
-  }, []);
-
-  // Filter zones based on the selected race and class
-  const compatibleZones = useMemo(() => {
-    return charCreateCombinations
-      .filter(
-        (combination) =>
-          combination.race === selectedRace?.id &&
-          combination.class === selectedClass?.id
-      )
-      .map((combination) => combination.start_zone);
-  }, [selectedRace, selectedClass]);
-
-  // Filter available zones to only include those that are in allStartZones
-  const availableZones = useMemo(() => {
-    return zones.filter((zone) => allStartZones.includes(zone.zoneidnumber));
-  }, [allStartZones]);
-
-  const onSelectZone = (zoneId: number) => {
-    const selectedZone = availableZones.find(
-      (zone) => zone.zoneidnumber === zoneId
-    );
-    if (selectedZone) {
-      setSelectedZone(selectedZone);
+  const fetchAdjacentZones = useCallback(async () => {
+    if (characterProfile.zoneId) {
+      const zones = await getAdjacentZones(characterProfile.zoneId);
+      setAdjacentZones(zones);
     }
-  };
+  }, [characterProfile.zoneId]);
 
-  // Effect to set the first available compatible zone
   useEffect(() => {
-    if (!selectedZone || !compatibleZones.includes(selectedZone.zoneidnumber)) {
-      const firstCompatibleZone = availableZones.find((zoneItem) =>
-        compatibleZones.includes(zoneItem.zoneidnumber)
-      );
-      if (firstCompatibleZone) {
-        setSelectedZone(firstCompatibleZone);
-      }
-    }
-  }, [compatibleZones, availableZones, selectedZone, setSelectedZone]);
+    fetchAdjacentZones();
+  }, [fetchAdjacentZones]);
+
+  const handleZoneClick = async (zone: Zone) => {
+    setCharacterZone(zone.zoneidnumber);
+    await fetchAdjacentZones();
+  };
 
   return (
     <div>
-      <h2>Starting Zone</h2>
-      {availableZones.map((zone) => (
-        <button
-          key={zone.zoneidnumber}
-          onClick={() => onSelectZone(zone.zoneidnumber)}
-          disabled={!compatibleZones.includes(zone.zoneidnumber)}
-          style={{
-            backgroundColor:
-              selectedZone?.zoneidnumber === zone.zoneidnumber
-                ? "#007bff"
-                : !compatibleZones.includes(zone.zoneidnumber)
-                ? "#e0e0e0"
-                : "#f8f9fa",
-            color:
-              selectedZone?.zoneidnumber === zone.zoneidnumber
-                ? "white"
-                : !compatibleZones.includes(zone.zoneidnumber)
-                ? "#a0a0a0"
-                : "black",
-            margin: "5px",
-            padding: "10px",
-            border: "1px solid #ced4da",
-            borderRadius: "4px",
-            cursor: compatibleZones.includes(zone.zoneidnumber)
-              ? "pointer"
-              : "not-allowed",
-          }}
-        >
-          {zone.long_name}
-        </button>
-      ))}
+      <h3>Select New Zone:</h3>
+      <div>
+        {adjacentZones.map((zone) => (
+          <button key={zone.id} onClick={() => handleZoneClick(zone)}>
+            {zone.long_name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

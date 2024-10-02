@@ -14,12 +14,10 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 
 * Double check ALL for races on items is working as intended, make sure race-specific item is also only showing that one race
 * Make sure an item with stats is showing relevant stats
-* Figure out system for replacing varibles in dbstr/eqstr stuff with values. So far no luck in finding relevant eqmu code
 * Fix display of fire and magic and etc resists on items
 * Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
-* Separate character creation into its own page
-* Add character starting inventory/display it
-* Incremental/idle combat engine
+* Add item stack, fix quantities for starting item food/drink
+* Make useRandomName a util and not a hook
 * Lots more
 
 ## Backlog

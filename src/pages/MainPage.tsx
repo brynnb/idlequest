@@ -12,6 +12,7 @@ import CursorInventorySlot from "../components/CursorInventorySlot";
 import DeleteItemOnCursorButton from "../components/DeleteItemOnCursorButton";
 import SellGeneralInventory from "../components/SellGeneralInventory";
 import PlayerCurrencyDisplay from "../components/PlayerCurrencyDisplay";
+import ZoneSelector from "../components/ZoneSelector";
 
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
@@ -35,6 +36,7 @@ const MainPage: React.FC = () => {
       <DeleteItemOnCursorButton />
       <SellGeneralInventory />
       <CursorInventorySlot />
+      <ZoneSelector />
       <PlayerCurrencyDisplay />
       <ItemInformationDisplay
         item={hoveredItem}

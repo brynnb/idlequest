@@ -17,9 +17,7 @@ const SubmitCharacter: React.FC = () => {
   const setCharacterProfile = usePlayerCharacterStore(
     (state) => state.setCharacterProfile
   );
-  const setInventory = usePlayerCharacterStore(
-    (state) => state.setInventory
-  );
+  const setInventory = usePlayerCharacterStore((state) => state.setInventory);
 
   const { createInventory, loading } = useInventoryCreator();
 
@@ -29,7 +27,6 @@ const SubmitCharacter: React.FC = () => {
       race: selectedRace,
       class: selectedClass,
       deity: selectedDeity,
-      startingZone: selectedZone,
       zoneId: selectedZone.zoneidnumber,
       attributes: {
         str: attributes.str + attributes.base_str,
@@ -39,7 +36,7 @@ const SubmitCharacter: React.FC = () => {
         int: attributes.int + attributes.base_int,
         agi: attributes.agi + attributes.base_agi,
         wis: attributes.wis + attributes.base_wis,
-      }
+      },
     };
 
     setCharacterProfile(newCharacterProfile);

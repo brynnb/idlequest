@@ -3,7 +3,7 @@ import RaceSelector from "./RaceSelector";
 import ClassSelector from "./ClassSelector";
 import DeitySelector from "./DeitySelector";
 import NameInput from "./NameInput";
-import ZoneSelector from "./ZoneSelector";
+import ZoneSelector from "./StartingZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
 import CharacterDescription from "./CharacterSelectionDescription";
 import { Link } from "react-router-dom";
