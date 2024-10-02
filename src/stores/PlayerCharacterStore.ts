@@ -6,6 +6,10 @@ import { getItemById } from "../utils/databaseOperations";
 import { Item } from "../entities/Item";
 import { InventorySlot } from "../entities/InventorySlot";
 
+function createDefaultCharacterProfile(): CharacterProfile {
+  return {} as CharacterProfile;
+}
+
 interface PlayerCharacterStore {
   characterProfile: CharacterProfile;
   setCharacterProfile: (profile: CharacterProfile) => void;
@@ -26,23 +30,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
   devtools(
     persist(
       (set, get) => ({
-        characterProfile: {
-          name: "",
-          race: null,
-          class: null,
-          deity: null,
-          startingZone: null,
-          attributes: {
-            str: 0,
-            sta: 0,
-            cha: 0,
-            dex: 0,
-            int: 0,
-            agi: 0,
-            wis: 0,
-          },
-          inventory: [],
-        },
+        characterProfile: createDefaultCharacterProfile(),
         setCharacterProfile: (profile) => set({ characterProfile: profile }),
         setInventory: async (inventory) => {
           set((state) => ({
