@@ -19,6 +19,13 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 * Add item stack, fix quantities for starting item food/drink
 * Make useRandomName a util and not a hook
 * Need to engage with NPCs given their rarity of spawning, otherwise when in Karnor's we're killin Venril all the time and getting way too much good loot. Maybe need to incorporate spawn timers too. 
+* Rings show "FINGER FINGER" for slots in item info
+* No duplicate LORE items
+* AC needs to display on own line for item info
+* Score 2H weapons against both primary and secondary slot items
+* Bards should keep best version of each instrument
+* If old weapon and newly looted weapon both have zero stats, compare best ratio even for casters
+* When automatically replacing equiped item with new one, make sure old one is actually going back to inventory
 * Lots more
 
 ## Backlog

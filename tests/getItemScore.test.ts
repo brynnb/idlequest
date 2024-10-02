@@ -8,10 +8,10 @@ describe("getItemScore", () => {
   });
 
   it("compares scores for items 5019 and 10908 for Warrior class", async () => {
-    const warrior: CharacterClass = { id: 1, name: "Warrior" };
+    const warrior: CharacterClass = { id: 1, name: "Necromancer" };
 
-    const item5019 = await getItemById(3151);
-    const item10908 = await getItemById(7825);
+    const item5019 = await getItemById(8880);
+    const item10908 = await getItemById(4407);
 
     if (!item5019 || !item10908) {
       throw new Error("One or both items not found in the database");

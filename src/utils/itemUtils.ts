@@ -15,6 +15,7 @@ import Race from "../entities/Race";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import { InventoryItem } from "../entities/InventoryItem";
 import getItemScore from "./getItemScore";
+import { CharacterClass } from "../entities/CharacterClass";
 
 export const handleItemClick = (slotId: InventorySlot) => {
   const { characterProfile, swapItems, moveItemToSlot } =
@@ -31,7 +32,11 @@ export const handleItemClick = (slotId: InventorySlot) => {
     if (slot === InventorySlot.Cursor || slot >= 23) return true;
     if (!item.itemDetails || item.itemDetails.slots === undefined) return false;
     const itemSlots = parseInt(item.itemDetails.slots);
-    return (itemSlots & SlotBitmasks[slot]) !== 0;
+    return (
+      (itemSlots & SlotBitmasks[slot]) !== 0 &&
+      isEquippableWithClass(item.itemDetails, characterProfile.class) &&
+      isEquippableWithRace(item.itemDetails, characterProfile.race)
+    );
   };
 
   if (currentSlotItem && cursorItem) {
@@ -129,6 +134,16 @@ export const formatPrice = (copperPrice: number): string => {
   return `${platinum}p ${gold}g ${silver}s ${copper}c`;
 };
 
+export const isEquippableWithClass = (item: Item, characterClass: CharacterClass): boolean => {
+  if (!item.classes || !characterClass.bitmask) return false;
+  return (parseInt(item.classes.toString()) & characterClass.bitmask) !== 0;
+};
+
+export const isEquippableWithRace = (item: Item, characterRace: Race): boolean => {
+  if (!item.races || !characterRace.bitmask) return false;
+  return (parseInt(item.races.toString()) & characterRace.bitmask) !== 0;
+};
+
 export const handleLoot = (loot: Item[]) => {
   const { addInventoryItem, characterProfile, removeInventoryItem } =
     usePlayerCharacterStore.getState();
@@ -139,7 +154,11 @@ export const handleLoot = (loot: Item[]) => {
       return;
     }
 
-    if (isEquippableItem(item)) {
+    if (
+      isEquippableItem(item) &&
+      isEquippableWithClass(item, characterProfile.class) &&
+      isEquippableWithRace(item, characterProfile.race)
+    ) {
       const itemSlots = parseInt(item.slots);
       const availableSlot = Object.entries(SlotBitmasks).find(
         ([slot, bitmask]) => {
@@ -149,6 +168,7 @@ export const handleLoot = (loot: Item[]) => {
           const existingItem = characterProfile.inventory.find(
             (invItem) => invItem.slotid === slotId
           );
+          
           if (!existingItem) {
             const charClass = characterProfile.class;
             const newItemScore = getItemScore(item, charClass);
