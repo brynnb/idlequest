@@ -4,12 +4,17 @@ import {
   getItemTypeName,
   EQUIPPABLE_ITEM_TYPES,
 } from "../entities/ItemType";
-import { InventorySlot, SlotBitmasks, getInventorySlotNames } from "../entities/InventorySlot";
+import {
+  InventorySlot,
+  SlotBitmasks,
+  getInventorySlotNames,
+} from "../entities/InventorySlot";
 import classesData from "/data/classes.json";
 import racesData from "/data/races.json";
 import Race from "../entities/Race";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import { InventoryItem } from "../entities/InventoryItem";
+import getItemScore from "./getItemScore";
 
 export const handleItemClick = (slotId: InventorySlot) => {
   const { characterProfile, swapItems, moveItemToSlot } =
@@ -125,35 +130,80 @@ export const formatPrice = (copperPrice: number): string => {
 };
 
 export const handleLoot = (loot: Item[]) => {
-  const { addInventoryItem, characterProfile, removeInventoryItem } = usePlayerCharacterStore.getState();
+  const { addInventoryItem, characterProfile, removeInventoryItem } =
+    usePlayerCharacterStore.getState();
 
   loot.forEach((item) => {
+    if (!item) {
+      console.error("Encountered undefined item in loot");
+      return;
+    }
+
     if (isEquippableItem(item)) {
       const itemSlots = parseInt(item.slots);
-      const availableSlot = Object.entries(SlotBitmasks).find(([slot, bitmask]) => {
-        const slotId = parseInt(slot);
-        if (slotId >= 23 || (itemSlots & bitmask) === 0) return false;
+      const availableSlot = Object.entries(SlotBitmasks).find(
+        ([slot, bitmask]) => {
+          const slotId = parseInt(slot);
+          if (slotId >= 23 || (itemSlots & bitmask) === 0) return false;
 
-        const existingItem = characterProfile.inventory.find(invItem => invItem.slotid === slotId);
-        if (!existingItem) return true;
+          const existingItem = characterProfile.inventory.find(
+            (invItem) => invItem.slotid === slotId
+          );
+          if (!existingItem) {
+            const charClass = characterProfile.class;
+            const newItemScore = getItemScore(item, charClass);
+            console.log(
+              `New item to equip in empty slot ${slotId}:`,
+              item.name,
+              "Score:",
+              newItemScore
+            );
+            return true;
+          }
 
-        const newItemPrice = item.price || 0;
-        const existingItemPrice = existingItem.itemDetails?.price || 0;
-        return newItemPrice > existingItemPrice;
-      });
+          const charClass = characterProfile.class;
+          const newItemScore = getItemScore(item, charClass);
+          const existingItemScore = getItemScore(
+            existingItem.itemDetails,
+            charClass
+          );
+
+          return newItemScore > existingItemScore;
+        }
+      );
 
       if (availableSlot) {
         const slotId = parseInt(availableSlot[0]);
-        const existingItem = characterProfile.inventory.find(invItem => invItem.slotid === slotId);
+        const existingItem = characterProfile.inventory.find(
+          (invItem) => invItem.slotid === slotId
+        );
+        const charClass = characterProfile.class;
+        const newItemScore = getItemScore(item, charClass);
 
-        if (existingItem) {
+        if (existingItem && existingItem.itemDetails) {
+          const existingItemScore = getItemScore(
+            existingItem.itemDetails,
+            charClass
+          );
           console.log("Upgrade found:");
-          console.log("Old item:", existingItem.itemDetails?.name, "Price:", formatPrice(existingItem.itemDetails?.price || 0));
-          console.log("New item:", item.name, "Price:", formatPrice(item.price || 0));
+          console.log(
+            "Old item:",
+            existingItem.itemDetails.name,
+            "Score:",
+            existingItemScore
+          );
+          console.log("New item:", item.name, "Score:", newItemScore);
 
           removeInventoryItem(existingItem.slotid);
-          const firstAvailableSlot = Array.from({ length: 8 }, (_, i) => i + 23)
-            .find(slot => !characterProfile.inventory.some(invItem => invItem.slotid === slot));
+          const firstAvailableSlot = Array.from(
+            { length: 8 },
+            (_, i) => i + 23
+          ).find(
+            (slot) =>
+              !characterProfile.inventory.some(
+                (invItem) => invItem.slotid === slot
+              )
+          );
 
           if (firstAvailableSlot !== undefined) {
             addInventoryItem({
@@ -161,7 +211,10 @@ export const handleLoot = (loot: Item[]) => {
               slotid: firstAvailableSlot,
             });
           } else {
-            console.log("Inventory full, item dropped:", existingItem.itemDetails?.name);
+            console.log(
+              "Inventory full, item dropped:",
+              existingItem.itemDetails.name
+            );
           }
         }
 
@@ -176,8 +229,10 @@ export const handleLoot = (loot: Item[]) => {
     }
 
     // If not equippable or no available equipment slot, add to general inventory
-    const firstAvailableSlot = Array.from({ length: 8 }, (_, i) => i + 23)
-      .find(slot => !characterProfile.inventory.some(invItem => invItem.slotid === slot));
+    const firstAvailableSlot = Array.from({ length: 8 }, (_, i) => i + 23).find(
+      (slot) =>
+        !characterProfile.inventory.some((invItem) => invItem.slotid === slot)
+    );
 
     if (firstAvailableSlot !== undefined) {
       addInventoryItem({
@@ -187,7 +242,7 @@ export const handleLoot = (loot: Item[]) => {
         itemDetails: item,
       });
     } else {
-      console.log("Inventory full, item dropped:", item.Name);
+      console.log("Inventory full, item dropped:", item.name);
     }
   });
 };
