@@ -14,12 +14,12 @@ const SellGeneralInventory: React.FC = () => {
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
   const sellGeneralInventory = useCallback(() => {
-    let totalValue = 0;
+    let totalCopper = 0;
 
     characterProfile?.inventory?.forEach((item) => {
       if (generalSlots.includes(item.slotid) && item.itemDetails) {
         if (isSellable(item.itemDetails)) {
-          totalValue += Math.floor(item.itemDetails.price);
+          totalCopper += Math.floor(item.itemDetails.price);
           removeInventoryItem(item.slotid);
         } else if (deleteNoDrop && item.itemDetails.nodrop == 0) {
           removeInventoryItem(item.slotid);
@@ -27,20 +27,31 @@ const SellGeneralInventory: React.FC = () => {
       }
     });
 
-    const platinum = Math.floor(totalValue / 1000);
-    const gold = Math.floor((totalValue % 1000) / 100);
-    const silver = Math.floor((totalValue % 100) / 10);
-    const copper = totalValue % 10;
+    const platinum = Math.floor(totalCopper / 1000);
+    const gold = Math.floor((totalCopper % 1000) / 100);
+    const silver = Math.floor((totalCopper % 100) / 10);
+    const copper = totalCopper % 10;
 
-    usePlayerCharacterStore.setState((state) => ({
-      characterProfile: {
-        ...state.characterProfile,
-        platinum: (state.characterProfile.platinum || 0) + platinum,
-        gold: (state.characterProfile.gold || 0) + gold,
-        silver: (state.characterProfile.silver || 0) + silver,
-        copper: (state.characterProfile.copper || 0) + copper,
-      },
-    }));
+    usePlayerCharacterStore.setState((state) => {
+      let newCopper = (state.characterProfile.copper || 0) + copper;
+      let newSilver = (state.characterProfile.silver || 0) + silver;
+      let newGold = (state.characterProfile.gold || 0) + gold;
+      let newPlatinum = (state.characterProfile.platinum || 0) + platinum;
+
+      // Convert existing copper to silver
+      newSilver += Math.floor(newCopper / 10);
+      newCopper = newCopper % 10;
+
+      return {
+        characterProfile: {
+          ...state.characterProfile,
+          platinum: newPlatinum,
+          gold: newGold,
+          silver: newSilver,
+          copper: newCopper,
+        },
+      };
+    });
 
     console.log(`Sold items for ${platinum}p ${gold}g ${silver}s ${copper}c`);
   }, [characterProfile?.inventory, removeInventoryItem, deleteNoDrop]);
