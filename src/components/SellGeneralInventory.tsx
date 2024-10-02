@@ -1,17 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import { InventorySlot } from "../entities/InventorySlot";
+import { Item } from "../entities/Item";
+
+const isSellable = (item: Item): boolean => {
+  console.log(
+    `Item "${item.name}" - ${item.nodrop != 0 ? " Drop" : "No Drop"}`
+  );
+  return !!item.price && item.price > 0 && item.nodrop != 0 && item.norent != 0;
+};
 
 const SellGeneralInventory: React.FC = () => {
   const { characterProfile, removeInventoryItem } = usePlayerCharacterStore();
   const [autoSell, setAutoSell] = useState(true);
 
-  const sellGeneralInventory = () => {
-    const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
+  const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
+
+  const sellGeneralInventory = useCallback(() => {
     let totalValue = 0;
 
     characterProfile?.inventory?.forEach((item) => {
-      if (generalSlots.includes(item.slotid) && item.itemDetails?.price && item.itemDetails.price > 0) {
+      if (
+        generalSlots.includes(item.slotid) &&
+        item.itemDetails &&
+        isSellable(item.itemDetails)
+      ) {
         totalValue += Math.floor(item.itemDetails.price);
         removeInventoryItem(item.slotid);
       }
@@ -33,26 +46,23 @@ const SellGeneralInventory: React.FC = () => {
     }));
 
     console.log(`Sold items for ${platinum}p ${gold}g ${silver}s ${copper}c`);
-  };
+  }, [characterProfile?.inventory, removeInventoryItem]);
 
   useEffect(() => {
     if (autoSell) {
-      const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
-      const isInventoryFull = generalSlots.every(slot => 
-        characterProfile?.inventory?.some(item => item.slotid === slot)
+      const isInventoryFull = generalSlots.every((slot) =>
+        characterProfile?.inventory?.some((item) => item.slotid === slot)
       );
 
       if (isInventoryFull) {
         sellGeneralInventory();
       }
     }
-  }, [characterProfile?.inventory, autoSell]);
+  }, [characterProfile?.inventory, autoSell, sellGeneralInventory]);
 
   return (
     <div>
-      <button onClick={sellGeneralInventory}>
-        Sell General Inventory
-      </button>
+      <button onClick={sellGeneralInventory}>Sell General Inventory</button>
       <label>
         <input
           type="checkbox"
