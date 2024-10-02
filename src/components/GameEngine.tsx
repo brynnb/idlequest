@@ -33,15 +33,16 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
 
     const playerLevel = characterProfile.level || 1;
-    const eligibleNPCs = currentZoneNPCs.filter(
-      (npc) =>
-        Math.abs(npc.level - playerLevel) <= 3 && npc.id !== targetNPC?.id
-    );
+    const eligibleNPCs = currentZoneNPCs;
+    // const eligibleNPCs = currentZoneNPCs.filter(
+    //   (npc) =>
+    //     Math.abs(npc.level - playerLevel) <= 3 && npc.id !== targetNPC?.id
+    // );
 
-    if (eligibleNPCs.length === 0) {
-      console.log("No eligible NPCs found, try changing zones");
-      return;
-    }
+    // if (eligibleNPCs.length === 0) {
+    //   console.log("No NPCs found within specified level range, try changing zones");
+    //   return;
+    // }
 
     const randomIndex = Math.floor(Math.random() * eligibleNPCs.length);
     const newTargetNPC = eligibleNPCs[randomIndex];
@@ -81,6 +82,7 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     if (characterProfile.zoneId) {
       setCurrentZone(characterProfile.zoneId);
       updateCurrentZoneNPCs();
+      fetchAndSetTargetNPC();
     }
   }, [characterProfile.zoneId, setCurrentZone, updateCurrentZoneNPCs]);
 

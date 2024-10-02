@@ -1,18 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import { InventorySlot } from "../entities/InventorySlot";
 import { Item } from "../entities/Item";
 
 const isSellable = (item: Item): boolean => {
-  console.log(
-    `Item "${item.name}" - ${item.nodrop != 0 ? " Drop" : "No Drop"}`
-  );
   return !!item.price && item.price > 0 && item.nodrop != 0 && item.norent != 0;
 };
 
 const SellGeneralInventory: React.FC = () => {
   const { characterProfile, removeInventoryItem } = usePlayerCharacterStore();
   const [autoSell, setAutoSell] = useState(true);
+  const [deleteNoDrop, setDeleteNoDrop] = useState(true);
 
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -20,13 +17,13 @@ const SellGeneralInventory: React.FC = () => {
     let totalValue = 0;
 
     characterProfile?.inventory?.forEach((item) => {
-      if (
-        generalSlots.includes(item.slotid) &&
-        item.itemDetails &&
-        isSellable(item.itemDetails)
-      ) {
-        totalValue += Math.floor(item.itemDetails.price);
-        removeInventoryItem(item.slotid);
+      if (generalSlots.includes(item.slotid) && item.itemDetails) {
+        if (isSellable(item.itemDetails)) {
+          totalValue += Math.floor(item.itemDetails.price);
+          removeInventoryItem(item.slotid);
+        } else if (deleteNoDrop && item.itemDetails.nodrop == 0) {
+          removeInventoryItem(item.slotid);
+        }
       }
     });
 
@@ -46,7 +43,7 @@ const SellGeneralInventory: React.FC = () => {
     }));
 
     console.log(`Sold items for ${platinum}p ${gold}g ${silver}s ${copper}c`);
-  }, [characterProfile?.inventory, removeInventoryItem]);
+  }, [characterProfile?.inventory, removeInventoryItem, deleteNoDrop]);
 
   useEffect(() => {
     if (autoSell) {
@@ -70,6 +67,14 @@ const SellGeneralInventory: React.FC = () => {
           onChange={(e) => setAutoSell(e.target.checked)}
         />
         Auto sell when full
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={deleteNoDrop}
+          onChange={(e) => setDeleteNoDrop(e.target.checked)}
+        />
+        Delete NoDrop Items
       </label>
     </div>
   );
