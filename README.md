@@ -3,7 +3,7 @@
 
 IdleQuest is an [idle/incremental game](https://en.wikipedia.org/wiki/Incremental_game) based on EverQuest, the iconic MMO released in 1999. Designed to progress on its own, players interact by making strategic choices to determine how the game plays out in an automated way. The goal is to recreate as much of the original EverQuest experience as possible using a database dump from the EverQuest emulator (EQEmu) project, which itself is data from scraping the original game. This data, rooted in the original game, allows for a nostalgic and detailed exploration of EverQuest’s world in a more casual, low commitment way. 
 
-The game content and mechanics are as true to the original experience as can be reaosnably done with a single developer - the interface, classes, races, zones, items, NPCs, loot drops, skills, spells, etc are all very close to original EverQuest content. 
+The game content and mechanics are as true to the original experience as can be reasonably done with a single developer - the interface, classes, races, zones, items, NPCs, loot drops, skills, spells, etc are all very close to original EverQuest content. 
 
 Though there may be implementation of 3D graphics in the future, the current focus on this project is text-based adventuring with some visual aids. EverQuest was originally created from the era of MUDs (multi-user dungeons) which were basically EverQuest without graphics. It's fun to now return to the MUD heritage of the game, but with the addition of LLMs for dynamic quests, dialogue, and storytelling. 
 
@@ -11,11 +11,19 @@ I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](
 
 This project is very much in its early phase, and the casual nature of the README and documentation reflect this.
 
-## Dev
+## Development
+
+This project is built using React/TypeScript and Zustand. Long term this will probably transition to having a RESTful API backend but is currently all running locally of a SQLite database.
+
+To run it:
 
 `pnp run dev`
 
+There is also an assortment of one-off scripts in the /data folder, for example:
+
 `python ./data/add_table_to_db_from_csv.py` as needed, but also don't do this bc it makes all fields text values
+
+The data in the SQLite file is fairly comprehensive at this point though, so it is unlikely much more data import work will need to be done.
 
 
 ## Resources
@@ -110,18 +118,6 @@ I've renamed "spawn2" to "spawnlocation" because the name makes much more sense.
 - `variance` in spawnlocation adds randomness to respawn time, useful for boss monsters.
 - `pathgrid` in spawnlocation sets a movement path for spawned NPCs.
 - `timeleft` in spawnlocation is used by the game to track respawn timers.
-
-### Automated Progression Steps
-
-These are steps I would have the automated system prioritize:
-
-* Equip all items, initiate combat (risk tolerance slider? when higher risk, will try harder mobs), collect loot, replace low value loot with high value when out of spots
-* Save up for backpacks to carry more loot
-* Buy missing and useful spells first, buy less useful ones secondary
-* Train new skills as they become available (e.g. meditate at level 8)
-* Maybe have a "grind versus adventure" slider - adventure makes the bot focus on quests to get better gear, grind means stick with what you got and upgrade when something drops
-* Have have a "quest selector" for the user to say which quests to focus on for specific items of gear they want. 
-* Have a travel risk meter - when having to go to new zones for quests, how slow you move versus how much risk you take. Higher risk, higher movement speed. 
 
 ### Boilerplate Notes
 
