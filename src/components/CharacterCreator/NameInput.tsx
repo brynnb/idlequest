@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import useRandomName from '../hooks/useRandomName';
-import useCharacterCreatorStore from '../stores/CharacterCreatorStore';
+import React, { useEffect } from "react";
+import useRandomName from "../../hooks/useRandomName";
+import useCharacterCreatorStore from "../../stores/CharacterCreatorStore";
 
 const NameInput: React.FC = () => {
   const { characterName, setCharacterName } = useCharacterCreatorStore();
@@ -9,7 +9,7 @@ const NameInput: React.FC = () => {
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let newName = event.target.value;
-    newName = newName.replace(/[^a-zA-Z]/g, ''); // Remove non-alphabetic characters
+    newName = newName.replace(/[^a-zA-Z]/g, ""); // Remove non-alphabetic characters
     newName = newName.charAt(0).toUpperCase() + newName.slice(1).toLowerCase(); // Capitalize first letter, lowercase rest
     setCharacterName(newName.slice(0, maxLength)); // Limit length
   };

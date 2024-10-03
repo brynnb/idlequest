@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
-import AddInventoryItem from "../components/AddInventoryItem";
-import DeleteAllInventory from "../components/DeleteAllInventory";
-import EquipAllItems from "../components/EquipAllItems";
-import EquippedItemsInventory from "../components/EquippedItemsInventory";
+import AddInventoryItem from "../components/Inventory/AddInventoryItem";
+import DeleteAllInventory from "../components/Inventory/DeleteAllInventory";
+import EquipAllItems from "../components/Inventory/EquipAllItems";
+import EquippedItemsInventory from "../components/Inventory/EquippedItemsInventory";
 import GameEngine from "../components/GameEngine";
-import GeneralInventorySlots from "../components/GeneralInventorySlots";
-import ItemInformationDisplay from "../components/ItemInformationDisplay";
+import GeneralInventorySlots from "../components/Inventory/GeneralInventorySlots";
+import ItemInformationDisplay from "../components/Inventory/ItemInformationDisplay";
 import useGameStatusStore from "../stores/GameStatusStore";
 import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import CursorInventorySlot from "../components/CursorInventorySlot";
-import DeleteItemOnCursorButton from "../components/DeleteItemOnCursorButton";
-import SellGeneralInventory from "../components/SellGeneralInventory";
-import PlayerCurrencyDisplay from "../components/PlayerCurrencyDisplay";
+import CursorInventorySlot from "../components/Inventory/CursorInventorySlot";
+import DeleteItemOnCursorButton from "../components/Inventory/DeleteItemOnCursorButton";
+import SellGeneralInventory from "../components/Inventory/SellGeneralInventory";
+import PlayerCurrencyDisplay from "../components/Inventory/PlayerCurrencyDisplay";
 import ZoneSelector from "../components/ZoneSelector";
 
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
-    hoveredItem: state?.hoveredItem
+    hoveredItem: state?.hoveredItem,
   })) || { hoveredItem: null };
   const { initializeZones } = useGameStatusStore();
 

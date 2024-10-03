@@ -1,9 +1,9 @@
 import React from "react";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
+import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
 import styles from "./GeneralInventorySlots.module.css";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
-import { handleItemClick } from "../utils/itemUtils";
-import { InventorySlot } from "../entities/InventorySlot";
+import { handleItemClick } from "../../utils/itemUtils";
+import { InventorySlot } from "../../entities/InventorySlot";
 
 const GeneralInventorySlots: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();

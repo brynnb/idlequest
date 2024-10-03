@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
-import deities from "../../data/deities.json";
-import useCharacterStore from "../stores/CharacterCreatorStore";
-import charCreateCombinations from "../../data/char_create_combinations.json";
+import deities from "../../../data/deities.json";
+import useCharacterStore from "../../stores/CharacterCreatorStore";
+import charCreateCombinations from "../../../data/char_create_combinations.json";
 
 const DeitySelector = () => {
   const { selectedDeity, setSelectedDeity, selectedRace, selectedClass } =
@@ -26,7 +26,9 @@ const DeitySelector = () => {
 
   useEffect(() => {
     if (!selectedDeity || !compatibleDeities.includes(selectedDeity.id)) {
-      const firstCompatibleDeity = deities.find(deity => compatibleDeities.includes(deity.id));
+      const firstCompatibleDeity = deities.find((deity) =>
+        compatibleDeities.includes(deity.id)
+      );
       if (firstCompatibleDeity) {
         setSelectedDeity(firstCompatibleDeity);
       }
@@ -35,7 +37,7 @@ const DeitySelector = () => {
 
   return (
     <div>
-        <h2>Deity</h2>
+      <h2>Deity</h2>
       {deities.map((deity) => (
         <button
           key={deity.id}
@@ -49,7 +51,9 @@ const DeitySelector = () => {
             padding: "10px",
             border: "1px solid #ced4da",
             borderRadius: "4px",
-            cursor: compatibleDeities.includes(deity.id) ? "pointer" : "not-allowed",
+            cursor: compatibleDeities.includes(deity.id)
+              ? "pointer"
+              : "not-allowed",
             opacity: compatibleDeities.includes(deity.id) ? 1 : 0.5,
           }}
         >

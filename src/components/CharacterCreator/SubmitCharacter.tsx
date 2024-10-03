@@ -1,7 +1,7 @@
 import React from "react";
-import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import useInventoryCreator from "../hooks/useInventoryCreator";
+import useCharacterCreatorStore from "../../stores/CharacterCreatorStore";
+import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
+import useInventoryCreator from "../../hooks/useInventoryCreator";
 
 const SubmitCharacter: React.FC = () => {
   const {

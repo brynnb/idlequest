@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import usePlayerCharacterStore from '../stores/PlayerCharacterStore';
-import { getNextAvailableSlot } from '../utils/inventoryUtils';
-import { InventoryItem } from '../entities/InventoryItem';
+import React, { useState } from "react";
+import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
+import { getNextAvailableSlot } from "../../utils/inventoryUtils";
+import { InventoryItem } from "../../entities/InventoryItem";
 
 const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30]; // Define your general slots here
 
 const AddInventoryItem: React.FC = () => {
-  const [itemId, setItemId] = useState('');
+  const [itemId, setItemId] = useState("");
   const { addInventoryItem, characterProfile } = usePlayerCharacterStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,8 +18,11 @@ const AddInventoryItem: React.FC = () => {
 
   const handleAddItem = async () => {
     if (itemId) {
-      const nextSlot = getNextAvailableSlot(characterProfile.inventory, generalSlots);
-      
+      const nextSlot = getNextAvailableSlot(
+        characterProfile.inventory,
+        generalSlots
+      );
+
       if (nextSlot === null) {
         alert("No available slots in inventory!");
         return;
@@ -40,7 +43,7 @@ const AddInventoryItem: React.FC = () => {
       };
 
       await addInventoryItem(newItem);
-      setItemId(''); // Clear the input after adding
+      setItemId(""); // Clear the input after adding
     }
   };
 

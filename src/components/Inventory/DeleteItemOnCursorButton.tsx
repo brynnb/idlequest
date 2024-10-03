@@ -1,6 +1,6 @@
 import React from "react";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import { InventorySlot } from "../entities/InventorySlot";
+import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
+import { InventorySlot } from "../../entities/InventorySlot";
 
 const DeleteItemOnCursorButton: React.FC = () => {
   const { characterProfile, deleteItemOnCursor } = usePlayerCharacterStore();

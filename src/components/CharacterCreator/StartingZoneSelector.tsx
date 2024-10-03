@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
-import zones from "../../data/zones.json";
-import useCharacterStore from "../stores/CharacterCreatorStore";
-import charCreateCombinations from "../../data/char_create_combinations.json";
+import zones from "../../../data/zones.json";
+import useCharacterStore from "../../stores/CharacterCreatorStore";
+import charCreateCombinations from "../../../data/char_create_combinations.json";
 
 const ZoneSelector = () => {
   const { selectedZone, setSelectedZone, selectedRace, selectedClass } =

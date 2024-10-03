@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import { Item } from "../entities/Item";
+import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
+import { Item } from "../../entities/Item";
 
 const isSellable = (item: Item): boolean => {
   return item.nodrop != 0 && item.norent != 0;

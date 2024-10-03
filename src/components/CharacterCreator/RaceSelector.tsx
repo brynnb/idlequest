@@ -1,12 +1,13 @@
-import races from "../../data/races.json";
-import Race from "../entities/Race";
-import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
+import races from "../../../data/races.json";
+import Race from "../../entities/Race";
+import useCharacterCreatorStore from "../../stores/CharacterCreatorStore";
 
 const RaceSelector = () => {
-  const { selectedRace, setSelectedRace, resetAttributes } = useCharacterCreatorStore();
+  const { selectedRace, setSelectedRace, resetAttributes } =
+    useCharacterCreatorStore();
 
   // Filter races to only include those that are playable
-  const playableRaces = races.filter(race => race.is_playable);
+  const playableRaces = races.filter((race) => race.is_playable);
 
   const onSelectRace = (race: Race) => {
     setSelectedRace(race);

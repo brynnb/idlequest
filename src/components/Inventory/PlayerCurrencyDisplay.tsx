@@ -1,5 +1,5 @@
 import React from "react";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
+import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
 
 const PlayerCurrencyDisplay: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();

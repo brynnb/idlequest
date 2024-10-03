@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
+import useCharacterCreatorStore from "/src/stores/CharacterCreatorStore";
 import AttributeAutoAllocatorButton from "./AttributeAutoAllocatorButton";
 
 const baseAttributes = [

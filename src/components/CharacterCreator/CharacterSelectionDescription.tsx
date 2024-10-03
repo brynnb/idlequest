@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import useCharacterStore from "../stores/CharacterCreatorStore";
-import raceClassDeityDescriptions from "../../data/race_class_deity_descriptions.json";
+import useCharacterStore from "../../stores/CharacterCreatorStore";
+import raceClassDeityDescriptions from "/data/race_class_deity_descriptions.json";
 
 const CharacterDescription: React.FC = () => {
   const { selectedRace, selectedClass, selectedDeity, selectedZone } =

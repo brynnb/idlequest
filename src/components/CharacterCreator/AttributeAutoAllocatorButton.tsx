@@ -1,7 +1,7 @@
 import React from "react";
-import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
-import characterCombinations from "../../data/char_create_combinations.json";
-import attributeAllocations from "../../data/char_create_point_allocations.json";
+import useCharacterCreatorStore from "/src/stores/CharacterCreatorStore";
+import characterCombinations from "/data/char_create_combinations.json";
+import attributeAllocations from "/data/char_create_point_allocations.json";
 
 const baseAttributes = [
   "str",

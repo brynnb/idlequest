@@ -26,6 +26,8 @@ This project accommodates numerous quirks from legacy Everquest code, including 
 * Bards should keep best version of each instrument
 * If old weapon and newly looted weapon both have zero stats, compare best ratio even for casters
 * When automatically replacing equiped item with new one, make sure old one is actually going back to inventory
+* Add bags and logic, don't sell them automatically. Show number of slots on item info.
+* Don't sell consumables with auto-sell (like food and drink)
 * Lots more
 
 ## Backlog

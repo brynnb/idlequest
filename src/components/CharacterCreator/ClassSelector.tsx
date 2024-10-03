@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import classes from "../../data/classes.json";
-import useCharacterStore from "../stores/CharacterCreatorStore";
-import CharacterClass from "../entities/CharacterClass";
-import charCreateCombinations from "../../data/char_create_combinations.json";
+import classes from "/data/classes.json";
+import useCharacterStore from "/src/stores/CharacterCreatorStore";
+import CharacterClass from "/src/entities/CharacterClass";
+import charCreateCombinations from "/data/char_create_combinations.json";
 
 const ClassSelector = () => {
   const { selectedClass, setSelectedClass, selectedRace } = useCharacterStore();
