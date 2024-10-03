@@ -173,7 +173,7 @@ export const handleLoot = (loot: Item[]) => {
             const charClass = characterProfile.class;
             const newItemScore = getItemScore(item, charClass);
             console.log(
-              `New item to equip in empty slot ${slotId}:`,
+              `New item to equip for ${InventorySlot[slotId]}:`,
               item.name,
               "Score:",
               newItemScore
