@@ -1,8 +1,17 @@
-# IdleQuest
 
-Idle / incremental game based on EverQuest circa 1999. Lots of features to be determined. Overall idea is to have data be as close as feasibly possible to classic EverQuest. As one example, all of the race/class/diety/starting zone/point allocations are from the actual EQEmu database, which presumably either matches classic or is pretty close and good enough. I also intend to have the same mobs in the same zones dropping the same loot and providing the same level of experience. 
+![logo](https://github.com/user-attachments/assets/57cf97fd-32a6-4385-a4d3-670d57439913)
 
-This project accommodates numerous quirks from legacy Everquest code, including inconsistent data, poor data structuring, and various puzzling elements. I've chosen to maintain these oddities for two reasons: to avoid extensive data cleanup and to keep calculations closely aligned with EQ Emulator code. This approach allows me to continue using their open-source work for future progress while staying true to the classic experience.
+IdleQuest is an [idle/incremental game](https://en.wikipedia.org/wiki/Incremental_game) based on EverQuest, the iconic MMO released in 1999. Designed to progress on its own, players interact by making strategic choices to determine how the game plays out in an automated way. The goal is to recreate as much of the original EverQuest experience as possible using a database dump from the EverQuest emulator (EQEmu) project, which itself is data from scraping the original game. This data, rooted in the original game, allows for a nostalgic and detailed exploration of EverQuest’s world in a more casual, low commitment way. 
+
+The game content and mechanics are as true to the original experience as can be reaosnably done with a single developer - the interface, classes, races, zones, items, NPCs, loot drops, skills, spells, etc are all very close to original EverQuest content. 
+
+Though there may be implementation of 3D graphics in the future, the current focus on this project is text-based adventuring with some visual aids. EverQuest was originally created from the era of MUDs (multi-user dungeons) which were basically EverQuest without graphics. It's fun to now return to the MUD heritage of the game, but with the addition of LLMs for dynamic quests, dialogue, and storytelling. 
+
+I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](https://en.wikipedia.org/wiki/Progress_Quest) from 2002, which is also interestingly the example project used for the "idle games" article on Wikipedia. Though ProgressQuest is much simpler in nature and doesn't contain content from the real game, I want to recognize that this isn't a wholly original idea on my behalf, and I have fond memories of playing ProgressQuest 20+ years ago. 
+
+Similar to ProgressQuest, this project falls under fair use because it transforms elements of the original EverQuest game for a different purpose—an idle game experience rather than an active MMORPG. It does not replicate the gameplay mechanics or experience in a 1:1 manner but instead serves as a commentary and nostalgic parody of EverQuest’s legacy, which fits within the definition of transformative use. Additionally, IdleQuest is non-commercial, and the use of EverQuest’s content is limited and for purposes that add new meaning, context, and value.
+
+This project is very much in its early phase, and the casual nature of the README and documentation reflect this.
 
 ## Dev
 
