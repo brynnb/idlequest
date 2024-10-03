@@ -9,8 +9,6 @@ Though there may be implementation of 3D graphics in the future, the current foc
 
 I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](https://en.wikipedia.org/wiki/Progress_Quest) from 2002, which is also interestingly the example project used for the "idle games" article on Wikipedia. Though ProgressQuest is much simpler in nature and doesn't contain content from the real game, I want to recognize that this isn't a wholly original idea on my behalf, and I have fond memories of playing ProgressQuest 20+ years ago. 
 
-Similar to ProgressQuest, this project falls under fair use because it transforms elements of the original EverQuest game for a different purpose—an idle game experience rather than an active MMORPG. It does not replicate the gameplay mechanics or experience in a 1:1 manner but instead serves as a commentary and nostalgic parody of EverQuest’s legacy, which fits within the definition of transformative use. Additionally, IdleQuest is non-commercial, and the use of EverQuest’s content is limited and for purposes that add new meaning, context, and value.
-
 This project is very much in its early phase, and the casual nature of the README and documentation reflect this.
 
 ## Dev
@@ -26,18 +24,6 @@ This project is very much in its early phase, and the casual nature of the READM
 * https://github.com/EQEmu/Server
 * UI examples for classic character creation: https://www.youtube.com/watch?v=EjWDRHu9mhU
 
-
-## Notes
-
-* Damage calculation in spellCalculations.ts is really messy due to legacy everquest stuff. For example, base damage values can be negative. But I think we want them negative since healing is positive? But we want to display them as positive values. After lots of messing with it, the values look sane and accurate to me. Maybe I will revisit this later.
-
-
-## Ideas
-
-* Item durabiity may be fun since using a variety of weapons and gear adds more to gameplay. Maybe magic items never break but need time to recharge periodically. Non-magic can be repaired a certain number of times, maybe with slightly diminished stats each time
-* Item durability goes hand in hand with a concept I've always liked, which is that most NPCs would drop armor and weapons in a more realistic world, so stuff breaking constantly isn't a big deal because there's always fresh loot to replace it.
-* A journal to show a to-do list for the character. For example if you turn level 8 and are missing spells because you can't afford them yet, getting those spells and scribing them may be on the list.
-* Groups. Bots, maybe. Or multiplayer with other people. Since a lot of classes can't realistically solo. 
 
 ## Looting System Breakdown
 
@@ -189,3 +175,8 @@ export default tseslint.config({
   },
 });
 ```
+
+
+## License
+
+Similar to ProgressQuest, this project falls under fair use because it transforms elements of the original EverQuest game for a different purpose—an idle game experience rather than an active MMORPG. It does not replicate the gameplay mechanics or experience in a 1:1 manner but instead serves as a commentary and nostalgic parody of EverQuest’s legacy, which fits within the definition of transformative use. Additionally, IdleQuest is non-commercial, and the use of EverQuest’s content is limited and for purposes that add new meaning, context, and value.
