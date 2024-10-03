@@ -7,9 +7,9 @@ The game content and mechanics are as true to the original experience as can be 
 
 Though there may be implementation of 3D graphics in the future, the current focus on this project is text-based adventuring with some visual aids. EverQuest was originally created from the era of MUDs (multi-user dungeons) which were basically EverQuest without graphics. It's fun to now return to the MUD heritage of the game, but with the addition of LLMs for dynamic quests, dialogue, and storytelling. 
 
-This project is very much in its early phase, and the casual nature of the README and documentation reflect this.
+I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](https://en.wikipedia.org/wiki/Progress_Quest) from 2002, which is also interestingly the example project used for the "idle games" article on Wikipedia. Though ProgressQuest is much simpler in nature and doesn't contain content from the real game, I want to recognize that this isn't a wholly original idea on my behalf, and I have fond memories of playing ProgressQuest 20+ years ago. Similar to ProgressQuest, this project falls under fair use because it transforms elements of the original EverQuest game for a different purpose—an idle game experience rather than an active MMORPG. It does not replicate the gameplay mechanics or experience in a 1:1 manner but instead serves as a commentary and nostalgic parody of EverQuest’s legacy, which fits within the definition of transformative use. Additionally, IdleQuest is non-commercial, and the use of EverQuest’s content is limited and for purposes that add new meaning, context, and value.
 
-I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](https://en.wikipedia.org/wiki/Progress_Quest) from 2002, which is also interestingly the example project used for the "idle games" article on Wikipedia. Though ProgressQuest is much simpler in nature and doesn't contain content from the real game, I want to recognize that this isn't a wholly original idea on my behalf, and I have fond memories of playing ProgressQuest 20+ years ago. 
+This project is very much in its early phase, and the casual nature of the README and documentation reflect this.
 
 ## Dev
 
