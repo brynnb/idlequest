@@ -19,27 +19,6 @@ This project is very much in its early phase, and the casual nature of the READM
 
 `python ./data/add_table_to_db_from_csv.py` as needed, but also don't do this bc it makes all fields text values
 
-## To-Do
-
-* Double check ALL for races on items is working as intended, make sure race-specific item is also only showing that one race
-* Make sure an item with stats is showing relevant stats
-* Fix display of fire and magic and etc resists on items
-* Calculate health, mana, stamina, and maybe armor and attack points on character creation/stat and level change
-* Add item stack, fix quantities for starting item food/drink
-* Make useRandomName a util and not a hook
-* Need to engage with NPCs given their rarity of spawning, otherwise when in Karnor's we're killin Venril all the time and getting way too much good loot. Maybe need to incorporate spawn timers too. 
-* No duplicate LORE items
-* Score 2H weapons against both primary and secondary slot items
-* Bards should keep best version of each instrument
-* When automatically replacing equiped item with new one, make sure old one is actually going back to inventory
-* Add bags and logic, don't sell them automatically. Show number of slots on item info.
-* Don't sell consumables with auto-sell (like food and drink)
-* Lots more
-
-## Backlog
-
-* The race/class/deity combinations pull in descriptions from eqstr_us.txt. Some of these are already organized into JSON but there are so many possible combinations and not all of them have organized. This is a low priority nice-to-have so putting it off for now.
-* Sqlite database I'm importing data into it using TEXT type for every field, I should probably import the actual table structures, which might also require some code updates because there are places that accommdated stuff being string which I thought was an artifact of legacy code but it may have possibly just been my mistake. 
 
 ## Resources
 
