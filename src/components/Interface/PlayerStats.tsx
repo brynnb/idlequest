@@ -69,7 +69,7 @@ const FullBarImage = styled.img.attrs({ className: "full-bar-image" })`
 const XPBarSub = styled.div.attrs({ className: "xp-bar-sub" })`
   position: absolute;
   left: 26px;
-  top: 78px;
+  top: 24px;
   width: 99px;
 `;
 
