@@ -66,3 +66,28 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.yellow-text {
+  color: #fce803;
+}
+.black-text {
+  color: #281e16;
+}
+.blue-text {
+  color: #150a6e;
+}
+.red-text {
+  color: #cf081b;
+}
+.green-text {
+  color: #55873a;
+}
+.purple-text {
+  color: #7e476b;
+}
+.name-text {
+  color: #d1d2d3;
+}
+.teal-text {
+  color: #80e8de;
+}

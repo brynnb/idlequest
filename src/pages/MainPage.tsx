@@ -13,6 +13,8 @@ import DeleteItemOnCursorButton from "../components/Inventory/DeleteItemOnCursor
 import SellGeneralInventory from "../components/Inventory/SellGeneralInventory";
 import PlayerCurrencyDisplay from "../components/Inventory/PlayerCurrencyDisplay";
 import ZoneSelector from "../components/ZoneSelector";
+import PlayerStats from "../components/Interface/PlayerStats";
+import RightSidebar from "../components/Import/RightSidebar";
 
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
@@ -28,6 +30,7 @@ const MainPage: React.FC = () => {
   return (
     <>
       <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
+      <RightSidebar />
       <GeneralInventorySlots />
       <EquippedItemsInventory />
       <AddInventoryItem />

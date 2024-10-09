@@ -1,27 +1,85 @@
-import React from 'react';
+import styled from "styled-components";
+
+const StyledGroupContainer = styled.div`
+  width: 113px;
+  height: 135px;
+  padding-left: 17px;
+  position: absolute;
+  top: 133px;
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
+
+const GroupMember = styled.div`
+  width: 100%;
+  height: 27px;
+  position: relative;
+  font-size: 11px;
+`;
+
+const GroupMemberName = styled.span`
+  padding-left: 7px;
+  white-space: nowrap;
+  font-size: 9pt;
+  color: #d1d2d3;
+`;
+
+const HealthBarMember = styled.div`
+  position: absolute;
+  left: 3px;
+  top: 15px;
+  width: 110px;
+`;
+
+const EmptyHealthImage = styled.img`
+  width: 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+`;
+
+const FullHealthContainer = styled.div`
+  width: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const FullHealthImage = styled.img`
+  width: 110px;
+`;
 
 const GroupContainer = () => {
   const partyMembers = [
-    // You'll need to populate this with your party member data
-    { username: 'Member1', healthPercent: 0.8 },
-    { username: 'Member2', healthPercent: 0.6 },
+    { username: "Member1", healthPercent: 0.8 },
+    { username: "Member2", healthPercent: 0.6 },
   ];
 
   return (
-    <div className="group-container">
+    <StyledGroupContainer>
       {partyMembers.map((member, index) => (
-        <div key={index} className="group-member">
-          <span className="group-member-name name-text">
+        <GroupMember key={index}>
+          <GroupMemberName className="name-text">
             {member.username}
-          </span>
-          <div className="health-bar-member">
-            <div className="full-health-container" style={{width: `${member.healthPercent * 100}%`}}>
-              <img src="/images/healthbar_full.png" className="full-health-image" alt="Full health bar" />
-            </div>
-          </div>
-        </div>
+          </GroupMemberName>
+          <HealthBarMember>
+            <EmptyHealthImage
+              src="/images/healthbar_empty.png"
+              alt="Empty health bar"
+            />
+            <FullHealthContainer
+              style={{ width: `${member.healthPercent * 84 + 13}px` }}
+            >
+              <FullHealthImage
+                src="/images/healthbar_full.png"
+                alt="Full health bar"
+              />
+            </FullHealthContainer>
+          </HealthBarMember>
+        </GroupMember>
       ))}
-    </div>
+    </StyledGroupContainer>
   );
 };
 

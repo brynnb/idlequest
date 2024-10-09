@@ -1,14 +1,42 @@
 import React from 'react';
+import styled from 'styled-components';
+
+const TargetAndActionsContainer = styled.div`
+  .target-health-bar {
+    position: relative;
+  }
+
+  .target-full-health-container {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .target-full-health-image {
+    height: 15px;
+  }
+
+  .target_name {
+    color: #e4e1e1;
+    top: -1px;
+    position: absolute;
+    left: 0px;
+    font-size: 0.9vw;
+    padding-left: 5px;
+    padding-top: 2px;
+    padding-right: 5px;
+  }
+`;
 
 const TargetAndActions = () => {
   const targetData = {
-    // You'll need to populate this with your target data
     name: 'Target Name',
-    percentDone: 0.6
+    percentDone: .5
   };
 
   return (
-    <div className="target_and_actions">
+    <TargetAndActionsContainer className="target_and_actions">
       <div className="target-health-bar">
         <div className="target-full-health-container" style={{width: `calc(${targetData.percentDone} * 126px)`}}>
           <img
@@ -19,7 +47,7 @@ const TargetAndActions = () => {
         </div>
         <div className="target_name">{targetData.name}</div>
       </div>
-    </div>
+    </TargetAndActionsContainer>
   );
 };
 
