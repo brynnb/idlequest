@@ -3,14 +3,13 @@ import SpellBar from "./SpellBar";
 import SystemOptions from "./SystemOptions";
 import MacroButtons from "./MacroButtons";
 
-const SidebarContainer = styled.div.attrs({ className: 'marble-bg' })`
+const LeftSidebarContainer = styled.div.attrs({ className: 'marble-bg' })`
   position: absolute;
   left: 0;
   top: 0;
-  width: 149px;
-  height: 600px;
+  width: 268px;
+  height: 1080px;
   background-image: url('/images/leftsidebarblank.png');
-  background-size: 149px 610px;
 
   
 `;
@@ -27,7 +26,7 @@ const BottomSection = styled.div.attrs({ className: 'left-sidebar-bottom-section
 
 const LeftSidebar = () => {
   return (
-    <SidebarContainer>
+    <LeftSidebarContainer>
       <TopSection>
         <SpellBar />
         <SystemOptions />
@@ -35,7 +34,7 @@ const LeftSidebar = () => {
       <BottomSection>
         <MacroButtons />
       </BottomSection>
-    </SidebarContainer>
+    </LeftSidebarContainer>
   );
 };
 

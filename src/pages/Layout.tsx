@@ -10,9 +10,8 @@ const MainContainer = styled.div`
   margin: 50px auto;
   justify-items: center;
   align-items: center;
-  background-image: url("/static/everbitica/images/classic_full_screen_bg_blank.png");
-  width: 800px;
-  height: 600px;
+  width: 1440px;
+  height: 1080px;
   position: relative;
   overflow: hidden;
 `;

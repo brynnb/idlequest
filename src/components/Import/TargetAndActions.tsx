@@ -4,9 +4,7 @@ import styled from "styled-components";
 const TargetAndActionsContainer = styled.div`
   .target-health-bar {
     position: relative;
-    background-image: url("/images/targetbar.png");
-    background-size: contain;
-    background-repeat: no-repeat;
+
     width: 193px;
     height: 33px;
   }

@@ -2,22 +2,23 @@ import React from "react";
 import styled from "styled-components";
 import { getSpellGems, SpellGem } from "../../utils/uiUtils";
 
+const SCALE_FACTOR = 1.7; //using scale factor to properly size the gems and make adjustment easier as UI tweaks are made
+
 const SpellBarContainer = styled.div.attrs({
   className: "spell-bar-container",
 })`
-  width: 30px;
-  left: 111px;
+  width: 70px;
+  right: 0px;
   position: absolute;
   padding-top: 2px;
 `;
 
 const SpellGemDiv = styled.div.attrs({
   className: "spell-gem",
-})`
-  margin-top: 19px;
-  width: 38px;
-  height: 29px;
-  left: 11px;
+})<{ scaleFactor: number }>`
+  margin-top: ${21 * SCALE_FACTOR}px;
+  width: ${38 * SCALE_FACTOR}px;
+  height: ${29 * SCALE_FACTOR}px;
 `;
 
 const SpellBar: React.FC = () => {
@@ -29,9 +30,12 @@ const SpellBar: React.FC = () => {
         <SpellGemDiv
           key={index}
           id={`spell_gem_${index + 1}`}
+          scaleFactor={SCALE_FACTOR}
           style={{
-            background: `url('/images/${gem.spritesheet}') ${gem.x}px ${gem.y}px no-repeat`,
-            backgroundSize: "263px",
+            background: `url('/images/${gem.spritesheet}') ${
+              gem.x * SCALE_FACTOR
+            }px ${gem.y * SCALE_FACTOR}px no-repeat`,
+            backgroundSize: `${263 * SCALE_FACTOR}px`,
           }}
         />
       ))}

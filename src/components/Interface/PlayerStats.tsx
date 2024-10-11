@@ -5,13 +5,9 @@ import styled from "styled-components";
 const PlayerStatsContainer = styled.div.attrs({
   className: "player-stats-container",
 })`
-  position: relative;
-  background-image: url("/images/player_stats_bg.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 193px;
-  height: 100px;
-`;
+  position: absolute;
+  top: 20px
+  `;
 
 const UserName = styled.div.attrs({ className: "user-name" })`
   position: absolute;

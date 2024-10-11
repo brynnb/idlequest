@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const StyledGroupContainer = styled.div.attrs({
-  className: 'styled-group-container'
+  className: "styled-group-container",
 })`
   width: 129px;
   height: 155px;
@@ -10,14 +10,12 @@ const StyledGroupContainer = styled.div.attrs({
   top: 133px;
   overflow-x: hidden;
   overflow-y: auto;
-  background-image: url("/images/partymembers.png");
-  background-size: contain;
-  background-repeat: no-repeat;
+
   padding-top: 5px;
 `;
 
 const GroupMember = styled.div.attrs({
-  className: 'group-member'
+  className: "group-member",
 })`
   width: 100%;
   height: 27px;
@@ -26,7 +24,7 @@ const GroupMember = styled.div.attrs({
 `;
 
 const GroupMemberName = styled.span.attrs({
-  className: 'group-member-name'
+  className: "group-member-name",
 })`
   padding-left: 7px;
   white-space: nowrap;
@@ -35,7 +33,7 @@ const GroupMemberName = styled.span.attrs({
 `;
 
 const HealthBarMember = styled.div.attrs({
-  className: 'health-bar-member'
+  className: "health-bar-member",
 })`
   position: absolute;
   left: 3px;
@@ -44,7 +42,7 @@ const HealthBarMember = styled.div.attrs({
 `;
 
 const EmptyHealthImage = styled.img.attrs({
-  className: 'empty-health-image'
+  className: "empty-health-image",
 })`
   width: 100%;
   position: relative;
@@ -53,7 +51,7 @@ const EmptyHealthImage = styled.img.attrs({
 `;
 
 const FullHealthContainer = styled.div.attrs({
-  className: 'full-health-container'
+  className: "full-health-container",
 })`
   width: 100%;
   overflow: hidden;
@@ -63,7 +61,7 @@ const FullHealthContainer = styled.div.attrs({
 `;
 
 const FullHealthImage = styled.img.attrs({
-  className: 'full-health-image'
+  className: "full-health-image",
 })`
   width: 110px;
 `;
