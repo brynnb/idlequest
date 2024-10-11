@@ -23,6 +23,7 @@ const UserName = styled.div.attrs({ className: "user-name" })`
 const BarsContainer = styled.div.attrs({ className: "bars-container" })`
   position: relative;
   top: 49px;
+  left: 11px;
 `;
 
 interface BarProps {
@@ -36,7 +37,7 @@ const Bar: React.FC<BarProps> = ({ type, percent, top }) => {
     position: absolute;
     left: 26px;
     top: ${top}px;
-    width: 99px;
+    width: 200px;
   `;
 
   const EmptyBar = styled.img.attrs({ className: "empty-bar" })`
@@ -57,7 +58,7 @@ const Bar: React.FC<BarProps> = ({ type, percent, top }) => {
   `;
 
   const FullBarImage = styled.img.attrs({ className: "full-bar-image" })`
-    width: 99px;
+    width: 200px;
   `;
 
   return (
@@ -67,7 +68,7 @@ const Bar: React.FC<BarProps> = ({ type, percent, top }) => {
         className={`empty-${type}`}
         alt={`Empty ${type} bar`}
       />
-      <FullBarContainer width={`calc((${percent} * 74px) + 13px)`}>
+      <FullBarContainer width={`calc((${percent} * 174px) + 13px)`}>
         <FullBarImage
           src={`/images/${type}bar_full.png`}
           className={`full-${type}-image`}
@@ -83,7 +84,7 @@ const XPBarSub: React.FC<{ percent: number }> = ({ percent }) => {
     position: absolute;
     left: 26px;
     top: 24px;
-    width: 99px;
+    width: 200px;
   `;
 
   const FullXPContainerSub = styled.div.attrs({
@@ -99,12 +100,12 @@ const XPBarSub: React.FC<{ percent: number }> = ({ percent }) => {
   `;
 
   const FullXPImageSub = styled.img.attrs({ className: "full-xp-image-sub" })`
-    width: 99px;
+    width: 200px;
   `;
 
   return (
     <XPBarSubContainer>
-      <FullXPContainerSub width={`calc((${percent} * 74px) + 13px)`}>
+      <FullXPContainerSub width={`calc((${percent} * 174px) + 13px)`}>
         <FullXPImageSub
           src="/images/xpbar_subbar_full.png"
           alt="Full XP subbar"
@@ -119,7 +120,7 @@ const PlayerStats: React.FC = () => {
 
   // You'll need to implement these calculations based on your game logic
   const healthPercent = 0.75; // Example value
-  const manaPercent = 0.56; // Example value
+  const manaPercent = 0.5; // Example value
   const xpPercent = 0.25; // Example value
   const xpPercentSubbar = 0.1; // Example value
 
@@ -128,8 +129,8 @@ const PlayerStats: React.FC = () => {
       <UserName>{characterProfile.name}</UserName>
       <BarsContainer>
         <Bar type="health" percent={healthPercent} top={0} />
-        <Bar type="mana" percent={manaPercent} top={12} />
-        <Bar type="xp" percent={xpPercent} top={24} />
+        <Bar type="mana" percent={manaPercent} top={20} />
+        <Bar type="xp" percent={xpPercent} top={40} />
         <XPBarSub percent={xpPercentSubbar} />
       </BarsContainer>
     </PlayerStatsContainer>
