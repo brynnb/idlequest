@@ -15,6 +15,9 @@ import PlayerCurrencyDisplay from "../components/Inventory/PlayerCurrencyDisplay
 import ZoneSelector from "../components/ZoneSelector";
 import PlayerStats from "../components/Interface/PlayerStats";
 import RightSidebar from "../components/Import/RightSidebar";
+import VideoBackground from "../components/Import/VideoBackground";
+import Chatbox from "../components/Import/Chatbox";
+import LeftSidebar from "../components/Import/LeftSidebar";
 
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
@@ -29,16 +32,11 @@ const MainPage: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   return (
     <>
-      <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} />
+      <Chatbox />
+      <VideoBackground />
+      {/* <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} /> */}
+      <LeftSidebar />
       <RightSidebar />
-      <GeneralInventorySlots />
-      <EquippedItemsInventory />
-      <AddInventoryItem />
-      <DeleteAllInventory />
-      <EquipAllItems />
-      <DeleteItemOnCursorButton />
-      <SellGeneralInventory />
-      <CursorInventorySlot />
       <ZoneSelector />
       <PlayerCurrencyDisplay />
       <ItemInformationDisplay

@@ -4,6 +4,7 @@ import useGameStatusStore from "../stores/GameStatusStore";
 import { NPCType } from "../entities/NPCType";
 import { getNPCLoot } from "../utils/getNPCLoot";
 import { handleLoot } from "../utils/itemUtils";
+import useChatStore from "../stores/ChatStore";
 
 interface GameEngineProps {
   isRunning: boolean;
@@ -143,6 +144,8 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
   const currentZoneName = characterProfile.zoneId
     ? getZoneLongNameById(characterProfile.zoneId) || "Unknown"
     : "Unknown";
+
+  const addChatMessage = useChatStore((state) => state.addMessage);
 
   return (
     <div>

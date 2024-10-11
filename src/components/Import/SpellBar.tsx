@@ -1,24 +1,49 @@
-import React from 'react';
+import React from "react";
+import styled from "styled-components";
+import { getSpellGems, SpellGem } from "../../utils/uiUtils";
 
-const SpellBar = () => {
-  const spellGems = {
-    // You'll need to populate this with your spell data
-  };
+const SpellBarContainer = styled.div.attrs({
+  className: "spell-bar-container",
+})`
+  width: 30px;
+  left: 111px;
+  position: absolute;
+  padding-top: 2px;
+`;
+
+const SpellGemDiv = styled.div.attrs({
+  className: "spell-gem",
+})`
+  margin-top: 19px;
+  width: 38px;
+  height: 29px;
+  left: 11px;
+`;
+
+interface SpellGemProps {
+  gem: SpellGem;
+  index: number;
+}
+
+const SpellGemComponent: React.FC<SpellGemProps> = ({ gem, index }) => (
+  <SpellGemDiv
+    id={`spell_gem_${index + 1}`}
+    style={{
+      background: `url('/images/${gem.spritesheet}') ${gem.x}px ${gem.y}px no-repeat`,
+      backgroundSize: "263px",
+    }}
+  />
+);
+
+const SpellBar: React.FC = () => {
+  const spellGems = React.useMemo(() => getSpellGems(), []);
 
   return (
-    <div className="spellbar">
-      {Object.entries(spellGems).map(([key, gem]) => (
-        <div
-          key={key}
-          className="spell_gem"
-          id={`spell_gem_${key}`}
-          style={{
-            background: `url('/images/${gem.spritesheet}') ${gem.x}px ${gem.y}px no-repeat`,
-            backgroundSize: '263px'
-          }}
-        />
+    <SpellBarContainer>
+      {spellGems.map((gem, index) => (
+        <SpellGemComponent key={index} gem={gem} index={index} />
       ))}
-    </div>
+    </SpellBarContainer>
   );
 };
 
