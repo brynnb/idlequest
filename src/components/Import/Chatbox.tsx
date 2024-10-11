@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import useChatStore from "../../stores/ChatStore";
 
-const ChatContainer = styled.div`
+const ChatContainer = styled.div.attrs({ className: 'chat-container' })`
   width: 397px;
   height: 164px;
   overflow-y: auto;
@@ -10,6 +10,7 @@ const ChatContainer = styled.div`
   top: 412px;
   position: absolute;
   font-size: 10px;
+  background-image: url('/images/chatbg.png');
 `;
 
 const ChatMessage = styled.div`

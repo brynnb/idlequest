@@ -37,13 +37,13 @@ const MainPage: React.FC = () => {
       {/* <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} /> */}
       <LeftSidebar />
       <RightSidebar />
-      <ZoneSelector />
-      <PlayerCurrencyDisplay />
-      <ItemInformationDisplay
+      {/* <ZoneSelector /> */}
+      {/* <PlayerCurrencyDisplay /> */}
+      {/* <ItemInformationDisplay
         item={hoveredItem}
         isVisible={hoveredItem !== null}
         // isVisible={true}
-      />
+      /> */}
     </>
   );
 };

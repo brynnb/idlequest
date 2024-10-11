@@ -9,6 +9,10 @@ const SidebarContainer = styled.div.attrs({ className: 'marble-bg' })`
   top: 0;
   width: 149px;
   height: 600px;
+  background-image: url('/images/leftsidebarblank.png');
+  background-size: 149px 610px;
+
+  
 `;
 
 const TopSection = styled.div.attrs({ className: 'left-sidebar-top-section' })`

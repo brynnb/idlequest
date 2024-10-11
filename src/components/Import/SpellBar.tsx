@@ -20,28 +20,20 @@ const SpellGemDiv = styled.div.attrs({
   left: 11px;
 `;
 
-interface SpellGemProps {
-  gem: SpellGem;
-  index: number;
-}
-
-const SpellGemComponent: React.FC<SpellGemProps> = ({ gem, index }) => (
-  <SpellGemDiv
-    id={`spell_gem_${index + 1}`}
-    style={{
-      background: `url('/images/${gem.spritesheet}') ${gem.x}px ${gem.y}px no-repeat`,
-      backgroundSize: "263px",
-    }}
-  />
-);
-
 const SpellBar: React.FC = () => {
-  const spellGems = React.useMemo(() => getSpellGems(), []);
+  const spellGems = React.useMemo<SpellGem[]>(() => getSpellGems(), []);
 
   return (
     <SpellBarContainer>
-      {spellGems.map((gem, index) => (
-        <SpellGemComponent key={index} gem={gem} index={index} />
+      {spellGems.map((gem: SpellGem, index: number) => (
+        <SpellGemDiv
+          key={index}
+          id={`spell_gem_${index + 1}`}
+          style={{
+            background: `url('/images/${gem.spritesheet}') ${gem.x}px ${gem.y}px no-repeat`,
+            backgroundSize: "263px",
+          }}
+        />
       ))}
     </SpellBarContainer>
   );
