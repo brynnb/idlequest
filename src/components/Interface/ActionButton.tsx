@@ -37,30 +37,33 @@ interface ActionButtonProps {
   marginBottom?: string;
   customCSS?: string;
   isToggleable?: boolean;
+  isPressed?: boolean;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ 
-  text, 
-  onClick, 
+const ActionButton: React.FC<ActionButtonProps> = ({
+  text,
+  onClick,
   marginBottom = "7px",
   customCSS,
-  isToggleable = false
+  isToggleable = false,
+  isPressed: isPressedProp,
 }) => {
-  const [isPressed, setIsPressed] = useState(false);
+  const [isInternalPressed, setIsInternalPressed] = useState(false);
+  const isPressed = isPressedProp !== undefined ? isPressedProp : isInternalPressed;
 
   const handleClick = () => {
-    if (isToggleable) {
-      setIsPressed((prev) => !prev);
+    if (isToggleable && isPressedProp === undefined) {
+      setIsInternalPressed((prev) => !prev);
     }
     onClick();
   };
 
   const handleMouseEvents = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isToggleable) {
-      if (event.type === 'mousedown') {
-        setIsPressed(true);
-      } else if (event.type === 'mouseup' || event.type === 'mouseleave') {
-        setIsPressed(false);
+    if (!isToggleable && isPressedProp === undefined) {
+      if (event.type === "mousedown") {
+        setIsInternalPressed(true);
+      } else if (event.type === "mouseup" || event.type === "mouseleave") {
+        setIsInternalPressed(false);
       }
     }
   };

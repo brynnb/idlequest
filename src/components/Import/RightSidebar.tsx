@@ -45,6 +45,7 @@ const RightSidebar = () => {
           text="Combat"
           onClick={toggleRunning}
           isPressed={isRunning}
+          isToggleable={true}
         />
         <ActionButton text="Socials" onClick={() => {}} />
       </TopActionButtonContainer>
