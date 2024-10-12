@@ -50,7 +50,7 @@ const VerticalScroll: React.FC<VerticalScrollProps> = ({
   contentHeight,
   onScroll,
 }) => {
-  const [scrollPosition, setScrollPosition] = useState(106); //TODO: make this dynamic
+  const [scrollPosition, setScrollPosition] = useState(50); //TODO: make this dynamic. 106 is the value for the indicator's bottom position, where the most recent chat messages are. 10 is the value for the top most position.
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startY = useRef(0);

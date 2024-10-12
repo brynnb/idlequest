@@ -16,6 +16,7 @@ import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
 import { InventoryItem } from "../entities/InventoryItem";
 import getItemScore from "./getItemScore";
 import { CharacterClass } from "../entities/CharacterClass";
+import useChatStore, { MessageType } from "../stores/ChatStore";
 
 export const handleItemClick = (slotId: InventorySlot) => {
   const { characterProfile, swapItems, moveItemToSlot } =
@@ -147,6 +148,7 @@ export const isEquippableWithRace = (item: Item, characterRace: Race): boolean =
 export const handleLoot = (loot: Item[]) => {
   const { addInventoryItem, characterProfile, removeInventoryItem } =
     usePlayerCharacterStore.getState();
+  const addChatMessage = useChatStore.getState().addMessage;
 
   loot.forEach((item) => {
     if (!item) {
@@ -231,10 +233,7 @@ export const handleLoot = (loot: Item[]) => {
               slotid: firstAvailableSlot,
             });
           } else {
-            console.log(
-              "Inventory full, item dropped:",
-              existingItem.itemDetails.name
-            );
+            addChatMessage(`Inventory full, item dropped: ${existingItem.itemDetails.name}`, MessageType.LOOT);
           }
         }
 
@@ -262,7 +261,7 @@ export const handleLoot = (loot: Item[]) => {
         itemDetails: item,
       });
     } else {
-      console.log("Inventory full, item dropped:", item.name);
+      addChatMessage(`Inventory full, item dropped: ${item.name}`, MessageType.LOOT);
     }
   });
 };

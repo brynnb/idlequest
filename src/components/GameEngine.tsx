@@ -145,8 +145,6 @@ const GameEngine: React.FC<GameEngineProps> = ({ isRunning, setIsRunning }) => {
     ? getZoneLongNameById(characterProfile.zoneId) || "Unknown"
     : "Unknown";
 
-  const addChatMessage = useChatStore((state) => state.addMessage);
-
   return (
     <div>
       <h2>Game Engine</h2>
