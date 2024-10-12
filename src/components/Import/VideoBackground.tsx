@@ -13,7 +13,16 @@ const VideoBackground: React.FC = () => {
   const [videoSrc, setVideoSrc] = useState("");
 
   useEffect(() => {
-    setVideoSrc(getVideoEmbedOption());
+    const baseUrl = getVideoEmbedOption();
+    const params = new URLSearchParams({
+      controls: "0",
+      showinfo: "0",
+      rel: "0",
+      autoplay: "1",
+      mute: "1",
+      loop: "1",
+    });
+    setVideoSrc(`${baseUrl}&${params.toString()}`);
   }, []);
 
   return (
