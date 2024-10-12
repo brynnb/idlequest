@@ -8,17 +8,16 @@ const TargetContainer = styled.div`
 const TargetHealthBar = styled.div`
   position: absolute;
   width: 193px;
-
   top: 518px;
   left: 9px;
 `;
 
-const TargetFullHealthContainer = styled.div<{ percentDone: number }>`
+const TargetFullHealthContainer = styled.div<{ $percentDone: number }>`
   overflow: hidden;
   position: absolute;
   top: 15px;
   left: 15px;
-  width: ${(props) => `calc(${props.percentDone} * 228px)`};
+  width: ${(props) => `calc(${props.$percentDone} * 228px)`};
 `;
 
 const TargetFullHealthImage = styled.img`
@@ -43,7 +42,7 @@ const TargetBar: React.FC = () => {
   return (
     <TargetContainer className="target_and_actions">
       <TargetHealthBar>
-        <TargetFullHealthContainer percentDone={targetData.percentDone}>
+        <TargetFullHealthContainer $percentDone={targetData.percentDone}>
           <TargetFullHealthImage
             src="/images/target_healthbar_full.png"
             alt="Target health bar"

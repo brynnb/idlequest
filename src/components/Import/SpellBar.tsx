@@ -15,7 +15,7 @@ const SpellBarContainer = styled.div.attrs({
 
 const SpellGemDiv = styled.div.attrs({
   className: "spell-gem",
-})<{ scaleFactor: number }>`
+})<{ $scaleFactor: number }>`
   margin-top: ${18.5 * SCALE_FACTOR}px;
   width: ${38 * SCALE_FACTOR}px;
   height: ${28.9 * SCALE_FACTOR}px;
@@ -30,7 +30,7 @@ const SpellBar: React.FC = () => {
         <SpellGemDiv
           key={index}
           id={`spell_gem_${index + 1}`}
-          scaleFactor={SCALE_FACTOR}
+          $scaleFactor={SCALE_FACTOR}
           style={{
             background: `url('/images/${gem.spritesheet}') ${
               gem.x * SCALE_FACTOR

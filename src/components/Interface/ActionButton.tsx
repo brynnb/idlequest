@@ -36,25 +36,44 @@ interface ActionButtonProps {
   onClick: () => void;
   marginBottom?: string;
   customCSS?: string;
+  isToggleable?: boolean;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({ 
   text, 
   onClick, 
   marginBottom = "7px",
-  customCSS 
+  customCSS,
+  isToggleable = false
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+
+  const handleClick = () => {
+    if (isToggleable) {
+      setIsPressed((prev) => !prev);
+    }
+    onClick();
+  };
+
+  const handleMouseEvents = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isToggleable) {
+      if (event.type === 'mousedown') {
+        setIsPressed(true);
+      } else if (event.type === 'mouseup' || event.type === 'mouseleave') {
+        setIsPressed(false);
+      }
+    }
+  };
 
   return (
     <StyledActionButton
       $isPressed={isPressed}
       $marginBottom={marginBottom}
       $customCSS={customCSS}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
-      onClick={onClick}
+      onMouseDown={handleMouseEvents}
+      onMouseUp={handleMouseEvents}
+      onMouseLeave={handleMouseEvents}
+      onClick={handleClick}
     >
       {text}
     </StyledActionButton>

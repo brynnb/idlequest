@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import PlayerStats from "/src/components/Interface/PlayerStats";
 import GroupContainer from "./GroupContainer";
-import TargetBar from "./TargetAndActions";
+import TargetBar from "./TargetBar";
 import ActionButton from "../Interface/ActionButton";
+import useGameStatusStore from "../../stores/GameStatusStore";
 
 const StyledRightSidebar = styled.div.attrs({ className: "right-sidebar" })`
   right: 0px;
@@ -32,14 +33,19 @@ const BottomActionButtonContainer = styled.div.attrs({
 const marginBottomForBottomButtons = "12px";
 
 const RightSidebar = () => {
+  const { isRunning, toggleRunning } = useGameStatusStore();
+
   return (
     <StyledRightSidebar>
       <PlayerStats />
-      {/* <GroupContainer /> */}
       <TargetBar />
       <TopActionButtonContainer>
         <ActionButton text="Abilities" onClick={() => {}} />
-        <ActionButton text="Combat" onClick={() => {}} />
+        <ActionButton
+          text="Combat"
+          onClick={toggleRunning}
+          isPressed={isRunning}
+        />
         <ActionButton text="Socials" onClick={() => {}} />
       </TopActionButtonContainer>
       <BottomActionButtonContainer>

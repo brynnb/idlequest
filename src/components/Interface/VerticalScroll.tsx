@@ -11,14 +11,14 @@ const ScrollContainer = styled.div`
   top: 30px;
 `;
 
-const ScrollButton = styled.button<{ isUp: boolean }>`
+const ScrollButton = styled.button<{ $isUp: boolean }>`
   width: 24px;
   height: 42px;
   position: absolute;
   left: 4px;
-  ${(props) => (props.isUp ? "top: 0;" : "bottom: 0;")}
+  ${(props) => (props.$isUp ? "top: 0;" : "bottom: 0;")}
   background-image: url(${(props) =>
-    props.isUp
+    props.$isUp
       ? "/images/ui/scroll/scrolluparrow.png"
       : "/images/ui/scroll/scrolldownarrow.png"});
   background-size: 100% 100%;
@@ -30,13 +30,12 @@ const ScrollButton = styled.button<{ isUp: boolean }>`
   box-sizing: border-box;
 `;
 
-const ScrollIndicator = styled.div<{ position: number }>`
+const ScrollIndicator = styled.div<{ $position: number }>`
   width: 24px;
   height: 24px;
-
   position: absolute;
   left: 4px;
-  top: ${(props) => props.position}px;
+  top: ${(props) => props.$position}px;
   background-image: url("/images/ui/scroll/scrollpositionindicator.png");
   background-size: cover;
   cursor: pointer;
@@ -98,12 +97,12 @@ const VerticalScroll: React.FC<VerticalScrollProps> = ({
 
   return (
     <ScrollContainer ref={containerRef}>
-      <ScrollButton isUp={true} onClick={() => handleScroll(-10)} />
+      <ScrollButton $isUp={true} onClick={() => handleScroll(-10)} />
       <ScrollIndicator
-        position={20 + scrollPosition * scrollRatio}
+        $position={20 + scrollPosition * scrollRatio}
         onMouseDown={handleMouseDown}
       />
-      <ScrollButton isUp={false} onClick={() => handleScroll(10)} />
+      <ScrollButton $isUp={false} onClick={() => handleScroll(10)} />
     </ScrollContainer>
   );
 };
