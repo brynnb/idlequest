@@ -1,64 +1,29 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import useChatStore, { MessageType } from "../../stores/ChatStore";
 import VerticalScroll from "../Interface/VerticalScroll";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
-  width: 801px;
-  height: 308px;
-  overflow-y: auto;
+  width: 901px;
+  height: 360px;
   left: 267px;
   top: 722px;
   position: absolute;
   background-image: url("/images/chatbg.png");
   background-size: cover;
-  padding-left: 100px;
-  padding-top: 50px;
   font-size: 20px;
   line-height: 1.2;
+  display: flex;
+`;
 
-  /* screenshot, experience, gained experience */
-  .yellow-text {
-    color: #fce803;
-  }
-
-  /* user inflicts damage, local chat */
-  .black-text {
-    color: #281e16;
-  }
-
-  /* emotes, spell casting messages,  */
-  .blue-text {
-    color: #150a6e;
-  }
-
-  /* user receives damage, shouts */
-  .red-text {
-    color: #cf081b;
-  }
-
-  /* ooc messages */
-  .green-text {
-    color: #55873a;
-  }
-
-  /* /who lookups, PMs */
-  .purple-text {
-    color: #7e476b;
-  }
-
-  /* group chat messages */
-  .teal-text {
-    color: #80e8de;
-  }
-
-  .white-text {
-    color: #ffffff;
-  }
-
-  .gray-text {
-    color: #808080;
-  }
+const ChatContent = styled.div`
+  width: calc(100% - 28px);
+  height: 100%;
+  overflow: hidden;
+  padding-left: 100px;
+  padding-top: 50px;
+  padding-right: 10px;
+  box-sizing: border-box;
 `;
 
 const ChatMessage = styled.div`
@@ -117,21 +82,42 @@ const getMessageClass = (type: MessageType): string => {
 
 const ChatBox: React.FC = () => {
   const { messages } = useChatStore();
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContentRef.current) {
+      const newContentHeight = chatContentRef.current.scrollHeight;
+      setContentHeight(newContentHeight);
+      setScrollPosition(newContentHeight - 308);
+    }
   }, [messages]);
+
+  useEffect(() => {
+    if (chatContentRef.current) {
+      chatContentRef.current.scrollTop = scrollPosition;
+    }
+  }, [scrollPosition]);
+
+  const handleScroll = (newScrollPosition: number) => {
+    setScrollPosition(newScrollPosition);
+  };
 
   return (
     <ChatContainer>
-      {messages.map((message) => (
-        <ChatMessage key={message.id} className={getMessageClass(message.type)}>
-          {message.text}
-        </ChatMessage>
-      ))}
-      <div ref={chatEndRef} />
-      <VerticalScroll contentHeight={100} onScroll={() => {}} />
+      <ChatContent ref={chatContentRef}>
+        {messages.map((message) => (
+          <ChatMessage key={message.id} className={getMessageClass(message.type)}>
+            {message.text}
+          </ChatMessage>
+        ))}
+      </ChatContent>
+      <VerticalScroll
+        contentHeight={contentHeight}
+        visibleHeight={308}
+        onScroll={handleScroll}
+      />
     </ChatContainer>
   );
 };
