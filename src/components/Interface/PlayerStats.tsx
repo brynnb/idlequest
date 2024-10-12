@@ -12,18 +12,23 @@ const PlayerStatsContainer = styled.div.attrs({
 
 const UserName = styled.div.attrs({ className: "user-name" })`
   position: absolute;
-  left: 29px;
-  top: 20px;
-  font-size: 10pt;
-  width: 98px;
-  height: 32px;
+  left: 48px;
+  top:14px;
+  font-size: 18pt;
+  width: 180px;
+  max-height: 70px;
   overflow: hidden;
   color: #d1d2d3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  line-height: 1.3;
 `;
 
 const BarsContainer = styled.div.attrs({ className: "bars-container" })`
-  position: relative;
-  top: 49px;
+  position: absolute;
+  top: 80px;
   left: 11px;
 `;
 
@@ -38,7 +43,7 @@ const PlayerStats: React.FC = () => {
 
   return (
     <PlayerStatsContainer>
-      <UserName>{characterProfile.name}</UserName>
+      <UserName>{characterProfile?.name}</UserName>
       <BarsContainer>
         <StatBar type="health" percent={healthPercent} top={0} />
         <StatBar type="mana" percent={manaPercent} top={20} />
