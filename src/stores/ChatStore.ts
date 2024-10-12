@@ -45,6 +45,7 @@ interface ChatStore {
   messages: ChatMessage[];
   addMessage: (text: string, type: MessageType) => void;
   clearMessages: () => void;
+  nextId: number;
 }
 
 const initialMessages: ChatMessage[] = [
@@ -56,14 +57,16 @@ const useChatStore = create<ChatStore>()(
     persist(
       (set) => ({
         messages: initialMessages,
+        nextId: 2,
         addMessage: (text: string, type: MessageType) =>
           set((state) => ({
             messages: [
               ...state.messages,
-              { id: Date.now(), text, timestamp: Date.now(), type },
+              { id: state.nextId, text, timestamp: Date.now(), type },
             ].slice(-100), // Keep only the last 100 messages
+            nextId: state.nextId + 1,
           })),
-        clearMessages: () => set({ messages: [] }),
+        clearMessages: () => set({ messages: [], nextId: 1 }),
       }),
       { name: "chat-storage" }
     ),
