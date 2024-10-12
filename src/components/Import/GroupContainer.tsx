@@ -1,5 +1,5 @@
 import styled from "styled-components";
-
+import StatBar from "../Interface/StatBar";
 const StyledGroupContainer = styled.div.attrs({
   className: "styled-group-container",
 })`
@@ -30,6 +30,7 @@ const GroupMemberName = styled.span.attrs({
   white-space: nowrap;
   font-size: 9pt;
   color: #d1d2d3;
+  position: relative;
 `;
 
 const HealthBarMember = styled.div.attrs({
@@ -41,30 +42,7 @@ const HealthBarMember = styled.div.attrs({
   width: 110px;
 `;
 
-const EmptyHealthImage = styled.img.attrs({
-  className: "empty-health-image",
-})`
-  width: 100%;
-  position: relative;
-  top: 0;
-  left: 0;
-`;
 
-const FullHealthContainer = styled.div.attrs({
-  className: "full-health-container",
-})`
-  width: 100%;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const FullHealthImage = styled.img.attrs({
-  className: "full-health-image",
-})`
-  width: 110px;
-`;
 
 const GroupContainer = () => {
   const partyMembers = [
@@ -79,20 +57,7 @@ const GroupContainer = () => {
           <GroupMemberName className="name-text">
             {member.username}
           </GroupMemberName>
-          <HealthBarMember>
-            <EmptyHealthImage
-              src="/images/healthbar_empty.png"
-              alt="Empty health bar"
-            />
-            <FullHealthContainer
-              style={{ width: `${member.healthPercent * 84 + 13}px` }}
-            >
-              <FullHealthImage
-                src="/images/healthbar_full.png"
-                alt="Full health bar"
-              />
-            </FullHealthContainer>
-          </HealthBarMember>
+          <StatBar type="health" percent={member.healthPercent} top={0} />
         </GroupMember>
       ))}
     </StyledGroupContainer>

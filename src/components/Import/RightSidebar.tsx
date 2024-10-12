@@ -18,7 +18,7 @@ const RightSidebar = () => {
   return (
     <StyledRightSidebar>
         <PlayerStats />
-        <GroupContainer />
+        {/* <GroupContainer /> */}
         <TargetAndActions />
     </StyledRightSidebar>
   );
