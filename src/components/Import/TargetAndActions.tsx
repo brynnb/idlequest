@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const TargetAndActionsContainer = styled.div`
+const TargetContainer = styled.div`
   position: relative;
 `;
 
@@ -34,14 +34,14 @@ const TargetName = styled.div`
   padding: 2px 5px 0 5px;
 `;
 
-const TargetAndActions: React.FC = () => {
+const TargetBar: React.FC = () => {
   const targetData = {
     name: "Target Name",
     percentDone: 0.57,
   };
 
   return (
-    <TargetAndActionsContainer className="target_and_actions">
+    <TargetContainer className="target_and_actions">
       <TargetHealthBar>
         <TargetFullHealthContainer percentDone={targetData.percentDone}>
           <TargetFullHealthImage
@@ -51,8 +51,8 @@ const TargetAndActions: React.FC = () => {
         </TargetFullHealthContainer>
         <TargetName>{targetData.name}</TargetName>
       </TargetHealthBar>
-    </TargetAndActionsContainer>
+    </TargetContainer>
   );
 };
 
-export default TargetAndActions;
+export default TargetBar;
