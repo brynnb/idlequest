@@ -22,7 +22,12 @@ const TopSection = styled.div.attrs({ className: 'left-sidebar-top-section' })`
   width: 100%;
 `;
 
-const BottomSection = styled.div.attrs({ className: 'left-sidebar-bottom-section' })``;
+const BottomSection = styled.div.attrs({ className: 'left-sidebar-bottom-section' })`
+position: absolute;
+top:695px;
+left: 35px
+
+`;
 
 const LeftSidebar = () => {
   return (
