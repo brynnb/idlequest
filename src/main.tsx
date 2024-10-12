@@ -1,13 +1,27 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { RouterProvider } from "react-router-dom";
-import router from "./routes"
+import router from "./routes";
+import GameEngine from "./scripts/GameEngine";
+import useGameStatusStore from "./stores/GameStatusStore";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-    {/* <ReactQueryDevtools /> */}
-  </StrictMode>
-);
+const App = () => {
+  useEffect(() => {
+    GameEngine.getInstance();
+  }, []);
+
+  return (
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  );
+};
+
+const initializeStore = async () => {
+  await useGameStatusStore.persist.rehydrate();
+
+  createRoot(document.getElementById("root")!).render(<App />);
+};
+
+initializeStore();

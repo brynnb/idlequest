@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import useGameStatusStore from "../../stores/GameStatusStore";
 
 const TargetContainer = styled.div`
   position: relative;
@@ -34,21 +35,27 @@ const TargetName = styled.div`
 `;
 
 const TargetBar: React.FC = () => {
-  const targetData = {
-    name: "Target Name",
-    percentDone: 0.57,
-  };
+  const { targetNPC, currentNPCHealth } = useGameStatusStore((state) => ({
+    targetNPC: state.targetNPC,
+    currentNPCHealth: state.currentNPCHealth,
+  }));
+
+  if (!targetNPC || currentNPCHealth === null) {
+    return null;
+  }
+
+  const percentDone = currentNPCHealth / Number(targetNPC.hp);
 
   return (
     <TargetContainer className="target_and_actions">
       <TargetHealthBar>
-        <TargetFullHealthContainer $percentDone={targetData.percentDone}>
+        <TargetFullHealthContainer $percentDone={percentDone}>
           <TargetFullHealthImage
             src="/images/target_healthbar_full.png"
             alt="Target health bar"
           />
         </TargetFullHealthContainer>
-        <TargetName>{targetData.name}</TargetName>
+        <TargetName>{targetNPC.name}</TargetName>
       </TargetHealthBar>
     </TargetContainer>
   );
