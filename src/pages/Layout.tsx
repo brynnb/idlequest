@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Link, Outlet } from "react-router-dom";
-import ResetGameButton from "../components/ResetGameButton";
-import StoreDebugger from "../components/StoreDebugger";
+import ResetGameButton from "@components/ResetGameButton";
+import StoreDebugger from "@components/StoreDebugger";
 
 const MainContainer = styled.div`
   display: grid;

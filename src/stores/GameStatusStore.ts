@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { devtools, persist, subscribeWithSelector } from "zustand/middleware";
-import { NPCType } from "../entities/NPCType";
-import { getZoneNPCs } from "../utils/getZoneNPCs";
-import Zone from "../entities/Zone";
-import { useDatabase } from "../hooks/useDatabase";
+import { NPCType } from "@entities/NPCType";
+import { getZoneNPCs } from "@utils/getZoneNPCs";
+import Zone from "@entities/Zone";
+import { useDatabase } from "@hooks/useDatabase";
 
 interface GameStatusStore {
   zones: Zone[];

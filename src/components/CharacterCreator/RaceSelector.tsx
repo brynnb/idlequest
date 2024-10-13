@@ -1,6 +1,6 @@
 import races from "../../../data/races.json";
-import Race from "../../entities/Race";
-import useCharacterCreatorStore from "../../stores/CharacterCreatorStore";
+import Race from "@entities/Race";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 
 const RaceSelector = () => {
   const { selectedRace, setSelectedRace, resetAttributes } =

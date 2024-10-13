@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
-import { getNextAvailableSlot } from "../../utils/inventoryUtils";
-import { InventoryItem } from "../../entities/InventoryItem";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { getNextAvailableSlot } from "@utils/inventoryUtils";
+import { InventoryItem } from "@entities/InventoryItem";
 
 const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30]; // Define your general slots here
 

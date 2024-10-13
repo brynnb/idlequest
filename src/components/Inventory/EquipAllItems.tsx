@@ -1,9 +1,9 @@
 import React from "react";
-import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
-import { getInventorySlotNames } from "../../entities/InventorySlot";
-import { InventorySlot } from "../../entities/InventorySlot";
-import { InventoryItem } from "../../entities/InventoryItem";
-import { Item } from "../../entities/Item";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { getInventorySlotNames } from "@entities/InventorySlot";
+import { InventorySlot } from "@entities/InventorySlot";
+import { InventoryItem } from "@entities/InventoryItem";
+import { Item } from "@entities/Item";
 
 const EquipAllItems: React.FC = () => {
   const { characterProfile, setInventory, getItemDetails } =

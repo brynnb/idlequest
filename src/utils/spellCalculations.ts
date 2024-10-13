@@ -1,5 +1,5 @@
 //Based off eqemu code here: https://github.com/EQEmu/Server/blob/master/zone/spell_effects.cpp#L3500
-import { Spell } from "../entities/Spell";
+import { Spell } from "@entities/Spell";
 
 function calcBuffDuration(
   casterLevel: number,

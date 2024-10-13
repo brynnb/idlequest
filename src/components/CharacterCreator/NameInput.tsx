@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import useRandomName from "../../hooks/useRandomName";
-import useCharacterCreatorStore from "../../stores/CharacterCreatorStore";
+import useRandomName from "@hooks/useRandomName";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 
 const NameInput: React.FC = () => {
   const { characterName, setCharacterName } = useCharacterCreatorStore();

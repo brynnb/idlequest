@@ -1,8 +1,8 @@
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import useGameStatusStore from "../stores/GameStatusStore";
-import { NPCType } from "../entities/NPCType";
-import { getNPCLoot } from "../utils/getNPCLoot";
-import { handleLoot } from "../utils/itemUtils";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useGameStatusStore from "@stores/GameStatusStore";
+import { NPCType } from "@entities/NPCType";
+import { getNPCLoot } from "@utils/getNPCLoot";
+import { handleLoot } from "@utils/itemUtils";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;

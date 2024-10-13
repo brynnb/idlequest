@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { initDatabase, getById, getAllFromTable, getZoneNPCs } from "../utils/databaseOperations";
-import { Item } from "../entities/Item";
-import { Zone } from "../entities/Zone";
-import { NPCType } from "../entities/NPCType";
+import {
+  initDatabase,
+  getById,
+  getAllFromTable,
+  getZoneNPCs,
+} from "@utils/databaseOperations";
+import { Item } from "@entities/Item";
+import { Zone } from "@entities/Zone";
+import { NPCType } from "@entities/NPCType";
 
 type TableTypes = {
   items: Item;
@@ -43,5 +48,10 @@ export const useDatabase = <T extends keyof TableTypes>() => {
     []
   );
 
-  return { getById: getByIdHook, getAllFromTable: getAllFromTableHook, getZoneNPCs: getZoneNPCsHook, loading };
+  return {
+    getById: getByIdHook,
+    getAllFromTable: getAllFromTableHook,
+    getZoneNPCs: getZoneNPCsHook,
+    loading,
+  };
 };

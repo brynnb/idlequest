@@ -1,8 +1,8 @@
 import React from "react";
-import { Item } from "../../entities/Item";
-import { ItemSize, getItemSizeName } from "../../entities/ItemSize";
+import { Item } from "@entities/Item";
+import { ItemSize, getItemSizeName } from "@entities/ItemSize";
 import styles from "./ItemInformationDisplay.module.css";
-import { useSpellInfo } from "../../hooks/useSpellInfo";
+import { useSpellInfo } from "@hooks/useSpellInfo";
 import {
   getSlotNames,
   getClassNames,
@@ -10,7 +10,7 @@ import {
   getStatString,
   isEquippableItem,
   isSpellItem,
-} from "../../utils/itemUtils";
+} from "@utils/itemUtils";
 import WeaponStats from "../WeaponStats";
 import SpellInfo from "../SpellInfo";
 

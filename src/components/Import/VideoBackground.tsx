@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { getVideoEmbedOption } from "../../utils/uiUtils";
+import { getVideoEmbedOption } from "@utils/uiUtils";
 
 const ViewContainer = styled.div`
   overflow: hidden;

@@ -1,4 +1,4 @@
-import CharacterCreator from "../components/CharacterCreator/CharacterCreator";
+import CharacterCreator from "@components/CharacterCreator/CharacterCreator";
 
 const CharacterCreatorPage = () => {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import useGameStatusStore from "../../stores/GameStatusStore";
+import useGameStatusStore from "@stores/GameStatusStore";
 
 const TargetContainer = styled.div`
   position: relative;

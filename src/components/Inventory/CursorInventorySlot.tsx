@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import styles from "./CursorInventorySlot.module.css";
-import { InventorySlot } from "../../entities/InventorySlot";
-import { useDatabase } from "../../hooks/useDatabase";
+import { InventorySlot } from "@entities/InventorySlot";
+import { useDatabase } from "@hooks/useDatabase";
 
 const CursorInventorySlot: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();

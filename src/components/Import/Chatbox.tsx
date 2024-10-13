@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import useChatStore, { MessageType } from "../../stores/ChatStore";
+import useChatStore, { MessageType } from "@stores/ChatStore";
 import VerticalScroll from "../Interface/VerticalScroll";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
@@ -8,8 +8,8 @@ const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   height: 300px;
   left: 267px;
   top: 722px;
-  padding-top:40px;
-  padding-bottom:20px;
+  padding-top: 40px;
+  padding-bottom: 20px;
   position: absolute;
   background-image: url("/images/chatbg.png");
   background-size: cover;
@@ -110,7 +110,10 @@ const ChatBox: React.FC = () => {
     <ChatContainer>
       <ChatContent ref={chatContentRef}>
         {messages.map((message) => (
-          <ChatMessage key={message.id} className={getMessageClass(message.type)}>
+          <ChatMessage
+            key={message.id}
+            className={getMessageClass(message.type)}
+          >
             {message.text}
           </ChatMessage>
         ))}

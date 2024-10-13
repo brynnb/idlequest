@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import useGameStatusStore from "../stores/GameStatusStore";
-import { NPCType } from "../entities/NPCType";
-import { getNPCLoot } from "../utils/getNPCLoot";
-import { handleLoot } from "../utils/itemUtils";
-import useChatStore from "../stores/ChatStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useGameStatusStore from "@stores/GameStatusStore";
+import { NPCType } from "@entities/NPCType";
+import { getNPCLoot } from "@utils/getNPCLoot";
+import { handleLoot } from "@utils/itemUtils";
+import useChatStore from "@stores/ChatStore";
 
 interface GameEngineProps {
   isRunning: boolean;

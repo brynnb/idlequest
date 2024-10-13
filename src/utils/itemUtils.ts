@@ -1,22 +1,22 @@
-import { Item } from "../entities/Item";
+import { Item } from "@entities/Item";
 import {
   ItemType,
   getItemTypeName,
   EQUIPPABLE_ITEM_TYPES,
-} from "../entities/ItemType";
+} from "@entities/ItemType";
 import {
   InventorySlot,
   SlotBitmasks,
   getInventorySlotNames,
-} from "../entities/InventorySlot";
+} from "@entities/InventorySlot";
 import classesData from "/data/classes.json";
 import racesData from "/data/races.json";
-import Race from "../entities/Race";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import { InventoryItem } from "../entities/InventoryItem";
+import Race from "@entities/Race";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { InventoryItem } from "@entities/InventoryItem";
 import getItemScore from "./getItemScore";
-import { CharacterClass } from "../entities/CharacterClass";
-import useChatStore, { MessageType } from "../stores/ChatStore";
+import { CharacterClass } from "@entities/CharacterClass";
+import useChatStore, { MessageType } from "@stores/ChatStore";
 
 export const handleItemClick = (slotId: InventorySlot) => {
   const { characterProfile, swapItems, moveItemToSlot } =
@@ -135,12 +135,18 @@ export const formatPrice = (copperPrice: number): string => {
   return `${platinum}p ${gold}g ${silver}s ${copper}c`;
 };
 
-export const isEquippableWithClass = (item: Item, characterClass: CharacterClass): boolean => {
+export const isEquippableWithClass = (
+  item: Item,
+  characterClass: CharacterClass
+): boolean => {
   if (!item.classes || !characterClass.bitmask) return false;
   return (parseInt(item.classes.toString()) & characterClass.bitmask) !== 0;
 };
 
-export const isEquippableWithRace = (item: Item, characterRace: Race): boolean => {
+export const isEquippableWithRace = (
+  item: Item,
+  characterRace: Race
+): boolean => {
   if (!item.races || !characterRace.bitmask) return false;
   return (parseInt(item.races.toString()) & characterRace.bitmask) !== 0;
 };
@@ -170,7 +176,7 @@ export const handleLoot = (loot: Item[]) => {
           const existingItem = characterProfile.inventory.find(
             (invItem) => invItem.slotid === slotId
           );
-          
+
           if (!existingItem) {
             const charClass = characterProfile.class;
             const newItemScore = getItemScore(item, charClass);
@@ -233,7 +239,10 @@ export const handleLoot = (loot: Item[]) => {
               slotid: firstAvailableSlot,
             });
           } else {
-            addChatMessage(`Inventory full, item dropped: ${existingItem.itemDetails.name}`, MessageType.LOOT);
+            addChatMessage(
+              `Inventory full, item dropped: ${existingItem.itemDetails.name}`,
+              MessageType.LOOT
+            );
           }
         }
 
@@ -261,7 +270,10 @@ export const handleLoot = (loot: Item[]) => {
         itemDetails: item,
       });
     } else {
-      addChatMessage(`Inventory full, item dropped: ${item.name}`, MessageType.LOOT);
+      addChatMessage(
+        `Inventory full, item dropped: ${item.name}`,
+        MessageType.LOOT
+      );
     }
   });
 };

@@ -3,7 +3,7 @@ import PlayerStats from "/src/components/Interface/PlayerStats";
 import GroupContainer from "./GroupContainer";
 import TargetBar from "./TargetBar";
 import ActionButton from "../Interface/ActionButton";
-import useGameStatusStore from "../../stores/GameStatusStore";
+import useGameStatusStore from "@stores/GameStatusStore";
 
 const StyledRightSidebar = styled.div.attrs({ className: "right-sidebar" })`
   right: 0px;
@@ -50,12 +50,36 @@ const RightSidebar = () => {
         <ActionButton text="Socials" onClick={() => {}} />
       </TopActionButtonContainer>
       <BottomActionButtonContainer>
-        <ActionButton text="Who" onClick={() => {}} marginBottom={marginBottomForBottomButtons} />
-        <ActionButton text="Invite" onClick={() => {}} marginBottom={marginBottomForBottomButtons} />
-        <ActionButton text="Disband" onClick={() => {}} marginBottom={marginBottomForBottomButtons} />
-        <ActionButton text="Camp" onClick={() => {}} marginBottom={marginBottomForBottomButtons} />
-        <ActionButton text="Sit" onClick={() => {}} marginBottom={marginBottomForBottomButtons} />
-        <ActionButton text="Walk" onClick={() => {}} marginBottom={marginBottomForBottomButtons} />
+        <ActionButton
+          text="Who"
+          onClick={() => {}}
+          marginBottom={marginBottomForBottomButtons}
+        />
+        <ActionButton
+          text="Invite"
+          onClick={() => {}}
+          marginBottom={marginBottomForBottomButtons}
+        />
+        <ActionButton
+          text="Disband"
+          onClick={() => {}}
+          marginBottom={marginBottomForBottomButtons}
+        />
+        <ActionButton
+          text="Camp"
+          onClick={() => {}}
+          marginBottom={marginBottomForBottomButtons}
+        />
+        <ActionButton
+          text="Sit"
+          onClick={() => {}}
+          marginBottom={marginBottomForBottomButtons}
+        />
+        <ActionButton
+          text="Walk"
+          onClick={() => {}}
+          marginBottom={marginBottomForBottomButtons}
+        />
       </BottomActionButtonContainer>
     </StyledRightSidebar>
   );

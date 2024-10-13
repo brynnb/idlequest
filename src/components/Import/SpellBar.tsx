@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { getSpellGems, SpellGem } from "../../utils/uiUtils";
+import { getSpellGems, SpellGem } from "@utils/uiUtils";
 
 const SCALE_FACTOR = 1.8; //using scale factor to properly size the gems and make adjustment easier as UI tweaks are made
 
 const SpellBarContainer = styled.div.attrs({
   className: "spell-bar-container",
 })`
-  width:70px;
+  width: 70px;
   right: 0px;
   position: absolute;
   padding-top: 2px;

@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import CharacterProfile from "../entities/CharacterProfile";
-import { InventoryItem } from "../entities/InventoryItem";
-import { getItemById } from "../utils/databaseOperations";
-import { Item } from "../entities/Item";
-import { InventorySlot } from "../entities/InventorySlot";
+import CharacterProfile from "@entities/CharacterProfile";
+import { InventoryItem } from "@entities/InventoryItem";
+import { getItemById } from "@utils/databaseOperations";
+import { Item } from "@entities/Item";
+import { InventorySlot } from "@entities/InventorySlot";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {} as CharacterProfile;

@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
-import { handleItemClick } from "../../utils/itemUtils";
-import { InventorySlot } from "../../entities/InventorySlot";
+import { handleItemClick } from "@utils/itemUtils";
+import { InventorySlot } from "@entities/InventorySlot";
 
 const GeneralInventoryContainer = styled.div`
   /* Add any container styles here */
@@ -22,8 +22,8 @@ const GeneralInventory = styled.div`
 
 const Slot = styled.div<{ row: number; col: number }>`
   position: absolute;
-  left: ${props => props.col * 50}%;
-  top: ${props => props.row * 25}%;
+  left: ${(props) => props.col * 50}%;
+  top: ${(props) => props.row * 25}%;
   width: 50%;
   height: 25%;
   display: flex;

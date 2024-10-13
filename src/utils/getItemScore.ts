@@ -1,5 +1,5 @@
-import { Item } from "../entities/Item";
-import CharacterClass from "../entities/CharacterClass";
+import { Item } from "@entities/Item";
+import CharacterClass from "@entities/CharacterClass";
 
 const MELEE_CLASSES = [1, 7, 9, 16]; // Warrior, Monk, Rogue, Berserker
 const HYBRID_CLASSES = [3, 4, 5, 8, 15]; // Paladin, Ranger, Shadow Knight, Bard, Beastlord

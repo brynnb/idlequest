@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import usePlayerCharacterStore from '../stores/PlayerCharacterStore';
-import { getAdjacentZones } from '../utils/zoneUtils';
-import Zone from '../entities/Zone';
+import React, { useEffect, useState, useCallback } from "react";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { getAdjacentZones } from "@utils/zoneUtils";
+import Zone from "../entities/Zone";
 
 const ZoneSelector: React.FC = () => {
   const [adjacentZones, setAdjacentZones] = useState<Zone[]>([]);

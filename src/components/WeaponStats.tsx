@@ -1,6 +1,6 @@
 import React from "react";
-import { Item } from "../entities/Item";
-import { ItemType, getItemTypeName } from "../entities/ItemType";
+import { Item } from "@entities/Item";
+import { ItemType, getItemTypeName } from "@entities/ItemType";
 
 interface WeaponStatsProps {
   item: Item;

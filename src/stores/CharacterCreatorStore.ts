@@ -1,15 +1,15 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import CharacterCreationAttributes from "../entities/CharacterCreationAttributes";
-import Race from "../entities/Race";
-import CharacterClass from "../entities/CharacterClass";
-import Zone from "../entities/Zone";
-import Deity from "../entities/Deity";
-import { InventoryItem } from "../entities/InventoryItem";
+import CharacterCreationAttributes from "@entities/CharacterCreationAttributes";
+import Race from "@entities/Race";
+import CharacterClass from "@entities/CharacterClass";
+import Zone from "@entities/Zone";
+import Deity from "@entities/Deity";
+import { InventoryItem } from "@entities/InventoryItem";
 import races from "/data/races.json";
 import classes from "/data/classes.json";
 import charCreatePointsAvailable from "/data/char_create_points_available.json";
-import calculateBaseAttributes from "../utils/calculateBaseAttributes";
+import calculateBaseAttributes from "@utils/calculateBaseAttributes";
 
 const humanRace = races.find((race: Race) => race.id === 1);
 const warriorClass = classes.find(

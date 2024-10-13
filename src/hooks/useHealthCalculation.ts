@@ -1,5 +1,5 @@
 //alleged logic from eqemu, found on a forums post in psuedo code, seems reasonable and makes sense so i'm going with this for now
-import useCharacterProfileStore from "../stores/PlayerCharacterStore";
+import useCharacterProfileStore from "@stores/PlayerCharacterStore";
 
 export const useHealthCalculation = () => {
   const { characterProfile } = useCharacterProfileStore();

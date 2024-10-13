@@ -1,9 +1,9 @@
 import initSqlJs, { Database } from "sql.js";
 import fs from "fs";
 import path from "path";
-import { NPCType } from "../entities/NPCType";
-import { Zone } from "../entities/Zone";
-import { Item } from "../entities/Item";
+import { NPCType } from "@entities/NPCType";
+import { Zone } from "@entities/Zone";
+import { Item } from "@entities/Item";
 
 let db: Database | null = null;
 let initializationPromise: Promise<void> | null = null;

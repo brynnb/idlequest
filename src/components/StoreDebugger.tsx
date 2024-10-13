@@ -1,7 +1,7 @@
 import React from "react";
-import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import useGameStatusStore from "../stores/GameStatusStore";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useGameStatusStore from "@stores/GameStatusStore";
 
 const StoreDebugger: React.FC = () => {
   const characterCreatorStore = useCharacterCreatorStore();

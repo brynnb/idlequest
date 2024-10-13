@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import deities from "../../../data/deities.json";
-import useCharacterStore from "../../stores/CharacterCreatorStore";
+import useCharacterStore from "@stores/CharacterCreatorStore";
 import charCreateCombinations from "../../../data/char_create_combinations.json";
 
 const DeitySelector = () => {

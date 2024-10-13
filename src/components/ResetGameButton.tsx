@@ -1,6 +1,6 @@
 import React from "react";
-import usePlayerCharacterStore from "../stores/PlayerCharacterStore";
-import useCharacterCreatorStore from "../stores/CharacterCreatorStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 
 const ResetGameButton: React.FC = () => {
   const setPlayerCharacter = usePlayerCharacterStore(

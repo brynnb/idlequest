@@ -1,5 +1,5 @@
 import React from "react";
-import { getSpellLevels } from "../hooks/useSpellInfo";
+import { getSpellLevels } from "@hooks/useSpellInfo";
 
 interface SpellInfoProps {
   spellInfo: {
