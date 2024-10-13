@@ -4,9 +4,9 @@ import useChatStore, { MessageType } from "@stores/ChatStore";
 import VerticalScroll from "../Interface/VerticalScroll";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
-  width: 901px;
+  width: 902px;
   height: 300px;
-  left: 267px;
+  left: 266px;
   top: 722px;
   padding-top: 40px;
   padding-bottom: 20px;
