@@ -1,9 +1,42 @@
 import React from "react";
+import styled from "styled-components";
 import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
-import styles from "./GeneralInventorySlots.module.css";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
 import { handleItemClick } from "../../utils/itemUtils";
 import { InventorySlot } from "../../entities/InventorySlot";
+
+const GeneralInventoryContainer = styled.div`
+  /* Add any container styles here */
+`;
+
+const GeneralInventory = styled.div`
+  width: 219px;
+  height: 439px;
+  background-size: 100% 100%;
+  position: relative;
+  background-image: url(${generalInventoryBackground});
+  position: absolute;
+  right: 25px;
+  top: 570px;
+`;
+
+const Slot = styled.div<{ row: number; col: number }>`
+  position: absolute;
+  left: ${props => props.col * 50}%;
+  top: ${props => props.row * 25}%;
+  width: 50%;
+  height: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+`;
+
+const ItemIcon = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+`;
 
 const GeneralInventorySlots: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
@@ -17,11 +50,8 @@ const GeneralInventorySlots: React.FC = () => {
   const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
 
   return (
-    <div className={styles.generalInventoryContainer}>
-      <div
-        className={styles.generalInventory}
-        style={{ backgroundImage: `url(${generalInventoryBackground})` }}
-      >
+    <GeneralInventoryContainer>
+      <GeneralInventory>
         {generalSlots.map((slot, index) => {
           const inventoryItem = getInventoryItemForSlot(slot);
           const itemDetails = inventoryItem?.itemDetails;
@@ -30,36 +60,26 @@ const GeneralInventorySlots: React.FC = () => {
           const col = index % 2;
 
           return (
-            <div
+            <Slot
               key={`general-slot-${slot}`}
-              className={styles.slot}
-              style={{
-                position: "absolute",
-                left: `${col * 50}%`,
-                top: `${row * 25}%`,
-                width: "50%",
-                height: "25%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              row={row}
+              col={col}
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleItemClick(slot)}
             >
               {itemDetails && (
-                <img
+                <ItemIcon
                   src={`/icons/${itemDetails.icon}.gif`}
                   alt={itemDetails.Name}
                   title={itemDetails.Name}
-                  className={styles.itemIcon}
                 />
               )}
-            </div>
+            </Slot>
           );
         })}
-      </div>
-    </div>
+      </GeneralInventory>
+    </GeneralInventoryContainer>
   );
 };
 

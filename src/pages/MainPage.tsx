@@ -19,6 +19,7 @@ import VideoBackground from "../components/Import/VideoBackground";
 import Chatbox from "../components/Import/Chatbox";
 import LeftSidebar from "../components/Import/LeftSidebar";
 import InventoryAndStats from "./InventoryAndStats";
+import InventoryLayout from "../components/Inventory/InventoryLayout";
 
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
@@ -39,9 +40,11 @@ const MainPage: React.FC = () => {
       {/* <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} /> */}
       <LeftSidebar />
       <RightSidebar />
-      {isInventoryOpen && <EquippedItemsInventory />}
-      {isInventoryOpen && <GeneralInventorySlots />}
-      
+      {isInventoryOpen && (
+        <>
+          <InventoryLayout />
+        </>
+      )}
       <CursorInventorySlot />
       {/* <ZoneSelector /> */}
       {/* <PlayerCurrencyDisplay /> */}

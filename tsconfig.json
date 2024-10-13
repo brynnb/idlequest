@@ -7,7 +7,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "/src/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@stores/*": ["src/stores/*"],
+      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@entities/*": ["src/entities/*"],
+      "@images/*": ["public/images/*"]
     }
-  }
+  },
+  "include": ["src"]
 }

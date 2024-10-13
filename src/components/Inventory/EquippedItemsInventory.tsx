@@ -1,9 +1,59 @@
 import React from "react";
-import usePlayerCharacterStore from "../../stores/PlayerCharacterStore";
-import styles from "./EquippedItemsInventory.module.css";
+import styled from "styled-components";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import playerInventoryBackground from "/images/ui/playerinventorybackground.png";
-import { InventorySlot } from "../../entities/InventorySlot";
-import { handleItemClick } from "../../utils/itemUtils";
+import { InventorySlot } from "@entities/InventorySlot";
+import { handleItemClick } from "@utils/itemUtils";
+
+const EquippedItemsContainer = styled.div.attrs({
+  className: "equippedItemsContainer",
+})`
+  position: absolute;
+  right: 272px;
+  top: 0px;
+`;
+
+const EquippedItems = styled.div.attrs({
+  className: "equippedItems",
+})`
+  width: 663px;
+  height: 588px;
+  background-size: 100% 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 35px;
+  padding-bottom: 35px;
+  box-sizing: border-box;
+  background-image: url(${playerInventoryBackground});
+`;
+
+const Row = styled.div.attrs({
+  className: "row",
+})`
+  display: flex;
+  justify-content: flex-end;
+  gap: 29px;
+`;
+
+const Slot = styled.div.attrs({
+  className: "slot",
+})`
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ItemIcon = styled.img.attrs({
+  className: "itemIcon",
+})`
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+`;
 
 const EquippedItemsInventory: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
@@ -45,40 +95,35 @@ const EquippedItemsInventory: React.FC = () => {
   };
 
   return (
-    <div className={styles.equippedItemsContainer}>
-      <div
-        className={styles.equippedItems}
-        style={{ backgroundImage: `url(${playerInventoryBackground})` }}
-      >
+    <EquippedItemsContainer>
+      <EquippedItems>
         {equippedSlots.map((row, rowIndex) => (
-          <div key={rowIndex} className={styles.row}>
+          <Row key={rowIndex}>
             {row.map((slot) => {
               const inventoryItem = getInventoryItemForSlot(slot);
               const itemDetails = inventoryItem?.itemDetails;
 
               return (
-                <div
+                <Slot
                   key={slot}
-                  className={styles.slot}
                   onMouseEnter={() => setHoveredItem(itemDetails || null)}
                   onMouseLeave={() => setHoveredItem(null)}
                   onClick={() => handleItemClick(slot)}
                 >
                   {itemDetails && (
-                    <img
+                    <ItemIcon
                       src={`/icons/${itemDetails.icon}.gif`}
                       alt={itemDetails.Name}
                       title={itemDetails.Name}
-                      className={styles.itemIcon}
                     />
                   )}
-                </div>
+                </Slot>
               );
             })}
-          </div>
+          </Row>
         ))}
-      </div>
-    </div>
+      </EquippedItems>
+    </EquippedItemsContainer>
   );
 };
 
