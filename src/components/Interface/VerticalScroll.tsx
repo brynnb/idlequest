@@ -29,13 +29,15 @@ const ScrollButton = styled.button<{ $isUp: boolean }>`
   cursor: pointer;
   box-sizing: border-box;
 `;
-
-const ScrollIndicator = styled.div<{ $position: number }>`
+const ScrollIndicator = styled.div.attrs<{ $position: number }>(({ $position }) => ({ //this approach is used to minimize CSS classes and potential performance issues
+  style: {
+    top: `${$position}px`,
+  },
+}))`
   width: 24px;
   height: 24px;
   position: absolute;
   left: 4px;
-  top: ${(props) => props.$position}px;
   background-image: url("/images/ui/scroll/scrollpositionindicator.png");
   background-size: cover;
   cursor: pointer;

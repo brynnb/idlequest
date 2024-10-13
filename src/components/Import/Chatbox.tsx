@@ -5,9 +5,11 @@ import VerticalScroll from "../Interface/VerticalScroll";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   width: 901px;
-  height: 360px;
+  height: 300px;
   left: 267px;
   top: 722px;
+  padding-top:40px;
+  padding-bottom:20px;
   position: absolute;
   background-image: url("/images/chatbg.png");
   background-size: cover;

@@ -13,7 +13,6 @@ interface GameStatusStore {
   currentNPCHealth: number | null;
   isRunning: boolean;
   quickMode: boolean;
-
   initializeZones: (forceReload?: boolean) => Promise<void>;
   getZoneNameById: (id: number) => string | undefined;
   getZoneIdByName: (name: string) => number | undefined;
@@ -25,6 +24,8 @@ interface GameStatusStore {
   toggleRunning: () => void;
   setQuickMode: (quickMode: boolean) => void;
   toggleQuickMode: () => void;
+  isInventoryOpen: boolean;
+  toggleInventory: () => void;
 }
 
 const defaultIsRunning = true;
@@ -127,6 +128,11 @@ const useGameStatusStore = create<GameStatusStore>()(
             toggleQuickMode: () => {
               const currentQuickMode = get().quickMode;
               get().setQuickMode(!currentQuickMode);
+            },
+
+            isInventoryOpen: false,
+            toggleInventory: () => {
+              set({ isInventoryOpen: !get().isInventoryOpen });
             },
           };
         },
