@@ -33,7 +33,7 @@ const StyledActionButton = styled.button.attrs({ className: "action-button" })<{
 
 interface ActionButtonProps {
   text: string;
-  onClick: () => void;
+  onClick?: () => void;  // Make onClick optional
   marginBottom?: string;
   customCSS?: string;
   isToggleable?: boolean;
@@ -49,13 +49,16 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   isPressed: isPressedProp,
 }) => {
   const [isInternalPressed, setIsInternalPressed] = useState(false);
-  const isPressed = isPressedProp !== undefined ? isPressedProp : isInternalPressed;
+  const isPressed =
+    isPressedProp !== undefined ? isPressedProp : isInternalPressed;
 
   const handleClick = () => {
     if (isToggleable && isPressedProp === undefined) {
       setIsInternalPressed((prev) => !prev);
     }
-    onClick();
+    if (onClick && typeof onClick === 'function') {
+      onClick();
+    }
   };
 
   const handleMouseEvents = (event: React.MouseEvent<HTMLButtonElement>) => {

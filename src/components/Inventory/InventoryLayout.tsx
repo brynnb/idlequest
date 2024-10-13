@@ -1,12 +1,15 @@
 import React from "react";
-import DeleteItemOnCursorButton from "./DeleteItemOnCursorButton";
 import EquippedItemsInventory from "./EquippedItemsInventory";
 import GeneralInventorySlots from "./GeneralInventorySlots";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import ActionButton from "@components/Interface/ActionButton";
+import useGameStatusStore from "@stores/GameStatusStore";
+import ItemInformationDisplay from "@components/Inventory/ItemInformationDisplay";
+import PlayerCurrencyDisplay from "./PlayerCurrencyDisplay";
 
 const InventorySidebar: React.FC = () => {
-  const { characterProfile, deleteItemOnCursor } = usePlayerCharacterStore();
+  const { deleteItemOnCursor } = usePlayerCharacterStore();
+  const { toggleInventory } = useGameStatusStore();
 
   return (
     <>
@@ -29,6 +32,13 @@ const InventorySidebar: React.FC = () => {
         text="Destroy"
         customCSS={`position: absolute; bottom: 513px; right: 50px; z-index: 1000; width: 170px;`}
       />
+      <ActionButton
+        text="Done"
+        onClick={toggleInventory}
+        customCSS={`position: absolute; bottom: 15px; right: 75px; z-index: 1000; width: 120px;`}
+      />
+      <ItemInformationDisplay />
+      <PlayerCurrencyDisplay />
     </>
   );
 };
