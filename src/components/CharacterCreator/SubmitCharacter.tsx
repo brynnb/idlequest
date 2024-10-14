@@ -3,6 +3,8 @@ import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useInventoryCreator from "@hooks/useInventoryCreator";
 import { calculatePlayerHP } from "@utils/playerCharacterUtils";
+import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
+
 const SubmitCharacter: React.FC = () => {
   const {
     characterName,
@@ -42,6 +44,10 @@ const SubmitCharacter: React.FC = () => {
     };
     newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
     newCharacterProfile.curHp = newCharacterProfile.maxHp;
+    newCharacterProfile.stats = {
+      ac: calculateSimpleArmorClass(newCharacterProfile),
+      atk: 100,
+    };
 
     setCharacterProfile(newCharacterProfile);
 

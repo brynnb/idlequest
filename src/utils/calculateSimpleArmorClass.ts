@@ -21,7 +21,7 @@ const getIksarBonus = (character: CharacterProfile): number => {
   return 0;
 };
 
-const calculateTotalAC = (character: CharacterProfile): number => {
+const calculateSimpleArmorClass = (character: CharacterProfile): number => {
   const baseAC = calcBaseAC(character.level);
   const equippedAC = calculateTotalEquippedAC(character);
   const iksarBonus = getIksarBonus(character);
@@ -29,4 +29,4 @@ const calculateTotalAC = (character: CharacterProfile): number => {
   return baseAC + equippedAC + iksarBonus;
 };
 
-export { calculateTotalAC };
+export { calculateSimpleArmorClass };

@@ -115,8 +115,15 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         hoveredItem: null,
         setHoveredItem: (item) => set({ hoveredItem: item }),
         setCharacterZone: (zoneId) => {
-          const zoneName = useGameStatusStore.getState().getZoneLongNameById(zoneId) || "Unknown Zone";
-          useChatStore.getState().addMessage(`Traveling to ${zoneName}`, MessageType.ZONE_ANNOUNCEMENT);
+          const zoneName =
+            useGameStatusStore.getState().getZoneLongNameById(zoneId) ||
+            "Unknown Zone";
+          useChatStore
+            .getState()
+            .addMessage(
+              `Traveling to ${zoneName}`,
+              MessageType.ZONE_ANNOUNCEMENT
+            );
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,

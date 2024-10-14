@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useCallback } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { getAdjacentZones } from "@utils/zoneUtils";
-import Zone from "../entities/Zone";
+import Zone from "@entities/Zone";
 import ActionButton from "./Interface/ActionButton";
+import useGameStatusStore from "@/stores/GameStatusStore";
 
 const ZoneSelector: React.FC = () => {
   const [adjacentZones, setAdjacentZones] = useState<Zone[]>([]);
   const { characterProfile, setCharacterZone } = usePlayerCharacterStore();
+  const { setCurrentZone } = useGameStatusStore();
 
   const fetchAdjacentZones = useCallback(async () => {
     if (characterProfile.zoneId) {
@@ -21,6 +23,7 @@ const ZoneSelector: React.FC = () => {
 
   const handleZoneClick = async (zone: Zone) => {
     setCharacterZone(zone.zoneidnumber);
+    setCurrentZone(zone.zoneidnumber);
     await fetchAdjacentZones();
   };
 

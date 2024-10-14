@@ -47,6 +47,7 @@ const HpAcAtk = styled.div`
   left:80px;
   height:200px;
   width:200px;
+  line-height: 7px;
 `;
 
 const MiddleLevelAttributes = styled.div`
@@ -87,8 +88,8 @@ const StatInfoBar: React.FC = () => {
             <p>
               {characterProfile.curHp} / {characterProfile.maxHp}
             </p>
-            <p>{characterProfile.ac}</p>
-            <p>{characterProfile.atk}</p>
+            <p>{characterProfile.stats?.ac}</p>
+            <p>{characterProfile.stats?.atk}</p>
           </HpAcAtk>
         </TopLevelStats>
         <MiddleLevelAttributes>

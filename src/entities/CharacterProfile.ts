@@ -56,6 +56,10 @@ export default interface CharacterProfile {
     agi?: number;
     wis?: number;
   };
+  stats?: {
+    ac?: number;
+    atk?: number;
+  };
   zoneChangeCount?: number;
   hungerLevel?: number;
   thirstLevel?: number;
