@@ -2,6 +2,7 @@ import React from "react";
 import usePlayerCharacterStore from "/src/stores/PlayerCharacterStore";
 import styled from "styled-components";
 import StatBar from "./StatBar";
+import { getExperienceLevel, EXPERIENCE_TABLE } from "@entities/ExperienceLevel";
 
 const PlayerStatsContainer = styled.div.attrs({
   className: "player-stats-container",
@@ -35,11 +36,21 @@ const BarsContainer = styled.div.attrs({ className: "bars-container" })`
 const PlayerStats: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();
 
-  // todo: implement these calculations based on game logic
   const healthPercent = characterProfile.curHp / characterProfile.maxHp;
   const manaPercent = characterProfile.curMana / characterProfile.maxMana;
-  const xpPercent = 0.25; // Example value
-  const xpPercentSubbar = 0.65; // Example value
+
+  const currentExp = characterProfile.exp || 0;
+  const currentLevelData = getExperienceLevel(currentExp);
+  const nextLevelData = EXPERIENCE_TABLE[currentLevelData.level];
+
+  const expForCurrentLevel = currentLevelData.totalExperience;
+  const expForNextLevel = nextLevelData ? nextLevelData.totalExperience : currentLevelData.totalExperience;
+  const expIntoCurrentLevel = currentExp - expForCurrentLevel;
+  const expNeededForNextLevel = expForNextLevel - expForCurrentLevel;
+
+  const totalProgressPercent = expIntoCurrentLevel / expNeededForNextLevel;
+  const xpPercent = Math.floor(totalProgressPercent * 5) / 5;
+  const xpPercentSubbar = (xpPercent % 0.2) / 0.2;
 
   return (
     <PlayerStatsContainer>
@@ -47,7 +58,7 @@ const PlayerStats: React.FC = () => {
       <BarsContainer>
         <StatBar type="health" percent={healthPercent} top={0} />
         <StatBar type="mana" percent={manaPercent} top={20} />
-        <StatBar type="xp" percent={xpPercent} top={40} />
+        <StatBar type="xp" percent={xpPercent} top={40} subbarPercent={xpPercentSubbar} />
       </BarsContainer>
     </PlayerStatsContainer>
   );

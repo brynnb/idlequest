@@ -1,11 +1,13 @@
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
+import useChatStore, { MessageType } from "@stores/ChatStore";
 import { NPCType } from "@entities/NPCType";
 import { getNPCLoot } from "@utils/getNPCLoot";
 import { handleLoot } from "@utils/itemUtils";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
+const chatStore = useChatStore;
 
 class GameEngine {
   private static instance: GameEngine;
@@ -57,19 +59,24 @@ class GameEngine {
     console.log("Fetching and setting target NPC");
     const { currentZoneNPCs, setTargetNPC } = gameStatusStore.getState();
     const { characterProfile } = playerCharacterStore.getState();
+    const { addMessage } = chatStore.getState();
 
     if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
 
     const playerLevel = characterProfile.level || 1;
-    const levelRange = 5; // Adjust this value to change the acceptable level range
+    const levelRange = 4; //adjust as needed
 
-    const eligibleNPCs = currentZoneNPCs.filter(npc => {
+    const eligibleNPCs = currentZoneNPCs.filter((npc) => {
       const npcLevel = npc.level || 1;
       return Math.abs(npcLevel - playerLevel) <= levelRange;
     });
 
     if (eligibleNPCs.length === 0) {
       console.log("No NPCs within the acceptable level range");
+      addMessage(
+        "No suitable NPCs found in this zone. Try moving to a different area!",
+        MessageType.SYSTEM
+      );
       return;
     }
 
@@ -91,6 +98,7 @@ class GameEngine {
 
   private handleNPCDefeat(npcName: string) {
     const { targetNPC } = gameStatusStore.getState();
+    const { addMessage } = chatStore.getState();
 
     if (!targetNPC || !targetNPC.id) {
       console.error("No target NPC or NPC ID when attempting to get loot");
@@ -100,11 +108,25 @@ class GameEngine {
     const npcId = Number(targetNPC.id);
 
     const { characterProfile } = playerCharacterStore.getState();
+    const oldLevel = characterProfile.level;
     const experienceGained = this.getExperienceForNPCKill();
     console.log("Experience gained:", experienceGained);
     playerCharacterStore.getState().addExperience(experienceGained);
     console.log("Experience after addition:", characterProfile.exp);
     console.log("Level after addition:", characterProfile.level);
+
+    if (characterProfile.level > oldLevel) {
+      addMessage(
+        `Congratulations! You have reached level ${characterProfile.level}!`,
+        MessageType.EXPERIENCE_GAIN
+      );
+    }
+
+    addMessage(
+      `You have defeated ${npcName} and gained ${experienceGained} experience!`,
+      MessageType.COMBAT_OUTGOING
+    );
+
     getNPCLoot(npcId)
       .then((loot) => {
         handleLoot(loot);
@@ -120,10 +142,36 @@ class GameEngine {
   private tick() {
     const { targetNPC, currentNPCHealth, quickMode, isRunning } =
       gameStatusStore.getState();
+    const { characterProfile } = playerCharacterStore.getState();
 
     if (!isRunning) {
       this.stopEngine();
       return;
+    }
+
+    let isRegenerating = false;
+
+    // Regenerate health and mana
+    if (
+      characterProfile.curHp < characterProfile.maxHp ||
+      characterProfile.curMana < characterProfile.maxMana
+    ) {
+      isRegenerating = true;
+
+      const regenRate = 0.1;
+      const healthRegen = Math.floor(characterProfile.maxHp * regenRate);
+      const manaRegen = Math.floor(characterProfile.maxMana * regenRate);
+
+      const newHealth = Math.min(
+        characterProfile.curHp + healthRegen,
+        characterProfile.maxHp
+      );
+      const newMana = Math.min(
+        characterProfile.curMana + manaRegen,
+        characterProfile.maxMana
+      );
+
+      playerCharacterStore.getState().updateHealthAndMana(newHealth, newMana);
     }
 
     if (!targetNPC || currentNPCHealth === null || currentNPCHealth <= 0) {
@@ -131,12 +179,15 @@ class GameEngine {
       return;
     }
 
-    const damagePerTick = quickMode ? targetNPC.hp / 5 : targetNPC.hp / 15;
-    const newHealth = Math.max(currentNPCHealth - damagePerTick, 0);
-    gameStatusStore.setState({ currentNPCHealth: newHealth });
+    // Only attack and damage NPC if not regenerating
+    if (!isRegenerating) {
+      const damagePerTick = quickMode ? targetNPC.hp / 5 : targetNPC.hp / 15;
+      const newHealth = Math.max(currentNPCHealth - damagePerTick, 0);
+      gameStatusStore.setState({ currentNPCHealth: newHealth });
 
-    if (newHealth === 0) {
-      this.handleNPCDefeat(targetNPC.name);
+      if (newHealth === 0) {
+        this.handleNPCDefeat(targetNPC.name);
+      }
     }
   }
 

@@ -7,6 +7,7 @@ interface BarProps {
   type: "health" | "mana" | "xp";
   percent: number;
   top: number;
+  subbarPercent?: number;
 }
 
 const BarContainer = styled.div<{ $top: number }>`
@@ -35,7 +36,7 @@ const FullBarImage = styled.img`
   width: 200px;
 `;
 
-const StatBar: React.FC<BarProps> = ({ type, percent, top }) => {
+const StatBar: React.FC<BarProps> = ({ type, percent, top, subbarPercent }) => {
   return (
     <>
       <BarContainer $top={top}>
@@ -52,7 +53,9 @@ const StatBar: React.FC<BarProps> = ({ type, percent, top }) => {
           />
         </FullBarContainer>
       </BarContainer>
-      {type === "xp" && <XPBarSub percent={percent} />}
+      {type === "xp" && subbarPercent !== undefined && (
+        <XPBarSub percent={subbarPercent} />
+      )}
     </>
   );
 };

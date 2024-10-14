@@ -16,6 +16,38 @@ const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   font-size: 20px;
   line-height: 1.2;
   display: flex;
+
+  .yellow-text {
+    color: #fce803;
+  }
+
+  .black-text {
+    color: #281e16;
+  }
+
+  .blue-text {
+    color: #150a6e;
+  }
+
+  .red-text {
+    color: #cf081b;
+  }
+
+  .green-text {
+    color: #55873a;
+  }
+
+  .purple-text {
+    color: #7e476b;
+  }
+
+  .teal-text {
+    color: #80e8de;
+  }
+
+  .name-text {
+    color: #d1d2d3;
+  }
 `;
 
 const ChatContent = styled.div`

@@ -34,6 +34,7 @@ interface PlayerCharacterStore {
   updateMaxHP: () => void;
   addExperience: (experience: number) => void;
   updateMaxMana: () => void;
+  updateHealthAndMana: (newHealth: number, newMana: number) => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -211,7 +212,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              maxHp: newMaxHP
+              maxHp: newMaxHP,
             },
           }));
         },
@@ -222,7 +223,16 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              maxMana: newMaxMana
+              maxMana: newMaxMana,
+            },
+          }));
+        },
+        updateHealthAndMana: (newHealth: number, newMana: number) => {
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              curHp: newHealth,
+              curMana: newMana,
             },
           }));
         },
@@ -245,6 +255,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
             if (level > oldLevel) {
               setTimeout(() => {
+                const { addMessage } = useChatStore.getState();
+
+                addMessage(
+                  `Congratulations! You have reached level ${level}!`,
+                  MessageType.EXPERIENCE_GAIN
+                );
                 get().updateArmorClass();
                 get().updateMaxHP();
                 get().updateMaxMana();

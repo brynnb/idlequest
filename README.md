@@ -34,6 +34,7 @@ The data in the SQLite file is fairly comprehensive at this point though, so it 
 * Every NPC photo here, though with Luclin graphics: https://mqemulator.net/npc.php?id=174250
 * Lots of NPC descriptions here: https://wiki.project1999.com/Biggle_Limbokker (look for h3 containing "Description" then look for contenst of the next <p> )
 * Really good NPC descriptions here but URL isn't easy to use for automated retrieval: https://www.giantbomb.com/brutol-rhaksen/3005-19742/
+* Info on stats: https://wiki.project1999.com/Mana#Primary_Stats
 
 ## Looting System Breakdown
 
