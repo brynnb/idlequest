@@ -1,3 +1,5 @@
+import { ItemDetails } from "@entities/ItemDetails";
+
 export interface InventoryItem {
   charid?: number; // Character Identifier
   slotid?: number; // Slot Identifier
@@ -15,4 +17,5 @@ export interface InventoryItem {
   ornamenticon?: number; // Ornamentation Icon
   ornamentidfile?: number; // Ornamentation Texture
   ornament_hero_model?: number; // Ornamentation Hero's Forge Model
+  itemDetails?: ItemDetails;
 }

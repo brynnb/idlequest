@@ -1,4 +1,6 @@
 import { InventoryItem } from "@entities/InventoryItem";
+import { InventorySlot } from "@entities/InventorySlot";
+import CharacterProfile from "@entities/CharacterProfile";
 
 export const getNextAvailableSlot = (
   inventory: InventoryItem[],
@@ -13,4 +15,17 @@ export const getNextAvailableSlot = (
   }
 
   return null; // No available slots
+};
+
+export const calculateTotalEquippedAC = (character: CharacterProfile): number => {
+  if (!character.inventory) return 0;
+
+  return character.inventory.reduce((totalAC, item) => {
+    if (item.slotid !== undefined && 
+        item.slotid >= InventorySlot.Charm && 
+        item.slotid <= InventorySlot.Ammo) {
+      return totalAC + (item.itemDetails?.ac || 0);
+    }
+    return totalAC;
+  }, 0);
 };

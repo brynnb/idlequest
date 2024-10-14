@@ -6,7 +6,7 @@ import charCreatePointAllocations from "/data/char_create_point_allocations.json
 
 const baseAttributeKeys = ["str", "sta", "dex", "agi", "int", "wis", "cha"];
 
-const calculateBaseAttributes = (
+const getBaseAttributes = (
   race: Race | null,
   charClass: CharacterClass | null
 ): CharacterCreationAttributes => {
@@ -57,4 +57,4 @@ const calculateBaseAttributes = (
   return baseAttributes;
 };
 
-export default calculateBaseAttributes;
+export default getBaseAttributes;

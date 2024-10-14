@@ -1,6 +1,7 @@
+//this is the xp / health / mana bar that displays in the top right corner of the screen
+
 import React from "react";
 import styled from "styled-components";
-
 
 interface BarProps {
   type: "health" | "mana" | "xp";
@@ -11,7 +12,7 @@ interface BarProps {
 const BarContainer = styled.div<{ $top: number }>`
   position: absolute;
   left: 26px;
-  top: ${props => props.$top}px;
+  top: ${(props) => props.$top}px;
   width: 200px;
 `;
 
@@ -23,7 +24,7 @@ const EmptyBar = styled.img`
 `;
 
 const FullBarContainer = styled.div<{ width: string }>`
-  width: ${props => props.width};
+  width: ${(props) => props.width};
   overflow: hidden;
   position: absolute;
   top: 0;

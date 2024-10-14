@@ -9,7 +9,7 @@ import { InventoryItem } from "@entities/InventoryItem";
 import races from "/data/races.json";
 import classes from "/data/classes.json";
 import charCreatePointsAvailable from "/data/char_create_points_available.json";
-import calculateBaseAttributes from "@utils/calculateBaseAttributes";
+import getBaseAttributes from "@utils/getBaseAttributes";
 
 const humanRace = races.find((race: Race) => race.id === 1);
 const warriorClass = classes.find(
@@ -54,17 +54,14 @@ const useCharacterCreatorStore = create(
         selectedZone: null,
         selectedRace: humanRace || null,
         selectedClass: warriorClass || null,
-        attributes: calculateBaseAttributes(humanRace, warriorClass),
+        attributes: getBaseAttributes(humanRace, warriorClass),
         attributePoints: warriorClass
           ? getAttributePointsForClass(warriorClass.id)
           : 0,
         setSelectedRace: (race) =>
           set((state) => {
             const newState = { selectedRace: race };
-            const baseAttributes = calculateBaseAttributes(
-              race,
-              state.selectedClass
-            );
+            const baseAttributes = getBaseAttributes(race, state.selectedClass);
             return {
               ...newState,
               attributes: { ...baseAttributes },
@@ -81,7 +78,7 @@ const useCharacterCreatorStore = create(
                 ? getAttributePointsForClass(charClass.id)
                 : 0,
             };
-            const baseAttributes = calculateBaseAttributes(
+            const baseAttributes = getBaseAttributes(
               state.selectedRace,
               charClass
             );
@@ -107,7 +104,7 @@ const useCharacterCreatorStore = create(
         setAttributePoints: (points) => set({ attributePoints: points }),
         updateBaseAttributes: () =>
           set((state) => {
-            const baseAttributes = calculateBaseAttributes(
+            const baseAttributes = getBaseAttributes(
               state.selectedRace,
               state.selectedClass
             );
@@ -123,7 +120,7 @@ const useCharacterCreatorStore = create(
         resetStore: () => {
           const defaultRace = humanRace || null;
           const defaultClass = warriorClass || null;
-          const defaultAttributes = calculateBaseAttributes(
+          const defaultAttributes = getBaseAttributes(
             defaultRace,
             defaultClass
           );
@@ -147,7 +144,7 @@ const useCharacterCreatorStore = create(
         },
         resetAttributes: () =>
           set((state) => {
-            const baseAttributes = calculateBaseAttributes(
+            const baseAttributes = getBaseAttributes(
               state.selectedRace,
               state.selectedClass
             );

@@ -2,7 +2,7 @@ import React from "react";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useInventoryCreator from "@hooks/useInventoryCreator";
-
+import { calculatePlayerHP } from "@utils/playerCharacterUtils";
 const SubmitCharacter: React.FC = () => {
   const {
     characterName,
@@ -28,6 +28,7 @@ const SubmitCharacter: React.FC = () => {
       class: selectedClass,
       deity: selectedDeity,
       zoneId: selectedZone.zoneidnumber,
+      level: 1,
       attributes: {
         str: attributes.str + attributes.base_str,
         sta: attributes.sta + attributes.base_sta,
@@ -37,7 +38,10 @@ const SubmitCharacter: React.FC = () => {
         agi: attributes.agi + attributes.base_agi,
         wis: attributes.wis + attributes.base_wis,
       },
+      intoxication: 0,
     };
+    newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
+    newCharacterProfile.curHp = newCharacterProfile.maxHp;
 
     setCharacterProfile(newCharacterProfile);
 

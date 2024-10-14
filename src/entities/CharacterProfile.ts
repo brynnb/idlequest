@@ -43,6 +43,7 @@ export default interface CharacterProfile {
   aaPoints?: number;
   points?: number;
   curHp?: number;
+  maxHp?: number;
   mana?: number;
   endurance?: number;
   intoxication?: number;

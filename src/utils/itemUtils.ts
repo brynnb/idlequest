@@ -315,7 +315,8 @@ export const handleEquipAllItems = () => {
 };
 
 export const handleSellGeneralInventory = () => {
-  const { characterProfile, removeInventoryItem } = usePlayerCharacterStore.getState();
+  const { characterProfile, removeInventoryItem } =
+    usePlayerCharacterStore.getState();
   let totalCopper = 0;
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
