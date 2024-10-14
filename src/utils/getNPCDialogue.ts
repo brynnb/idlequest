@@ -13,16 +13,21 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-interface DialogueResponse {
+export interface DialogueResponse {
   dialogue: string;
   questions: string[];
 }
 
-interface NonDialogueResponse {
+export interface NonDialogueResponse {
   dialogue: string;
 }
 
-export async function getNPCDialogue(npcName: string): Promise<DialogueResponse | NonDialogueResponse | null> {
+interface DialogueEntry {
+  npcDialogue: string;
+  playerQuestion?: string;
+}
+
+export async function getNPCDialogue(npcName: string, dialogueHistory: DialogueEntry[] = []): Promise<DialogueResponse | NonDialogueResponse | null> {
   console.log(`getNPCDialogue called with npcName: ${npcName}`);
 
   console.log('Getting database...');
@@ -47,8 +52,10 @@ export async function getNPCDialogue(npcName: string): Promise<DialogueResponse 
 
     const nonDialogueInstruction = "You are an AI assistant creating dialogue for NPCs in a fantasy MMORPG setting, EverQuest. " +
           "Generate a brief, context-appropriate response for an NPC when approached by a player. " +
-          "The player is interactign with this NPC despite the NPC not having any dialogue for the player, often because it's a non-speaking creature like an animal. Simply describe what the NPC is doing in response to being talked at, but do not give it any speaking lines. For example, the NPC might look at the player and walk away. Or ignore them entirely." +
-          "Format your response as a JSON object with 'dialogue' property. " ;
+          "The player is interacting with this NPC despite the NPC not having any dialogue for the player, often because it's a non-speaking creature like an animal. Simply describe what the NPC is doing in response to being talked at, but do not give it any speaking lines. For example, the NPC might look at the player and walk away. Or ignore them entirely." +
+          "Format your response as a JSON object with 'dialogue' property. "
+
+          const sharedInstruction = "Do not make up details about an NPC's species if you do not know.  No not make up details about an NPC's species if you do not know (e.g. don't make the NPC a unicorn unless it's obvious from the name). Do not make inanimate objects act like they're alive (they don't look at things). Things like boats may have dialogue associated in the LUA script but still do not treat them like they can speak. SirensBane and Stormbreaker are ships, do not make them talk or look at things. ";
 
     console.log('SQL query executed. Result:', JSON.stringify(result, null, 2));
 
@@ -60,22 +67,30 @@ export async function getNPCDialogue(npcName: string): Promise<DialogueResponse 
           "to further progress the dialogue. Only provide multiple questions if there are multiple areas for the " +
           "conversation to progress to. Only present the opening dialogue from the script. Format your response as " +
           "a JSON object with 'dialogue' and 'questions' fields. If the LUA script has no dialogue and is only event scripting, then " +
-          nonDialogueInstruction },
+          nonDialogueInstruction + sharedInstruction },
         { role: "user", content: `NPC named ${npcName} and LUA script:\n\n${luaScript}` }
       ];
     } else {
       console.log(`No Lua script found for NPC: ${npcName}`);
       messages = [
-        { role: "system", content: nonDialogueInstruction },
-        { role: "user", content: `Create a description of the actions of an NPCnamed ${npcName} when approached by a player. ` +
-          `No specific script is available, so use your knowledge of fantasy RPGs and EverQuest to create an appropriate response.` }
+        { role: "system", content: nonDialogueInstruction + sharedInstruction },
+        { role: "user", content: `Create a description of the actions of an NPC named ${npcName} when approached by a player. ` +
+          `No specific script is available, so use your knowledge of EverQuest to create an appropriate response. ` }
       ];
     }
 
-  
+    if (dialogueHistory.length > 0) {
+      const historyContent = dialogueHistory.map(entry => 
+        `NPC: ${entry.npcDialogue}${entry.playerQuestion ? `\nPlayer: ${entry.playerQuestion}` : ''}`
+      ).join('\n');
+      messages.push({ role: "user", content: `Previous dialogue:\n${historyContent}\n\nContinue the conversation based on this context.` });
+    }
+
     try {
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        // model: "gpt-4-0125-preview",
+        // model: "gpt-3.5-turbo",
+        model: "gpt-4o",
         response_format: { type: "json_object" },
         messages: messages,
       });

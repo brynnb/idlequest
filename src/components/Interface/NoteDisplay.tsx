@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import QuestNPCList from "@components/Interface/QuestNPCList";
 import useDialogueStore from "@stores/DialogueStore";
+import { getNPCDialogue } from "@utils/getNPCDialogue";
 
 const NoteDisplayContainer = styled.div.attrs({
   className: "note-display-container",
@@ -43,6 +44,7 @@ const DialogueDisplay = styled.div.attrs({
   left: 170px;
   color: black;
   font-size: 20px;
+  overflow-y: auto;
 `;
 
 const QuestionsList = styled.ul`
@@ -59,7 +61,19 @@ const QuestionItem = styled.li`
 `;
 
 const NoteDisplay: React.FC = () => {
-  const { currentDialogue } = useDialogueStore();
+  const { currentDialogue, currentNPC, setCurrentDialogue, addDialogueEntry, getDialogueHistory } = useDialogueStore();
+
+  const handleQuestionClick = async (question: string) => {
+    if (currentNPC) {
+      addDialogueEntry(currentNPC, { npcDialogue: currentDialogue?.dialogue || '', playerQuestion: question });
+      const dialogueHistory = getDialogueHistory(currentNPC);
+      const newDialogue = await getNPCDialogue(currentNPC, dialogueHistory);
+      if (newDialogue) {
+        setCurrentDialogue(newDialogue);
+        addDialogueEntry(currentNPC, { npcDialogue: newDialogue.dialogue });
+      }
+    }
+  };
 
   return (
     <NoteDisplayContainer>
@@ -68,10 +82,12 @@ const NoteDisplay: React.FC = () => {
           {currentDialogue ? (
             <>
               <p>{currentDialogue.dialogue}</p>
-              {currentDialogue.questions && currentDialogue.questions.length > 0 ? (
+              {Array.isArray(currentDialogue.questions) && currentDialogue.questions.length > 0 ? (
                 <QuestionsList>
                   {currentDialogue.questions.map((question, index) => (
-                    <QuestionItem key={index}>{question}</QuestionItem>
+                    <QuestionItem key={index} onClick={() => handleQuestionClick(question)}>
+                      {question}
+                    </QuestionItem>
                   ))}
                 </QuestionsList>
               ) : null}

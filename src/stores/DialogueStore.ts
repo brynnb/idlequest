@@ -1,13 +1,34 @@
 import { create } from 'zustand';
+import { DialogueResponse, NonDialogueResponse } from '@utils/getNPCDialogue';
 
-interface DialogueState {
-  currentDialogue: string | null;
-  setCurrentDialogue: (dialogue: string | null) => void;
+interface DialogueEntry {
+  npcDialogue: string;
+  playerQuestion?: string;
 }
 
-const useDialogueStore = create<DialogueState>((set) => ({
+interface DialogueState {
+  dialogueHistory: Record<string, DialogueEntry[]>;
+  currentNPC: string | null;
+  currentDialogue: DialogueResponse | NonDialogueResponse | null;
+  setCurrentDialogue: (dialogue: DialogueResponse | NonDialogueResponse | null) => void;
+  setCurrentNPC: (npcName: string) => void;
+  addDialogueEntry: (npcName: string, entry: DialogueEntry) => void;
+  getDialogueHistory: (npcName: string) => DialogueEntry[];
+}
+
+const useDialogueStore = create<DialogueState>((set, get) => ({
+  dialogueHistory: {},
+  currentNPC: null,
   currentDialogue: null,
   setCurrentDialogue: (dialogue) => set({ currentDialogue: dialogue }),
+  setCurrentNPC: (npcName) => set({ currentNPC: npcName }),
+  addDialogueEntry: (npcName, entry) => set((state) => ({
+    dialogueHistory: {
+      ...state.dialogueHistory,
+      [npcName]: [...(state.dialogueHistory[npcName] || []), entry],
+    },
+  })),
+  getDialogueHistory: (npcName) => get().dialogueHistory[npcName] || [],
 }));
 
 export default useDialogueStore;

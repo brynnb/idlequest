@@ -24,12 +24,15 @@ const NPCItem = styled.div`
 
 const QuestNPCList: React.FC = () => {
   const { currentZoneNPCs } = useGameStatusStore();
-  const { setCurrentDialogue } = useDialogueStore();
+  const { setCurrentDialogue, setCurrentNPC, addDialogueEntry, getDialogueHistory } = useDialogueStore();
 
   const handleNPCClick = async (npc: NPCType) => {
-    const dialogue = await getNPCDialogue(npc.name);
+    setCurrentNPC(npc.name);
+    const dialogueHistory = getDialogueHistory(npc.name);
+    const dialogue = await getNPCDialogue(npc.name, dialogueHistory);
     if (dialogue) {
       setCurrentDialogue(dialogue);
+      addDialogueEntry(npc.name, { npcDialogue: dialogue.dialogue });
     }
   };
 
