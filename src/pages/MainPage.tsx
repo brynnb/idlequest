@@ -20,13 +20,12 @@ import Chatbox from "@components/Import/Chatbox";
 import LeftSidebar from "@components/Import/LeftSidebar";
 import InventoryAndStats from "./InventoryAndStats";
 import InventoryLayout from "@components/Inventory/InventoryLayout";
-
+import MapAndZoneSelection from "@components/Interface/MapAndZoneSelection";
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
     hoveredItem: state?.hoveredItem,
   })) || { hoveredItem: null };
-  const { initializeZones } = useGameStatusStore();
-  const { isInventoryOpen } = useGameStatusStore();
+  const { initializeZones, isInventoryOpen, isMapOpen } = useGameStatusStore();
 
   useEffect(() => {
     initializeZones();
@@ -53,6 +52,7 @@ const MainPage: React.FC = () => {
         isVisible={hoveredItem !== null}
         // isVisible={true}
       /> */}
+      {isMapOpen && <MapAndZoneSelection />}
     </>
   );
 };

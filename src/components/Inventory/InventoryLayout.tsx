@@ -8,7 +8,7 @@ import ItemInformationDisplay from "@components/Inventory/ItemInformationDisplay
 import PlayerCurrencyDisplay from "./PlayerCurrencyDisplay";
 
 const InventorySidebar: React.FC = () => {
-  const { deleteItemOnCursor } = usePlayerCharacterStore();
+  const { deleteItemOnCursor, hoveredItem } = usePlayerCharacterStore();
   const { toggleInventory } = useGameStatusStore();
 
   return (
@@ -37,7 +37,11 @@ const InventorySidebar: React.FC = () => {
         onClick={toggleInventory}
         customCSS={`position: absolute; bottom: 15px; right: 75px; z-index: 1000; width: 120px;`}
       />
-      <ItemInformationDisplay />
+      <ItemInformationDisplay
+        item={hoveredItem}
+        // isVisible={hoveredItem !== null}
+        isVisible={true}
+      />
       <PlayerCurrencyDisplay />
     </>
   );

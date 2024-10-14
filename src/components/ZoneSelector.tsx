@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { getAdjacentZones } from "@utils/zoneUtils";
 import Zone from "../entities/Zone";
+import ActionButton from "./Interface/ActionButton";
 
 const ZoneSelector: React.FC = () => {
   const [adjacentZones, setAdjacentZones] = useState<Zone[]>([]);
@@ -25,12 +26,16 @@ const ZoneSelector: React.FC = () => {
 
   return (
     <div>
-      <h3>Select New Zone:</h3>
+      <h3 style={{ color: "white", fontSize: "35px" }}>Select New Zone:</h3>
       <div>
         {adjacentZones.map((zone) => (
-          <button key={zone.id} onClick={() => handleZoneClick(zone)}>
-            {zone.long_name}
-          </button>
+          <ActionButton
+            key={zone.id}
+            text={zone.long_name}
+            onClick={() => handleZoneClick(zone)}
+            marginBottom="10px"
+            customCSS="font-size: 16px; height: 80px"
+          />
         ))}
       </div>
     </div>

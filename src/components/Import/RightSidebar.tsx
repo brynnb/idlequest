@@ -33,7 +33,8 @@ const BottomActionButtonContainer = styled.div.attrs({
 const marginBottomForBottomButtons = "12px";
 
 const RightSidebar = () => {
-  const { isRunning, toggleRunning } = useGameStatusStore();
+  const { isRunning, toggleRunning, isMapOpen, toggleMap } =
+    useGameStatusStore();
 
   return (
     <StyledRightSidebar>
@@ -51,8 +52,10 @@ const RightSidebar = () => {
       </TopActionButtonContainer>
       <BottomActionButtonContainer>
         <ActionButton
-          text="Who"
-          onClick={() => {}}
+          text="Map"
+          onClick={toggleMap}
+          isPressed={isMapOpen}
+          isToggleable={true}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton

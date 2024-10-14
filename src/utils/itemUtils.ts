@@ -277,3 +277,85 @@ export const handleLoot = (loot: Item[]) => {
     }
   });
 };
+
+export const handleEquipAllItems = () => {
+  const { characterProfile, setInventory } = usePlayerCharacterStore.getState();
+  const newInventory = [...characterProfile.inventory];
+
+  const generalItems = newInventory.filter(
+    (item) => item.slotid && item.slotid > 22
+  );
+
+  for (const inventoryItem of generalItems) {
+    const itemDetails = inventoryItem.itemDetails;
+
+    if (itemDetails && itemDetails.slots !== undefined) {
+      const possibleSlots = getInventorySlotNames(itemDetails.slots);
+
+      for (const slotName of possibleSlots) {
+        const slotId = Object.entries(InventorySlot).find(
+          ([key, value]) => key.replace(/\d+/g, "").toUpperCase() === slotName
+        )?.[1];
+
+        if (slotId >= 0 && slotId <= 22) {
+          const isSlotEmpty = !newInventory.some(
+            (invItem) => invItem.slotid === slotId
+          );
+
+          if (isSlotEmpty) {
+            inventoryItem.slotid = slotId;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  setInventory(newInventory);
+};
+
+export const handleSellGeneralInventory = () => {
+  const { characterProfile, removeInventoryItem } = usePlayerCharacterStore.getState();
+  let totalCopper = 0;
+  const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
+
+  characterProfile?.inventory?.forEach((item) => {
+    if (generalSlots.includes(item.slotid) && item.itemDetails) {
+      if (isSellable(item.itemDetails)) {
+        totalCopper += Math.floor(item.itemDetails.price);
+        removeInventoryItem(item.slotid);
+      }
+    }
+  });
+
+  const platinum = Math.floor(totalCopper / 1000);
+  const gold = Math.floor((totalCopper % 1000) / 100);
+  const silver = Math.floor((totalCopper % 100) / 10);
+  const copper = totalCopper % 10;
+
+  usePlayerCharacterStore.setState((state) => {
+    let newCopper = (state.characterProfile.copper || 0) + copper;
+    let newSilver = (state.characterProfile.silver || 0) + silver;
+    let newGold = (state.characterProfile.gold || 0) + gold;
+    let newPlatinum = (state.characterProfile.platinum || 0) + platinum;
+
+    newSilver += Math.floor(newCopper / 10);
+    newCopper = newCopper % 10;
+
+    return {
+      characterProfile: {
+        ...state.characterProfile,
+        platinum: newPlatinum,
+        gold: newGold,
+        silver: newSilver,
+        copper: newCopper,
+      },
+    };
+  });
+
+  console.log(`Sold items for ${platinum}p ${gold}g ${silver}s ${copper}c`);
+};
+
+const isSellable = (item: Item): boolean => {
+  return item.nodrop != 0 && item.norent != 0;
+};

@@ -1,7 +1,7 @@
 import React from "react";
+import styled from "styled-components";
 import { Item } from "@entities/Item";
 import { ItemSize, getItemSizeName } from "@entities/ItemSize";
-import styles from "./ItemInformationDisplay.module.css";
 import { useSpellInfo } from "@hooks/useSpellInfo";
 import {
   getSlotNames,
@@ -13,6 +13,45 @@ import {
 } from "@utils/itemUtils";
 import WeaponStats from "../WeaponStats";
 import SpellInfo from "../SpellInfo";
+
+const ItemDisplayContainer = styled.div.attrs({
+  className: "item-display-container",
+})`
+  width: 902px;
+  height: 300px;
+  left: 266px;
+  top: 722px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+  position: absolute;
+  background-image: url("/images/chatbginspect.png");
+  background-size: cover;
+  font-size: 20px;
+  line-height: 1.2;
+  display: flex;
+  font-family: Arial, sans-serif;
+  color: black;
+  font-weight: bold;
+
+  p {
+    margin: 5px 0;
+    font-size: 16px;
+    line-height: 1.2;
+    color: black;
+    font-weight: 600;
+  }
+`;
+
+const ItemDisplayContent = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 120px;
+  right: 60px;
+  bottom: 60px;
+  overflow: auto;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+`;
 
 interface ItemDisplayProps {
   item: Item | null;
@@ -42,8 +81,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
   };
 
   return (
-    <div className={styles.itemDisplay}>
-      <div className={styles.itemDisplayContent}>
+    <ItemDisplayContainer>
+      <ItemDisplayContent>
         <p>{item.name}</p>
         <p>{getItemFlags(item)}</p>
         {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
@@ -62,8 +101,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
           </>
         )}
         {isSpell && spellInfo && <SpellInfo spellInfo={spellInfo} />}
-      </div>
-    </div>
+      </ItemDisplayContent>
+    </ItemDisplayContainer>
   );
 };
 

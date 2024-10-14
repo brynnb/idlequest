@@ -26,6 +26,8 @@ interface GameStatusStore {
   toggleQuickMode: () => void;
   isInventoryOpen: boolean;
   toggleInventory: () => void;
+  isMapOpen: boolean;
+  toggleMap: () => void;
 }
 
 const defaultIsRunning = true;
@@ -132,7 +134,18 @@ const useGameStatusStore = create<GameStatusStore>()(
 
             isInventoryOpen: false,
             toggleInventory: () => {
-              set({ isInventoryOpen: !get().isInventoryOpen });
+              set((state) => ({
+                isInventoryOpen: !state.isInventoryOpen,
+                isMapOpen: state.isInventoryOpen ? false : state.isMapOpen,
+              }));
+            },
+
+            isMapOpen: false,
+            toggleMap: () => {
+              set((state) => ({
+                isMapOpen: !state.isMapOpen,
+                isInventoryOpen: state.isMapOpen ? false : state.isInventoryOpen,
+              }));
             },
           };
         },
