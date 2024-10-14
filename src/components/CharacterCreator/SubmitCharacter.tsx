@@ -32,6 +32,7 @@ const SubmitCharacter: React.FC = () => {
       zoneId: selectedZone.zoneidnumber,
       level: 1,
       exp: 0,
+      weightAllowance: attributes.str + attributes.base_str,
       attributes: {
         str: attributes.str + attributes.base_str,
         sta: attributes.sta + attributes.base_sta,

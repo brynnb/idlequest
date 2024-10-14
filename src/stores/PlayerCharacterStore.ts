@@ -11,6 +11,7 @@ import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 import { getExperienceLevel } from "@entities/ExperienceLevel";
 import { calculatePlayerHP } from "@utils/playerCharacterUtils";
 import { calculatePlayerMana } from "@utils/playerCharacterUtils";
+import { calculateTotalWeight } from "@/utils/inventoryUtils";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {} as CharacterProfile;
@@ -35,6 +36,8 @@ interface PlayerCharacterStore {
   addExperience: (experience: number) => void;
   updateMaxMana: () => void;
   updateHealthAndMana: (newHealth: number, newMana: number) => void;
+  updateWeight: () => void;
+  updateWeightAllowance: () => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -67,6 +70,9 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             },
           }));
           get().updateArmorClass();
+          get().updateMaxHP();
+          get().updateMaxMana();
+          get().updateWeight();
         },
         removeInventoryItem: (slotId) =>
           set((state) => ({
@@ -241,8 +247,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             const { characterProfile } = state;
             if (!characterProfile) return state;
 
-            const oldLevel = characterProfile.level || 1;
-            const newExp = (characterProfile.exp || 0) + experience;
+            const oldLevel = characterProfile.level;
+            const newExp = characterProfile.exp + experience;
             const { level } = getExperienceLevel(newExp);
 
             const newState = {
@@ -269,6 +275,26 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
             return newState;
           }),
+        updateWeight: () => {
+          const { characterProfile } = get();
+          const newWeight = calculateTotalWeight(characterProfile);
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              weight: newWeight,
+            },
+          }));
+        },
+        updateWeightAllowance: () => {
+          const { characterProfile } = get();
+          const newWeightAllowance = calculateTotalWeight(characterProfile);
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              weightAllowance: newWeightAllowance,
+            },
+          }));
+        },
       }),
       { name: "player-character-storage" }
     ),

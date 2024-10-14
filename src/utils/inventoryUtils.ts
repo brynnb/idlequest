@@ -17,16 +17,33 @@ export const getNextAvailableSlot = (
   return null; // No available slots
 };
 
-export const calculateTotalEquippedAC = (character: CharacterProfile): number => {
+export const calculateTotalEquippedAC = (
+  character: CharacterProfile
+): number => {
   if (!character.inventory) return 0;
 
   return character.inventory.reduce((totalAC, item) => {
-    if (item.slotid !== undefined && 
-        item.slotid >= InventorySlot.Charm && 
-        item.slotid <= InventorySlot.Ammo) {
+    if (
+      item.slotid !== undefined &&
+      item.slotid >= InventorySlot.Charm &&
+      item.slotid <= InventorySlot.Ammo
+    ) {
       const itemAC = Number(item.itemDetails?.ac) || 0;
       return totalAC + itemAC;
     }
     return totalAC;
+  }, 0);
+};
+
+export const calculateTotalWeight = (character: CharacterProfile): number => {
+  if (!character.inventory) return 0;
+
+  return character.inventory.reduce((totalWeight, item) => {
+    const itemWeight = Number(item.itemDetails?.weight) || 0;
+    console.log("itemWeight", itemWeight);
+    console.log("item name", item.itemDetails?.name);
+    //show slot
+    console.log("item slot", item.slotid);
+    return totalWeight + itemWeight;
   }, 0);
 };

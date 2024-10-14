@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
-
+import { calculateTotalWeight } from "@utils/inventoryUtils";
 const StatInfoBarWrapper = styled.div`
   position: absolute;
   left: 0;
@@ -19,6 +19,15 @@ const StatsWrapper = styled.div`
   top: 139px;
   left: 55px;
   font-size: 20px;
+  line-height: 10px;
+  color: white;
+`;
+
+const Name = styled.div`
+  position: absolute;
+  top: 78px;
+  left: 30px;
+  font-size: 22px;
   line-height: 10px;
   color: white;
 `;
@@ -63,7 +72,10 @@ const MiddleBottomLevelResists = styled.div`
 `;
 
 const BottomLevelWeight = styled.div`
-  /* Add styles for bottom-level-weight */
+  position: absolute;
+  top: 850px;
+  left: 104px;
+  line-height: 6px;
 `;
 
 const StatInfoBar: React.FC = () => {
@@ -73,6 +85,9 @@ const StatInfoBar: React.FC = () => {
   return (
     <>
       <StatInfoBarWrapper />
+      <Name>
+        <p>{characterProfile.name}</p>
+      </Name>
       <StatsWrapper>
         <TopLevelStats>
           <LevelClassDeity>
@@ -109,7 +124,10 @@ const StatInfoBar: React.FC = () => {
           <p>{characterProfile.cr}</p>
         </MiddleBottomLevelResists>
         <BottomLevelWeight>
-          {/* <p>Weight: {characterProfile.weight} / {characterProfile.max_weight}</p> */}
+          <p>
+            {calculateTotalWeight(characterProfile)} /{" "}
+            {characterProfile.weightAllowance}
+          </p>
         </BottomLevelWeight>
       </StatsWrapper>
     </>

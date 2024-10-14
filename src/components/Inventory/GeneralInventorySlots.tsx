@@ -20,10 +20,10 @@ const GeneralInventory = styled.div`
   top: 570px;
 `;
 
-const Slot = styled.div<{ row: number; col: number }>`
+const Slot = styled.div<{ $row: number; $col: number }>`
   position: absolute;
-  left: ${(props) => props.col * 50}%;
-  top: ${(props) => props.row * 25}%;
+  left: ${(props) => props.$col * 50}%;
+  top: ${(props) => props.$row * 25}%;
   width: 50%;
   height: 25%;
   display: flex;
@@ -62,8 +62,8 @@ const GeneralInventorySlots: React.FC = () => {
           return (
             <Slot
               key={`general-slot-${slot}`}
-              row={row}
-              col={col}
+              $row={row}
+              $col={col}
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleItemClick(slot)}

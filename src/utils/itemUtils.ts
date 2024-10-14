@@ -154,9 +154,11 @@ export const isEquippableWithRace = (
 };
 
 export const handleLoot = (loot: Item[]) => {
-  const { addInventoryItem, characterProfile, removeInventoryItem } =
+  const { addInventoryItem, characterProfile, removeInventoryItem, setInventory } =
     usePlayerCharacterStore.getState();
   const addChatMessage = useChatStore.getState().addMessage;
+
+  let updatedInventory = [...characterProfile.inventory];
 
   loot.forEach((item) => {
     if (!item) {
@@ -241,6 +243,7 @@ export const handleLoot = (loot: Item[]) => {
               slotid: firstAvailableSlot,
             });
           } else {
+            //make sure we remove item from inventory
             addChatMessage(
               `Inventory full, item dropped: ${existingItem.itemDetails.name}`,
               MessageType.LOOT
@@ -261,16 +264,18 @@ export const handleLoot = (loot: Item[]) => {
     // If not equippable or no available equipment slot, add to general inventory
     const firstAvailableSlot = Array.from({ length: 8 }, (_, i) => i + 23).find(
       (slot) =>
-        !characterProfile.inventory.some((invItem) => invItem.slotid === slot)
+        !updatedInventory.some((invItem) => invItem.slotid === slot)
     );
 
     if (firstAvailableSlot !== undefined) {
-      addInventoryItem({
+      const newItem = {
         itemid: item.id,
         slotid: firstAvailableSlot,
         charges: 1,
         itemDetails: item,
-      });
+      };
+      updatedInventory.push(newItem);
+      addInventoryItem(newItem);
     } else {
       addChatMessage(
         `Inventory full, item dropped: ${item.name}`,
@@ -278,6 +283,8 @@ export const handleLoot = (loot: Item[]) => {
       );
     }
   });
+
+  setInventory(updatedInventory);
 };
 
 export const handleEquipAllItems = () => {

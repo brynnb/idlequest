@@ -17,6 +17,7 @@ export default interface CharacterProfile {
     heading?: number;
   };
   gender?: number;
+  weightAllowance?: number;
   race?: number;
   class?: number;
   level?: number;
