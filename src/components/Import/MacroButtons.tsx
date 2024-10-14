@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
@@ -90,6 +91,8 @@ const MacroButtons = () => {
     right: false,
   });
 
+  const navigate = useNavigate();
+
   const {
     setCharacterProfile,
     characterProfile,
@@ -126,6 +129,7 @@ const MacroButtons = () => {
     setCharacterProfile({});
     resetCharacterCreator();
     console.log("Game has been reset!");
+    navigate("/create");
   };
 
   const handleDeleteAllInventory = () => {

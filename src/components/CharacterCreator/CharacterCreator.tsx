@@ -12,6 +12,9 @@ const CharacterCreator = () => {
   return (
     <div>
       <h2>Character Creator</h2>
+      <Link to="/">
+        <SubmitCharacter />
+      </Link>
       <NameInput />
       <RaceSelector />
       <ClassSelector />
@@ -19,9 +22,6 @@ const CharacterCreator = () => {
       <DeitySelector />
       <ZoneSelector />
       <CharacterDescription />
-      <Link to="/">
-        <SubmitCharacter />
-      </Link>
     </div>
   );
 };
