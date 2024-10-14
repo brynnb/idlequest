@@ -6,6 +6,7 @@ import ActionButton from "@components/Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
 import ItemInformationDisplay from "@components/Inventory/ItemInformationDisplay";
 import PlayerCurrencyDisplay from "./PlayerCurrencyDisplay";
+import StatInfoBar from "./StatInfoBar";
 
 const InventorySidebar: React.FC = () => {
   const { deleteItemOnCursor, hoveredItem } = usePlayerCharacterStore();
@@ -43,6 +44,7 @@ const InventorySidebar: React.FC = () => {
         isVisible={true}
       />
       <PlayerCurrencyDisplay />
+      <StatInfoBar />
     </>
   );
 };

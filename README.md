@@ -31,7 +31,9 @@ The data in the SQLite file is fairly comprehensive at this point though, so it 
 * https://docs.eqemu.io/schema/characters/char_create_combinations/ (and other pages)
 * https://github.com/EQEmu/Server
 * UI examples for classic character creation: https://www.youtube.com/watch?v=EjWDRHu9mhU
-
+* Every NPC photo here, though with Luclin graphics: https://mqemulator.net/npc.php?id=174250
+* Lots of NPC descriptions here: https://wiki.project1999.com/Biggle_Limbokker (look for h3 containing "Description" then look for contenst of the next <p> )
+* Really good NPC descriptions here but URL isn't easy to use for automated retrieval: https://www.giantbomb.com/brutol-rhaksen/3005-19742/
 
 ## Looting System Breakdown
 

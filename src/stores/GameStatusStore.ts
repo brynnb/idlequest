@@ -28,6 +28,10 @@ interface GameStatusStore {
   toggleInventory: () => void;
   isMapOpen: boolean;
   toggleMap: () => void;
+  isSpellbookOpen: boolean;
+  toggleSpellbook: () => void;
+  isNoteOpen: boolean;
+  toggleNote: () => void; 
 }
 
 const defaultIsRunning = true;
@@ -145,6 +149,24 @@ const useGameStatusStore = create<GameStatusStore>()(
               set((state) => ({
                 isMapOpen: !state.isMapOpen,
                 isInventoryOpen: state.isMapOpen ? false : state.isInventoryOpen,
+              }));
+            },
+
+            isSpellbookOpen: false,
+            toggleSpellbook: () => {
+              set((state) => ({
+                isSpellbookOpen: !state.isSpellbookOpen,
+                isInventoryOpen: state.isSpellbookOpen ? false : state.isInventoryOpen,
+                isMapOpen: state.isSpellbookOpen ? false : state.isMapOpen,
+              }));
+            },
+
+            isNoteOpen: false,
+            toggleNote: () => {
+              set((state) => ({
+                isNoteOpen: !state.isNoteOpen,
+                isInventoryOpen: state.isNoteOpen ? false : state.isInventoryOpen,
+                isMapOpen: state.isNoteOpen ? false : state.isMapOpen,
               }));
             },
           };

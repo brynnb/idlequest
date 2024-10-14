@@ -4,7 +4,7 @@ import useGameStatusStore from "@stores/GameStatusStore";
 
 const SystemOptions = () => {
   const buttonWidth = "164px";
-  const { isInventoryOpen, toggleInventory } = useGameStatusStore();
+  const { isInventoryOpen, toggleInventory, isSpellbookOpen, toggleSpellbook } = useGameStatusStore();
 
   return (
     <div
@@ -34,7 +34,9 @@ const SystemOptions = () => {
       </div>
       <ActionButton
         text="Spells"
-        onClick={() => {}}
+        onClick={toggleSpellbook}
+        isPressed={isSpellbookOpen}
+        isToggleable={true}
         customCSS={`width: ${buttonWidth}; margin-top: 403px;`}
       />
       <ActionButton
