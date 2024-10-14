@@ -66,6 +66,16 @@ class GameEngine {
     setTargetNPC(newTargetNPC);
   }
 
+  private getExperienceForNPCKill(npcId: number): number {
+    const { targetNPC } = gameStatusStore.getState();
+
+    const level = targetNPC.level;
+    const EXP_FORMULA = (level: number) =>
+      Math.floor((level * level * 75 * 35) / 10); //from https://github.com/EQEmu/Server/blob/ae198ae04332e4f7176114de9cfab893b720af24/common/features.h#L223
+
+    return EXP_FORMULA(level);
+  }
+
   private handleNPCDefeat(npcName: string) {
     const { targetNPC } = gameStatusStore.getState();
 
@@ -76,11 +86,12 @@ class GameEngine {
 
     const npcId = Number(targetNPC.id);
 
-    if (isNaN(npcId)) {
-      console.error(`Invalid NPC ID: ${targetNPC.id}`);
-      return;
-    }
-
+    const { characterProfile } = playerCharacterStore.getState();
+    const experienceGained = this.getExperienceForNPCKill();
+    console.log("Experience gained:", experienceGained);
+    playerCharacterStore.getState().addExperience(experienceGained);
+    console.log("Experience after addition:", characterProfile.exp);
+    console.log("Level after addition:", characterProfile.level);
     getNPCLoot(npcId)
       .then((loot) => {
         handleLoot(loot);

@@ -36,7 +36,7 @@ const PlayerStats: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();
 
   // todo: implement these calculations based on game logic
-  const healthPercent = 0.75; // Example value
+  const healthPercent = characterProfile.curHp / characterProfile.maxHp;
   const manaPercent = 0.5; // Example value
   const xpPercent = 0.25; // Example value
   const xpPercentSubbar = 0.65; // Example value

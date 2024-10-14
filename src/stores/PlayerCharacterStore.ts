@@ -8,6 +8,8 @@ import { InventorySlot } from "@entities/InventorySlot";
 import useChatStore, { MessageType } from "./ChatStore";
 import useGameStatusStore from "./GameStatusStore";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
+import { getExperienceLevel } from "@entities/ExperienceLevel";
+import { calculatePlayerHP } from "@utils/playerCharacterUtils";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {} as CharacterProfile;
@@ -28,6 +30,8 @@ interface PlayerCharacterStore {
   swapItems: (fromSlot: number, toSlot: number) => void;
   deleteItemOnCursor: () => void;
   updateArmorClass: () => void;
+  updateMaxHP: () => void;
+  addExperience: (experience: number) => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -198,6 +202,43 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             },
           }));
         },
+        updateMaxHP: () => {
+          const { characterProfile } = get();
+          const newMaxHP = calculatePlayerHP(characterProfile);
+          console.log("New max HP:", newMaxHP);
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              maxHp: newMaxHP
+            },
+          }));
+        },
+        addExperience: (experience: number) =>
+          set((state) => {
+            const { characterProfile } = state;
+            if (!characterProfile) return state;
+
+            const oldLevel = characterProfile.level || 1;
+            const newExp = (characterProfile.exp || 0) + experience;
+            const { level } = getExperienceLevel(newExp);
+
+            const newState = {
+              characterProfile: {
+                ...characterProfile,
+                exp: newExp,
+                level: level,
+              } as CharacterProfile,
+            };
+
+            if (level > oldLevel) {
+              setTimeout(() => {
+                get().updateArmorClass();
+                get().updateMaxHP();
+              }, 0);
+            }
+
+            return newState;
+          }),
       }),
       { name: "player-character-storage" }
     ),

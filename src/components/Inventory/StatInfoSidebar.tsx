@@ -43,10 +43,10 @@ const ClassAndDeity = styled.div`
 
 const HpAcAtk = styled.div`
   position: absolute;
-  top:102px;
-  left:80px;
-  height:200px;
-  width:200px;
+  top: 102px;
+  left: 80px;
+  height: 200px;
+  width: 200px;
   line-height: 7px;
 `;
 
@@ -66,8 +66,7 @@ const BottomLevelWeight = styled.div`
 `;
 
 const StatInfoBar: React.FC = () => {
-  const { deleteItemOnCursor, hoveredItem, characterProfile } =
-    usePlayerCharacterStore();
+  const { characterProfile } = usePlayerCharacterStore();
   const { toggleInventory } = useGameStatusStore();
 
   return (
