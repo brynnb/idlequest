@@ -24,7 +24,8 @@ export const calculateTotalEquippedAC = (character: CharacterProfile): number =>
     if (item.slotid !== undefined && 
         item.slotid >= InventorySlot.Charm && 
         item.slotid <= InventorySlot.Ammo) {
-      return totalAC + (item.itemDetails?.ac || 0);
+      const itemAC = Number(item.itemDetails?.ac) || 0;
+      return totalAC + itemAC;
     }
     return totalAC;
   }, 0);

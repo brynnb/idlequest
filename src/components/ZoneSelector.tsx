@@ -22,7 +22,7 @@ const ZoneSelector: React.FC = () => {
   }, [fetchAdjacentZones]);
 
   const handleZoneClick = async (zone: Zone) => {
-    setCharacterZone(zone.zoneidnumber);
+    setCharacterZone(zone.zoneidnumber); //TODO: we shouldn't update in two places, need to either connect or make the game engine rely on the player zone
     setCurrentZone(zone.zoneidnumber);
     await fetchAdjacentZones();
   };

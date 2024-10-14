@@ -7,6 +7,7 @@ import { Item } from "@entities/Item";
 import { InventorySlot } from "@entities/InventorySlot";
 import useChatStore, { MessageType } from "./ChatStore";
 import useGameStatusStore from "./GameStatusStore";
+import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {} as CharacterProfile;
@@ -26,6 +27,7 @@ interface PlayerCharacterStore {
   moveItemToSlot: (fromSlot: number, toSlot: number) => void;
   swapItems: (fromSlot: number, toSlot: number) => void;
   deleteItemOnCursor: () => void;
+  updateArmorClass: () => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -39,6 +41,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             characterProfile: { ...state.characterProfile, inventory },
           }));
           await get().loadItemDetails();
+          get().updateArmorClass();
         },
         addInventoryItem: async (item: InventoryItem) => {
           const itemDetails = await getItemById(item.itemid || 0);
@@ -56,6 +59,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               inventory: [...state.characterProfile.inventory, newItem],
             },
           }));
+          get().updateArmorClass();
         },
         removeInventoryItem: (slotId) =>
           set((state) => ({
@@ -181,6 +185,19 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               ),
             },
           })),
+        updateArmorClass: () => {
+          const { characterProfile } = get();
+          const newAC = calculateSimpleArmorClass(characterProfile);
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              stats: {
+                ...state.characterProfile.stats,
+                ac: newAC,
+              },
+            },
+          }));
+        },
       }),
       { name: "player-character-storage" }
     ),

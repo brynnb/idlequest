@@ -51,6 +51,8 @@ export const handleItemClick = (slotId: InventorySlot) => {
   } else if (currentSlotItem) {
     moveItemToSlot(slotId, InventorySlot.Cursor);
   }
+
+  usePlayerCharacterStore.getState().updateArmorClass();
 };
 
 export const getSlotNames = (slots: number | undefined) => {
