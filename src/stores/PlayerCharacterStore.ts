@@ -10,6 +10,7 @@ import useGameStatusStore from "./GameStatusStore";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 import { getExperienceLevel } from "@entities/ExperienceLevel";
 import { calculatePlayerHP } from "@utils/playerCharacterUtils";
+import { calculatePlayerMana } from "@utils/playerCharacterUtils";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {} as CharacterProfile;
@@ -32,6 +33,7 @@ interface PlayerCharacterStore {
   updateArmorClass: () => void;
   updateMaxHP: () => void;
   addExperience: (experience: number) => void;
+  updateMaxMana: () => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -213,6 +215,17 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             },
           }));
         },
+        updateMaxMana: () => {
+          const { characterProfile } = get();
+          const newMaxMana = calculatePlayerMana(characterProfile);
+          console.log("New max Mana:", newMaxMana);
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              maxMana: newMaxMana
+            },
+          }));
+        },
         addExperience: (experience: number) =>
           set((state) => {
             const { characterProfile } = state;
@@ -234,6 +247,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               setTimeout(() => {
                 get().updateArmorClass();
                 get().updateMaxHP();
+                get().updateMaxMana();
               }, 0);
             }
 

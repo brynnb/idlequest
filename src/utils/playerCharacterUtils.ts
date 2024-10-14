@@ -1,5 +1,6 @@
 //sourced from here, may not be totally accurate, but spot check looks good: https://www.eqemulator.org/forums/showthread.php?t=14911
 import CharacterProfile from "@entities/CharacterProfile";
+import { ClassId } from "@entities/CharacterClass";
 
 const getHpLevelMultiplier = (
   characterClass: number,
@@ -63,3 +64,31 @@ export const calculatePlayerHP = (character: CharacterProfile): number => {
   return Math.floor(term1 + term2);
 };
 
+export const calculatePlayerMana = (character: CharacterProfile): number => {
+  if (!character.level || !character.class || !character.attributes?.int || !character.attributes?.wis) {
+    return 0;
+  }
+
+  const classId = character.class.id;
+
+  // Warriors, Monks, and Rogues have no mana
+  if (classId === ClassId.Warrior || classId === ClassId.Monk || classId === ClassId.Rogue) {
+    return 0;
+  }
+
+  const level = character.level;
+  const int = character.attributes.int;
+  const wis = character.attributes.wis;
+
+  // Determine which attribute to use based on class
+  const manaAttribute = [ClassId.Cleric, ClassId.Paladin, ClassId.Druid, ClassId.Shaman, ClassId.Ranger].includes(classId) ? wis : int;
+
+  let manaGained;
+  if (manaAttribute <= 200) {
+    manaGained = ((80 * level) / 425) * manaAttribute;
+  } else {
+    manaGained = ((40 * level) / 425) * manaAttribute;
+  }
+
+  return Math.floor(manaGained);
+};

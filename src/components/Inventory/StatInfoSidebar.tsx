@@ -39,6 +39,7 @@ const ClassAndDeity = styled.div`
   position: absolute;
   left: 00px;
   top: 30px;
+  width: 240px;
 `;
 
 const HpAcAtk = styled.div`

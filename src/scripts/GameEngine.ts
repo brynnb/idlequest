@@ -60,8 +60,21 @@ class GameEngine {
 
     if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
 
-    const randomIndex = Math.floor(Math.random() * currentZoneNPCs.length);
-    const newTargetNPC = currentZoneNPCs[randomIndex];
+    const playerLevel = characterProfile.level || 1;
+    const levelRange = 5; // Adjust this value to change the acceptable level range
+
+    const eligibleNPCs = currentZoneNPCs.filter(npc => {
+      const npcLevel = npc.level || 1;
+      return Math.abs(npcLevel - playerLevel) <= levelRange;
+    });
+
+    if (eligibleNPCs.length === 0) {
+      console.log("No NPCs within the acceptable level range");
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * eligibleNPCs.length);
+    const newTargetNPC = eligibleNPCs[randomIndex];
 
     setTargetNPC(newTargetNPC);
   }

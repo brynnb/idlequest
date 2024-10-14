@@ -2,7 +2,7 @@ import React from "react";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useInventoryCreator from "@hooks/useInventoryCreator";
-import { calculatePlayerHP } from "@utils/playerCharacterUtils";
+import { calculatePlayerHP, calculatePlayerMana } from "@utils/playerCharacterUtils";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 
 const SubmitCharacter: React.FC = () => {
@@ -31,6 +31,7 @@ const SubmitCharacter: React.FC = () => {
       deity: selectedDeity,
       zoneId: selectedZone.zoneidnumber,
       level: 1,
+      exp: 0,
       attributes: {
         str: attributes.str + attributes.base_str,
         sta: attributes.sta + attributes.base_sta,
@@ -44,6 +45,8 @@ const SubmitCharacter: React.FC = () => {
     };
     newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
     newCharacterProfile.curHp = newCharacterProfile.maxHp;
+    newCharacterProfile.maxMana = calculatePlayerMana(newCharacterProfile);
+    newCharacterProfile.curMana = newCharacterProfile.maxMana;
     newCharacterProfile.stats = {
       ac: calculateSimpleArmorClass(newCharacterProfile),
       atk: 100,
