@@ -115,7 +115,7 @@ const NoteDisplay: React.FC = () => {
               ) : null}
             </>
           ) : (
-            <p>No dialogue available</p>
+            <p>Select an NPC to begin a conversation.</p>
           )}
         </DialogueDisplay>
       </DialogueDisplayContainer>

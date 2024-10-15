@@ -53,14 +53,15 @@ const ParentContainer = styled.div`
 `;
 
 const PaneTitle = styled.div`
-  font-size: 23px;
+  font-size: 18px;
   font-weight: bold;
-  top: 31px;
+  top: 35px;
+  left: 25px;
   position: absolute;
 `;
 
 const QuestNPCList: React.FC = () => {
-  const { currentZoneNPCs } = useGameStatusStore();
+  const { currentZoneNPCs, currentZone, getZoneLongNameById } = useGameStatusStore();
   const {
     setCurrentDialogue,
     setCurrentNPC,
@@ -80,7 +81,7 @@ const QuestNPCList: React.FC = () => {
 
   return (
     <ParentContainer>
-      <PaneTitle>Select NPC to Speak</PaneTitle>
+      <PaneTitle>{getZoneLongNameById(currentZone)}</PaneTitle>
       <NPCListContainer>
         {currentZoneNPCs.sort((a, b) => a.name.localeCompare(b.name)).map((npc: NPCType) => (
           <NPCItem key={npc.id} onClick={() => handleNPCClick(npc)}>
