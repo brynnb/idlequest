@@ -6,25 +6,67 @@ import useDialogueStore from "@stores/DialogueStore";
 import { getNPCDialogue } from "@utils/getNPCDialogue";
 
 const NPCListContainer = styled.div`
-  width: 200px;
-  height: 600px;
-  overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px;
+  position: absolute;
+  left: 30px;
+  top: 80px;
+  bottom: 20px;
+  right: 20px;
+  height: 900px;
+  width: 219px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+  }
 `;
 
 const NPCItem = styled.div`
   margin-bottom: 5px;
+  font-size: 18px;
+  line-height: 23px;
   cursor: pointer;
   &:hover {
     text-decoration: underline;
   }
 `;
 
+const ParentContainer = styled.div`
+  width: 246px;
+  height: 1080px;
+  background-image: url("/images/ui/lootpanebackground.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: white;
+  overflow-y: auto;
+  padding-left: 24px;
+`;
+
+const PaneTitle = styled.div`
+  font-size: 23px;
+  font-weight: bold;
+  top: 31px;
+  position: absolute;
+`;
+
 const QuestNPCList: React.FC = () => {
   const { currentZoneNPCs } = useGameStatusStore();
-  const { setCurrentDialogue, setCurrentNPC, addDialogueEntry, getDialogueHistory } = useDialogueStore();
+  const {
+    setCurrentDialogue,
+    setCurrentNPC,
+    addDialogueEntry,
+    getDialogueHistory,
+  } = useDialogueStore();
 
   const handleNPCClick = async (npc: NPCType) => {
     setCurrentNPC(npc.name);
@@ -37,13 +79,16 @@ const QuestNPCList: React.FC = () => {
   };
 
   return (
-    <NPCListContainer>
-      {currentZoneNPCs.map((npc: NPCType) => (
-        <NPCItem key={npc.id} onClick={() => handleNPCClick(npc)}>
-          {npc.name}
-        </NPCItem>
-      ))}
-    </NPCListContainer>
+    <ParentContainer>
+      <PaneTitle>Select NPC to Speak</PaneTitle>
+      <NPCListContainer>
+        {currentZoneNPCs.sort((a, b) => a.name.localeCompare(b.name)).map((npc: NPCType) => (
+          <NPCItem key={npc.id} onClick={() => handleNPCClick(npc)}>
+            {npc.name.replace(/_/g, ' ')}
+          </NPCItem>
+        ))}
+      </NPCListContainer>
+    </ParentContainer>
   );
 };
 

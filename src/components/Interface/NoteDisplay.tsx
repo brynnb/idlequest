@@ -1,29 +1,19 @@
 import React from "react";
-import styled from "styled-components";
-import QuestNPCList from "@components/Interface/QuestNPCList";
+import styled, { keyframes } from "styled-components";
 import useDialogueStore from "@stores/DialogueStore";
 import { getNPCDialogue } from "@utils/getNPCDialogue";
+import { LoadingJokeUtil } from "@utils/getRandomLoadingJoke";
 
 const NoteDisplayContainer = styled.div.attrs({
   className: "note-display-container",
 })`
-  height: 720px;
+  height: 722px;
   width: 900px;
-  position: absolute;
-  left: 267px;
-  top: 0px;
   background-image: url("/images/ui/notebackground.png");
   background-size: cover;
-  display: flex;
-`;
-
-const NPCListWrapper = styled.div.attrs({
-  className: "npc-list-wrapper",
-})`
   position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
+  left:270px;
+  top:0px;
 `;
 
 const DialogueDisplayContainer = styled.div.attrs({
@@ -37,10 +27,10 @@ const DialogueDisplayContainer = styled.div.attrs({
 const DialogueDisplay = styled.div.attrs({
   className: "dialogue-display",
 })`
-  width: 400px;
+  width: 550px;
   height: 400px;
   position: absolute;
-  top: 130px;
+  top: 170px;
   left: 170px;
   color: black;
   font-size: 20px;
@@ -60,8 +50,32 @@ const QuestionItem = styled.li`
   }
 `;
 
+const DialogueTitle = styled.div`
+  font-size: 23px;
+  font-weight: bold;
+  top: 140px;
+  position: absolute;
+  left: 360px;
+  text-align: center;
+  color: black
+`;
+
+const loadingAnimation = keyframes`
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+  100% { content: ''; }
+`;
+
+const LoadingText = styled.span`
+  &::after {
+    content: '';
+    animation: ${loadingAnimation} 1.5s infinite;
+  }
+`;
+
 const NoteDisplay: React.FC = () => {
-  const { currentDialogue, currentNPC, setCurrentDialogue, addDialogueEntry, getDialogueHistory } = useDialogueStore();
+  const { currentDialogue, currentNPC, setCurrentDialogue, addDialogueEntry, getDialogueHistory, isLoading } = useDialogueStore();
 
   const handleQuestionClick = async (question: string) => {
     if (currentNPC) {
@@ -78,15 +92,23 @@ const NoteDisplay: React.FC = () => {
   return (
     <NoteDisplayContainer>
       <DialogueDisplayContainer>
+        <DialogueTitle>
+          {currentNPC ? currentNPC.replace(/_/g, ' ') : 'No NPC Selected'}
+        </DialogueTitle>
         <DialogueDisplay>
-          {currentDialogue ? (
+          {isLoading ? (
+            <p><LoadingText>(Loading) {LoadingJokeUtil.getRandomLoadingJoke()}</LoadingText></p>
+          ) : currentDialogue ? (
             <>
               <p>{currentDialogue.dialogue}</p>
-              {Array.isArray(currentDialogue.questions) && currentDialogue.questions.length > 0 ? (
+              {Array.isArray(currentDialogue.responses) && currentDialogue.responses.length > 0 ? (
                 <QuestionsList>
-                  {currentDialogue.questions.map((question, index) => (
-                    <QuestionItem key={index} onClick={() => handleQuestionClick(question)}>
-                      {question}
+                  {currentDialogue.responses.map((response, index) => (
+                    <QuestionItem 
+                      key={index} 
+                      onClick={() => handleQuestionClick(typeof response === 'string' ? response : response.text)}
+                    >
+                      {typeof response === 'string' ? response : response.text}
                     </QuestionItem>
                   ))}
                 </QuestionsList>
@@ -97,9 +119,6 @@ const NoteDisplay: React.FC = () => {
           )}
         </DialogueDisplay>
       </DialogueDisplayContainer>
-      <NPCListWrapper>
-        <QuestNPCList />
-      </NPCListWrapper>
     </NoteDisplayContainer>
   );
 };

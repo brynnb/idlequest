@@ -55,7 +55,7 @@ const TargetBar: React.FC = () => {
             alt="Target health bar"
           />
         </TargetFullHealthContainer>
-        <TargetName>{targetNPC.name}</TargetName>
+        <TargetName>{targetNPC.name.replace(/_/g, ' ')}</TargetName>
       </TargetHealthBar>
     </TargetContainer>
   );

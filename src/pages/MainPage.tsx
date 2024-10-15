@@ -23,11 +23,18 @@ import InventoryLayout from "@components/Inventory/InventoryLayout";
 import MapAndZoneSelection from "@components/Interface/MapAndZoneSelection";
 import Spellbook from "@/components/Interface/Spellbook";
 import NoteDisplay from "@/components/Interface/NoteDisplay";
+import QuestDisplay from "@/components/Interface/QuestDisplay";
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
     hoveredItem: state?.hoveredItem,
   })) || { hoveredItem: null };
-  const { initializeZones, isInventoryOpen, isMapOpen, isSpellbookOpen, isNoteOpen } = useGameStatusStore();
+  const {
+    initializeZones,
+    isInventoryOpen,
+    isMapOpen,
+    isSpellbookOpen,
+    isNoteOpen,
+  } = useGameStatusStore();
 
   useEffect(() => {
     initializeZones();
@@ -56,7 +63,7 @@ const MainPage: React.FC = () => {
       /> */}
       {isMapOpen && <MapAndZoneSelection />}
       {isSpellbookOpen && <Spellbook />}
-      {isNoteOpen && <NoteDisplay />}
+      {isNoteOpen && <QuestDisplay />}
     </>
   );
 };

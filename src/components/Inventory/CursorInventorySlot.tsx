@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import styles from "./CursorInventorySlot.module.css";
 import { InventorySlot } from "@entities/InventorySlot";
 import { useDatabase } from "@hooks/useDatabase";
+
+const CursorSlot = styled.div`
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+`;
+
+const ItemIcon = styled.img`
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+`;
 
 const CursorInventorySlot: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
@@ -44,22 +56,20 @@ const CursorInventorySlot: React.FC = () => {
   }
 
   return (
-    <div
-      className={styles.cursorSlot}
+    <CursorSlot
       style={{
         left: position.x,
         top: position.y,
       }}
     >
-      <img
+      <ItemIcon
         src={`/icons/${itemDetails.icon}.gif`}
         alt={itemDetails.Name}
         title={itemDetails.Name}
-        className={styles.itemIcon}
         onMouseEnter={() => setHoveredItem(itemDetails)}
         onMouseLeave={() => setHoveredItem(null)}
       />
-    </div>
+    </CursorSlot>
   );
 };
 

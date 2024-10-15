@@ -14,6 +14,8 @@ interface DialogueState {
   setCurrentNPC: (npcName: string) => void;
   addDialogueEntry: (npcName: string, entry: DialogueEntry) => void;
   getDialogueHistory: (npcName: string) => DialogueEntry[];
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 const useDialogueStore = create<DialogueState>((set, get) => ({
@@ -29,6 +31,8 @@ const useDialogueStore = create<DialogueState>((set, get) => ({
     },
   })),
   getDialogueHistory: (npcName) => get().dialogueHistory[npcName] || [],
+  isLoading: false,
+  setIsLoading: (isLoading) => set({ isLoading }),
 }));
 
 export default useDialogueStore;
