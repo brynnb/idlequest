@@ -72,10 +72,14 @@ const QuestNPCList: React.FC = () => {
   const handleNPCClick = async (npc: NPCType) => {
     setCurrentNPC(npc.name);
     const dialogueHistory = getDialogueHistory(npc.name);
-    const dialogue = await getNPCDialogue(npc.name, dialogueHistory);
-    if (dialogue) {
-      setCurrentDialogue(dialogue);
-      addDialogueEntry(npc.name, { npcDialogue: dialogue.dialogue });
+    if (dialogueHistory.length === 0) {
+      const dialogue = await getNPCDialogue(npc.name);
+      if (dialogue) {
+        setCurrentDialogue(dialogue);
+        addDialogueEntry(npc.name, { npcDialogue: dialogue.dialogue, isPlayer: false });
+      }
+    } else {
+      setCurrentDialogue(null);
     }
   };
 

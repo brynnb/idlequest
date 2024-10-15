@@ -4,6 +4,7 @@ import { DialogueResponse, NonDialogueResponse } from '@utils/getNPCDialogue';
 interface DialogueEntry {
   npcDialogue: string;
   playerQuestion?: string;
+  isPlayer: boolean;
 }
 
 interface DialogueState {

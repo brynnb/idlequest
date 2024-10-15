@@ -35,11 +35,22 @@ const DialogueDisplay = styled.div.attrs({
   color: black;
   font-size: 20px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+`;
+
+const DialogueEntry = styled.div<{ isPlayer: boolean }>`
+  max-width: 80%;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 12px;
+  align-self: ${props => props.isPlayer ? 'flex-end' : 'flex-start'};
 `;
 
 const QuestionsList = styled.ul`
   list-style-type: none;
   padding: 0;
+  align-self: flex-end;
 `;
 
 const QuestionItem = styled.li`
@@ -79,15 +90,17 @@ const NoteDisplay: React.FC = () => {
 
   const handleQuestionClick = async (question: string) => {
     if (currentNPC) {
-      addDialogueEntry(currentNPC, { npcDialogue: currentDialogue?.dialogue || '', playerQuestion: question });
+      addDialogueEntry(currentNPC, { npcDialogue: '', playerQuestion: question, isPlayer: true });
       const dialogueHistory = getDialogueHistory(currentNPC);
       const newDialogue = await getNPCDialogue(currentNPC, dialogueHistory);
       if (newDialogue) {
         setCurrentDialogue(newDialogue);
-        addDialogueEntry(currentNPC, { npcDialogue: newDialogue.dialogue });
+        addDialogueEntry(currentNPC, { npcDialogue: newDialogue.dialogue, isPlayer: false });
       }
     }
   };
+
+  const dialogueHistory = currentNPC ? getDialogueHistory(currentNPC) : [];
 
   return (
     <NoteDisplayContainer>
@@ -98,10 +111,14 @@ const NoteDisplay: React.FC = () => {
         <DialogueDisplay>
           {isLoading ? (
             <p><LoadingText>(Loading) {LoadingJokeUtil.getRandomLoadingJoke()}</LoadingText></p>
-          ) : currentDialogue ? (
+          ) : dialogueHistory.length > 0 ? (
             <>
-              <p>{currentDialogue.dialogue}</p>
-              {Array.isArray(currentDialogue.responses) && currentDialogue.responses.length > 0 ? (
+              {dialogueHistory.map((entry, index) => (
+                <DialogueEntry key={index} isPlayer={entry.isPlayer}>
+                  {entry.isPlayer ? entry.playerQuestion : entry.npcDialogue}
+                </DialogueEntry>
+              ))}
+              {currentDialogue && Array.isArray(currentDialogue.responses) && currentDialogue.responses.length > 0 && (
                 <QuestionsList>
                   {currentDialogue.responses.map((response, index) => (
                     <QuestionItem 
@@ -112,7 +129,7 @@ const NoteDisplay: React.FC = () => {
                     </QuestionItem>
                   ))}
                 </QuestionsList>
-              ) : null}
+              )}
             </>
           ) : (
             <p>Select an NPC to begin a conversation.</p>
