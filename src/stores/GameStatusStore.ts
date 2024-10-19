@@ -5,6 +5,11 @@ import { getZoneNPCs } from "@utils/getZoneNPCs";
 import Zone from "@entities/Zone";
 import { useDatabase } from "@hooks/useDatabase";
 
+interface ContainerPosition {
+  x: number;
+  y: number;
+}
+
 interface GameStatusStore {
   zones: Zone[];
   currentZone: number | null;
@@ -31,7 +36,9 @@ interface GameStatusStore {
   isSpellbookOpen: boolean;
   toggleSpellbook: () => void;
   isNoteOpen: boolean;
-  toggleNote: () => void; 
+  toggleNote: () => void;
+  containerPositions: Record<number, ContainerPosition>;
+  setContainerPosition: (bagSlot: number, position: ContainerPosition) => void;
 }
 
 const defaultIsRunning = true;
@@ -167,6 +174,16 @@ const useGameStatusStore = create<GameStatusStore>()(
                 isNoteOpen: !state.isNoteOpen,
                 isInventoryOpen: state.isNoteOpen ? false : state.isInventoryOpen,
                 isMapOpen: state.isNoteOpen ? false : state.isMapOpen,
+              }));
+            },
+
+            containerPositions: {},
+            setContainerPosition: (bagSlot, position) => {
+              set((state) => ({
+                containerPositions: {
+                  ...state.containerPositions,
+                  [bagSlot]: position,
+                },
               }));
             },
           };
