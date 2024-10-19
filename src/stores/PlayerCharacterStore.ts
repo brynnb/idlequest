@@ -38,6 +38,7 @@ interface PlayerCharacterStore {
   updateHealthAndMana: (newHealth: number, newMana: number) => void;
   updateWeight: () => void;
   updateWeightAllowance: () => void;
+  updateAllStats: () => void;
 }
 
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
@@ -51,7 +52,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             characterProfile: { ...state.characterProfile, inventory },
           }));
           await get().loadItemDetails();
-          get().updateArmorClass();
+          get().updateAllStats();
         },
         addInventoryItem: async (item: InventoryItem) => {
           const itemDetails = await getItemById(item.itemid || 0);
@@ -69,10 +70,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               inventory: [...state.characterProfile.inventory, newItem],
             },
           }));
-          get().updateArmorClass();
-          get().updateMaxHP();
-          get().updateMaxMana();
-          get().updateWeight();
+          get().updateAllStats();
         },
         removeInventoryItem: (slotId) =>
           set((state) => ({
@@ -83,7 +81,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               ),
             },
           })),
-        clearInventory: () =>
+        clearInventory: () => {
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
@@ -93,7 +91,9 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               silver: 0,
               copper: 0,
             },
-          })),
+          }));
+          get().updateAllStats();
+        },
         loadItemDetails: async () => {
           const { characterProfile } = get();
           const itemsToLoad = characterProfile?.inventory?.filter(
@@ -162,6 +162,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               }
             );
 
+            get().updateAllStats();
             return {
               characterProfile: {
                 ...state.characterProfile,
@@ -182,6 +183,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               }
             );
 
+            get().updateAllStats();
             return {
               characterProfile: {
                 ...state.characterProfile,
@@ -267,9 +269,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                   `Congratulations! You have reached level ${level}!`,
                   MessageType.EXPERIENCE_GAIN
                 );
-                get().updateArmorClass();
-                get().updateMaxHP();
-                get().updateMaxMana();
+                get().updateAllStats();
               }, 0);
             }
 
@@ -294,6 +294,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               weightAllowance: newWeightAllowance,
             },
           }));
+        },
+        updateAllStats: () => {
+          get().updateArmorClass();
+          get().updateMaxHP();
+          get().updateMaxMana();
+          get().updateWeight();
         },
       }),
       { name: "player-character-storage" }

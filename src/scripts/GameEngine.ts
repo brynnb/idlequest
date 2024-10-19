@@ -64,7 +64,7 @@ class GameEngine {
     if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
 
     const playerLevel = characterProfile.level || 1;
-    const levelRange = 4; //adjust as needed
+    const levelRange = 99; //adjust as needed
 
     const eligibleNPCs = currentZoneNPCs.filter((npc) => {
       const npcLevel = npc.level || 1;

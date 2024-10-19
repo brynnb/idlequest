@@ -38,7 +38,7 @@ export const calculateTotalEquippedAC = (
 export const calculateTotalWeight = (character: CharacterProfile): number => {
   if (!character.inventory) return 0;
 
-  return character.inventory.reduce((totalWeight, item) => {
+  const total =  character.inventory.reduce((totalWeight, item) => {
     const itemWeight = Number(item.itemDetails?.weight) || 0;
     console.log("itemWeight", itemWeight);
     console.log("item name", item.itemDetails?.name);
@@ -46,4 +46,5 @@ export const calculateTotalWeight = (character: CharacterProfile): number => {
     console.log("item slot", item.slotid);
     return totalWeight + itemWeight;
   }, 0);
+  return Math.round(total / 10);
 };

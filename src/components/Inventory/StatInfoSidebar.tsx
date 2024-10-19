@@ -74,8 +74,9 @@ const MiddleBottomLevelResists = styled.div`
 const BottomLevelWeight = styled.div`
   position: absolute;
   top: 850px;
-  left: 104px;
+  left: 40px;
   line-height: 6px;
+  width: 200px;
 `;
 
 const StatInfoBar: React.FC = () => {
