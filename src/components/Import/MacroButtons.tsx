@@ -5,6 +5,7 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import { InventorySlot } from "@entities/InventorySlot";
 import { handleEquipAllItems, handleSellGeneralInventory } from "@utils/itemUtils";
+import { addItemToInventory } from "@utils/inventoryUtils";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
   display: flex;
@@ -136,6 +137,15 @@ const MacroButtons = () => {
     clearInventory();
   };
 
+  const handleAddTestItem = async () => {
+    const success = await addItemToInventory(17046);
+    if (success) {
+      console.log("Test item added successfully");
+    } else {
+      console.log("Failed to add test item");
+    }
+  };
+
   const renderMacroButton = (num: number) => {
     switch (num) {
       case 1:
@@ -146,6 +156,8 @@ const MacroButtons = () => {
         return "Delete All Inventory";
       case 4:
         return "Sell General Inventory";
+      case 5:
+        return "Add Test Item";
       default:
         return num.toString();
     }
@@ -164,6 +176,9 @@ const MacroButtons = () => {
         break;
       case 4:
         handleSellGeneralInventory();
+        break;
+      case 5:
+        handleAddTestItem();
         break;
       default:
         console.log(`Button ${num} clicked`);

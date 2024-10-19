@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
 import { handleItemClick } from "@utils/itemUtils";
 import { InventorySlot } from "@entities/InventorySlot";
+import ContainerInventoryModal from "./ContainerInventoryModal";
 
 const GeneralInventoryContainer = styled.div`
   /* Add any container styles here */
@@ -40,6 +41,7 @@ const ItemIcon = styled.img`
 
 const GeneralInventorySlots: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
+  const [openBagSlots, setOpenBagSlots] = useState<Set<number>>(new Set());
 
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -48,6 +50,18 @@ const GeneralInventorySlots: React.FC = () => {
   };
 
   const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
+
+  const handleBagClick = (slot: number) => {
+    setOpenBagSlots(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(slot)) {
+        newSet.delete(slot);
+      } else {
+        newSet.add(slot);
+      }
+      return newSet;
+    });
+  };
 
   return (
     <GeneralInventoryContainer>
@@ -67,6 +81,12 @@ const GeneralInventorySlots: React.FC = () => {
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleItemClick(slot)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                if (itemDetails?.itemclass === 1) {
+                  handleBagClick(slot);
+                }
+              }}
             >
               {itemDetails && (
                 <ItemIcon
@@ -79,6 +99,13 @@ const GeneralInventorySlots: React.FC = () => {
           );
         })}
       </GeneralInventory>
+      {Array.from(openBagSlots).map(slot => (
+        <ContainerInventoryModal
+          key={`container-modal-${slot}`}
+          bagSlot={slot}
+          onClose={() => handleBagClick(slot)}
+        />
+      ))}
     </GeneralInventoryContainer>
   );
 };

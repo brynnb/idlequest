@@ -17,8 +17,12 @@ const MainContainer = styled.div`
 `;
 
 const Layout = () => {
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+  };
+
   return (
-    <MainContainer id="main">
+    <MainContainer id="main" onContextMenu={handleContextMenu}>
       {/* <Link to="/create">
         <ResetGameButton />
       </Link> */}
