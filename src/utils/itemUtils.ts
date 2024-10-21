@@ -30,7 +30,7 @@ export const handleItemClick = (slotId: InventorySlot) => {
   const currentSlotItem = getInventoryItemForSlot(slotId);
 
   const isItemAllowedInSlot = (item: InventoryItem, slot: InventorySlot) => {
-    if (slot === InventorySlot.Cursor || slot >= 23) return true;
+    if (slot === InventorySlot.Cursor || (slot >= 23 && slot <= 30) || (slot >= 262 && slot <= 351)) return true;
     if (!item.itemDetails || item.itemDetails.slots === undefined) return false;
     const itemSlots = parseInt(item.itemDetails.slots);
     return (

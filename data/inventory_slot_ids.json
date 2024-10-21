@@ -29,6 +29,42 @@
     "General5": 27,
     "General6": 28,
     "General7": 29,
-    "General8": 30
-
+    "General8": 30,
+    "Cursor": 31,
+    "General1Bag": {
+        "start": 262,
+        "end": 271
+    },
+    "General2Bag": {
+        "start": 272,
+        "end": 281
+    },
+    "General3Bag": {
+        "start": 282,
+        "end": 291
+    },
+    "General4Bag": {
+        "start": 292,
+        "end": 301
+    },
+    "General5Bag": {
+        "start": 302,
+        "end": 311
+    },
+    "General6Bag": {
+        "start": 312,
+        "end": 321
+    },
+    "General7Bag": {
+        "start": 322,
+        "end": 331
+    },
+    "General8Bag": {
+        "start": 332,
+        "end": 341
+    },
+    "CursorBag": {
+        "start": 342,
+        "end": 351
+    }
 }

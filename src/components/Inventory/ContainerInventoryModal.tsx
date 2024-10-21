@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Draggable from "react-draggable";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
@@ -133,6 +133,8 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
     return newPosition;
   });
 
+  const nodeRef = useRef(null);
+
   const bagItem = characterProfile?.inventory?.find(
     (item) => item.slotid === bagSlot
   );
@@ -140,7 +142,11 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
 
   const containerSlots = bagItem.itemDetails.bagslots || 0;
   const containerItems = characterProfile?.inventory?.filter(
-    (item) => item.slotid >= 251 && item.slotid < 251 + containerSlots
+    (item) => {
+      const bagStart = 262 + (bagSlot - 23) * 10;
+      const bagEnd = bagStart + 9;
+      return item.slotid >= bagStart && item.slotid <= bagEnd;
+    }
   );
 
   const handleDrag = (e: any, data: { x: number; y: number }) => {
@@ -152,8 +158,13 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
   const modalHeight = 120 + Math.ceil(containerSlots / 2) * 114 + 5;
 
   return (
-    <Draggable handle=".handle" position={position} onStop={handleDrag}>
-      <ModalContainer $height={modalHeight + 109}>
+    <Draggable
+      handle=".handle"
+      position={position}
+      onStop={handleDrag}
+      nodeRef={nodeRef}
+    >
+      <ModalContainer ref={nodeRef} $height={modalHeight + 109}>
         <ModalContent>
           <ModalHeader className="handle">
             <ModalTitle>{bagItem.itemDetails.name}</ModalTitle>

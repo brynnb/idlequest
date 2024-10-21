@@ -6,8 +6,7 @@ import { handleItemClick } from "@utils/itemUtils";
 import { InventorySlot } from "@entities/InventorySlot";
 import ContainerInventoryModal from "./ContainerInventoryModal";
 
-const GeneralInventoryContainer = styled.div`
-`;
+const GeneralInventoryContainer = styled.div``;
 
 const GeneralInventory = styled.div`
   width: 219px;
@@ -51,14 +50,11 @@ const GeneralInventorySlots: React.FC = () => {
   const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
 
   const handleBagClick = (slot: number) => {
-    console.log(`Attempting to open/close bag in slot ${slot}`);
-    setOpenBagSlots(prev => {
+    setOpenBagSlots((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(slot)) {
-        console.log(`Closing bag in slot ${slot}`);
         newSet.delete(slot);
       } else {
-        console.log(`Opening bag in slot ${slot}`);
         newSet.add(slot);
       }
       return newSet;
@@ -85,12 +81,8 @@ const GeneralInventorySlots: React.FC = () => {
               onClick={() => handleItemClick(slot)}
               onContextMenu={(e) => {
                 e.preventDefault();
-                console.log(`Right-click detected on slot ${slot}`);
                 if (itemDetails?.itemclass == 1) {
-                  console.log(`Item in slot ${slot} is a bag, attempting to open`);
                   handleBagClick(slot);
-                } else {
-                  console.log(`Item in slot ${slot} is not a bag, itemclass: ${itemDetails?.itemclass}`);
                 }
               }}
             >
@@ -105,7 +97,7 @@ const GeneralInventorySlots: React.FC = () => {
           );
         })}
       </GeneralInventory>
-      {Array.from(openBagSlots).map(slot => (
+      {Array.from(openBagSlots).map((slot) => (
         <ContainerInventoryModal
           key={`container-modal-${slot}`}
           bagSlot={slot}

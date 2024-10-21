@@ -1,17 +1,23 @@
 import { InventoryItem } from "@entities/InventoryItem";
 import { InventorySlot } from "@entities/InventorySlot";
 import CharacterProfile from "@entities/CharacterProfile";
-import { Item } from "@entities/Item";
 import { getItemById } from "@utils/databaseOperations";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 
 export const getNextAvailableSlot = (
   inventory: InventoryItem[],
-  generalSlots: number[]
+  generalSlots: number[],
+  bagSlots: number[]
 ): number | null => {
   const occupiedSlots = new Set(inventory.map((item) => item.slotid));
 
   for (const slot of generalSlots) {
+    if (!occupiedSlots.has(slot)) {
+      return slot;
+    }
+  }
+
+  for (const slot of bagSlots) {
     if (!occupiedSlots.has(slot)) {
       return slot;
     }
@@ -41,25 +47,28 @@ export const calculateTotalEquippedAC = (
 export const calculateTotalWeight = (character: CharacterProfile): number => {
   if (!character.inventory) return 0;
 
-  const total =  character.inventory.reduce((totalWeight, item) => {
+  const total = character.inventory.reduce((totalWeight, item) => {
     const itemWeight = Number(item.itemDetails?.weight) || 0;
-    // console.log("itemWeight", itemWeight);
-    // console.log("item name", item.itemDetails?.name);
-    //show slot
-    // console.log("item slot", item.slotid);
+
     return totalWeight + itemWeight;
   }, 0);
   return Math.round(total / 10);
 };
 
 export const addItemToInventory = async (itemId: number): Promise<boolean> => {
-  const { addInventoryItem, characterProfile } = usePlayerCharacterStore.getState();
+  const { addInventoryItem, characterProfile } =
+    usePlayerCharacterStore.getState();
   const item = await getItemById(itemId);
-  
+
   if (item) {
-    const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30]; //todo: reference this from existing code
-    const nextAvailableSlot = getNextAvailableSlot(characterProfile.inventory, generalSlots);
-    
+    const generalSlots = Object.values(InventorySlot).filter(slot => slot >= InventorySlot.General1Bag && slot <= InventorySlot.General8Bag);
+    const bagSlots = Object.values(InventorySlot).filter(slot => slot >= InventorySlot.General1Bag && slot <= InventorySlot.General8Bag);
+    const nextAvailableSlot = getNextAvailableSlot(
+      characterProfile.inventory,
+      generalSlots,
+      bagSlots
+    );
+
     if (nextAvailableSlot !== null) {
       await addInventoryItem({
         itemid: item.id,

@@ -63,6 +63,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             return;
           } // Prevent adding if item not found
           const newItem = { ...item, itemDetails };
+          
 
           set((state) => ({
             characterProfile: {
@@ -216,7 +217,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         updateMaxHP: () => {
           const { characterProfile } = get();
           const newMaxHP = calculatePlayerHP(characterProfile);
-          console.log("New max HP:", newMaxHP);
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
@@ -227,7 +227,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         updateMaxMana: () => {
           const { characterProfile } = get();
           const newMaxMana = calculatePlayerMana(characterProfile);
-          console.log("New max Mana:", newMaxMana);
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,

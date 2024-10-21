@@ -15,10 +15,10 @@ const CurrencyContainer = styled.div`
   font-size: 25px;
 `;
 
-const CurrencyItem = styled.div<{ index: number }>`
+const CurrencyItem = styled.div<{ $index: number }>`
   position: absolute;
   top: 50px;
-  left: ${(props) => (props.index - 1) * pixelsApart}px;
+  left: ${(props) => (props.$index - 1) * pixelsApart}px;
   min-width: 50px;
   text-align: center;
   white-space: nowrap;
@@ -42,10 +42,10 @@ const PlayerCurrencyDisplay: React.FC = () => {
   return (
     <CurrencyContainer>
       <CurrencyTextContainer>
-        <CurrencyItem index={1}>{characterProfile.platinum || 0}</CurrencyItem>
-        <CurrencyItem index={2}>{characterProfile.gold || 0}</CurrencyItem>
-        <CurrencyItem index={3}>{characterProfile.silver || 0}</CurrencyItem>
-        <CurrencyItem index={4}>{characterProfile.copper || 0}</CurrencyItem>
+        <CurrencyItem $index={1}>{characterProfile.platinum || 0}</CurrencyItem>
+        <CurrencyItem $index={2}>{characterProfile.gold || 0}</CurrencyItem>
+        <CurrencyItem $index={3}>{characterProfile.silver || 0}</CurrencyItem>
+        <CurrencyItem $index={4}>{characterProfile.copper || 0}</CurrencyItem>
       </CurrencyTextContainer>
     </CurrencyContainer>
   );

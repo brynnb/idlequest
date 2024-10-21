@@ -22,7 +22,16 @@ export enum InventorySlot {
   Waist = 20,
   PowerSource = 21,
   Ammo = 22,
-  Cursor = 31
+  Cursor = 31,
+  General1Bag = 262,
+  General2Bag = 272,
+  General3Bag = 282,
+  General4Bag = 292,
+  General5Bag = 302,
+  General6Bag = 312,
+  General7Bag = 322,
+  General8Bag = 332,
+  CursorBag = 342,
 }
 
 export const SlotBitmasks: { [key in InventorySlot]: number } = {
@@ -49,18 +58,19 @@ export const SlotBitmasks: { [key in InventorySlot]: number } = {
   [InventorySlot.Waist]: 1048576,
   [InventorySlot.PowerSource]: 2097152,
   [InventorySlot.Ammo]: 4194304,
-  [InventorySlot.Cursor]: 8388608
 };
 
 export function getInventorySlotNames(slotBitmask: number): string[] {
   const slotNames: string[] = [];
-  
+
   // Check the bitmask
   for (const [key, value] of Object.entries(SlotBitmasks)) {
     if ((slotBitmask & value) !== 0) {
-      slotNames.push(InventorySlot[Number(key)].replace(/\d+/g, '').toUpperCase());      
+      slotNames.push(
+        InventorySlot[Number(key)].replace(/\d+/g, "").toUpperCase()
+      );
     }
   }
-  
+
   return slotNames;
 }

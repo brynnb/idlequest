@@ -22,7 +22,7 @@ const useInventoryCreator = () => {
           (item.zoneid === zone || item.zoneid === 0)
       );
 
-      let currentSlot = 23;
+      let currentSlot = 23; //todo: make this use getNextAvailableSlot function from that other file
       const inventoryItems: InventoryItem[] = matchingStartingItems
         .slice(0, 8)
         .map((startingItem) => {
