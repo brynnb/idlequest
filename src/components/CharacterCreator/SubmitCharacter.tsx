@@ -2,24 +2,37 @@ import React from "react";
 import useInventoryCreator from "@hooks/useInventoryCreator";
 import { createNewCharacterProfile } from "@utils/playerCharacterUtils";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 
 const SubmitCharacter: React.FC = () => {
-  const { loading } = useInventoryCreator();
+  const { loading, createInventory } = useInventoryCreator();
   const {
     characterName,
     selectedRace,
     selectedClass,
     selectedDeity,
     selectedZone,
-    allPointsAllocated
+    allPointsAllocated,
+    attributes
   } = useCharacterCreatorStore();
+
+  const { setCharacterProfile } = usePlayerCharacterStore();
 
   const handleSubmit = async () => {
     await createNewCharacterProfile(
-      characterCreatorState,
+      {
+        characterName,
+        selectedRace,
+        selectedClass,
+        selectedDeity,
+        selectedZone,
+        attributes,
+        allPointsAllocated
+      },
       createInventory,
       setCharacterProfile
-    );  };
+    );
+  };
 
   return (
     <button

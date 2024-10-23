@@ -14,7 +14,9 @@ import { calculatePlayerMana } from "@utils/playerCharacterUtils";
 import { calculateTotalWeight } from "@/utils/inventoryUtils";
 
 function createDefaultCharacterProfile(): CharacterProfile {
-  return {} as CharacterProfile;
+  return {
+    inventory: [],
+  } as CharacterProfile;
 }
 
 interface PlayerCharacterStore {

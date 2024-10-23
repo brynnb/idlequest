@@ -114,7 +114,19 @@ export const calculatePlayerMana = (character: CharacterProfile): number => {
   return Math.floor(manaGained);
 };
 
-export const createNewCharacterProfile = async () => {
+export const createNewCharacterProfile = async (
+  characterCreatorState: {
+    characterName: string;
+    selectedRace: Race;
+    selectedClass: CharacterClass;
+    selectedDeity: Deity;
+    selectedZone: Zone;
+    attributes: CharacterCreationAttributes;
+    allPointsAllocated: boolean;
+  },
+  createInventory: (race: number, characterClass: number, deity: number, zone: number) => Promise<Item[]>,
+  setCharacterProfile: (profile: CharacterProfile) => void
+) => {
   const {
     characterName,
     selectedRace,
@@ -123,13 +135,7 @@ export const createNewCharacterProfile = async () => {
     selectedZone,
     attributes,
     allPointsAllocated,
-  } = useCharacterCreatorStore();
-
-  const { createInventory } = useInventoryCreator();
-
-  const setCharacterProfile = usePlayerCharacterStore(
-    (state) => state.setCharacterProfile
-  );
+  } = characterCreatorState;
 
   const newCharacterProfile: CharacterProfile = {
     name: characterName,
@@ -158,6 +164,7 @@ export const createNewCharacterProfile = async () => {
       ac: 0,
       atk: 100,
     },
+    inventory: [],
   };
 
   newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
@@ -165,7 +172,6 @@ export const createNewCharacterProfile = async () => {
   newCharacterProfile.maxMana = calculatePlayerMana(newCharacterProfile);
   newCharacterProfile.curMana = newCharacterProfile.maxMana;
   newCharacterProfile.stats.ac = calculateSimpleArmorClass(newCharacterProfile);
-
 
   setCharacterProfile(newCharacterProfile);
 
@@ -176,5 +182,4 @@ export const createNewCharacterProfile = async () => {
     selectedZone.id
   );
   handleLoot(startingItems);
-
 };
