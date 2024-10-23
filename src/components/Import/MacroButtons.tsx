@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { InventorySlot } from "@entities/InventorySlot";
-import { handleEquipAllItems, handleSellGeneralInventory } from "@utils/itemUtils";
-import { addItemToInventory } from "@utils/inventoryUtils";
+import {
+  handleEquipAllItems,
+  handleSellGeneralInventory,
+  addItemToInventoryByItemId,
+} from "@utils/itemUtils";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
   display: flex;
@@ -138,12 +140,7 @@ const MacroButtons = () => {
   };
 
   const handleAddTestItem = async () => {
-    const success = await addItemToInventory(17046);
-    if (success) {
-      console.log("Test item added successfully");
-    } else {
-      console.log("Failed to add test item");
-    }
+    addItemToInventoryByItemId(17046);
   };
 
   const renderMacroButton = (num: number) => {

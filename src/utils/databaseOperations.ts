@@ -94,6 +94,7 @@ export const getByZoneId = async <T extends "items" | "zone">(
 };
 
 export const getItemById = async (id: number): Promise<Item | undefined> => {
+  console.log("getItemById", id);
   return getById("items", id) as Promise<Item | undefined>;
 };
 

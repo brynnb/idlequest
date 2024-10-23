@@ -3,8 +3,6 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { getNextAvailableSlot } from "@utils/inventoryUtils";
 import { InventoryItem } from "@entities/InventoryItem";
 
-const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30]; // Define your general slots here
-
 const AddInventoryItem: React.FC = () => {
   const [itemId, setItemId] = useState("");
   const { addInventoryItem, characterProfile } = usePlayerCharacterStore();
@@ -18,19 +16,8 @@ const AddInventoryItem: React.FC = () => {
 
   const handleAddItem = async () => {
     if (itemId) {
-      const nextSlot = getNextAvailableSlot(
-        characterProfile.inventory,
-        generalSlots
-      );
-
-      if (nextSlot === null) {
-        alert("No available slots in inventory!");
-        return;
-      }
-
       const newItem: InventoryItem = {
         itemid: parseInt(itemId),
-        slotid: nextSlot,
         charges: 1,
         color: 0,
         augslot1: 0,

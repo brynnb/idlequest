@@ -1,6 +1,10 @@
 //sourced from here, may not be totally accurate, but spot check looks good: https://www.eqemulator.org/forums/showthread.php?t=14911
 import CharacterProfile from "@entities/CharacterProfile";
 import { ClassId } from "@entities/CharacterClass";
+import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
+import useInventoryCreator from "@hooks/useInventoryCreator";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import { handleLoot } from "@utils/itemUtils";
 
 const getHpLevelMultiplier = (
   characterClass: number,
@@ -65,14 +69,23 @@ export const calculatePlayerHP = (character: CharacterProfile): number => {
 };
 
 export const calculatePlayerMana = (character: CharacterProfile): number => {
-  if (!character.level || !character.class || !character.attributes?.int || !character.attributes?.wis) {
+  if (
+    !character.level ||
+    !character.class ||
+    !character.attributes?.int ||
+    !character.attributes?.wis
+  ) {
     return 0;
   }
 
   const classId = character.class.id;
 
   // Warriors, Monks, and Rogues have no mana
-  if (classId === ClassId.Warrior || classId === ClassId.Monk || classId === ClassId.Rogue) {
+  if (
+    classId === ClassId.Warrior ||
+    classId === ClassId.Monk ||
+    classId === ClassId.Rogue
+  ) {
     return 0;
   }
 
@@ -81,7 +94,15 @@ export const calculatePlayerMana = (character: CharacterProfile): number => {
   const wis = character.attributes.wis;
 
   // Determine which attribute to use based on class
-  const manaAttribute = [ClassId.Cleric, ClassId.Paladin, ClassId.Druid, ClassId.Shaman, ClassId.Ranger].includes(classId) ? wis : int;
+  const manaAttribute = [
+    ClassId.Cleric,
+    ClassId.Paladin,
+    ClassId.Druid,
+    ClassId.Shaman,
+    ClassId.Ranger,
+  ].includes(classId)
+    ? wis
+    : int;
 
   let manaGained;
   if (manaAttribute <= 200) {
@@ -91,4 +112,69 @@ export const calculatePlayerMana = (character: CharacterProfile): number => {
   }
 
   return Math.floor(manaGained);
+};
+
+export const createNewCharacterProfile = async () => {
+  const {
+    characterName,
+    selectedRace,
+    selectedClass,
+    selectedDeity,
+    selectedZone,
+    attributes,
+    allPointsAllocated,
+  } = useCharacterCreatorStore();
+
+  const { createInventory } = useInventoryCreator();
+
+  const setCharacterProfile = usePlayerCharacterStore(
+    (state) => state.setCharacterProfile
+  );
+
+  const newCharacterProfile: CharacterProfile = {
+    name: characterName,
+    race: selectedRace,
+    class: selectedClass,
+    deity: selectedDeity,
+    zoneId: selectedZone.zoneidnumber,
+    level: 1,
+    exp: 0,
+    weightAllowance: attributes.str + attributes.base_str,
+    attributes: {
+      str: attributes.str + attributes.base_str,
+      sta: attributes.sta + attributes.base_sta,
+      cha: attributes.cha + attributes.base_cha,
+      dex: attributes.dex + attributes.base_dex,
+      int: attributes.int + attributes.base_int,
+      agi: attributes.agi + attributes.base_agi,
+      wis: attributes.wis + attributes.base_wis,
+    },
+    intoxication: 0,
+    maxHp: 0,
+    curHp: 0,
+    maxMana: 0,
+    curMana: 0,
+    stats: {
+      ac: 0,
+      atk: 100,
+    },
+  };
+
+  newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
+  newCharacterProfile.curHp = newCharacterProfile.maxHp;
+  newCharacterProfile.maxMana = calculatePlayerMana(newCharacterProfile);
+  newCharacterProfile.curMana = newCharacterProfile.maxMana;
+  newCharacterProfile.stats.ac = calculateSimpleArmorClass(newCharacterProfile);
+
+
+  setCharacterProfile(newCharacterProfile);
+
+  const startingItems = await createInventory(
+    selectedRace.id,
+    selectedClass.id,
+    selectedDeity.id,
+    selectedZone.id
+  );
+  handleLoot(startingItems);
+
 };

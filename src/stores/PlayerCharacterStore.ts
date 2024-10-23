@@ -54,16 +54,18 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           await get().loadItemDetails();
           get().updateAllStats();
         },
-        addInventoryItem: async (item: InventoryItem) => {
-          const itemDetails = await getItemById(item.itemid || 0);
+
+        addInventoryItem: async (item: InventoryItem, itemDetails?: Item) => {
+          if (!itemDetails) {
+            itemDetails = await getItemById(item.itemid || 0);
+          }
           if (!itemDetails) {
             console.error(
               `Item with ID ${item.itemid} not found in the database.`
             );
             return;
-          } // Prevent adding if item not found
+          }
           const newItem = { ...item, itemDetails };
-          
 
           set((state) => ({
             characterProfile: {

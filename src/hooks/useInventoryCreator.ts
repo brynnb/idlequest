@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import startingItemsData from "../../data/starting_items.json";
-import { InventoryItem } from "@entities/InventoryItem";
+import { Item } from "@entities/Item";
+import { getItemById } from "@utils/databaseOperations";
 
 const useInventoryCreator = () => {
   const [loading, setLoading] = useState(false);
@@ -22,24 +23,18 @@ const useInventoryCreator = () => {
           (item.zoneid === zone || item.zoneid === 0)
       );
 
-      let currentSlot = 23; //todo: make this use getNextAvailableSlot function from that other file
-      const inventoryItems: InventoryItem[] = matchingStartingItems
-        .slice(0, 8)
-        .map((startingItem) => {
-          if (currentSlot > 30) return null;
-
-          const inventoryItem: InventoryItem = {
-            slotid: currentSlot,
-            itemid: startingItem.itemid,
-            charges: startingItem.item_charges || 0,
-          };
-          currentSlot++;
-          return inventoryItem;
+      const inventoryItems: Item[] = await Promise.all(
+        matchingStartingItems.slice(0, 8).map(async (startingItem) => {
+          const item = await getItemById(startingItem.itemid);
+          if (item) {
+            item.charges = startingItem.item_charges || 0;
+          }
+          return item;
         })
-        .filter((item): item is InventoryItem => item !== null);
+      );
 
       setLoading(false);
-      return inventoryItems;
+      return inventoryItems.filter((item): item is Item => item !== undefined);
     },
     []
   );

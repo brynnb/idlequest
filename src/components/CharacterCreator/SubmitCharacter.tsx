@@ -1,70 +1,25 @@
 import React from "react";
-import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useInventoryCreator from "@hooks/useInventoryCreator";
-import { calculatePlayerHP, calculatePlayerMana } from "@utils/playerCharacterUtils";
-import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
+import { createNewCharacterProfile } from "@utils/playerCharacterUtils";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 
 const SubmitCharacter: React.FC = () => {
+  const { loading } = useInventoryCreator();
   const {
     characterName,
     selectedRace,
     selectedClass,
     selectedDeity,
     selectedZone,
-    attributes,
-    allPointsAllocated,
+    allPointsAllocated
   } = useCharacterCreatorStore();
 
-  const setCharacterProfile = usePlayerCharacterStore(
-    (state) => state.setCharacterProfile
-  );
-  const setInventory = usePlayerCharacterStore((state) => state.setInventory);
-
-  const { createInventory, loading } = useInventoryCreator();
-
   const handleSubmit = async () => {
-    const newCharacterProfile = {
-      name: characterName,
-      race: selectedRace,
-      class: selectedClass,
-      deity: selectedDeity,
-      zoneId: selectedZone.zoneidnumber,
-      level: 1,
-      exp: 0,
-      weightAllowance: attributes.str + attributes.base_str,
-      attributes: {
-        str: attributes.str + attributes.base_str,
-        sta: attributes.sta + attributes.base_sta,
-        cha: attributes.cha + attributes.base_cha,
-        dex: attributes.dex + attributes.base_dex,
-        int: attributes.int + attributes.base_int,
-        agi: attributes.agi + attributes.base_agi,
-        wis: attributes.wis + attributes.base_wis,
-      },
-      intoxication: 0,
-    };
-    newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
-    newCharacterProfile.curHp = newCharacterProfile.maxHp;
-    newCharacterProfile.maxMana = calculatePlayerMana(newCharacterProfile);
-    newCharacterProfile.curMana = newCharacterProfile.maxMana;
-    newCharacterProfile.stats = {
-      ac: calculateSimpleArmorClass(newCharacterProfile),
-      atk: 100,
-    };
-
-    setCharacterProfile(newCharacterProfile);
-
-    const inventory = await createInventory(
-      selectedRace.id,
-      selectedClass.id,
-      selectedDeity.id,
-      selectedZone.id
-    );
-    setInventory(inventory);
-
-    console.log("Character created successfully!");
-  };
+    await createNewCharacterProfile(
+      characterCreatorState,
+      createInventory,
+      setCharacterProfile
+    );  };
 
   return (
     <button
