@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Draggable from "react-draggable";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
-import { handleItemClick } from "@utils/itemUtils";
+import { handleItemClick, getBagStartingSlot } from "@utils/itemUtils";
 import ActionButton from "@components/Interface/ActionButton";
 
 const ModalContainer = styled.div.attrs({
@@ -141,13 +141,11 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
   if (!bagItem || !bagItem.itemDetails) return null;
 
   const containerSlots = bagItem.itemDetails.bagslots || 0;
-  const containerItems = characterProfile?.inventory?.filter(
-    (item) => {
-      const bagStart = 262 + (bagSlot - 23) * 10;
-      const bagEnd = bagStart + 9;
-      return item.slotid >= bagStart && item.slotid <= bagEnd;
-    }
-  );
+  const containerItems = characterProfile?.inventory?.filter((item) => {
+    const bagStart = getBagStartingSlot(bagSlot);
+    const bagEnd = bagStart + (containerSlots - 1);
+    return item.slotid >= bagStart && item.slotid <= bagEnd;
+  });
 
   const handleDrag = (e: any, data: { x: number; y: number }) => {
     const newPosition = { x: data.x, y: data.y };
@@ -178,7 +176,7 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
           </ContainerIcon>
           <ContainerInventory>
             {Array.from({ length: containerSlots }).map((_, index) => {
-              const slotId = 251 + index;
+              const slotId = getBagStartingSlot(bagSlot) + index;
               const inventoryItem = containerItems?.find(
                 (item) => item.slotid === slotId
               );

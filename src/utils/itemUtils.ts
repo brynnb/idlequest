@@ -31,12 +31,16 @@ export const handleItemClick = (slotId: InventorySlot) => {
   const currentSlotItem = getInventoryItemForSlot(slotId);
 
   const isItemAllowedInSlot = (item: InventoryItem, slot: InventorySlot) => {
-    if (
-      slot === InventorySlot.Cursor ||
-      (slot >= 23 && slot <= 30) ||
-      (slot >= 262 && slot <= 351)
-    )
-      return true;
+    // Allow items in cursor
+    if (slot === InventorySlot.Cursor) return true;
+    
+    // Allow items in general inventory slots
+    if (slot >= 23 && slot <= 30) return true;
+    
+    // Allow items in bag slots
+    if (slot >= 262 && slot <= 351) return true;
+    
+    // Check equipment slots
     if (!item.itemDetails || item.itemDetails.slots === undefined) return false;
     const itemSlots = parseInt(item.itemDetails.slots);
     return (
@@ -309,7 +313,7 @@ const findFirstAvailableGeneralSlot = (
   return undefined;
 };
 
-const getBagStartingSlot = (baseSlot: number): number => {
+export const getBagStartingSlot = (baseSlot: number): number => {
   switch (baseSlot) {
     case 23:
       return InventorySlot.General1BagStartingSlot;
@@ -421,3 +425,4 @@ export const addItemToInventoryByItemId = async (itemId: number) => {
 
   addItemToInventory(item);
 };
+

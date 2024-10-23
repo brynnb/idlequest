@@ -78,7 +78,7 @@ const GeneralInventorySlots: React.FC = () => {
               $col={col}
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
-              onClick={() => handleItemClick(slot)}
+              onClick={() => handleItemClick(slot as InventorySlot)}
               onContextMenu={(e) => {
                 e.preventDefault();
                 if (itemDetails?.itemclass == 1) {
