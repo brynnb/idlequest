@@ -50,9 +50,25 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         characterProfile: createDefaultCharacterProfile(),
         setCharacterProfile: (profile) => set({ characterProfile: profile }),
         setInventory: async (inventory) => {
-          set((state) => ({
-            characterProfile: { ...state.characterProfile, inventory },
-          }));
+          set((state) => {
+            // Deduplicate inventory items
+            const deduplicatedInventory = inventory.reduce((acc, item) => {
+              const existingItem = acc.find(i => i.slotid === item.slotid);
+              if (!existingItem) {
+                acc.push(item);
+              } else {
+                console.warn('Prevented duplicate item in slot:', item.slotid);
+              }
+              return acc;
+            }, [] as InventoryItem[]);
+
+            return {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: deduplicatedInventory,
+              },
+            };
+          });
           await get().loadItemDetails();
           get().updateAllStats();
         },
@@ -67,14 +83,25 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             );
             return;
           }
-          const newItem = { ...item, itemDetails };
 
-          set((state) => ({
-            characterProfile: {
-              ...state.characterProfile,
-              inventory: [...state.characterProfile.inventory, newItem],
-            },
-          }));
+          set((state) => {
+            const existingItem = state.characterProfile.inventory.find(
+              i => i.slotid === item.slotid
+            );
+            
+            if (existingItem) {
+              console.warn('Slot already occupied:', item.slotid);
+              return state;
+            }
+
+            return {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: [...state.characterProfile.inventory, { ...item, itemDetails }],
+              },
+            };
+          });
+          
           get().updateAllStats();
         },
         removeInventoryItem: (slotId) =>
@@ -178,6 +205,15 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         moveItemToSlot: (fromSlot: number, toSlot: number) =>
           set((state) => {
             if (!state.characterProfile) return state;
+
+            // Check if target slot is already occupied
+            const existingItem = state.characterProfile.inventory.find(
+              item => item.slotid === toSlot
+            );
+            if (existingItem) {
+              console.warn('Attempted to move item to occupied slot:', toSlot);
+              return state;
+            }
 
             const updatedInventory = state.characterProfile.inventory.map(
               (item) => {

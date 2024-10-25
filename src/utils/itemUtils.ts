@@ -20,8 +20,14 @@ import useChatStore, { MessageType } from "@stores/ChatStore";
 import { getItemById } from "./databaseOperations";
 
 export const handleItemClick = (slotId: InventorySlot) => {
-  const { characterProfile, swapItems, moveItemToSlot } =
+  const { characterProfile, swapItems, moveItemToSlot, setInventory } =
     usePlayerCharacterStore.getState();
+
+  console.log('Current inventory DETAILED:', characterProfile.inventory.map(item => ({
+    id: item.itemid,
+    slot: item.slotid,
+    name: item.itemDetails?.Name
+  })));
 
   const getInventoryItemForSlot = (slot: InventorySlot) => {
     return characterProfile?.inventory?.find((item) => item.slotid === slot);
@@ -29,6 +35,17 @@ export const handleItemClick = (slotId: InventorySlot) => {
 
   const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
   const currentSlotItem = getInventoryItemForSlot(slotId);
+
+  // If this is a bag, log its contents
+  if (cursorItem?.itemDetails?.itemclass === 1 || currentSlotItem?.itemDetails?.itemclass === 1) {
+    const bagSlot = cursorItem?.slotid ?? currentSlotItem?.slotid;
+    const startingSlot = getBagStartingSlot(bagSlot!);
+    console.log('Bag contents:', characterProfile.inventory.filter(item => 
+      item.slotid >= startingSlot && item.slotid < startingSlot + 10
+    ));
+  }
+
+  console.log('Clicking slot:', slotId);
 
   const isItemAllowedInSlot = (item: InventoryItem, slot: InventorySlot) => {
     // Allow items in cursor
@@ -50,16 +67,121 @@ export const handleItemClick = (slotId: InventorySlot) => {
     );
   };
 
+  const updateBagContents = (
+    inventory: InventoryItem[],
+    fromSlot: number,
+    toSlot: number
+  ): InventoryItem[] => {
+    const fromStart = getBagStartingSlot(fromSlot);
+    const toStart = getBagStartingSlot(toSlot);
+    const slotDifference = toStart - fromStart;
+
+    return inventory.map((item) => {
+      if (item.slotid === fromSlot) {
+        return { ...item, slotid: toSlot };
+      }
+      if (
+        fromStart > 0 && 
+        item.slotid >= fromStart && 
+        item.slotid < fromStart + 10
+      ) {
+        return { ...item, slotid: item.slotid + slotDifference };
+      }
+      return item;
+    });
+  };
+
   if (currentSlotItem && cursorItem) {
     if (isItemAllowedInSlot(cursorItem, slotId)) {
-      swapItems(currentSlotItem.slotid, cursorItem.slotid);
+      if (cursorItem.itemDetails?.itemclass === 1) {
+        console.log('Swapping bag with item');
+        let updatedInventory = [...characterProfile.inventory];
+        
+        // First update the bag contents
+        const fromStart = getBagStartingSlot(InventorySlot.Cursor);
+        const toStart = getBagStartingSlot(slotId);
+        console.log('Bag slots:', { fromStart, toStart });
+
+        updatedInventory = updatedInventory.map(item => {
+          // Move items in the bag
+          if (item.slotid >= fromStart && item.slotid < fromStart + 10) {
+            console.log('Moving bag item from', item.slotid, 'to', item.slotid - fromStart + toStart);
+            return { ...item, slotid: item.slotid - fromStart + toStart };
+          }
+          // Swap the bags themselves
+          if (item.slotid === InventorySlot.Cursor) {
+            return { ...item, slotid: slotId };
+          }
+          if (item.slotid === slotId) {
+            return { ...item, slotid: InventorySlot.Cursor };
+          }
+          return item;
+        });
+
+        console.log('Updated inventory:', updatedInventory);
+        setInventory(updatedInventory);
+      } else {
+        swapItems(currentSlotItem.slotid, cursorItem.slotid);
+      }
     }
   } else if (cursorItem) {
     if (isItemAllowedInSlot(cursorItem, slotId)) {
-      moveItemToSlot(InventorySlot.Cursor, slotId);
+      if (cursorItem.itemDetails?.itemclass === 1) {
+        console.log('Moving bag to empty slot');
+        let updatedInventory = [...characterProfile.inventory];
+        
+        // First update the bag contents
+        const fromStart = getBagStartingSlot(InventorySlot.Cursor);
+        const toStart = getBagStartingSlot(slotId);
+        console.log('Bag slots:', { fromStart, toStart });
+
+        updatedInventory = updatedInventory.map(item => {
+          // Move items in the bag
+          if (item.slotid >= fromStart && item.slotid < fromStart + 10) {
+            console.log('Moving bag item from', item.slotid, 'to', item.slotid - fromStart + toStart);
+            return { ...item, slotid: item.slotid - fromStart + toStart };
+          }
+          // Move the bag itself
+          if (item.slotid === InventorySlot.Cursor) {
+            return { ...item, slotid: slotId };
+          }
+          return item;
+        });
+
+        console.log('Updated inventory:', updatedInventory);
+        setInventory(updatedInventory);
+      } else {
+        moveItemToSlot(InventorySlot.Cursor, slotId);
+      }
     }
   } else if (currentSlotItem) {
-    moveItemToSlot(slotId, InventorySlot.Cursor);
+    if (currentSlotItem.itemDetails?.itemclass === 1) {
+      console.log('Moving bag to cursor');
+      let updatedInventory = [...characterProfile.inventory];
+      
+      // First update the bag contents
+      const fromStart = getBagStartingSlot(slotId);
+      const toStart = getBagStartingSlot(InventorySlot.Cursor);
+      console.log('Bag slots:', { fromStart, toStart });
+
+      updatedInventory = updatedInventory.map(item => {
+        // Move items in the bag
+        if (item.slotid >= fromStart && item.slotid < fromStart + 10) {
+          console.log('Moving bag item from', item.slotid, 'to', item.slotid - fromStart + toStart);
+          return { ...item, slotid: item.slotid - fromStart + toStart };
+        }
+        // Move the bag itself
+        if (item.slotid === slotId) {
+          return { ...item, slotid: InventorySlot.Cursor };
+        }
+        return item;
+      });
+
+      console.log('Updated inventory:', updatedInventory);
+      setInventory(updatedInventory);
+    } else {
+      moveItemToSlot(slotId, InventorySlot.Cursor);
+    }
   }
 
   usePlayerCharacterStore.getState().updateArmorClass();
@@ -315,6 +437,8 @@ const findFirstAvailableGeneralSlot = (
 
 export const getBagStartingSlot = (baseSlot: number): number => {
   switch (baseSlot) {
+    case InventorySlot.Cursor:
+      return InventorySlot.CursorBagStartingSlot; // Should be 342
     case 23:
       return InventorySlot.General1BagStartingSlot;
     case 24:
@@ -420,9 +544,50 @@ const isSellable = (item: Item): boolean => {
 };
 
 export const addItemToInventoryByItemId = async (itemId: number) => {
-  const item = await getItemById(itemId);
-  if (!item) return;
+  const { characterProfile, addInventoryItem } = usePlayerCharacterStore.getState();
+  const itemDetails = await getItemById(itemId);
+  
+  if (!itemDetails) {
+    console.error(`Failed to fetch item details for item ID: ${itemId}`);
+    return;
+  }
 
-  addItemToInventory(item);
+  const generalSlot = findFirstAvailableGeneralSlot(characterProfile.inventory);
+  if (generalSlot === undefined) {
+    console.warn('No available slots for new item');
+    return;
+  }
+
+  const newItem = {
+    itemid: itemId,
+    slotid: generalSlot,
+    charges: 1,
+    itemDetails,
+  };
+
+  await addInventoryItem(newItem);
+};
+
+const updateBagContents = (
+  inventory: InventoryItem[],
+  oldBagSlot: number,
+  newBagSlot: number
+): InventoryItem[] => {
+  const oldStartSlot = getBagStartingSlot(oldBagSlot);
+  const newStartSlot = getBagStartingSlot(newBagSlot);
+  const slotDifference = newStartSlot - oldStartSlot;
+
+  return inventory.map((item) => {
+    if (
+      item.slotid >= oldStartSlot &&
+      item.slotid < oldStartSlot + 10
+    ) {
+      return {
+        ...item,
+        slotid: item.slotid + slotDifference,
+      };
+    }
+    return item;
+  });
 };
 
