@@ -233,12 +233,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
               const firstBagItems = newInventory.filter(
                 item => item.slotid >= getBagStartingSlot(fromSlot) && 
-                        item.slotid < getBagStartingSlot(fromSlot) + firstBag.itemDetails.bagslots
+                        item.slotid < getBagStartingSlot(fromSlot) + 10 //max number of bag slots
               );
 
               const secondBagItems = newInventory.filter(
                 item => item.slotid >= getBagStartingSlot(toSlot) && 
-                        item.slotid < getBagStartingSlot(toSlot) + secondBag.itemDetails.bagslots
+                        item.slotid < getBagStartingSlot(toSlot) + 10 //max number of bag slots
               );
 
               newInventory = newInventory.filter(item => 

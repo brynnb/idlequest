@@ -8,7 +8,6 @@ const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
 
 export const getBagStartingSlot = (baseSlot: number): number => {
   const slotMap = {
-    [InventorySlot.Cursor]: 342,
     23: 262,
     24: 272,
     25: 282,
@@ -16,7 +15,8 @@ export const getBagStartingSlot = (baseSlot: number): number => {
     27: 302,
     28: 312,
     29: 322,
-    30: 332
+    30: 332,
+    31: 342
   };
   return slotMap[baseSlot as keyof typeof slotMap] ?? -1;
 };
