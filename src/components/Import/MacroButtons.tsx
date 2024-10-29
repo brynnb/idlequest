@@ -5,9 +5,9 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import {
   handleEquipAllItems,
-  handleSellGeneralInventory,
   addItemToInventoryByItemId,
 } from "@utils/itemUtils";
+import { useInventorySelling } from "@hooks/useInventorySelling";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
   display: flex;
@@ -95,12 +95,8 @@ const MacroButtons = () => {
   });
 
   const navigate = useNavigate();
-
-  const {
-    setCharacterProfile,
-    characterProfile,
-    clearInventory,
-  } = usePlayerCharacterStore();
+  const { sellGeneralInventory } = useInventorySelling();
+  const { setCharacterProfile, clearInventory } = usePlayerCharacterStore();
   const resetCharacterCreator = useCharacterCreatorStore(
     (state) => state.resetStore
   );
@@ -143,6 +139,10 @@ const MacroButtons = () => {
     addItemToInventoryByItemId(17046);
   };
 
+  const handleAddTestItem2 = async () => {
+    addItemToInventoryByItemId(9001);
+  };
+
   const renderMacroButton = (num: number) => {
     switch (num) {
       case 1:
@@ -155,6 +155,8 @@ const MacroButtons = () => {
         return "Sell General Inventory";
       case 5:
         return "Add Test Item";
+      case 6:
+        return "Add Test Item 2";
       default:
         return num.toString();
     }
@@ -172,10 +174,13 @@ const MacroButtons = () => {
         handleDeleteAllInventory();
         break;
       case 4:
-        handleSellGeneralInventory();
+        sellGeneralInventory(true);
         break;
       case 5:
         handleAddTestItem();
+        break;
+      case 6:
+        handleAddTestItem2();
         break;
       default:
         console.log(`Button ${num} clicked`);

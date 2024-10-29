@@ -12,6 +12,7 @@ import { getExperienceLevel } from "@entities/ExperienceLevel";
 import { calculatePlayerHP } from "@utils/playerCharacterUtils";
 import { calculatePlayerMana } from "@utils/playerCharacterUtils";
 import { calculateTotalWeight } from "@/utils/inventoryUtils";
+import { getBagStartingSlot } from "@utils/inventoryUtils";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {
@@ -43,6 +44,30 @@ interface PlayerCharacterStore {
   updateAllStats: () => void;
 }
 
+const moveBagContents = (
+  inventory: InventoryItem[],
+  bagSlot: number,
+  newSlot: number,
+  bagSize: number
+) => {
+  const oldStartingSlot = Number(getBagStartingSlot(bagSlot));
+  const newStartingSlot = Number(getBagStartingSlot(newSlot));
+
+  return inventory.map((item) => {
+    if (item.slotid === bagSlot) {
+      return { ...item, slotid: newSlot };
+    }
+    
+    const isInOldBag = item.slotid >= oldStartingSlot && item.slotid < oldStartingSlot + bagSize;
+    if (isInOldBag) {
+      const relativeSlot = item.slotid - oldStartingSlot;
+      return { ...item, slotid: newStartingSlot + relativeSlot };
+    }
+    
+    return item;
+  });
+};
+
 const usePlayerCharacterStore = create<PlayerCharacterStore>()(
   devtools(
     persist(
@@ -53,11 +78,11 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           set((state) => {
             // Deduplicate inventory items
             const deduplicatedInventory = inventory.reduce((acc, item) => {
-              const existingItem = acc.find(i => i.slotid === item.slotid);
+              const existingItem = acc.find((i) => i.slotid === item.slotid);
               if (!existingItem) {
                 acc.push(item);
               } else {
-                console.warn('Prevented duplicate item in slot:', item.slotid);
+                console.warn("Prevented duplicate item in slot:", item.slotid);
               }
               return acc;
             }, [] as InventoryItem[]);
@@ -86,22 +111,25 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
           set((state) => {
             const existingItem = state.characterProfile.inventory.find(
-              i => i.slotid === item.slotid
+              (i) => i.slotid === item.slotid
             );
-            
+
             if (existingItem) {
-              console.warn('Slot already occupied:', item.slotid);
+              console.warn("Slot already occupied:", item.slotid);
               return state;
             }
 
             return {
               characterProfile: {
                 ...state.characterProfile,
-                inventory: [...state.characterProfile.inventory, { ...item, itemDetails }],
+                inventory: [
+                  ...state.characterProfile.inventory,
+                  { ...item, itemDetails },
+                ],
               },
             };
           });
-          
+
           get().updateAllStats();
         },
         removeInventoryItem: (slotId) =>
@@ -182,23 +210,33 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         },
         swapItems: (fromSlot: number, toSlot: number) =>
           set((state) => {
-            const updatedInventory = state.characterProfile?.inventory?.map(
-              (item) => {
-                if (item.slotid === fromSlot) {
-                  return { ...item, slotid: toSlot };
-                }
-                if (item.slotid === toSlot) {
-                  return { ...item, slotid: fromSlot };
-                }
-                return item;
-              }
+            if (!state.characterProfile) return state;
+
+            const fromItem = state.characterProfile.inventory.find(
+              (item) => item.slotid === fromSlot
+            );
+            const toItem = state.characterProfile.inventory.find(
+              (item) => item.slotid === toSlot
             );
 
+            if (!fromItem) return state;
+
+            const filteredInventory = state.characterProfile.inventory.filter(
+              (item) => item.slotid !== fromSlot && item.slotid !== toSlot
+            );
+
+            const newInventory = [
+              ...filteredInventory,
+              { ...fromItem, slotid: toSlot },
+              ...(toItem ? [{ ...toItem, slotid: fromSlot }] : []),
+            ];
+
             get().updateAllStats();
+
             return {
               characterProfile: {
                 ...state.characterProfile,
-                inventory: updatedInventory,
+                inventory: newInventory,
               },
             };
           }),
@@ -206,23 +244,37 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           set((state) => {
             if (!state.characterProfile) return state;
 
-            // Check if target slot is already occupied
             const existingItem = state.characterProfile.inventory.find(
-              item => item.slotid === toSlot
+              (item) => item.slotid === toSlot
             );
             if (existingItem) {
-              console.warn('Attempted to move item to occupied slot:', toSlot);
+              console.warn("Attempted to move item to occupied slot:", toSlot);
               return state;
             }
 
-            const updatedInventory = state.characterProfile.inventory.map(
-              (item) => {
+            const movingItem = state.characterProfile.inventory.find(
+              (item) => item.slotid === fromSlot
+            );
+
+            let updatedInventory = state.characterProfile.inventory;
+            if (movingItem?.itemDetails?.itemclass == 1) {
+              console.log(
+                `Moving bag from ${fromSlot} to ${toSlot} with size ${movingItem.itemDetails.bagslots}`
+              );
+              updatedInventory = moveBagContents(
+                updatedInventory,
+                fromSlot,
+                toSlot,
+                movingItem.itemDetails.bagslots
+              );
+            } else {
+              updatedInventory = updatedInventory.map((item) => {
                 if (item.slotid === fromSlot) {
                   return { ...item, slotid: toSlot };
                 }
                 return item;
-              }
-            );
+              });
+            }
 
             get().updateAllStats();
             return {
