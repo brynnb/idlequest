@@ -221,15 +221,72 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
             if (!fromItem) return state;
 
-            const filteredInventory = state.characterProfile.inventory.filter(
-              (item) => item.slotid !== fromSlot && item.slotid !== toSlot
-            );
+            let newInventory = [...state.characterProfile.inventory];
 
-            const newInventory = [
-              ...filteredInventory,
-              { ...fromItem, slotid: toSlot },
-              ...(toItem ? [{ ...toItem, slotid: fromSlot }] : []),
-            ];
+            const fromItemIsBag = fromItem.itemDetails?.itemclass == 1;
+            const toItemIsBag = toItem?.itemDetails?.itemclass == 1;
+
+
+            if (fromItemIsBag && toItemIsBag) {
+              const firstBag = fromItem;
+              const secondBag = toItem;
+
+              const firstBagItems = newInventory.filter(
+                item => item.slotid >= getBagStartingSlot(fromSlot) && 
+                        item.slotid < getBagStartingSlot(fromSlot) + firstBag.itemDetails.bagslots
+              );
+
+              const secondBagItems = newInventory.filter(
+                item => item.slotid >= getBagStartingSlot(toSlot) && 
+                        item.slotid < getBagStartingSlot(toSlot) + secondBag.itemDetails.bagslots
+              );
+
+              newInventory = newInventory.filter(item => 
+                !firstBagItems.includes(item) && 
+                !secondBagItems.includes(item) &&
+                item.slotid !== fromSlot &&
+                item.slotid !== toSlot
+              );
+
+              const relocatedFirstBagItems = firstBagItems.map(item => ({
+                ...item,
+                slotid: getBagStartingSlot(toSlot) + (item.slotid - getBagStartingSlot(fromSlot))
+              }));
+
+              const relocatedSecondBagItems = secondBagItems.map(item => ({
+                ...item,
+                slotid: getBagStartingSlot(fromSlot) + (item.slotid - getBagStartingSlot(toSlot))
+              }));
+
+              newInventory = [
+                ...newInventory,
+                { ...firstBag, slotid: toSlot },
+                { ...secondBag, slotid: fromSlot },
+                ...relocatedFirstBagItems,
+                ...relocatedSecondBagItems
+              ];
+            } else if (fromItemIsBag) {
+              newInventory = moveBagContents(
+                newInventory,
+                fromSlot,
+                toSlot,
+                fromItem.itemDetails.bagslots
+              );
+            } else if (toItemIsBag) {
+              newInventory = moveBagContents(
+                newInventory,
+                toSlot,
+                fromSlot,
+                toItem.itemDetails.bagslots
+              );
+            }
+
+            newInventory = newInventory
+              .filter((item) => item.slotid !== fromSlot && item.slotid !== toSlot)
+              .concat([
+                { ...fromItem, slotid: toSlot },
+                ...(toItem ? [{ ...toItem, slotid: fromSlot }] : []),
+              ]);
 
             get().updateAllStats();
 

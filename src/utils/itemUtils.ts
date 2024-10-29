@@ -59,12 +59,9 @@ export const handleItemClick = (slotId: InventorySlot) => {
       )
     ) {
       if (currentSlotItem) {
-        console.log(`Swapping items`);
-
         swapItems(InventorySlot.Cursor, slotId);
       } else {
-        console.log(`Moving item`);
-        moveItemToSlot(cursorItem.slotid, slotId );
+        moveItemToSlot(cursorItem.slotid, slotId);
       }
     }
   } else if (currentSlotItem) {
