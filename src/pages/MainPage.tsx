@@ -24,6 +24,7 @@ import MapAndZoneSelection from "@components/Interface/MapAndZoneSelection";
 import Spellbook from "@/components/Interface/Spellbook";
 import NoteDisplay from "@/components/Interface/NoteDisplay";
 import QuestDisplay from "@/components/Interface/QuestDisplay";
+import DiceRoller from "@/components/DiceRoller";
 const MainPage: React.FC = () => {
   const { hoveredItem } = usePlayerCharacterStore((state) => ({
     hoveredItem: state?.hoveredItem,
@@ -43,6 +44,7 @@ const MainPage: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   return (
     <>
+      <DiceRoller />
       <Chatbox />
       <VideoBackground />
       {/* <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} /> */}
