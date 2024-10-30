@@ -1,4 +1,7 @@
-import { useEffect, useRef } from 'react';
+//this component is loading external JS files in a sloppy get-it-working-now way because the dice library is someone's side project and not really meant for react-specific projects and i don't know best practices for implementing stuff that isn't in NPM etc
+import { useEffect, useRef } from "react";
+import styled from "styled-components";
+import useChatStore, { MessageType } from "../stores/ChatStore";
 
 declare global {
   interface Window {
@@ -9,139 +12,135 @@ declare global {
   }
 }
 
+const DiceContainer = styled.div`
+  height: 720px;
+  width: 900px;
+  position: absolute;
+  left: 267px;
+  top: 0px;
+`;
+
+const RollButton = styled.button`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1;
+`;
+
 function DiceRoller() {
   const containerRef = useRef<HTMLDivElement>(null);
   const diceBoxRef = useRef<any>(null);
   const scriptsLoadedRef = useRef(false);
 
   useEffect(() => {
-    console.log('DiceRoller useEffect triggered');
-    console.log('Initial refs state:', {
-      containerRef: containerRef.current,
-      diceBoxRef: diceBoxRef.current,
-      scriptsLoaded: scriptsLoadedRef.current
-    });
+    if (containerRef.current) {
+      const existingCanvases =
+        containerRef.current.getElementsByTagName("canvas");
+      Array.from(existingCanvases).forEach((canvas) => canvas.remove());
+    }
 
     const loadScript = (src: string): Promise<void> => {
-      console.log(`Attempting to load script: ${src}`);
       return new Promise((resolve, reject) => {
         if (document.querySelector(`script[src="${src}"]`)) {
-          console.log(`Script ${src} already loaded, skipping`);
           resolve();
           return;
         }
 
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         script.src = src;
         script.async = false;
-        script.onload = () => {
-          console.log(`Script loaded successfully: ${src}`);
-          resolve();
-        };
-        script.onerror = () => {
-          console.error(`Failed to load script: ${src}`);
-          reject(new Error(`Script load error: ${src}`));
-        };
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Script load error: ${src}`));
         document.body.appendChild(script);
-        console.log(`Script element added to document: ${src}`);
       });
     };
 
     const initializeDice = async () => {
-      console.log('Initializing dice system');
-      console.log('Current window globals:', {
-        THREE: !!window.THREE,
-        CANNON: !!window.CANNON,
-        teal: !!window.teal,
-        DICE: !!window.DICE
-      });
-
-      if (scriptsLoadedRef.current) {
-        console.log('Scripts already loaded, skipping initialization');
-        return;
+      if (!scriptsLoadedRef.current) {
+        await loadScript("/libs/dice/three.min.js");
+        await loadScript("/libs/dice/cannon.min.js");
+        await loadScript("/libs/dice/teal.js");
+        await loadScript("/libs/dice/dice.js");
+        scriptsLoadedRef.current = true;
       }
 
-      try {
-        console.log('Loading scripts in sequence...');
-        await loadScript('/libs/dice/three.min.js');
-        console.log('THREE.js loaded, window.THREE:', !!window.THREE);
-        
-        await loadScript('/libs/dice/cannon.min.js');
-        console.log('CANNON.js loaded, window.CANNON:', !!window.CANNON);
-        
-        await loadScript('/libs/dice/teal.js');
-        console.log('teal.js loaded, window.teal:', !!window.teal);
-        
-        await loadScript('/libs/dice/dice.js');
-        console.log('dice.js loaded, window.DICE:', !!window.DICE);
-
-        scriptsLoadedRef.current = true;
-        console.log('All scripts loaded successfully');
-
-        // Wait a brief moment to ensure DICE is initialized
-        console.log('Waiting for DICE initialization...');
-        setTimeout(() => {
-          console.log('Attempting to create dice box');
-          console.log('Container ref status:', !!containerRef.current);
-          console.log('DICE availability:', !!window.DICE);
+      if (containerRef.current && window.DICE) {
+        try {
+          window.DICE.vars = {
+            ...window.DICE.vars,
+            ambient_light_color: 0xFFFFFF,
+            spot_light_color: 0xFFFFFF,
+            desk_color: '#FFFFFF',
+            desk_opacity: 0,
+            use_shadows: false
+          };
           
-          if (containerRef.current && window.DICE) {
-            try {
-              console.log('DICE object:', window.DICE);
-              console.log('DICE methods:', Object.keys(window.DICE));
-              diceBoxRef.current = new window.DICE.dice_box(containerRef.current);
-              console.log('Dice box created successfully:', diceBoxRef.current);
-            } catch (error) {
-              console.error('Error creating dice box:', error);
+          const originalDiceBox = window.DICE.dice_box;
+          window.DICE.dice_box = function(container, options) {
+            const instance = new originalDiceBox(container, options);
+            
+            // Remove the desk from the scene
+            if (instance.desk) {
+              instance.scene.remove(instance.desk);
+              instance.desk = null;
             }
-          } else {
-            console.error('Failed to create dice box - missing dependencies:', {
-              container: !!containerRef.current,
-              DICE: !!window.DICE
-            });
-          }
-        }, 100);
-      } catch (error) {
-        console.error('Error during dice initialization:', error);
+            
+            // Set renderer to be transparent
+            instance.renderer.setClearColor(0x000000, 0);
+            
+            // Force an initial render
+            instance.renderer.render(instance.scene, instance.camera);
+            
+            return instance;
+          };
+          
+          diceBoxRef.current = new window.DICE.dice_box(containerRef.current, { scale: 100 });
+        } catch (error) {
+          // Keep error handling but remove console.error
+        }
       }
     };
 
     initializeDice();
 
     return () => {
-      console.log('DiceRoller cleanup triggered');
       if (diceBoxRef.current) {
-        console.log('Cleaning up dice box');
-        // Add cleanup if needed
+        if (typeof diceBoxRef.current.clear === "function") {
+          diceBoxRef.current.clear();
+        }
+        diceBoxRef.current = null;
+      }
+      if (containerRef.current) {
+        const existingCanvases =
+          containerRef.current.getElementsByTagName("canvas");
+        Array.from(existingCanvases).forEach((canvas) => canvas.remove());
       }
     };
   }, []);
 
   const handleRoll = () => {
-    console.log('Roll button clicked');
-    console.log('Dice box status:', !!diceBoxRef.current);
-    
-    if (!diceBoxRef.current) {
-      console.error('Dice box not initialized');
-      return;
-    }
-    
+    if (!diceBoxRef.current) return;
+
     try {
-      console.log('Setting dice configuration');
-      diceBoxRef.current.setDice("2d6");
-      console.log('Starting throw animation');
-      diceBoxRef.current.start_throw();
-      console.log('Throw animation started');
+      const addMessage = useChatStore.getState().addMessage;
+
+      diceBoxRef.current.setDice("d20");
+      diceBoxRef.current.start_throw(
+        (notation: any) => null,
+        (notation: any) => {
+          addMessage(`Rolled a d20: ${notation.resultTotal}`, MessageType.SYSTEM);
+        }
+      );
     } catch (error) {
-      console.error('Error during dice roll:', error);
+      // Keep error handling but remove console.error
     }
   };
 
   return (
-    <div>
-      <div ref={containerRef} style={{ width: '500px', height: '300px' }} />
-      <button onClick={handleRoll}>Roll Dice</button>
-    </div>
+    <DiceContainer>
+      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+      <RollButton onClick={handleRoll}>Roll Dice</RollButton>
+    </DiceContainer>
   );
 }
 

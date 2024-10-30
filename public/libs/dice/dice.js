@@ -9,19 +9,6 @@
  * @dependencies teal.js, cannon.js, three.js
  */
 
-/**
- * CHANGELOG
- * - tweaked scaling to make dice look nice on mobile
- * - removed dice selector feature (separating UI from dice roller)
- * - file reorg (moving variable declarations to top, followed by public then private functions)
- * - removing true random option (was cool but not worth the extra dependencies or complexity)
- * - removing mouse event bindings (separating UI from dice roller)
- * - refactoring to module pattern and reducing publically available properties/methods
- * - removing dice notation getter callback in favour of setting dice to roll directly
- * - adding sound effect
- * - adding roll results to notation returned in after_roll callback
- * - adding 'd9' option (d10 to be added to d100 properly)
- */
 
 window.DICE = (function() {
     var that = {};
