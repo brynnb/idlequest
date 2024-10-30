@@ -8,7 +8,7 @@ const ScrollContainer = styled.div`
   background-image: url(/images/ui/scroll/scrollbarbackground.png);
   background-size: cover;
   right: 0px;
-  top: 0px;
+  top: 35px;
 `;
 
 const ScrollButton = styled.button<{ $isUp: boolean }>`

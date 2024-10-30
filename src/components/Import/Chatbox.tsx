@@ -50,14 +50,30 @@ const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   }
 `;
 
-const ChatContent = styled.div`
-  width: calc(100% - 28px);
-  height: 100%;
-  overflow: hidden;
+const ChatContent = styled.div.attrs({ className: "chat-content" })`
+  width: calc(100%);
+  height: 300px;
   padding-left: 100px;
-  padding-top: 50px;
-  padding-right: 10px;
+
+  padding-right: 20px;
+  padding-bottom: 10px;
   box-sizing: border-box;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+    background: #000000ad;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c6b5ad;
+    border-radius: 6px;
+    
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 6px;
+  }
 `;
 
 const ChatMessage = styled.div`
@@ -117,26 +133,12 @@ const getMessageClass = (type: MessageType): string => {
 const ChatBox: React.FC = () => {
   const { messages } = useChatStore();
   const chatContentRef = useRef<HTMLDivElement>(null);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     if (chatContentRef.current) {
-      const newContentHeight = chatContentRef.current.scrollHeight;
-      setContentHeight(newContentHeight);
-      setScrollPosition(newContentHeight - 308);
+      chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
     }
   }, [messages]);
-
-  useEffect(() => {
-    if (chatContentRef.current) {
-      chatContentRef.current.scrollTop = scrollPosition;
-    }
-  }, [scrollPosition]);
-
-  const handleScroll = (newScrollPosition: number) => {
-    setScrollPosition(newScrollPosition);
-  };
 
   return (
     <ChatContainer>
@@ -150,11 +152,6 @@ const ChatBox: React.FC = () => {
           </ChatMessage>
         ))}
       </ChatContent>
-      <VerticalScroll
-        contentHeight={contentHeight}
-        visibleHeight={308}
-        onScroll={handleScroll}
-      />
     </ChatContainer>
   );
 };
