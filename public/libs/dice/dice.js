@@ -20,15 +20,16 @@ window.DICE = (function() {
         material_options: {
             specular: 0x172022,
             color: 0xf0f0f0,
-            shininess: 40,
+            shininess: 10,
             shading: THREE.FlatShading,
+            roughness: 1,
         },
-        label_color: '#aaaaaa', //numbers on dice
-        dice_color: '#202020',
+        label_color: '#55585acb', //numbers on dice
+        dice_color: '#dabfa1',
         ambient_light_color: 0xf0f0f0,
-        spot_light_color: 0xefefef,
+        spot_light_color: '#d0bfa1',
         desk_color: '#101010', //canvas background
-        desk_opacity: 0.5,
+        desk_opacity: 0,
         use_shadows: true,
         use_adapvite_timestep: true //todo: setting this to false improves performace a lot. but the dice rolls don't look as natural...
 
@@ -143,7 +144,7 @@ window.DICE = (function() {
 
         var mw = Math.max(this.w, this.h);
         if (this.light) this.scene.remove(this.light);
-        this.light = new THREE.SpotLight(vars.spot_light_color, 2.0);
+        this.light = new THREE.SpotLight(vars.spot_light_color, 1.0);
         this.light.position.set(-mw / 2, mw / 2, mw * 2);
         this.light.target.position.set(0, 0, 0);
         this.light.distance = mw * 5;
@@ -541,16 +542,35 @@ window.DICE = (function() {
             var context = canvas.getContext("2d");
             var ts = calc_texture_size(size + size * 2 * margin) * 2;
             canvas.width = canvas.height = ts;
-            context.font = ts / (1 + 2 * margin) + "pt Arial";
+            
             context.fillStyle = back_color;
             context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.font = ts / (1 + 2 * margin) + "pt 'MedievalSharp', 'Luminari', 'Blackletter', 'Times New Roman'";
             context.textAlign = "center";
             context.textBaseline = "middle";
-            context.fillStyle = color;
+            
+            // Add shadow for depth effect
+            context.shadowColor = 'rgba(0,0,0,0.4)';
+            context.shadowBlur = 2;
+            context.shadowOffsetX = 1;
+            context.shadowOffsetY = 1;
+            
+            // Draw darker base layer for depth
+            context.fillStyle = 'rgba(0,0,0,0.3)';
             context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            // Reset shadow
+            context.shadowColor = 'transparent';
+            
+            // Draw main text slightly offset
+            context.fillStyle = color;
+            context.fillText(text, canvas.width / 2 - 0.5, canvas.height / 2 - 0.5);
+            
             if (text == '6' || text == '9') {
                 context.fillText('  .', canvas.width / 2, canvas.height / 2);
             }
+            
             var texture = new THREE.Texture(canvas);
             texture.needsUpdate = true;
             return texture;

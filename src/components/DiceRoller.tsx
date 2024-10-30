@@ -72,7 +72,7 @@ function DiceRoller() {
             spot_light_color: 0xFFFFFF,
             desk_color: '#FFFFFF',
             desk_opacity: 0,
-            use_shadows: false
+       
           };
           
           const originalDiceBox = window.DICE.dice_box;
