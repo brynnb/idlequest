@@ -18,6 +18,7 @@ const DiceContainer = styled.div`
   position: absolute;
   left: 267px;
   top: 0px;
+  z-index: 3000;
 `;
 
 const RollButton = styled.button`
@@ -64,6 +65,7 @@ function DiceRoller() {
         scriptsLoadedRef.current = true;
       }
 
+      //a lot of this could probably go away, i wound up just changing it directly in dice.js since it's not like it'll ever get updated like an external library
       if (containerRef.current && window.DICE) {
         try {
           window.DICE.vars = {
