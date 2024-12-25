@@ -3,7 +3,8 @@ import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { NPCType } from "@entities/NPCType";
 import { getNPCLoot } from "@utils/getNPCLoot";
-import { handleLoot } from "@utils/itemUtils";
+import { useInventoryActions } from "@hooks/useInventoryActions";
+import { createInventorySelling } from "@hooks/useInventorySelling";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
@@ -99,6 +100,8 @@ class GameEngine {
   private handleNPCDefeat(npcName: string) {
     const { targetNPC } = gameStatusStore.getState();
     const { addMessage } = chatStore.getState();
+    const { handleLoot } = useInventoryActions();
+    const { sellGeneralInventory } = createInventorySelling();
 
     if (!targetNPC || !targetNPC.id) {
       console.error("No target NPC or NPC ID when attempting to get loot");

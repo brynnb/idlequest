@@ -3,7 +3,7 @@ import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import playerInventoryBackground from "/images/ui/playerinventorybackground.png";
 import { InventorySlot } from "@entities/InventorySlot";
-import { handleItemClick } from "@utils/itemUtils";
+import { useInventoryActions } from "@hooks/useInventoryActions";
 
 const EquippedItemsContainer = styled.div.attrs({
   className: "equippedItemsContainer",
@@ -57,6 +57,7 @@ const ItemIcon = styled.img.attrs({
 
 const EquippedItemsInventory: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
+  const { handleItemClick } = useInventoryActions();
 
   const equippedSlots = [
     [

@@ -18,6 +18,8 @@ interface GameStatusStore {
   currentNPCHealth: number | null;
   isRunning: boolean;
   quickMode: boolean;
+  autoSellEnabled: boolean;
+  toggleAutoSell: () => void;
   initializeZones: (forceReload?: boolean) => Promise<void>;
   getZoneNameById: (id: number) => string | undefined;
   getZoneIdByName: (name: string) => number | undefined;
@@ -57,6 +59,7 @@ const useGameStatusStore = create<GameStatusStore>()(
             currentNPCHealth: null,
             isRunning: defaultIsRunning,
             quickMode: defaultQuickMode,
+            autoSellEnabled: false,
 
             initializeZones: async (forceReload = false) => {
               const { zones } = get();
@@ -184,6 +187,12 @@ const useGameStatusStore = create<GameStatusStore>()(
                   ...state.containerPositions,
                   [bagSlot]: position,
                 },
+              }));
+            },
+
+            toggleAutoSell: () => {
+              set((state) => ({
+                autoSellEnabled: !state.autoSellEnabled
               }));
             },
           };

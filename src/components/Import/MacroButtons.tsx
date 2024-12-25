@@ -3,10 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import {
-  handleEquipAllItems,
-  addItemToInventoryByItemId,
-} from "@utils/itemUtils";
+import { useInventoryActions } from "@hooks/useInventoryActions";
 import { useInventorySelling } from "@hooks/useInventorySelling";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
@@ -100,6 +97,7 @@ const MacroButtons = () => {
   const resetCharacterCreator = useCharacterCreatorStore(
     (state) => state.resetStore
   );
+  const { addItemToInventoryByItemId, handleEquipAllItems } = useInventoryActions();
 
   const handlePageChange = (direction: "left" | "right") => {
     setPage((prev) =>

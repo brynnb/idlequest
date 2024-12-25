@@ -25,7 +25,7 @@ This project is built using React/TypeScript and Zustand. Long term this will pr
 
 To run it:
 
-`pnp run dev`
+`pnpm run dev`
 
 There is also an assortment of one-off scripts in the /data folder, for example:
 

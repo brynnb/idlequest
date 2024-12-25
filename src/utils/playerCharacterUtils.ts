@@ -4,7 +4,7 @@ import { ClassId } from "@entities/CharacterClass";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 import useInventoryCreator from "@hooks/useInventoryCreator";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { handleLoot } from "@utils/itemUtils";
+import { processLootItems } from "@hooks/useInventoryActions";
 
 const getHpLevelMultiplier = (
   characterClass: number,
@@ -181,5 +181,5 @@ export const createNewCharacterProfile = async (
     selectedDeity.id,
     selectedZone.id
   );
-  handleLoot(startingItems);
+  processLootItems(startingItems);
 };

@@ -3,7 +3,8 @@ import styled from "styled-components";
 import Draggable from "react-draggable";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
-import { handleItemClick, getBagStartingSlot } from "@utils/itemUtils";
+import { getBagStartingSlot } from "@utils/itemUtils";
+import { useInventoryActions } from "@hooks/useInventoryActions";
 import ActionButton from "@components/Interface/ActionButton";
 
 const ModalContainer = styled.div.attrs({
@@ -123,6 +124,7 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
 }) => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
   const { containerPositions, setContainerPosition } = useGameStatusStore();
+  const { handleItemClick } = useInventoryActions();
   const [position, setPosition] = useState(() => {
     if (containerPositions[bagSlot]) {
       return containerPositions[bagSlot];

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
-import { handleItemClick } from "@utils/itemUtils";
+import { useInventoryActions } from "@hooks/useInventoryActions";
 import { InventorySlot } from "@entities/InventorySlot";
 import ContainerInventoryModal from "./ContainerInventoryModal";
 
@@ -39,6 +39,7 @@ const ItemIcon = styled.img`
 
 const GeneralInventorySlots: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
+  const { handleItemClick } = useInventoryActions();
   const [openBagSlots, setOpenBagSlots] = useState<Set<number>>(new Set());
 
   const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
