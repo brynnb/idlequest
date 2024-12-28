@@ -16,7 +16,16 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "/src": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./src"),
+      "@utils": path.resolve(__dirname, "./src/utils"),
+      "@data": path.resolve(__dirname, "./data"),
+      "@stores": path.resolve(__dirname, "./src/stores"),
+      "@hooks": path.resolve(__dirname, "./src/hooks"),
+      "@components": path.resolve(__dirname, "./src/components"),
+      "@entities": path.resolve(__dirname, "./src/entities"),
+      "@scripts": path.resolve(__dirname, "./src/scripts"),
+      "@pages": path.resolve(__dirname, "./src/pages"),
+      "@interfaces": path.resolve(__dirname, "./src/interfaces"),
     },
   },
   test: {

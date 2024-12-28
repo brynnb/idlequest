@@ -3,12 +3,15 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@components/*": ["src/components/*"],
-      "@stores/*": ["src/stores/*"],
       "@utils/*": ["src/utils/*"],
+      "@data/*": ["data/*"],
+      "@stores/*": ["src/stores/*"],
       "@hooks/*": ["src/hooks/*"],
+      "@components/*": ["src/components/*"],
       "@entities/*": ["src/entities/*"],
-      "@images/*": ["public/images/*"]
+      "@scripts/*": ["src/scripts/*"],
+      "@pages/*": ["src/pages/*"],
+      "@interfaces/*": ["src/interfaces/*"]
     }
   },
   "files": [],

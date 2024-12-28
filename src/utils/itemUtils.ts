@@ -38,7 +38,6 @@ export const isItemAllowedInSlot = (
   );
 };
 
-
 export const getSlotNames = (slots: number | undefined) => {
   if (slots === undefined) return "NONE";
   const slotNames = getInventorySlotNames(slots);
@@ -137,7 +136,7 @@ export const isEquippableWithRace = (
   return (parseInt(item.races.toString()) & characterRace.bitmask) !== 0;
 };
 
-const getEquippableSlots = (item: Item): number[] => {
+export const getEquippableSlots = (item: Item): number[] => {
   if (!item.slots) return [];
   const itemSlots = parseInt(item.slots.toString());
   return Object.entries(SlotBitmasks)
@@ -147,7 +146,7 @@ const getEquippableSlots = (item: Item): number[] => {
     .map(([slot]) => parseInt(slot));
 };
 
-const findFirstAvailableGeneralSlot = (
+export const findFirstAvailableGeneralSlot = (
   inventory: InventoryItem[]
 ): number | undefined => {
   // Check base slots (23 to 30)

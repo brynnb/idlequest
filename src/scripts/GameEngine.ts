@@ -3,8 +3,7 @@ import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { NPCType } from "@entities/NPCType";
 import { getNPCLoot } from "@utils/getNPCLoot";
-import { useInventoryActions } from "@hooks/useInventoryActions";
-import { createInventorySelling } from "@hooks/useInventorySelling";
+import { handleLoot, sellGeneralInventory } from "@utils/inventoryUtils";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
@@ -100,8 +99,6 @@ class GameEngine {
   private handleNPCDefeat(npcName: string) {
     const { targetNPC } = gameStatusStore.getState();
     const { addMessage } = chatStore.getState();
-    const { handleLoot } = useInventoryActions();
-    const { sellGeneralInventory } = createInventorySelling();
 
     if (!targetNPC || !targetNPC.id) {
       console.error("No target NPC or NPC ID when attempting to get loot");
@@ -112,7 +109,7 @@ class GameEngine {
 
     const { characterProfile } = playerCharacterStore.getState();
     const oldLevel = characterProfile.level;
-    const experienceGained = this.getExperienceForNPCKill();
+    const experienceGained = this.getExperienceForNPCKill(npcId);
     console.log("Experience gained:", experienceGained);
     playerCharacterStore.getState().addExperience(experienceGained);
     console.log("Experience after addition:", characterProfile.exp);
@@ -133,6 +130,7 @@ class GameEngine {
     getNPCLoot(npcId)
       .then((loot) => {
         handleLoot(loot);
+        sellGeneralInventory();
       })
       .catch((error) => {
         console.error("Error fetching NPC loot:", error);

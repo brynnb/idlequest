@@ -3,6 +3,8 @@ import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import { calculateTotalWeight } from "@utils/inventoryUtils";
+import { CharacterProfile } from "@entities/CharacterProfile";
+
 const StatInfoBarWrapper = styled.div`
   position: absolute;
   left: 0;
@@ -83,6 +85,10 @@ const StatInfoBar: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();
   const { toggleInventory } = useGameStatusStore();
 
+  if (!characterProfile) {
+    return <div>Loading character information...</div>;
+  }
+
   return (
     <>
       <StatInfoBarWrapper />
@@ -96,8 +102,8 @@ const StatInfoBar: React.FC = () => {
               <p>{characterProfile.level}</p>
             </Level>
             <ClassAndDeity>
-              <p>{characterProfile.class.name}</p>
-              <p>{characterProfile.deity.name}</p>
+              <p>{characterProfile.class?.name}</p>
+              <p>{characterProfile.deity?.name}</p>
             </ClassAndDeity>
           </LevelClassDeity>
           <HpAcAtk>
