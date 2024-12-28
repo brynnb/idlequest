@@ -9,8 +9,8 @@ export const useInventorySelling = () => {
   const { characterProfile, removeInventoryItem } = usePlayerCharacterStore();
 
   const isSellable = (item: Item): boolean => {
-    console.log(item);
-    console.log(item.itemclass);
+    // console.log(item);
+    // console.log(item.itemclass);
     return item.itemclass != 1 && item.nodrop != 0 && item.norent != 0;
   };
 
