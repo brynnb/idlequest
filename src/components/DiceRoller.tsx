@@ -1,14 +1,52 @@
-//this component is loading external JS files in a sloppy get-it-working-now way because the dice library is someone's side project and not really meant for react-specific projects and i don't know best practices for implementing stuff that isn't in NPM etc
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import useChatStore, { MessageType } from "../stores/ChatStore";
+import type { Scene, WebGLRenderer, Camera, Material } from "three";
+
+interface DiceVars {
+  ambient_light_color: number;
+  spot_light_color: number;
+  desk_color: string;
+  desk_opacity: number;
+}
+
+interface DiceBox {
+  scene: Scene;
+  renderer: WebGLRenderer;
+  camera: Camera;
+  desk: Material | null;
+  clear: () => void;
+  start_throw: (
+    beforeCallback: () => null,
+    afterCallback: (notation: DiceNotation) => void
+  ) => void;
+  setDice: (notation: string) => void;
+}
+
+interface DiceNotation {
+  resultTotal: number;
+}
+
+type TealCopyFunction = (
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+) => Record<string, unknown>;
 
 declare global {
   interface Window {
-    teal: any;
-    DICE: any;
-    THREE: any;
-    CANNON: any;
+    teal: {
+      copy: TealCopyFunction;
+      copyto: TealCopyFunction;
+    };
+    DICE: {
+      vars: DiceVars;
+      dice_box: new (
+        container: HTMLElement,
+        options: { scale: number }
+      ) => DiceBox;
+    };
+    THREE: typeof import("three");
+    CANNON: typeof import("cannon-es");
   }
 }
 
@@ -30,7 +68,7 @@ const RollButton = styled.button`
 
 function DiceRoller() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const diceBoxRef = useRef<any>(null);
+  const diceBoxRef = useRef<DiceBox | null>(null);
   const scriptsLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -58,47 +96,68 @@ function DiceRoller() {
 
     const initializeDice = async () => {
       if (!scriptsLoadedRef.current) {
-        await loadScript("/libs/dice/three.min.js");
-        await loadScript("/libs/dice/cannon.min.js");
-        await loadScript("/libs/dice/teal.js");
-        await loadScript("/libs/dice/dice.js");
-        scriptsLoadedRef.current = true;
+        try {
+          await loadScript("/libs/dice/three.min.js");
+          await loadScript("/libs/dice/cannon.min.js");
+          await loadScript("/libs/dice/teal.js");
+
+          window.DICE = {
+            vars: {
+              ambient_light_color: 0xffffff,
+              spot_light_color: 0xffffff,
+              desk_color: "#FFFFFF",
+              desk_opacity: 0,
+            },
+            dice_box: null as unknown as new (
+              container: HTMLElement,
+              options: { scale: number }
+            ) => DiceBox,
+          };
+
+          if (window.teal) {
+            const copyFunction: TealCopyFunction = (target, source) =>
+              Object.assign(target, source);
+            window.teal.copy = copyFunction;
+            window.teal.copyto = copyFunction;
+          }
+
+          await loadScript("/libs/dice/dice.js");
+          scriptsLoadedRef.current = true;
+        } catch (loadError) {
+          console.error("Failed to load dice scripts:", loadError);
+          return;
+        }
       }
 
-      //a lot of this could probably go away, i wound up just changing it directly in dice.js since it's not like it'll ever get updated like an external library
-      if (containerRef.current && window.DICE) {
+      if (containerRef.current && window.DICE?.dice_box) {
         try {
-          window.DICE.vars = {
-            ...window.DICE.vars,
-            ambient_light_color: 0xFFFFFF,
-            spot_light_color: 0xFFFFFF,
-            desk_color: '#FFFFFF',
-            desk_opacity: 0,
-       
-          };
-          
-          const originalDiceBox = window.DICE.dice_box;
-          window.DICE.dice_box = function(container, options) {
-            const instance = new originalDiceBox(container, options);
-            
-            // Remove the desk from the scene
-            if (instance.desk) {
-              instance.scene.remove(instance.desk);
-              instance.desk = null;
-            }
-            
-            // Set renderer to be transparent
-            instance.renderer.setClearColor(0x000000, 0);
-            
-            // Force an initial render
-            instance.renderer.render(instance.scene, instance.camera);
-            
-            return instance;
-          };
-          
-          diceBoxRef.current = new window.DICE.dice_box(containerRef.current, { scale: 100 });
-        } catch (error) {
-          // Keep error handling but remove console.error
+          const box = new window.DICE.dice_box(containerRef.current, {
+            scale: 100,
+          });
+
+          diceBoxRef.current = box;
+
+          if (diceBoxRef.current?.renderer) {
+            diceBoxRef.current.renderer.setClearColor(0x000000, 0);
+          }
+
+          if (diceBoxRef.current?.desk && diceBoxRef.current?.scene) {
+            diceBoxRef.current.scene.remove(diceBoxRef.current.desk);
+            diceBoxRef.current.desk = null;
+          }
+
+          if (
+            diceBoxRef.current?.renderer &&
+            diceBoxRef.current?.scene &&
+            diceBoxRef.current?.camera
+          ) {
+            diceBoxRef.current.renderer.render(
+              diceBoxRef.current.scene,
+              diceBoxRef.current.camera
+            );
+          }
+        } catch (initError) {
+          console.error("Failed to initialize dice:", initError);
         }
       }
     };
@@ -106,10 +165,8 @@ function DiceRoller() {
     initializeDice();
 
     return () => {
-      if (diceBoxRef.current) {
-        if (typeof diceBoxRef.current.clear === "function") {
-          diceBoxRef.current.clear();
-        }
+      if (diceBoxRef.current?.clear) {
+        diceBoxRef.current.clear();
         diceBoxRef.current = null;
       }
       if (containerRef.current) {
@@ -121,20 +178,33 @@ function DiceRoller() {
   }, []);
 
   const handleRoll = () => {
-    if (!diceBoxRef.current) return;
+    if (!diceBoxRef.current) {
+      console.error("Dice box not initialized");
+      return;
+    }
 
     try {
       const addMessage = useChatStore.getState().addMessage;
 
-      diceBoxRef.current.setDice("d20");
+      if (!diceBoxRef.current.setDice || !diceBoxRef.current.start_throw) {
+        throw new Error("Dice box methods not available");
+      }
+
+      diceBoxRef.current.setDice("1d20");
+
       diceBoxRef.current.start_throw(
-        (notation: any) => null,
-        (notation: any) => {
-          addMessage(`Rolled a d20: ${notation.resultTotal}`, MessageType.SYSTEM);
+        () => null,
+        (notation: DiceNotation) => {
+          if (notation?.resultTotal) {
+            addMessage(
+              `Rolled a d20: ${notation.resultTotal}`,
+              MessageType.SYSTEM
+            );
+          }
         }
       );
     } catch (error) {
-      // Keep error handling but remove console.error
+      console.error("Error during dice roll:", error);
     }
   };
 
