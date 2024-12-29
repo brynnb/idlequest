@@ -19,19 +19,13 @@ window.DICE = (function() {
         
         material_options: {
             specular: 0x172022,
-            color: 0xffffff, // Set to white to show texture clearly
-            shininess: 5, // Reduced shininess to make wood look more natural
+            color: 0xf0f0f0,
+            shininess: 40,
             shading: THREE.FlatShading,
             roughness: 1,
-            map: null // Will be set by texture loader
         },
-        //light "bone colored" version
-        // label_color: '#55585acb', //numbers on dice
-        // dice_color: '#dabfa1',
-        // ambient_light_color: 0xf0f0f0,
-        // spot_light_color: '#d0bfa1',
-        label_color: '#fbff00b4', //numbers on dice
-        dice_color: '#4e3221',
+        label_color: '#55585acb', //numbers on dice
+        dice_color: '#dabfa1',
         ambient_light_color: 0xf0f0f0,
         spot_light_color: '#d0bfa1',
         desk_color: '#101010', //canvas background
@@ -60,15 +54,6 @@ window.DICE = (function() {
             [[], [0, 0, 0], [4, 2, 3], [1, 4, 3], [4, 1, 2], [1, 3, 2]]
         ]
     }
-
-    // Add texture loading right after vars
-    const textureLoader = new THREE.TextureLoader();
-    const woodTexture = textureLoader.load('/assets/woodtexture.jpg', function(texture) {
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(0.5, 0.5); // Adjust scale of texture on dice
-        texture.encoding = THREE.sRGBEncoding; // Better color reproduction
-        vars.material_options.map = texture;
-    });
 
     // DICE BOX OBJECT
 

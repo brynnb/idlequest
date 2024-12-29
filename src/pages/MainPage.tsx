@@ -44,7 +44,7 @@ const MainPage: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   return (
     <>
-      {/* <DiceRoller /> */}
+      <DiceRoller />
       <Chatbox />
       <VideoBackground />
       {/* <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} /> */}
