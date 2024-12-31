@@ -3,28 +3,37 @@ import classes from "/data/classes.json";
 import useCharacterStore from "/src/stores/CharacterCreatorStore";
 import CharacterClass from "/src/entities/CharacterClass";
 import charCreateCombinations from "/data/char_create_combinations.json";
+import styled from "styled-components";
+import SelectionButton from "../Interface/SelectionButton";
+
+interface CharCreateCombination {
+  race: number;
+  class: number;
+}
+
+const ClassSelectorContainer = styled.div`
+
+`;
 
 const ClassSelector = () => {
   const { selectedClass, setSelectedClass, selectedRace } = useCharacterStore();
   const availableClasses = classes.slice(0, 14);
 
-  // Filter classes based on the selected race
   const compatibleClasses = charCreateCombinations
     .filter(
-      (combination) => combination.race === selectedRace?.id // Assuming selectedRace has an id property
+      (combination: CharCreateCombination) =>
+        combination.race === selectedRace?.id
     )
-    .map((combination) => combination.class);
+    .map((combination: CharCreateCombination) => combination.class);
 
   const onSelectClass = (charClass: CharacterClass) => {
     setSelectedClass(charClass);
   };
 
-  // Effect to reset selected class if incompatible with new race
   useEffect(() => {
     if (selectedClass && !compatibleClasses.includes(selectedClass.id)) {
-      // Reset to the first compatible class if the current selected class is not compatible
-      const firstCompatibleClass = availableClasses.find((classItem) =>
-        compatibleClasses.includes(classItem.id)
+      const firstCompatibleClass = availableClasses.find(
+        (classItem: CharacterClass) => compatibleClasses.includes(classItem.id)
       );
       if (firstCompatibleClass) {
         setSelectedClass(firstCompatibleClass);
@@ -39,39 +48,19 @@ const ClassSelector = () => {
   ]);
 
   return (
-    <div>
-      <h2>Class</h2>
-      {availableClasses.map((classItem) => (
-        <button
+    <ClassSelectorContainer>
+      {availableClasses.map((classItem: CharacterClass) => (
+        <SelectionButton
           key={classItem.id}
           onClick={() => onSelectClass(classItem)}
-          disabled={!compatibleClasses.includes(classItem.id)} // Disable button if not compatible
-          style={{
-            backgroundColor:
-              selectedClass?.id === classItem.id
-                ? "#007bff"
-                : !compatibleClasses.includes(classItem.id)
-                ? "#e0e0e0"
-                : "#f8f9fa", // Grey for disabled
-            color:
-              selectedClass?.id === classItem.id
-                ? "white"
-                : !compatibleClasses.includes(classItem.id)
-                ? "#a0a0a0"
-                : "black", // Darker grey for disabled text
-            margin: "5px",
-            padding: "10px",
-            border: "1px solid #ced4da",
-            borderRadius: "4px",
-            cursor: compatibleClasses.includes(classItem.id)
-              ? "pointer"
-              : "not-allowed", // Change cursor for disabled
-          }}
+          disabled={!compatibleClasses.includes(classItem.id)}
+          $isSelected={selectedClass?.id === classItem.id}
+          $isDisabled={!compatibleClasses.includes(classItem.id)}
         >
           {classItem.name}
-        </button>
+        </SelectionButton>
       ))}
-    </div>
+    </ClassSelectorContainer>
   );
 };
 

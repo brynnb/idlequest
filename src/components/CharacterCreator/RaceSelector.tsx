@@ -1,12 +1,21 @@
 import races from "../../../data/races.json";
 import Race from "@entities/Race";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import styled from "styled-components";
+import SelectionButton from "../Interface/SelectionButton";
+
+const RaceSelectorContainer = styled.div`
+
+`;
 
 const RaceSelector = () => {
   const { selectedRace, setSelectedRace, resetAttributes } =
-    useCharacterCreatorStore();
+    useCharacterCreatorStore((state) => ({
+      selectedRace: state.selectedRace,
+      setSelectedRace: state.setSelectedRace,
+      resetAttributes: state.resetAttributes,
+    }));
 
-  // Filter races to only include those that are playable
   const playableRaces = races.filter((race) => race.is_playable);
 
   const onSelectRace = (race: Race) => {
@@ -15,26 +24,17 @@ const RaceSelector = () => {
   };
 
   return (
-    <div>
-      <h2>Race</h2>
+    <RaceSelectorContainer>
       {playableRaces.map((race) => (
-        <button
+        <SelectionButton
           key={race.id}
           onClick={() => onSelectRace(race)}
-          style={{
-            backgroundColor:
-              selectedRace?.id === race.id ? "#007bff" : "#f8f9fa",
-            color: selectedRace?.id === race.id ? "white" : "black",
-            margin: "5px",
-            padding: "10px",
-            border: "1px solid #ced4da",
-            borderRadius: "4px",
-          }}
+          $isSelected={selectedRace?.id === race.id}
         >
           {race.name}
-        </button>
+        </SelectionButton>
       ))}
-    </div>
+    </RaceSelectorContainer>
   );
 };
 

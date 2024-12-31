@@ -2,6 +2,24 @@ import React from "react";
 import useCharacterCreatorStore from "/src/stores/CharacterCreatorStore";
 import characterCombinations from "/data/char_create_combinations.json";
 import attributeAllocations from "/data/char_create_point_allocations.json";
+import SelectionButton from "../Interface/SelectionButton";
+
+interface CharacterCombination {
+  race: string;
+  class: string;
+  allocation_id: number;
+}
+
+interface AttributeAllocation {
+  id: number;
+  alloc_str: number;
+  alloc_sta: number;
+  alloc_dex: number;
+  alloc_agi: number;
+  alloc_int: number;
+  alloc_wis: number;
+  alloc_cha: number;
+}
 
 const baseAttributes = [
   "str",
@@ -29,7 +47,8 @@ const AttributeAutoAllocatorButton: React.FC = () => {
       typeof selectedClass === "object" ? selectedClass.id : selectedClass;
 
     const combination = characterCombinations.find(
-      (combo) => combo.race === raceId && combo.class === classId
+      (combo: CharacterCombination) =>
+        combo.race === raceId && combo.class === classId
     );
 
     if (!combination) {
@@ -37,7 +56,7 @@ const AttributeAutoAllocatorButton: React.FC = () => {
     }
 
     const allocation = attributeAllocations.find(
-      (alloc) => alloc.id === combination.allocation_id
+      (alloc: AttributeAllocation) => alloc.id === combination.allocation_id
     );
 
     if (!allocation) {
@@ -66,9 +85,14 @@ const AttributeAutoAllocatorButton: React.FC = () => {
   };
 
   return (
-    <button onClick={autoAllocate} disabled={attributePoints === 0}>
+    <SelectionButton
+      onClick={autoAllocate}
+      disabled={attributePoints === 0}
+      $isSelected={false}
+      $isDisabled={attributePoints === 0}
+    >
       Auto Allocate
-    </button>
+    </SelectionButton>
   );
 };
 

@@ -23,7 +23,7 @@ const getAttributePointsForClass = (classId: number): number => {
   return classPoints ? classPoints.attribute_points : 0;
 };
 
-interface CharacterCreatorStore {
+export interface CharacterCreatorStore {
   selectedRace: Race | null;
   selectedClass: CharacterClass | null;
   selectedZone: Zone | null;
@@ -47,7 +47,7 @@ interface CharacterCreatorStore {
   setInventory: (items: InventoryItem[]) => void;
 }
 
-const useCharacterCreatorStore = create(
+const useCharacterCreatorStore = create<CharacterCreatorStore>()(
   devtools(
     persist(
       (set, get) => ({
@@ -156,6 +156,7 @@ const useCharacterCreatorStore = create(
             };
           }),
         setInventory: (items) => set({ inventory: items }),
+        inventory: [],
       }),
       {
         name: "character-creator-storage",

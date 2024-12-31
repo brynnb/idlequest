@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import usePlayerCharacterStore from '@stores/PlayerCharacterStore';
-import { getClassName } from '@utils/characterUtils';
+import { useState } from "react";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { getClassName } from "@utils/characterUtils";
 import AttributeAllocator from "./AttributeAllocator";
 import RaceSelector from "./RaceSelector";
 import ClassSelector from "./ClassSelector";
@@ -10,17 +10,34 @@ import ZoneSelector from "./StartingZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
 import CharacterDescription from "./CharacterSelectionDescription";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
+
+const MainContainer = styled.div`
+  display: grid;
+  grid-template-columns: 220px 500px 220px 260px;
+  gap: 20px;
+  margin: 50px auto;
+  padding: 20px;
+  width: 1440px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  background-image: url("/images/ui/charactercreation/charactercreatorbackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+`;
 
 const CharacterCreator = () => {
   const { characterProfile, setCharacterProfile } = usePlayerCharacterStore();
 
   const handleClassSelection = (selectedClass: number) => {
-    setCharacterProfile(prev => ({
+    setCharacterProfile((prev) => ({
       ...prev,
       class: {
         id: selectedClass,
-        name: getClassName(selectedClass)
-      }
+        name: getClassName(selectedClass),
+      },
     }));
   };
 
@@ -35,19 +52,37 @@ const CharacterCreator = () => {
   };
 
   return (
-    <div>
-      <h2>Character Creator</h2>
-      <Link to="/">
+    <MainContainer>
+      <RaceSelector />
+      <div className="second-column">
+        <div className="second-column-top">
+          <img
+            src="/images/ui/charactercreation/creationviewport.png"
+            alt="Creation Viewport"
+            style={{ maxWidth: "500px" }}
+          />
+        </div>
+        <div className="second-column-bottom">
+          <NameInput />
+        </div>
+
+      </div>
+
+      <div className="third-column">
+         
+      <ClassSelector onSelect={handleClassSelection} />
+      </div>
+      <div className="fourth-column">
+
+        <AttributeAllocator />  
+        <Link to="/">
         <SubmitCharacter />
       </Link>
-      <NameInput />
-      <RaceSelector />
-      <ClassSelector onSelect={handleClassSelection} />
-      <AttributeAllocator />
-      <DeitySelector />
-      <ZoneSelector />
-      <CharacterDescription />
-    </div>
+      </div>
+         {/* <ZoneSelector /> */}
+        {/* <DeitySelector /> */}
+        {/* <CharacterDescription /> */}
+    </MainContainer>
   );
 };
 
