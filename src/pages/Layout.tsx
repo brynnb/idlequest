@@ -14,6 +14,10 @@ const MainContainer = styled.div`
   height: 1080px;
   position: relative;
   overflow: hidden;
+  background-image: url("/images/ui/charactercreation/charactercreatorbackground.png");
+  background-size: 1440px 1080px;
+  background-position: center;
+  background-repeat: no-repeat;
 `;
 
 const Layout = () => {

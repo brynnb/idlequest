@@ -13,7 +13,7 @@ const StyledButton = styled.button.attrs({ className: "selection-button" })<{
   $isDisabled?: boolean;
 }>`
   width: 230px;
-  height: 60px;
+  height: 70px;
   background-image: ${({ $isSelected }) =>
     $isSelected
       ? "url('/images/ui/actionbuttonpress.png')"
@@ -37,7 +37,7 @@ const StyledButton = styled.button.attrs({ className: "selection-button" })<{
   font-size: ${({ children }) =>
     typeof children === "string" && children.length > 9
       ? "clamp(12px, 24px, 27px)"
-      : "clamp(12px, 30px, 30px)"};
+      : "clamp(12px, 34px, 30px)"};
   text-overflow: ellipsis;
   overflow: hidden;
   &:focus {

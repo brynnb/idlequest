@@ -16,16 +16,8 @@ const MainContainer = styled.div`
   display: grid;
   grid-template-columns: 220px 500px 220px 260px;
   gap: 20px;
-  margin: 50px auto;
-  padding: 20px;
-  width: 1440px;
-  height: 1080px;
-  position: relative;
-  overflow: hidden;
-  background-image: url("/images/ui/charactercreation/charactercreatorbackground.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  height: 1040px;
+  width: 1400px;
 `;
 
 const CharacterCreator = () => {
@@ -65,23 +57,20 @@ const CharacterCreator = () => {
         <div className="second-column-bottom">
           <NameInput />
         </div>
-
       </div>
 
       <div className="third-column">
-         
-      <ClassSelector onSelect={handleClassSelection} />
+        <ClassSelector onSelect={handleClassSelection} />
       </div>
       <div className="fourth-column">
-
-        <AttributeAllocator />  
+        <AttributeAllocator />
         <Link to="/">
-        <SubmitCharacter />
-      </Link>
+          <SubmitCharacter />
+        </Link>
       </div>
-         {/* <ZoneSelector /> */}
-        {/* <DeitySelector /> */}
-        {/* <CharacterDescription /> */}
+      {/* <ZoneSelector /> */}
+      {/* <DeitySelector /> */}
+      {/* <CharacterDescription /> */}
     </MainContainer>
   );
 };

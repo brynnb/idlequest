@@ -11,13 +11,15 @@ interface CharCreateCombination {
   class: number;
 }
 
-const ClassSelectorContainer = styled.div`
-
-`;
+const ClassSelectorContainer = styled.div``;
 
 const ClassSelector = () => {
   const { selectedClass, setSelectedClass, selectedRace } = useCharacterStore();
-  const availableClasses = classes.slice(0, 14);
+  const availableClasses = classes
+    .slice(0, 14)
+    .sort((a: CharacterClass, b: CharacterClass) =>
+      a.name.localeCompare(b.name)
+    );
 
   const compatibleClasses = charCreateCombinations
     .filter(

@@ -19,6 +19,22 @@ const StyledText = styled.span`
   font-weight: 900;
   font-size: 24px;
   text-shadow: 2px 2px 4px #d6d2d2;
+  text-align: center;
+  display: block;
+`;
+
+const LargeStyledText = styled(StyledText)`
+  font-size: 52px;
+  display: inline-block;
+  min-width: 150px;
+  width: 150px;
+  flex: 0 0 150px;
+  text-align: left;
+  color: rgba(0, 0, 0, 0.6);
+  text-shadow: 0px 1px 0px rgba(210, 210, 210, 0.3),
+    0px -1px 0px rgba(0, 0, 0, 1);
+  padding: 5px 10px;
+  border-radius: 3px;
 `;
 
 const AttributeNumber = styled.span`
@@ -31,7 +47,38 @@ const AttributeNumber = styled.span`
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: 24px;
+  font-size: 26px;
+`;
+
+const AdjustButton = styled.button`
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  color: #000000;
+  border: 2px solid black;
+  outline: 2px solid #979494;
+  border-radius: 0;
+  background-color: #e8e5e5;
+`;
+
+const AttributeRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  width: 100%;
+  flex-wrap: nowrap;
+`;
+
+const AttributeControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `;
 
 const AttributeAllocator: React.FC = () => {
@@ -70,32 +117,34 @@ const AttributeAllocator: React.FC = () => {
   return (
     <div>
       <div>
-        <span>Attribute Points Left: {attributePoints}</span>
+        <StyledText>Ability Points Left: {attributePoints}</StyledText>
       </div>
 
       {baseAttributes.map((attr) => (
-        <div key={attr}>
-          <span>{attr.toUpperCase()}:</span>
-          <button
-            onClick={() => decrementAttribute(attr)}
-            disabled={
-              attributes[attr] === 0 ||
-              attributes[`base_${attr}`] + attributes[attr] <=
-                attributes[`base_${attr}`]
-            }
-          >
-            -
-          </button>
-          <AttributeNumber>
-            {attributes[`base_${attr}`] + attributes[attr]}
-          </AttributeNumber>
-          <button
-            onClick={() => incrementAttribute(attr)}
-            disabled={attributePoints === 0}
-          >
-            +
-          </button>
-        </div>
+        <AttributeRow key={attr}>
+          <LargeStyledText>{attr.toUpperCase()}:</LargeStyledText>
+          <AttributeControls>
+            <AdjustButton
+              onClick={() => decrementAttribute(attr)}
+              disabled={
+                attributes[attr] === 0 ||
+                attributes[`base_${attr}`] + attributes[attr] <=
+                  attributes[`base_${attr}`]
+              }
+            >
+              ‒
+            </AdjustButton>
+            <AttributeNumber>
+              {attributes[`base_${attr}`] + attributes[attr]}
+            </AttributeNumber>
+            <AdjustButton
+              onClick={() => incrementAttribute(attr)}
+              disabled={attributePoints === 0}
+            >
+              +
+            </AdjustButton>
+          </AttributeControls>
+        </AttributeRow>
       ))}
 
       <div style={{ textAlign: "center" }}>
