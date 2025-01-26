@@ -2,9 +2,12 @@
 import CharacterProfile from "@entities/CharacterProfile";
 import { ClassId } from "@entities/CharacterClass";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
-import useInventoryCreator from "@hooks/useInventoryCreator";
-import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { processLootItems } from "@hooks/useInventoryActions";
+import Race from "@entities/Race";
+import CharacterClass from "@entities/CharacterClass";
+import Deity from "@entities/Deity";
+import Zone from "@entities/Zone";
+import CharacterCreationAttributes from "@entities/CharacterCreationAttributes";
+import { Item } from "@entities/Item";
 
 const getHpLevelMultiplier = (
   characterClass: number,
@@ -61,10 +64,9 @@ export const calculatePlayerHP = (character: CharacterProfile): number => {
   const level = character.level;
   const stamina = character.attributes.sta;
   const levelMultiplier = getHpLevelMultiplier(character.class.id, level);
-
   const term1 = level * levelMultiplier;
   const term2 = ((level * levelMultiplier) / 300) * stamina + 5;
-
+  
   return Math.floor(term1 + term2);
 };
 
@@ -78,7 +80,7 @@ export const calculatePlayerMana = (character: CharacterProfile): number => {
     return 0;
   }
 
-  const classId = character.class.id;
+  const classId = character.class;
 
   // Warriors, Monks, and Rogues have no mana
   if (
@@ -124,7 +126,12 @@ export const createNewCharacterProfile = async (
     attributes: CharacterCreationAttributes;
     allPointsAllocated: boolean;
   },
-  createInventory: (race: number, characterClass: number, deity: number, zone: number) => Promise<Item[]>,
+  createInventory: (
+    race: number,
+    characterClass: number,
+    deity: number,
+    zone: number
+  ) => Promise<Item[]>,
   setCharacterProfile: (profile: CharacterProfile) => void
 ) => {
   const {
@@ -134,14 +141,40 @@ export const createNewCharacterProfile = async (
     selectedDeity,
     selectedZone,
     attributes,
-    allPointsAllocated,
   } = characterCreatorState;
 
-  const newCharacterProfile: CharacterProfile = {
+  const startingItems = await createInventory(
+    selectedRace.id,
+    selectedClass.id,
+    selectedDeity.id,
+    selectedZone.id
+  );
+
+  const newCharacterProfile: Required<
+    Pick<
+      CharacterProfile,
+      | "name"
+      | "race"
+      | "class"
+      | "deity"
+      | "zoneId"
+      | "level"
+      | "exp"
+      | "weightAllowance"
+      | "attributes"
+      | "intoxication"
+      | "maxHp"
+      | "curHp"
+      | "maxMana"
+      | "curMana"
+      | "stats"
+      | "inventory"
+    >
+  > = {
     name: characterName,
-    race: selectedRace,
-    class: selectedClass,
-    deity: selectedDeity,
+    race: selectedRace.id,
+    class: selectedClass.id,
+    deity: selectedDeity.id,
     zoneId: selectedZone.zoneidnumber,
     level: 1,
     exp: 0,
@@ -164,7 +197,12 @@ export const createNewCharacterProfile = async (
       ac: 0,
       atk: 100,
     },
-    inventory: [],
+    inventory: startingItems.map((item, index) => ({
+      itemid: item.id,
+      slotid: index + 1, // Start from slot 1
+      charges: 1,
+      itemDetails: item,
+    })),
   };
 
   newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
@@ -174,12 +212,4 @@ export const createNewCharacterProfile = async (
   newCharacterProfile.stats.ac = calculateSimpleArmorClass(newCharacterProfile);
 
   setCharacterProfile(newCharacterProfile);
-
-  const startingItems = await createInventory(
-    selectedRace.id,
-    selectedClass.id,
-    selectedDeity.id,
-    selectedZone.id
-  );
-  processLootItems(startingItems);
 };
