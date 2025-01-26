@@ -1,7 +1,36 @@
 import { useEffect, useMemo } from "react";
-import deities from "../../../data/deities.json";
+import deities from "/data/deities.json";
 import useCharacterStore from "@stores/CharacterCreatorStore";
-import charCreateCombinations from "../../../data/char_create_combinations.json";
+import charCreateCombinations from "/data/char_create_combinations.json";
+import styled from "styled-components";
+import SelectionButton from "../Interface/SelectionButton";
+
+const DeitySelectorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
+const DeitiesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  width: 100%;
+`;
+
+const Title = styled.h2`
+  font-family: "Times New Roman", Times, serif;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 32px;
+  text-shadow: 2px 2px 4px #d6d2d2;
+  text-align: center;
+  margin-bottom: 20px;
+`;
 
 const DeitySelector = () => {
   const { selectedDeity, setSelectedDeity, selectedRace, selectedClass } =
@@ -36,31 +65,22 @@ const DeitySelector = () => {
   }, [compatibleDeities, selectedDeity, setSelectedDeity]);
 
   return (
-    <div>
-      <h2>Deity</h2>
-      {deities.map((deity) => (
-        <button
-          key={deity.id}
-          onClick={() => onSelectDeity(deity.id)}
-          disabled={!compatibleDeities.includes(deity.id)}
-          style={{
-            backgroundColor:
-              selectedDeity?.id === deity.id ? "#007bff" : "#f8f9fa",
-            color: selectedDeity?.id === deity.id ? "white" : "black",
-            margin: "5px",
-            padding: "10px",
-            border: "1px solid #ced4da",
-            borderRadius: "4px",
-            cursor: compatibleDeities.includes(deity.id)
-              ? "pointer"
-              : "not-allowed",
-            opacity: compatibleDeities.includes(deity.id) ? 1 : 0.5,
-          }}
-        >
-          {deity.name}
-        </button>
-      ))}
-    </div>
+    <DeitySelectorContainer>
+      <Title>Choose Your Deity</Title>
+      <DeitiesGrid>
+        {deities.map((deity) => (
+          <SelectionButton
+            key={deity.id}
+            onClick={() => onSelectDeity(deity.id)}
+            disabled={!compatibleDeities.includes(deity.id)}
+            $isSelected={selectedDeity?.id === deity.id}
+            $isDisabled={!compatibleDeities.includes(deity.id)}
+          >
+            {deity.name}
+          </SelectionButton>
+        ))}
+      </DeitiesGrid>
+    </DeitySelectorContainer>
   );
 };
 

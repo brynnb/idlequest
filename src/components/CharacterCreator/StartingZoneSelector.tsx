@@ -1,7 +1,36 @@
 import { useEffect, useMemo } from "react";
-import zones from "../../../data/zones.json";
+import zones from "/data/zones.json";
 import useCharacterStore from "@stores/CharacterCreatorStore";
-import charCreateCombinations from "../../../data/char_create_combinations.json";
+import charCreateCombinations from "/data/char_create_combinations.json";
+import styled from "styled-components";
+import SelectionButton from "../Interface/SelectionButton";
+
+const ZoneSelectorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
+const ZonesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+  width: 100%;
+`;
+
+const Title = styled.h2`
+  font-family: "Times New Roman", Times, serif;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 32px;
+  text-shadow: 2px 2px 4px #d6d2d2;
+  text-align: center;
+  margin-bottom: 20px;
+`;
 
 const ZoneSelector = () => {
   const { selectedZone, setSelectedZone, selectedRace, selectedClass } =
@@ -55,39 +84,22 @@ const ZoneSelector = () => {
   }, [compatibleZones, availableZones, selectedZone, setSelectedZone]);
 
   return (
-    <div>
-      <h2>Starting Zone</h2>
-      {availableZones.map((zone) => (
-        <button
-          key={zone.zoneidnumber}
-          onClick={() => onSelectZone(zone.zoneidnumber)}
-          disabled={!compatibleZones.includes(zone.zoneidnumber)}
-          style={{
-            backgroundColor:
-              selectedZone?.zoneidnumber === zone.zoneidnumber
-                ? "#007bff"
-                : !compatibleZones.includes(zone.zoneidnumber)
-                ? "#e0e0e0"
-                : "#f8f9fa",
-            color:
-              selectedZone?.zoneidnumber === zone.zoneidnumber
-                ? "white"
-                : !compatibleZones.includes(zone.zoneidnumber)
-                ? "#a0a0a0"
-                : "black",
-            margin: "5px",
-            padding: "10px",
-            border: "1px solid #ced4da",
-            borderRadius: "4px",
-            cursor: compatibleZones.includes(zone.zoneidnumber)
-              ? "pointer"
-              : "not-allowed",
-          }}
-        >
-          {zone.long_name}
-        </button>
-      ))}
-    </div>
+    <ZoneSelectorContainer>
+      <Title>Choose Your Starting Zone</Title>
+      <ZonesGrid>
+        {availableZones.map((zone) => (
+          <SelectionButton
+            key={zone.zoneidnumber}
+            onClick={() => onSelectZone(zone.zoneidnumber)}
+            disabled={!compatibleZones.includes(zone.zoneidnumber)}
+            $isSelected={selectedZone?.zoneidnumber === zone.zoneidnumber}
+            $isDisabled={!compatibleZones.includes(zone.zoneidnumber)}
+          >
+            {zone.long_name}
+          </SelectionButton>
+        ))}
+      </ZonesGrid>
+    </ZoneSelectorContainer>
   );
 };
 

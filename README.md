@@ -23,7 +23,11 @@ This project is very much in its early phase, and the casual nature of the READM
 
 This project is built using React/TypeScript and Zustand. Long term this will probably transition to having a RESTful API backend but is currently all running locally off a SQLite database.
 
-To run it:
+Install:
+
+`pnpm install`
+
+Running:
 
 `pnpm run dev`
 

@@ -45,6 +45,9 @@ export interface CharacterCreatorStore {
   resetAttributes: () => void;
   inventory: InventoryItem[];
   setInventory: (items: InventoryItem[]) => void;
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+  canProceedToNextStep: () => boolean;
 }
 
 const useCharacterCreatorStore = create<CharacterCreatorStore>()(
@@ -137,6 +140,7 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
             characterName: "",
             allPointsAllocated: false,
             inventory: [],
+            currentStep: 1,
           });
 
           // Call updateBaseAttributes after resetting
@@ -157,6 +161,28 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
           }),
         setInventory: (items) => set({ inventory: items }),
         inventory: [],
+        currentStep: 1,
+        setCurrentStep: (step) => set({ currentStep: step }),
+        canProceedToNextStep: () => {
+          const state = get();
+          switch (state.currentStep) {
+            case 1:
+              return (
+                state.characterName &&
+                state.selectedRace &&
+                state.selectedClass &&
+                state.allPointsAllocated
+              );
+            case 2:
+              return state.selectedDeity !== null;
+            case 3:
+              return state.selectedZone !== null;
+            case 4:
+              return true;
+            default:
+              return false;
+          }
+        },
       }),
       {
         name: "character-creator-storage",

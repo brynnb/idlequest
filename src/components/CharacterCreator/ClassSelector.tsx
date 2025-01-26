@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import classes from "/data/classes.json";
-import useCharacterStore from "/src/stores/CharacterCreatorStore";
-import CharacterClass from "/src/entities/CharacterClass";
+import useCharacterStore from "@stores/CharacterCreatorStore";
+import CharacterClass from "@entities/CharacterClass";
 import charCreateCombinations from "/data/char_create_combinations.json";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
@@ -11,9 +11,13 @@ interface CharCreateCombination {
   class: number;
 }
 
+interface ClassSelectorProps {
+  onClassSelect?: (classId: number) => void;
+}
+
 const ClassSelectorContainer = styled.div``;
 
-const ClassSelector = () => {
+const ClassSelector = ({ onClassSelect }: ClassSelectorProps) => {
   const { selectedClass, setSelectedClass, selectedRace } = useCharacterStore();
   const availableClasses = classes
     .slice(0, 14)
@@ -30,6 +34,9 @@ const ClassSelector = () => {
 
   const onSelectClass = (charClass: CharacterClass) => {
     setSelectedClass(charClass);
+    if (onClassSelect) {
+      onClassSelect(charClass.id);
+    }
   };
 
   useEffect(() => {
@@ -39,6 +46,9 @@ const ClassSelector = () => {
       );
       if (firstCompatibleClass) {
         setSelectedClass(firstCompatibleClass);
+        if (onClassSelect) {
+          onClassSelect(firstCompatibleClass.id);
+        }
       }
     }
   }, [
@@ -47,6 +57,7 @@ const ClassSelector = () => {
     selectedClass,
     setSelectedClass,
     availableClasses,
+    onClassSelect,
   ]);
 
   return (
