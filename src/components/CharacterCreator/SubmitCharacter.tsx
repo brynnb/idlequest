@@ -1,10 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import useInventoryCreator from "@hooks/useInventoryCreator";
 import { createNewCharacterProfile } from "@utils/playerCharacterUtils";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 
 const SubmitCharacter: React.FC = () => {
+  const navigate = useNavigate();
   const { loading, createInventory } = useInventoryCreator();
   const {
     characterName,
@@ -13,7 +15,7 @@ const SubmitCharacter: React.FC = () => {
     selectedDeity,
     selectedZone,
     allPointsAllocated,
-    attributes
+    attributes,
   } = useCharacterCreatorStore();
 
   const { setCharacterProfile } = usePlayerCharacterStore();
@@ -27,11 +29,12 @@ const SubmitCharacter: React.FC = () => {
         selectedDeity,
         selectedZone,
         attributes,
-        allPointsAllocated
+        allPointsAllocated,
       },
       createInventory,
       setCharacterProfile
     );
+    navigate("/");
   };
 
   return (
