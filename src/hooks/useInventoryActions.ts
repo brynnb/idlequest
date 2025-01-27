@@ -2,7 +2,7 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { getItemById } from "@utils/databaseOperations";
-import { 
+import {
   isItemAllowedInSlot,
   findFirstAvailableGeneralSlot,
   isEquippableItem,
@@ -16,21 +16,19 @@ import { InventorySlot } from "@entities/InventorySlot";
 import getItemScore from "@utils/getItemScore";
 import { useInventorySelling } from "./useInventorySelling";
 
-export const processLootItems = (loot: Item[]) => {
-  const { addItemToInventory } = usePlayerCharacterStore.getState();
-
-  loot.forEach((item) => {
-    if (!item) {
-      console.error("Encountered undefined item in loot");
-      return;
-    }
-
-    addItemToInventory(item);
-  });
-};
-
 export const useInventoryActions = () => {
   const { sellItem } = useInventorySelling();
+
+  const processLootItems = (loot: Item[]) => {
+    loot.forEach((item) => {
+      if (!item) {
+        console.error("Encountered undefined item in loot");
+        return;
+      }
+
+      addItemToInventory(item);
+    });
+  };
 
   const handleItemClick = (slotId: InventorySlot) => {
     const { characterProfile, swapItems, moveItemToSlot } =
@@ -168,7 +166,8 @@ export const useInventoryActions = () => {
   };
 
   const addItemToInventoryByItemId = async (itemId: number) => {
-    const { characterProfile, addInventoryItem } = usePlayerCharacterStore.getState();
+    const { characterProfile, addInventoryItem } =
+      usePlayerCharacterStore.getState();
     const itemDetails = await getItemById(itemId);
 
     if (!itemDetails) {
@@ -176,7 +175,9 @@ export const useInventoryActions = () => {
       return;
     }
 
-    const generalSlot = findFirstAvailableGeneralSlot(characterProfile.inventory);
+    const generalSlot = findFirstAvailableGeneralSlot(
+      characterProfile.inventory
+    );
     if (generalSlot === undefined) {
       console.warn("No available slots for new item");
       return;
@@ -193,29 +194,30 @@ export const useInventoryActions = () => {
   };
 
   const handleEquipAllItems = () => {
-    const { characterProfile, setInventory } = usePlayerCharacterStore.getState();
+    const { characterProfile, setInventory } =
+      usePlayerCharacterStore.getState();
     const newInventory = [...characterProfile.inventory];
-  
+
     const generalItems = newInventory.filter(
       (item) => item.slotid && item.slotid > 22
     );
-  
+
     for (const inventoryItem of generalItems) {
       const itemDetails = inventoryItem.itemDetails;
-  
+
       if (itemDetails && itemDetails.slots !== undefined) {
         const possibleSlots = getInventorySlotNames(itemDetails.slots);
-  
+
         for (const slotName of possibleSlots) {
           const slotId = Object.entries(InventorySlot).find(
             ([key, value]) => key.replace(/\d+/g, "").toUpperCase() === slotName
           )?.[1];
-  
+
           if (slotId >= 0 && slotId <= 22) {
             const isSlotEmpty = !newInventory.some(
               (invItem) => invItem.slotid === slotId
             );
-  
+
             if (isSlotEmpty) {
               inventoryItem.slotid = slotId;
               break;
@@ -224,7 +226,7 @@ export const useInventoryActions = () => {
         }
       }
     }
-  
+
     setInventory(newInventory);
   };
 
@@ -233,11 +235,9 @@ export const useInventoryActions = () => {
     addItemToInventory,
     handleLoot,
     addItemToInventoryByItemId,
-    handleEquipAllItems
+    handleEquipAllItems,
   };
 };
-
-
 
 export const handleItemClick = (slotId: InventorySlot) => {
   const { characterProfile, swapItems, moveItemToSlot } =

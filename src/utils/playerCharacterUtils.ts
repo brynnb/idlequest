@@ -4,7 +4,7 @@ import { ClassId } from "@entities/CharacterClass";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 import useInventoryCreator from "@hooks/useInventoryCreator";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { processLootItems } from "@hooks/useInventoryActions";
+import { useInventoryActions } from "@hooks/useInventoryActions";
 
 const getHpLevelMultiplier = (
   characterClass: number,
@@ -124,7 +124,12 @@ export const createNewCharacterProfile = async (
     attributes: CharacterCreationAttributes;
     allPointsAllocated: boolean;
   },
-  createInventory: (race: number, characterClass: number, deity: number, zone: number) => Promise<Item[]>,
+  createInventory: (
+    race: number,
+    characterClass: number,
+    deity: number,
+    zone: number
+  ) => Promise<Item[]>,
   setCharacterProfile: (profile: CharacterProfile) => void
 ) => {
   const {
@@ -181,5 +186,6 @@ export const createNewCharacterProfile = async (
     selectedDeity.id,
     selectedZone.id
   );
-  processLootItems(startingItems);
+
+  return startingItems;
 };

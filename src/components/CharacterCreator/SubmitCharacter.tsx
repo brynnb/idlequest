@@ -4,10 +4,12 @@ import useInventoryCreator from "@hooks/useInventoryCreator";
 import { createNewCharacterProfile } from "@utils/playerCharacterUtils";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { useInventoryActions } from "@hooks/useInventoryActions";
 
 const SubmitCharacter: React.FC = () => {
   const navigate = useNavigate();
   const { loading, createInventory } = useInventoryCreator();
+  const { handleLoot } = useInventoryActions();
   const {
     characterName,
     selectedRace,
@@ -21,7 +23,7 @@ const SubmitCharacter: React.FC = () => {
   const { setCharacterProfile } = usePlayerCharacterStore();
 
   const handleSubmit = async () => {
-    await createNewCharacterProfile(
+    const startingItems = await createNewCharacterProfile(
       {
         characterName,
         selectedRace,
@@ -34,6 +36,7 @@ const SubmitCharacter: React.FC = () => {
       createInventory,
       setCharacterProfile
     );
+    handleLoot(startingItems);
     navigate("/");
   };
 
