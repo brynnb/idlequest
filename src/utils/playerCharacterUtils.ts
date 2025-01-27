@@ -124,12 +124,7 @@ export const createNewCharacterProfile = async (
     attributes: CharacterCreationAttributes;
     allPointsAllocated: boolean;
   },
-  createInventory: (
-    race: number,
-    characterClass: number,
-    deity: number,
-    zone: number
-  ) => Promise<Item[]>,
+  createInventory: (race: number, characterClass: number, deity: number, zone: number) => Promise<Item[]>,
   setCharacterProfile: (profile: CharacterProfile) => void
 ) => {
   const {
