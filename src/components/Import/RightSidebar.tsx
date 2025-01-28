@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import PlayerStats from "/src/components/Interface/PlayerStats";
-import GroupContainer from "./GroupContainer";
+import PlayerStats from "../Interface/PlayerStats";
 import TargetBar from "./TargetBar";
 import ActionButton from "../Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
@@ -40,6 +39,8 @@ const RightSidebar = () => {
     toggleMap,
     isNoteOpen,
     toggleNote,
+    autoSellEnabled,
+    toggleAutoSell,
   } = useGameStatusStore();
 
   return (
@@ -90,8 +91,10 @@ const RightSidebar = () => {
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton
-          text="Walk"
-          onClick={() => {}}
+          text="AutoSell"
+          onClick={toggleAutoSell}
+          isPressed={autoSellEnabled}
+          isToggleable={true}
           marginBottom={marginBottomForBottomButtons}
         />
       </BottomActionButtonContainer>

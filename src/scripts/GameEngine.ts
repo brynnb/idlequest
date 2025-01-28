@@ -1,9 +1,9 @@
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
-import { NPCType } from "@entities/NPCType";
 import { getNPCLoot } from "@utils/getNPCLoot";
-import { handleLoot, sellGeneralInventory } from "@utils/inventoryUtils";
+import { sellGeneralInventory } from "@utils/inventoryUtils";
+import { processLootItems } from "@utils/lootUtils";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
@@ -86,8 +86,10 @@ class GameEngine {
     setTargetNPC(newTargetNPC);
   }
 
-  private getExperienceForNPCKill(npcId: number): number {
+  private getExperienceForNPCKill(): number {
     const { targetNPC } = gameStatusStore.getState();
+
+    if (!targetNPC?.level) return 0;
 
     const level = targetNPC.level;
     const EXP_FORMULA = (level: number) =>
@@ -109,13 +111,17 @@ class GameEngine {
 
     const { characterProfile } = playerCharacterStore.getState();
     const oldLevel = characterProfile.level;
-    const experienceGained = this.getExperienceForNPCKill(npcId);
+    const experienceGained = this.getExperienceForNPCKill();
     console.log("Experience gained:", experienceGained);
     playerCharacterStore.getState().addExperience(experienceGained);
     console.log("Experience after addition:", characterProfile.exp);
     console.log("Level after addition:", characterProfile.level);
 
-    if (characterProfile.level > oldLevel) {
+    if (
+      characterProfile.level &&
+      oldLevel &&
+      characterProfile.level > oldLevel
+    ) {
       addMessage(
         `Congratulations! You have reached level ${characterProfile.level}!`,
         MessageType.EXPERIENCE_GAIN
@@ -129,7 +135,18 @@ class GameEngine {
 
     getNPCLoot(npcId)
       .then((loot) => {
-        handleLoot(loot);
+        const { addInventoryItem, characterProfile, setInventory } =
+          playerCharacterStore.getState();
+        const { autoSellEnabled } = gameStatusStore.getState();
+        const addChatMessage = chatStore.getState().addMessage;
+
+        processLootItems(loot, characterProfile, {
+          addInventoryItem,
+          setInventory,
+          addChatMessage,
+          autoSellEnabled,
+        });
+
         sellGeneralInventory();
       })
       .catch((error) => {
@@ -154,8 +171,12 @@ class GameEngine {
 
     // Regenerate health and mana
     if (
-      characterProfile.curHp < characterProfile.maxHp ||
-      characterProfile.curMana < characterProfile.maxMana
+      characterProfile.curHp !== undefined &&
+      characterProfile.maxHp !== undefined &&
+      characterProfile.curMana !== undefined &&
+      characterProfile.maxMana !== undefined &&
+      (characterProfile.curHp < characterProfile.maxHp ||
+        characterProfile.curMana < characterProfile.maxMana)
     ) {
       isRegenerating = true;
 

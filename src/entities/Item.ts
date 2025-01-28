@@ -2,7 +2,7 @@ export interface Item {
   id?: number; // Unique Item Identifier
   description?: string; // Adding this for when we import a description form a spell for a spell scroll
   minstatus?: number; // Minimum Status
-  Name?: string; // Name
+  name?: string; // Name
   aagi?: number; // Agility: -128 to 127
   ac?: number; // Armor Class
   accuracy?: number; // Accuracy

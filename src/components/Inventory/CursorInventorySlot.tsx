@@ -64,8 +64,8 @@ const CursorInventorySlot: React.FC = () => {
     >
       <ItemIcon
         src={`/icons/${itemDetails.icon}.gif`}
-        alt={itemDetails.Name}
-        title={itemDetails.Name}
+        alt={itemDetails.name}
+        title={itemDetails.name}
         onMouseEnter={() => setHoveredItem(itemDetails)}
         onMouseLeave={() => setHoveredItem(null)}
       />
