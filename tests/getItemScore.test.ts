@@ -1,6 +1,7 @@
 import { initDatabase, getItemById } from "../src/utils/databaseOperations";
 import getItemScore from "../src/utils/getItemScore";
 import CharacterClass from "../src/entities/CharacterClass";
+import classes from "../data/classes.json";
 
 describe("getItemScore", () => {
   beforeAll(async () => {
@@ -8,10 +9,13 @@ describe("getItemScore", () => {
   });
 
   it("compares scores for items 5019 and 10908 for Warrior class", async () => {
-    const warrior: CharacterClass = { id: 1, name: "Necromancer" };
+    const warrior = classes.find((c: CharacterClass) => c.id === 1);
+    if (!warrior) {
+      throw new Error("Warrior class not found in classes.json");
+    }
 
-    const item5019 = await getItemById(8880);
-    const item10908 = await getItemById(4407);
+    const item5019 = await getItemById(5019); //Rusty Long Sword, crappy low end weapon
+    const item10908 = await getItemById(10908); //Jagged Blade of War, high end epic weapon, should score much higher
 
     if (!item5019 || !item10908) {
       throw new Error("One or both items not found in the database");
@@ -25,5 +29,6 @@ describe("getItemScore", () => {
 
     expect(typeof score5019).toBe("number");
     expect(typeof score10908).toBe("number");
+    expect(score10908).toBeGreaterThan(score5019);
   });
 });
