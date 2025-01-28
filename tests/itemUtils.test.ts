@@ -1,10 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { formatPrice } from "../src/utils/itemUtils";
-import { handleItemClick } from "../src/hooks/useInventoryActions";
+import { useInventoryActions } from "../src/hooks/useInventoryActions";
 import usePlayerCharacterStore from "../src/stores/PlayerCharacterStore";
 import { InventorySlot } from "../src/entities/InventorySlot";
+import { getBagStartingSlot } from "../src/utils/inventoryUtils";
 
 vi.mock("../src/stores/PlayerCharacterStore");
+vi.mock("../src/hooks/useInventorySelling", () => ({
+  useInventorySelling: () => ({
+    sellItem: vi.fn(),
+  }),
+}));
+
+vi.mock("../src/utils/inventoryUtils", () => ({
+  getBagStartingSlot: (slot: number) => {
+    if (slot === 23) return 262;
+    if (slot === InventorySlot.Cursor) return 342;
+    if (slot === 24) return 272;
+    return 0;
+  },
+}));
 
 describe("formatPrice", () => {
   it("formats copper into correct denominations", () => {
@@ -23,7 +38,25 @@ describe("Bag movement tests", () => {
   it("should update bag contents when moving a bag with items", () => {
     const mockSetInventory = vi.fn();
     const mockSwapItems = vi.fn();
-    const mockMoveItemToSlot = vi.fn();
+    const mockMoveItemToSlot = vi
+      .fn()
+      .mockImplementation((fromSlot, toSlot) => {
+        const currentInventory =
+          usePlayerCharacterStore.getState().characterProfile.inventory;
+        const inventory = currentInventory.map((item) => {
+          if (item.slotid === fromSlot) {
+            return { ...item, slotid: toSlot };
+          }
+          const fromBagStart = getBagStartingSlot(fromSlot);
+          const toBagStart = getBagStartingSlot(toSlot);
+          if (item.slotid >= fromBagStart && item.slotid < fromBagStart + 8) {
+            const relativeSlot = item.slotid - fromBagStart;
+            return { ...item, slotid: toBagStart + relativeSlot };
+          }
+          return item;
+        });
+        mockSetInventory(inventory);
+      });
 
     const mockInventory = [
       // Bag in slot 23
@@ -62,10 +95,15 @@ describe("Bag movement tests", () => {
       updateArmorClass: vi.fn(),
     });
 
+    const { handleItemClick } = useInventoryActions();
+
     // First pick up the bag
     handleItemClick(23 as InventorySlot);
 
     // Verify first move to cursor
+    expect(mockMoveItemToSlot).toHaveBeenCalledWith(23, InventorySlot.Cursor);
+
+    // Verify inventory state after moving to cursor
     expect(mockSetInventory).toHaveBeenCalledWith([
       {
         itemid: 1,
@@ -126,6 +164,9 @@ describe("Bag movement tests", () => {
     // Then move bag from cursor to slot 24
     handleItemClick(24 as InventorySlot);
 
+    // Verify the final move
+    expect(mockMoveItemToSlot).toHaveBeenCalledWith(InventorySlot.Cursor, 24);
+
     // Verify the final inventory state
     expect(mockSetInventory).toHaveBeenCalledWith([
       {
@@ -140,14 +181,12 @@ describe("Bag movement tests", () => {
       },
       {
         itemid: 2,
-        slotid: 272,
+        slotid: 272, // First slot of bag in slot 24
         charges: 1,
         itemDetails: {
           Name: "Item in Bag",
         },
       },
     ]);
-
-    expect(mockMoveItemToSlot).toHaveBeenCalledWith(InventorySlot.Cursor, 24);
   });
 });
