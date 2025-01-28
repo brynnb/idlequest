@@ -14,7 +14,7 @@ const calcBaseAC = (level: number): number => {
 };
 
 const getIksarBonus = (character: CharacterProfile): number => {
-  if (character.race?.id === RaceId.Iksar) {
+  if (character.race === RaceId.Iksar) {
     const level = character.level || 0;
     return Math.max(10, Math.min(35, level));
   }

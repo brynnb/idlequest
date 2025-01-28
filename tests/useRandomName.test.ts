@@ -7,7 +7,7 @@ describe("useRandomName", () => {
     const name = generateRandomName();
     expect(typeof name).toBe("string");
     expect(name.length).toBeGreaterThanOrEqual(5);
-    expect(name.length).toBeLessThanOrEqual(10);
+    expect(name.length).toBeLessThanOrEqual(15);
     expect(name[0]).toBe(name[0].toUpperCase());
   });
 

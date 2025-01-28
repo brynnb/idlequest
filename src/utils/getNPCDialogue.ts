@@ -45,7 +45,7 @@ export async function getNPCDialogue(npcName: string, dialogueHistory: DialogueE
   let messages: OpenAI.Chat.ChatCompletionMessageParam[];
 
   try {
-    console.log(`Executing SQL query for NPC: ${npcName}`);
+    // console.log(`Executing SQL query for NPC: ${npcName}`);
     const result = db.exec(`
       SELECT lua_content
       FROM quests
@@ -60,7 +60,7 @@ export async function getNPCDialogue(npcName: string, dialogueHistory: DialogueE
 
           const sharedInstruction = "Do not make up details about an NPC's species if you do not know.  No not make up details about an NPC's species if you do not know (e.g. don't make the NPC a unicorn unless it's obvious from the name). Do not make inanimate objects act like they're alive (they don't look at things). Things like boats may have dialogue associated in the LUA script but still do not treat them like they can speak. SirensBane and Stormbreaker are ships, do not make them talk or look at things. Do not refer to 'the player' and instead say 'you' ";
 
-    console.log('SQL query executed. Result:', JSON.stringify(result, null, 2));
+    // console.log('SQL query executed. Result:', JSON.stringify(result, null, 2));
 
     if (result.length > 0 && result[0].values.length > 0) {
       luaScript = result[0].values[0][0] as string;
@@ -74,7 +74,7 @@ export async function getNPCDialogue(npcName: string, dialogueHistory: DialogueE
         { role: "user", content: `NPC named ${npcName} and LUA script:\n\n${luaScript}` }
       ];
     } else {
-      console.log(`No Lua script found for NPC: ${npcName}`);
+      // console.log(`No Lua script found for NPC: ${npcName}`);
       messages = [
         { role: "system", content: nonDialogueInstruction + sharedInstruction },
         { role: "user", content: `Create a description of the actions of an NPC named ${npcName} when approached by a player. ` +
@@ -100,7 +100,7 @@ export async function getNPCDialogue(npcName: string, dialogueHistory: DialogueE
       });
 
       const response: DialogueResponse | NonDialogueResponse = JSON.parse(completion.choices[0].message.content || '{}');
-      console.log('Dialogue response:', response);
+      // console.log('Dialogue response:', response);
       
       if ('responses' in response) {
         return response as DialogueResponse;
