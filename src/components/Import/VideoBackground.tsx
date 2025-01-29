@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { getVideoEmbedOption } from "@utils/uiUtils";
+import { getRandomVideoIndex, getVideoByIndex } from "@utils/uiUtils";
 import { useLocation } from "react-router-dom";
 import useGameStatusStore from "@stores/GameStatusStore";
 
@@ -19,18 +19,26 @@ const VideoBackground: React.FC = () => {
   const location = useLocation();
   const isCharacterCreation = location.pathname === "/create";
   const isMuted = useGameStatusStore((state) => state.isMuted);
-  const currentVideoIndex = useGameStatusStore(
-    (state) => state.currentVideoIndex
-  );
+  const currentVideoIndex = useGameStatusStore((state) => state.currentVideoIndex);
+  const setInitialVideoIndex = useGameStatusStore((state) => state.setInitialVideoIndex);
   const playerRef = useRef<HTMLIFrameElement>(null);
   const [videoId, setVideoId] = useState<string>("");
+  const [startTime, setStartTime] = useState<number>(0);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
-    const videos =
-      getVideoEmbedOption().split("playlist=")[1]?.split(",") || [];
-    const index = currentVideoIndex % videos.length;
-    setVideoId(videos[index] || "");
+    if (currentVideoIndex === -1) {
+      setInitialVideoIndex(getRandomVideoIndex());
+    }
+  }, [currentVideoIndex, setInitialVideoIndex]);
+
+  useEffect(() => {
+    if (currentVideoIndex !== -1) {
+      const videoChoice = getVideoByIndex(currentVideoIndex);
+      const newStartTime = Math.floor(Math.random() * (videoChoice.end - videoChoice.start + 1)) + videoChoice.start;
+      setVideoId(videoChoice.videoCode);
+      setStartTime(newStartTime);
+    }
   }, [currentVideoIndex]);
 
   // Add click handler to document to enable audio
@@ -47,7 +55,7 @@ const VideoBackground: React.FC = () => {
   // Construct the full embed URL with all necessary parameters
   const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&playsinline=1&origin=${encodeURIComponent(
     window.location.origin
-  )}&modestbranding=1&version=3&iv_load_policy=3`;
+  )}&modestbranding=1&version=3&iv_load_policy=3&start=${startTime}`;
 
   // Handle mute state changes and initial unmute
   useEffect(() => {

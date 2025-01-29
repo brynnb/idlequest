@@ -49,13 +49,20 @@ export function getVideoEmbedOption(): string {
     "https://www.youtube.com/embed/?autoplay=1&mute=1&loop=1&playlist=";
   const endStr = "&start=";
 
-  const videoChoice =
-    videoOptions[Math.floor(Math.random() * videoOptions.length)];
+  const videoChoice = videoOptions[0];
   const startTime =
     Math.floor(Math.random() * (videoChoice.end - videoChoice.start + 1)) +
     videoChoice.start;
 
   return `${baseStr}${videoChoice.videoCode}${endStr}${startTime}`;
+}
+
+export function getVideoByIndex(index: number): VideoOption {
+  return videoOptions[index % videoOptions.length];
+}
+
+export function getRandomVideoIndex(): number {
+  return Math.floor(Math.random() * videoOptions.length);
 }
 
 export interface SpellGem {

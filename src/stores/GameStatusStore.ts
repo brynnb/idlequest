@@ -21,6 +21,7 @@ interface GameStatusStore {
   autoSellEnabled: boolean;
   isMuted: boolean;
   currentVideoIndex: number;
+  setInitialVideoIndex: (index: number) => void;
   cycleVideo: () => void;
   toggleAutoSell: () => void;
   toggleMute: () => void;
@@ -65,7 +66,14 @@ const useGameStatusStore = create<GameStatusStore>()(
             quickMode: defaultQuickMode,
             autoSellEnabled: false,
             isMuted: true,
-            currentVideoIndex: 0,
+            currentVideoIndex: -1,
+
+            setInitialVideoIndex: (index: number) => {
+              const { currentVideoIndex } = get();
+              if (currentVideoIndex === -1) {
+                set({ currentVideoIndex: index });
+              }
+            },
 
             cycleVideo: () => {
               set((state) => ({
