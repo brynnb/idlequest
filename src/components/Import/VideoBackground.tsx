@@ -19,8 +19,12 @@ const VideoBackground: React.FC = () => {
   const location = useLocation();
   const isCharacterCreation = location.pathname === "/create";
   const isMuted = useGameStatusStore((state) => state.isMuted);
-  const currentVideoIndex = useGameStatusStore((state) => state.currentVideoIndex);
-  const setInitialVideoIndex = useGameStatusStore((state) => state.setInitialVideoIndex);
+  const currentVideoIndex = useGameStatusStore(
+    (state) => state.currentVideoIndex
+  );
+  const setInitialVideoIndex = useGameStatusStore(
+    (state) => state.setInitialVideoIndex
+  );
   const playerRef = useRef<HTMLIFrameElement>(null);
   const [videoId, setVideoId] = useState<string>("");
   const [startTime, setStartTime] = useState<number>(0);
@@ -35,7 +39,9 @@ const VideoBackground: React.FC = () => {
   useEffect(() => {
     if (currentVideoIndex !== -1) {
       const videoChoice = getVideoByIndex(currentVideoIndex);
-      const newStartTime = Math.floor(Math.random() * (videoChoice.end - videoChoice.start + 1)) + videoChoice.start;
+      const newStartTime =
+        Math.floor(Math.random() * (videoChoice.end - videoChoice.start + 1)) +
+        videoChoice.start;
       setVideoId(videoChoice.videoCode);
       setStartTime(newStartTime);
     }
