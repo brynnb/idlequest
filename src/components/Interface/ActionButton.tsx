@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Tooltip from "./Tooltip";
 
-const ButtonContainer = styled.div`
+const TooltipWrapper = styled.div`
   position: relative;
+  display: inline-block;
 `;
 
 const StyledActionButton = styled.button.attrs({ className: "action-button" })<{
@@ -38,7 +39,7 @@ const StyledActionButton = styled.button.attrs({ className: "action-button" })<{
 
 interface ActionButtonProps {
   text: string;
-  onClick?: () => void;  // Make onClick optional
+  onClick?: () => void;
   marginBottom?: string;
   customCSS?: string;
   isToggleable?: boolean;
@@ -65,7 +66,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     if (isToggleable && isPressedProp === undefined) {
       setIsInternalPressed((prev) => !prev);
     }
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick();
     }
   };
@@ -80,22 +81,30 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     }
   };
 
-  return (
-    <ButtonContainer>
-      <StyledActionButton
-        $isPressed={isPressed}
-        $marginBottom={marginBottom}
-        $customCSS={customCSS}
-        onMouseDown={handleMouseEvents}
-        onMouseUp={handleMouseEvents}
-        onMouseLeave={handleMouseEvents}
-        onClick={handleClick}
-      >
-        {text}
-      </StyledActionButton>
-      {tooltip && <Tooltip text={tooltip} isVisible={showTooltip} />}
-    </ButtonContainer>
+  const button = (
+    <StyledActionButton
+      $isPressed={isPressed}
+      $marginBottom={marginBottom}
+      $customCSS={customCSS}
+      onMouseDown={handleMouseEvents}
+      onMouseUp={handleMouseEvents}
+      onMouseLeave={handleMouseEvents}
+      onClick={handleClick}
+    >
+      {text}
+    </StyledActionButton>
   );
+
+  if (tooltip) {
+    return (
+      <TooltipWrapper>
+        {button}
+        <Tooltip text={tooltip} isVisible={showTooltip} />
+      </TooltipWrapper>
+    );
+  }
+
+  return button;
 };
 
 export default ActionButton;
