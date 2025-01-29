@@ -41,6 +41,8 @@ const RightSidebar = () => {
     toggleNote,
     autoSellEnabled,
     toggleAutoSell,
+    isMuted,
+    toggleMute,
   } = useGameStatusStore();
 
   return (
@@ -86,8 +88,10 @@ const RightSidebar = () => {
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton
-          text="Sit"
-          onClick={() => {}}
+          text="Mute"
+          onClick={toggleMute}
+          isPressed={isMuted}
+          isToggleable={true}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton

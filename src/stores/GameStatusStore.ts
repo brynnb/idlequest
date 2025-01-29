@@ -19,7 +19,9 @@ interface GameStatusStore {
   isRunning: boolean;
   quickMode: boolean;
   autoSellEnabled: boolean;
+  isMuted: boolean;
   toggleAutoSell: () => void;
+  toggleMute: () => void;
   initializeZones: (forceReload?: boolean) => Promise<void>;
   getZoneNameById: (id: number) => string | undefined;
   getZoneIdByName: (name: string) => number | undefined;
@@ -60,6 +62,13 @@ const useGameStatusStore = create<GameStatusStore>()(
             isRunning: defaultIsRunning,
             quickMode: defaultQuickMode,
             autoSellEnabled: false,
+            isMuted: true,
+
+            toggleMute: () => {
+              set((state) => ({
+                isMuted: !state.isMuted,
+              }));
+            },
 
             initializeZones: async (forceReload = false) => {
               const { zones } = get();
@@ -158,7 +167,9 @@ const useGameStatusStore = create<GameStatusStore>()(
             toggleMap: () => {
               set((state) => ({
                 isMapOpen: !state.isMapOpen,
-                isInventoryOpen: state.isMapOpen ? false : state.isInventoryOpen,
+                isInventoryOpen: state.isMapOpen
+                  ? false
+                  : state.isInventoryOpen,
               }));
             },
 
@@ -166,7 +177,9 @@ const useGameStatusStore = create<GameStatusStore>()(
             toggleSpellbook: () => {
               set((state) => ({
                 isSpellbookOpen: !state.isSpellbookOpen,
-                isInventoryOpen: state.isSpellbookOpen ? false : state.isInventoryOpen,
+                isInventoryOpen: state.isSpellbookOpen
+                  ? false
+                  : state.isInventoryOpen,
                 isMapOpen: state.isSpellbookOpen ? false : state.isMapOpen,
               }));
             },
@@ -175,7 +188,9 @@ const useGameStatusStore = create<GameStatusStore>()(
             toggleNote: () => {
               set((state) => ({
                 isNoteOpen: !state.isNoteOpen,
-                isInventoryOpen: state.isNoteOpen ? false : state.isInventoryOpen,
+                isInventoryOpen: state.isNoteOpen
+                  ? false
+                  : state.isInventoryOpen,
                 isMapOpen: state.isNoteOpen ? false : state.isMapOpen,
               }));
             },
@@ -192,7 +207,7 @@ const useGameStatusStore = create<GameStatusStore>()(
 
             toggleAutoSell: () => {
               set((state) => ({
-                autoSellEnabled: !state.autoSellEnabled
+                autoSellEnabled: !state.autoSellEnabled,
               }));
             },
           };
