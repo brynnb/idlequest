@@ -20,6 +20,8 @@ interface GameStatusStore {
   quickMode: boolean;
   autoSellEnabled: boolean;
   isMuted: boolean;
+  currentVideoIndex: number;
+  cycleVideo: () => void;
   toggleAutoSell: () => void;
   toggleMute: () => void;
   initializeZones: (forceReload?: boolean) => Promise<void>;
@@ -63,6 +65,13 @@ const useGameStatusStore = create<GameStatusStore>()(
             quickMode: defaultQuickMode,
             autoSellEnabled: false,
             isMuted: true,
+            currentVideoIndex: 0,
+
+            cycleVideo: () => {
+              set((state) => ({
+                currentVideoIndex: state.currentVideoIndex + 1,
+              }));
+            },
 
             toggleMute: () => {
               set((state) => ({

@@ -4,7 +4,13 @@ import useGameStatusStore from "@stores/GameStatusStore";
 
 const SystemOptions = () => {
   const buttonWidth = "164px";
-  const { isInventoryOpen, toggleInventory, isSpellbookOpen, toggleSpellbook } = useGameStatusStore();
+  const {
+    isInventoryOpen,
+    toggleInventory,
+    isSpellbookOpen,
+    toggleSpellbook,
+    cycleVideo,
+  } = useGameStatusStore();
 
   return (
     <div
@@ -41,7 +47,7 @@ const SystemOptions = () => {
       />
       <ActionButton
         text="View"
-        onClick={() => {}}
+        onClick={cycleVideo}
         customCSS={`width: ${buttonWidth};`}
       />
     </div>

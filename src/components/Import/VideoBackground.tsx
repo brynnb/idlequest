@@ -19,16 +19,19 @@ const VideoBackground: React.FC = () => {
   const location = useLocation();
   const isCharacterCreation = location.pathname === "/create";
   const isMuted = useGameStatusStore((state) => state.isMuted);
+  const currentVideoIndex = useGameStatusStore(
+    (state) => state.currentVideoIndex
+  );
   const playerRef = useRef<HTMLIFrameElement>(null);
   const [videoId, setVideoId] = useState<string>("");
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  // Get the video ID once and store it
   useEffect(() => {
-    const baseUrl = getVideoEmbedOption();
-    const id = baseUrl.split("playlist=")[1]?.split("&")[0];
-    setVideoId(id || "");
-  }, []);
+    const videos =
+      getVideoEmbedOption().split("playlist=")[1]?.split(",") || [];
+    const index = currentVideoIndex % videos.length;
+    setVideoId(videos[index] || "");
+  }, [currentVideoIndex]);
 
   // Add click handler to document to enable audio
   useEffect(() => {
@@ -46,10 +49,9 @@ const VideoBackground: React.FC = () => {
     window.location.origin
   )}&modestbranding=1&version=3&iv_load_policy=3`;
 
-  // Handle mute state changes
+  // Handle mute state changes and initial unmute
   useEffect(() => {
-    // Only try to unmute if user has interacted with the page
-    if (!hasInteracted && !isMuted) return;
+    if (!hasInteracted) return;
 
     const timeoutId = setTimeout(() => {
       if (playerRef.current?.contentWindow) {
@@ -66,7 +68,7 @@ const VideoBackground: React.FC = () => {
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [isMuted, hasInteracted]);
+  }, [isMuted, hasInteracted, videoId]);
 
   if (!videoId) return null;
 

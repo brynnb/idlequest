@@ -14,13 +14,14 @@ const TooltipContainer = styled.div<{ $isVisible: boolean }>`
   border-radius: 4px;
   font-size: 14px;
   white-space: nowrap;
-  pointer-events: none;
+  pointer-events: ${({ $isVisible }) => ($isVisible ? "auto" : "none")};
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   transition: opacity 0.2s;
   z-index: 9999;
   top: 0px;
   left: 50%;
   transform: translateX(-50%);
+  cursor: default;
 `;
 
 const Tooltip: React.FC<TooltipProps> = ({ text, isVisible }) => {
