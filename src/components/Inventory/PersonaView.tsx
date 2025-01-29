@@ -16,9 +16,10 @@ const PersonaView: React.FC = () => {
   const handleClick = async () => {
     if (cursorItem?.itemDetails) {
       // Create a new inventory without the cursor item
-      const inventoryWithoutCursor = characterProfile.inventory?.filter(
-        (item) => item.slotid !== InventorySlot.Cursor
-      ) || [];
+      const inventoryWithoutCursor =
+        characterProfile.inventory?.filter(
+          (item) => item.slotid !== InventorySlot.Cursor
+        ) || [];
 
       await addItemToInventory(
         cursorItem.itemDetails,
