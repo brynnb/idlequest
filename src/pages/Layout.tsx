@@ -1,9 +1,11 @@
 import styled from "styled-components";
-import { Link, Outlet } from "react-router-dom";
-import ResetGameButton from "@components/ResetGameButton";
-import StoreDebugger from "@components/StoreDebugger";
+import { Outlet, useLocation } from "react-router-dom";
 
-const MainContainer = styled.div`
+interface MainContainerProps {
+  $isCharacterCreation: boolean;
+}
+
+const MainContainer = styled.div<MainContainerProps>`
   display: grid;
   gap: 0px 0px;
   grid-auto-flow: row;
@@ -14,24 +16,31 @@ const MainContainer = styled.div`
   height: 1080px;
   position: relative;
   overflow: hidden;
-  background-image: url("/images/ui/charactercreation/charactercreatorbackground.png");
-  background-size: 1440px 1080px;
-  background-position: center;
-  background-repeat: no-repeat;
+  ${(props) =>
+    props.$isCharacterCreation &&
+    `
+    background-image: url("/images/ui/charactercreation/charactercreatorbackground.png");
+    background-size: 1440px 1080px;
+    background-position: center;
+    background-repeat: no-repeat;
+  `}
 `;
 
 const Layout = () => {
+  const location = useLocation();
+  const isCharacterCreation = location.pathname === "/create";
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
   };
 
   return (
-    <MainContainer id="main" onContextMenu={handleContextMenu}>
-      {/* <Link to="/create">
-        <ResetGameButton />
-      </Link> */}
+    <MainContainer
+      id="main"
+      onContextMenu={handleContextMenu}
+      $isCharacterCreation={isCharacterCreation}
+    >
       <Outlet />
-      {/* <StoreDebugger /> */}
     </MainContainer>
   );
 };

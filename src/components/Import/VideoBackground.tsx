@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { getVideoEmbedOption } from "@utils/uiUtils";
+import { useLocation } from "react-router-dom";
 
-const ViewContainer = styled.div`
+interface ViewContainerProps {
+  $isCharacterCreation: boolean;
+}
+
+const ViewContainer = styled.div<ViewContainerProps>`
   overflow: hidden;
-  z-index: -1;
   position: absolute;
   top: 0;
+  z-index: ${(props) => (props.$isCharacterCreation ? -2 : -1)};
 `;
 
 const VideoBackground: React.FC = () => {
   const [videoSrc, setVideoSrc] = useState("");
+  const location = useLocation();
+  const isCharacterCreation = location.pathname === "/create";
 
   useEffect(() => {
     const baseUrl = getVideoEmbedOption();
@@ -26,7 +33,7 @@ const VideoBackground: React.FC = () => {
   }, []);
 
   return (
-    <ViewContainer className="view">
+    <ViewContainer className="view" $isCharacterCreation={isCharacterCreation}>
       <iframe
         id="youtube-background-player"
         width="1400"
