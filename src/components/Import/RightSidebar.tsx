@@ -3,6 +3,7 @@ import PlayerStats from "../Interface/PlayerStats";
 import TargetBar from "./TargetBar";
 import ActionButton from "../Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
+import { useEffect, useState } from "react";
 
 const StyledRightSidebar = styled.div.attrs({ className: "right-sidebar" })`
   right: 0px;
@@ -44,6 +45,18 @@ const RightSidebar = () => {
     isMuted,
     toggleMute,
   } = useGameStatusStore();
+
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      setHasInteracted(true);
+      document.removeEventListener("click", handleInteraction);
+    };
+
+    document.addEventListener("click", handleInteraction);
+    return () => document.removeEventListener("click", handleInteraction);
+  }, []);
 
   return (
     <StyledRightSidebar>
@@ -93,6 +106,8 @@ const RightSidebar = () => {
           isPressed={isMuted}
           isToggleable={true}
           marginBottom={marginBottomForBottomButtons}
+          tooltip="Click anywhere to start audio"
+          showTooltip={!isMuted && !hasInteracted}
         />
         <ActionButton
           text="AutoSell"

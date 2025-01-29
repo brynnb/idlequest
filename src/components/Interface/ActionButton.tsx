@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import Tooltip from "./Tooltip";
+
+const ButtonContainer = styled.div`
+  position: relative;
+`;
 
 const StyledActionButton = styled.button.attrs({ className: "action-button" })<{
   $isPressed: boolean;
@@ -38,6 +43,8 @@ interface ActionButtonProps {
   customCSS?: string;
   isToggleable?: boolean;
   isPressed?: boolean;
+  tooltip?: string;
+  showTooltip?: boolean;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({
@@ -47,6 +54,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   customCSS,
   isToggleable = false,
   isPressed: isPressedProp,
+  tooltip,
+  showTooltip = false,
 }) => {
   const [isInternalPressed, setIsInternalPressed] = useState(false);
   const isPressed =
@@ -72,17 +81,20 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   };
 
   return (
-    <StyledActionButton
-      $isPressed={isPressed}
-      $marginBottom={marginBottom}
-      $customCSS={customCSS}
-      onMouseDown={handleMouseEvents}
-      onMouseUp={handleMouseEvents}
-      onMouseLeave={handleMouseEvents}
-      onClick={handleClick}
-    >
-      {text}
-    </StyledActionButton>
+    <ButtonContainer>
+      <StyledActionButton
+        $isPressed={isPressed}
+        $marginBottom={marginBottom}
+        $customCSS={customCSS}
+        onMouseDown={handleMouseEvents}
+        onMouseUp={handleMouseEvents}
+        onMouseLeave={handleMouseEvents}
+        onClick={handleClick}
+      >
+        {text}
+      </StyledActionButton>
+      {tooltip && <Tooltip text={tooltip} isVisible={showTooltip} />}
+    </ButtonContainer>
   );
 };
 
