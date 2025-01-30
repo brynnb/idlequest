@@ -1,13 +1,13 @@
 import React from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { addItemToInventory } from "@utils/lootUtils";
-import useGameStatusStore from "@stores/GameStatusStore";
+import useChatStore from "@stores/ChatStore";
 import { MessageType } from "@stores/ChatStore";
 import { InventorySlot } from "@entities/InventorySlot";
 
 const PersonaView: React.FC = () => {
   const { characterProfile, setInventory } = usePlayerCharacterStore();
-  const { addChatMessage } = useGameStatusStore();
+  const { addMessage } = useChatStore();
 
   const cursorItem = characterProfile?.inventory?.find(
     (item) => item.slotid === InventorySlot.Cursor
@@ -31,7 +31,7 @@ const PersonaView: React.FC = () => {
         {
           setInventory,
           addChatMessage: (message: string) =>
-            addChatMessage(message, MessageType.LOOT),
+            addMessage(message, MessageType.LOOT),
         }
       );
     }

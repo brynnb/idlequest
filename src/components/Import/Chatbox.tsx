@@ -1,21 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import useChatStore, { MessageType } from "@stores/ChatStore";
-import VerticalScroll from "../Interface/VerticalScroll";
+import PageSelection from "../Interface/PageSelection";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   width: 902px;
-  height: 300px;
+  height: 350px;
   left: 266px;
   top: 722px;
-  padding-top: 40px;
+ 
   padding-bottom: 20px;
   position: absolute;
   background-image: url("/images/chatbg.png");
-  background-size: cover;
+  background-size: contain;
   font-size: 20px;
   line-height: 1.2;
   display: flex;
+  flex-direction: column;
+  align-items: center;
 
   .yellow-text {
     color: #fce803;
@@ -54,7 +56,6 @@ const ChatContent = styled.div.attrs({ className: "chat-content" })`
   width: calc(100%);
   height: 300px;
   padding-left: 100px;
-
   padding-right: 20px;
   padding-bottom: 10px;
   box-sizing: border-box;
@@ -68,7 +69,6 @@ const ChatContent = styled.div.attrs({ className: "chat-content" })`
   &::-webkit-scrollbar-thumb {
     background: #c6b5ad;
     border-radius: 6px;
-    
   }
 
   &::-webkit-scrollbar-track {
@@ -79,6 +79,46 @@ const ChatContent = styled.div.attrs({ className: "chat-content" })`
 const ChatMessage = styled.div`
   margin-bottom: 0px;
 `;
+
+const CHAT_TYPES = ["Default", "Combat", "Loot", "Verbose"] as const;
+type ChatType = (typeof CHAT_TYPES)[number];
+
+interface ChatMessage {
+  id: string | number;
+  type: MessageType;
+  text: string;
+}
+
+const getFilteredMessages = (messages: ChatMessage[], chatType: ChatType) => {
+  switch (chatType) {
+    case "Combat":
+      return messages.filter((message) =>
+        [
+          MessageType.COMBAT_INCOMING,
+          MessageType.COMBAT_OUTGOING,
+          MessageType.COMBAT_SPECIAL,
+          MessageType.DEATH,
+        ].includes(message.type)
+      );
+    case "Loot":
+      return messages.filter((message) =>
+        [MessageType.LOOT].includes(message.type)
+      );
+    case "Verbose":
+      return messages;
+    default:
+      return messages.filter(
+        (message) =>
+          ![
+            MessageType.COMBAT_INCOMING,
+            MessageType.COMBAT_OUTGOING,
+            MessageType.COMBAT_SPECIAL,
+            MessageType.DEATH,
+            MessageType.LOOT,
+          ].includes(message.type)
+      );
+  }
+};
 
 const getMessageClass = (type: MessageType): string => {
   switch (type) {
@@ -133,17 +173,35 @@ const getMessageClass = (type: MessageType): string => {
 const ChatBox: React.FC = () => {
   const { messages } = useChatStore();
   const chatContentRef = useRef<HTMLDivElement>(null);
+  const [currentChatType, setCurrentChatType] = useState<ChatType>("Default");
 
   useEffect(() => {
     if (chatContentRef.current) {
       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, currentChatType]);
+
+  const handlePageChange = (direction: "left" | "right") => {
+    const currentIndex = CHAT_TYPES.indexOf(currentChatType);
+    const newIndex =
+      direction === "left"
+        ? (currentIndex - 1 + CHAT_TYPES.length) % CHAT_TYPES.length
+        : (currentIndex + 1) % CHAT_TYPES.length;
+    setCurrentChatType(CHAT_TYPES[newIndex]);
+  };
+
+  const filteredMessages = getFilteredMessages(messages, currentChatType);
 
   return (
     <ChatContainer>
+      <PageSelection
+        pages={[...CHAT_TYPES]}
+        currentPage={currentChatType}
+        onPageChange={handlePageChange}
+        useAttributeBackground={true}
+      />
       <ChatContent ref={chatContentRef}>
-        {messages.map((message) => (
+        {filteredMessages.map((message) => (
           <ChatMessage
             key={message.id}
             className={getMessageClass(message.type)}

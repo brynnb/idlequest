@@ -5,50 +5,12 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import { useInventorySelling } from "@hooks/useInventorySelling";
+import PageSelection from "../Interface/PageSelection";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const PageSelection = styled.div.attrs({ className: "page-selection" })`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const PageButton = styled.button.attrs({ className: "page-button" })<{
-  $isPressed: boolean;
-}>`
-  width: 47px;
-  height: 30px;
-  background-image: ${({ $isPressed }) =>
-    $isPressed
-      ? "url('/images/ui/macro/paginateleftpress.png')"
-      : "url('/images/ui/macro/paginateleft.png')"};
-  background-size: cover;
-  background-repeat: no-repeat;
-  border: none;
-  cursor: pointer;
-  outline: none;
-
-  &:last-child {
-    background-image: ${({ $isPressed }) =>
-      $isPressed
-        ? "url('/images/ui/macro/paginaterightpress.png')"
-        : "url('/images/ui/macro/paginateright.png')"};
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const PageNumber = styled.p.attrs({ className: "page-number" })`
-  margin: 0 10px;
-  font-size: 18px;
-  color: white;
 `;
 
 const MacroButtonsGrid = styled.div.attrs({ className: "macro-buttons-grid" })`
@@ -86,10 +48,6 @@ const MacroButtons = () => {
   const [pressedButtons, setPressedButtons] = useState<{
     [key: number]: boolean;
   }>({});
-  const [pressedPageButtons, setPressedPageButtons] = useState({
-    left: false,
-    right: false,
-  });
 
   const navigate = useNavigate();
   const { sellGeneralInventory } = useInventorySelling();
@@ -97,12 +55,19 @@ const MacroButtons = () => {
   const resetCharacterCreator = useCharacterCreatorStore(
     (state) => state.resetStore
   );
-  const { addItemToInventoryByItemId, handleEquipAllItems } = useInventoryActions();
+  const { addItemToInventoryByItemId, handleEquipAllItems } =
+    useInventoryActions();
+
+  const MACRO_PAGES = ["1", "2", "3", "4", "5"];
 
   const handlePageChange = (direction: "left" | "right") => {
-    setPage((prev) =>
-      direction === "left" ? Math.max(1, prev - 1) : prev + 1
-    );
+    setPage((prev) => {
+      if (direction === "left") {
+        return Math.max(1, prev - 1);
+      } else {
+        return Math.min(5, prev + 1);
+      }
+    });
   };
 
   const handleMacroButtonPress = (num: number) => {
@@ -111,15 +76,6 @@ const MacroButtons = () => {
 
   const handleMacroButtonRelease = (num: number) => {
     setPressedButtons((prev) => ({ ...prev, [num]: false }));
-  };
-
-  const handlePageButtonPress = (direction: "left" | "right") => {
-    setPressedPageButtons((prev) => ({ ...prev, [direction]: true }));
-    handlePageChange(direction);
-  };
-
-  const handlePageButtonRelease = (direction: "left" | "right") => {
-    setPressedPageButtons((prev) => ({ ...prev, [direction]: false }));
   };
 
   const handleResetGame = () => {
@@ -187,21 +143,11 @@ const MacroButtons = () => {
 
   return (
     <Container>
-      <PageSelection>
-        <PageButton
-          $isPressed={pressedPageButtons.left}
-          onMouseDown={() => handlePageButtonPress("left")}
-          onMouseUp={() => handlePageButtonRelease("left")}
-          onMouseLeave={() => handlePageButtonRelease("left")}
-        />
-        <PageNumber>{page}</PageNumber>
-        <PageButton
-          $isPressed={pressedPageButtons.right}
-          onMouseDown={() => handlePageButtonPress("right")}
-          onMouseUp={() => handlePageButtonRelease("right")}
-          onMouseLeave={() => handlePageButtonRelease("right")}
-        />
-      </PageSelection>
+      <PageSelection
+        pages={MACRO_PAGES}
+        currentPage={page.toString()}
+        onPageChange={handlePageChange}
+      />
       <MacroButtonsGrid>
         {[1, 2, 3, 4, 5, 6].map((num) => (
           <MacroButton
