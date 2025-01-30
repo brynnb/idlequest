@@ -227,6 +227,10 @@ export const processLootItems = async (
   },
   deps: LootHandlerDependencies
 ) => {
+  if (!loot || loot.length === 0) {
+    return;
+  }
+
   console.log(`Processing ${loot.length} loot items`);
   let currentInventory = [...(characterProfile.inventory || [])];
 
@@ -234,6 +238,18 @@ export const processLootItems = async (
     if (!item) {
       console.error("Encountered undefined item in loot");
       continue;
+    }
+    if (item.id) {
+      const itemDetails = await getItemById(item.id);
+      if (itemDetails) {
+        if (itemDetails?.name) {
+          const startsWithArticle = /^(a|an)\s+/i.test(itemDetails.name);
+          deps.addChatMessage(
+            `You have looted ${startsWithArticle ? '' : (/^[aeiou]/i.test(itemDetails.name) ? 'an' : 'a') + ' '}${itemDetails.name}`,
+            MessageType.LOOT
+          );
+        }
+      }
     }
     await addItemToInventory(
       item,

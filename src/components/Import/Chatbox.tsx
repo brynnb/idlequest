@@ -8,7 +8,7 @@ const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   height: 350px;
   left: 266px;
   top: 722px;
- 
+
   padding-bottom: 20px;
   position: absolute;
   background-image: url("/images/chatbg.png");

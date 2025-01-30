@@ -145,9 +145,10 @@ class GameEngine {
           setInventory,
           addChatMessage,
           autoSellEnabled,
+          sellItem: () => {
+            return sellGeneralInventory(false);
+          },
         });
-
-        sellGeneralInventory();
       })
       .catch((error) => {
         console.error("Error fetching NPC loot:", error);

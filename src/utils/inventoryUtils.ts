@@ -3,6 +3,7 @@ import { InventorySlot } from "@entities/InventorySlot";
 import CharacterProfile from "@entities/CharacterProfile";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { Item } from "@entities/Item";
+import useChatStore, { MessageType } from "@stores/ChatStore";
 
 const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -100,7 +101,9 @@ export const calculateTotalWeight = (character: CharacterProfile): number => {
 export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
   const { characterProfile, removeInventoryItem } =
     usePlayerCharacterStore.getState();
+  const { addMessage } = useChatStore.getState();
   let totalCopper = 0;
+  let itemsSold = 0;
 
   characterProfile?.inventory?.forEach((item) => {
     if (
@@ -123,6 +126,7 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
             if (isSellable(bagItem.itemDetails)) {
               totalCopper += Math.floor(bagItem.itemDetails.price || 0);
               removeInventoryItem(bagSlot);
+              itemsSold++;
             } else if (deleteNoDrop && bagItem.itemDetails.nodrop === 0) {
               removeInventoryItem(bagSlot);
             }
@@ -131,6 +135,7 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
       } else if (isSellable(item.itemDetails)) {
         totalCopper += Math.floor(item.itemDetails.price || 0);
         removeInventoryItem(item.slotid);
+        itemsSold++;
       } else if (deleteNoDrop && item.itemDetails.nodrop === 0) {
         removeInventoryItem(item.slotid);
       }
@@ -161,6 +166,15 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
       },
     };
   });
+
+  if (itemsSold > 0) {
+    addMessage(
+      `You have sold ${itemsSold} item${
+        itemsSold > 1 ? "s" : ""
+      } for ${platinum}p ${gold}g ${silver}s ${copper}c.`,
+      MessageType.LOOT
+    );
+  }
 
   return { platinum, gold, silver, copper };
 };

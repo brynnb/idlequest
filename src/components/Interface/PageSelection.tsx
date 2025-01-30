@@ -43,7 +43,7 @@ const PageName = styled.p.attrs({ className: "page-name" })<{
   color: white;
   min-width: ${({ $isNumeric }) => ($isNumeric ? "20px" : "100px")};
   text-align: center;
-  
+
   ${({ $useAttributeBackground }) =>
     $useAttributeBackground &&
     `
@@ -95,7 +95,10 @@ const PageSelection: React.FC<PageSelectionProps> = ({
         onMouseUp={() => handlePageButtonRelease("left")}
         onMouseLeave={() => handlePageButtonRelease("left")}
       />
-      <PageName $isNumeric={isNumeric} $useAttributeBackground={useAttributeBackground}>
+      <PageName
+        $isNumeric={isNumeric}
+        $useAttributeBackground={useAttributeBackground}
+      >
         {currentPage}
       </PageName>
       <PageButton
