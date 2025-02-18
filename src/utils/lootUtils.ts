@@ -16,6 +16,33 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore from "@stores/ChatStore";
 
+const sellSingleItem = (itemDetails: Item) => {
+  if (
+    itemDetails.itemclass != 1 &&
+    itemDetails.nodrop != 0 &&
+    itemDetails.norent != 0
+  ) {
+    const price = Math.floor(itemDetails.price || 0);
+    const platinum = Math.floor(price / 1000);
+    const gold = Math.floor((price % 1000) / 100);
+    const silver = Math.floor((price % 100) / 10);
+    const copper = price % 10;
+
+    usePlayerCharacterStore.setState((state) => ({
+      characterProfile: {
+        ...state.characterProfile,
+        platinum: (state.characterProfile.platinum || 0) + platinum,
+        gold: (state.characterProfile.gold || 0) + gold,
+        silver: (state.characterProfile.silver || 0) + silver,
+        copper: (state.characterProfile.copper || 0) + copper,
+      },
+    }));
+    console.log(`Selling ${itemDetails.name} for ${price} copper`);
+    return true;
+  }
+  return false;
+};
+
 export const addItemToInventory = async (
   item: Item,
   characterProfile: {
@@ -160,7 +187,9 @@ export const addItemToInventory = async (
           `Inventory full and auto-sell enabled, selling ${itemToReplace.itemDetails.name}`
         );
         if (itemToReplace.slotid !== undefined) {
-          usePlayerCharacterStore.getState().removeInventoryItem(itemToReplace.slotid);
+          usePlayerCharacterStore
+            .getState()
+            .removeInventoryItem(itemToReplace.slotid);
         }
         updatedInventory = updatedInventory.filter(
           (invItem) => invItem.slotid !== bestSlotToReplace
@@ -202,10 +231,40 @@ export const addItemToInventory = async (
     setInventory(updatedInventory);
   } else if (autoSellEnabled) {
     console.log(
-      `Inventory full and auto-sell enabled, selling ${itemDetails.name}`
+      `Inventory full and auto-sell enabled, selling all eligible items`
     );
-    if (itemDetails.id !== undefined) {
-      usePlayerCharacterStore.getState().removeInventoryItem(itemDetails.id);
+    // Sell all eligible items in inventory
+    characterProfile?.inventory?.forEach((invItem) => {
+      if (
+        invItem.slotid !== undefined &&
+        invItem.slotid >= 23 && // Only sell items in general inventory and bags
+        invItem.itemDetails &&
+        invItem.itemDetails.itemclass != 1 && // Don't sell bags
+        invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
+        invItem.itemDetails.norent != 0 // Don't sell NO RENT
+      ) {
+        if (sellSingleItem(invItem.itemDetails)) {
+          usePlayerCharacterStore
+            .getState()
+            .removeInventoryItem(invItem.slotid);
+        }
+      }
+    });
+
+    // After selling everything, try to add the new item again
+    const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
+    if (generalSlot !== undefined) {
+      const newItem = {
+        itemid: item.id,
+        slotid: generalSlot,
+        charges: 1,
+        itemDetails,
+      };
+      updatedInventory.push(newItem);
+      setInventory(updatedInventory);
+    } else {
+      // If still no space after selling everything, sell this item too
+      sellSingleItem(itemDetails);
     }
   } else {
     console.log(
@@ -224,6 +283,13 @@ export const processLootItems = async (
     inventory?: InventoryItem[];
     class?: number;
     race?: number;
+  },
+  options?: {
+    addInventoryItem?: (item: InventoryItem) => void;
+    setInventory?: (inventory: InventoryItem[]) => void;
+    addChatMessage?: (message: string, type: MessageType) => void;
+    autoSellEnabled?: boolean;
+    sellItem?: () => void;
   }
 ) => {
   if (!loot || loot.length === 0) {
@@ -242,16 +308,18 @@ export const processLootItems = async (
       const itemDetails = await getItemById(item.id);
       if (itemDetails?.name) {
         const startsWithArticle = /^(a|an)\s+/i.test(itemDetails.name);
-        useChatStore
-          .getState()
-          .addMessage(
-            `You have looted ${
-              startsWithArticle
-                ? ""
-                : (/^[aeiou]/i.test(itemDetails.name) ? "an" : "a") + " "
-            }${itemDetails.name}`,
-            MessageType.LOOT
-          );
+        (options?.addChatMessage || useChatStore.getState().addMessage)(
+          `You have looted ${
+            startsWithArticle
+              ? ""
+              : (/^[aeiou]/i.test(itemDetails.name) ? "an" : "a") + " "
+          }${itemDetails.name}`,
+          MessageType.LOOT
+        );
+
+        if (options?.autoSellEnabled) {
+          options.sellItem?.();
+        }
       }
     }
     await addItemToInventory(item, {

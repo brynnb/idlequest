@@ -63,8 +63,9 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
 
   if (!item || !isVisible) return null;
 
-  const weaponTypes = ["0", "1", "2", "3", "4", "35", "45"];
-  const showWeaponStats = weaponTypes.includes(String(item.itemtype));
+  const weaponTypes = [0, 1, 2, 3, 4, 35, 45];
+  const showWeaponStats =
+    item.itemtype !== undefined && weaponTypes.includes(item.itemtype);
 
   const slotNames = getSlotNames(item.slots);
 
@@ -86,9 +87,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
         <p>{item.name}</p>
         <p>{getItemFlags(item)}</p>
         {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
-        {showWeaponStats && item.itemclass === "0" && (
-          <WeaponStats item={item} />
-        )}
+        {showWeaponStats && item.itemclass === 0 && <WeaponStats item={item} />}
         <p>{getStatString(item)}</p>
         <p>
           WT: {((item.weight || 0) / 10).toFixed(1)} Size:{" "}

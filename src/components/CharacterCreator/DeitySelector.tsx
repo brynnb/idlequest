@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
-import deities from "/data/deities.json";
-import useCharacterStore from "@stores/CharacterCreatorStore";
-import charCreateCombinations from "/data/char_create_combinations.json";
+import deities from "@data/json/deities.json";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import charCreateCombinations from "@data/json/char_create_combinations.json";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
 
@@ -34,7 +34,7 @@ const Title = styled.h2`
 
 const DeitySelector = () => {
   const { selectedDeity, setSelectedDeity, selectedRace, selectedClass } =
-    useCharacterStore();
+    useCharacterCreatorStore();
 
   const compatibleDeities = useMemo(() => {
     return charCreateCombinations

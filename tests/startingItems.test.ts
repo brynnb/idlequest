@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import { StartingItems } from "../src/entities/StartingItems";
 import CharCreateCombination from "../src/entities/CharCreateCombination";
+import charCreateCombinations from "@data/json/char_create_combinations.json";
+import startingItemsData from "@data/json/starting_items.json";
 
 describe("Starting Items Validation", () => {
   it("ensures every char_create_combination has a matching starting item", () => {

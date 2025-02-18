@@ -1,0 +1,476 @@
+[
+	{
+		"id": 1,
+		"bitmask": 1,
+		"name": "Warrior",
+		"short_name": "WAR",
+		"spell_list_id": null,
+		"create_points": 25,
+		"first_title": "Champion",
+		"second_title": "Myrmidon",
+		"third_title": "Warlord"
+	},
+	{
+		"id": 2,
+		"bitmask": 2,
+		"name": "Cleric",
+		"short_name": "CLR",
+		"spell_list_id": 1,
+		"create_points": 30,
+		"first_title": "Vicar",
+		"second_title": "Templar",
+		"third_title": "High Priest"
+	},
+	{
+		"id": 3,
+		"bitmask": 4,
+		"name": "Paladin",
+		"short_name": "PAL",
+		"spell_list_id": 8,
+		"create_points": 20,
+		"first_title": "Cavalier",
+		"second_title": "Knight",
+		"third_title": "Crusader"
+	},
+	{
+		"id": 4,
+		"bitmask": 8,
+		"name": "Ranger",
+		"short_name": "RNG",
+		"spell_list_id": 10,
+		"create_points": 20,
+		"first_title": "Pathfinder",
+		"second_title": "Outrider",
+		"third_title": "Warder"
+	},
+	{
+		"id": 5,
+		"bitmask": 16,
+		"name": "Shadow Knight",
+		"short_name": "SHD",
+		"spell_list_id": 9,
+		"create_points": 20,
+		"first_title": "Reaver",
+		"second_title": "Revenant",
+		"third_title": "Grave Lord"
+	},
+	{
+		"id": 6,
+		"bitmask": 32,
+		"name": "Druid",
+		"short_name": "DRU",
+		"spell_list_id": 7,
+		"create_points": 30,
+		"first_title": "Wanderer",
+		"second_title": "Preserver",
+		"third_title": "Hierophant"
+	},
+	{
+		"id": 7,
+		"bitmask": 64,
+		"name": "Monk",
+		"short_name": "MNK",
+		"spell_list_id": null,
+		"create_points": 20,
+		"first_title": "Disciple",
+		"second_title": "Master",
+		"third_title": "Grandmaster"
+	},
+	{
+		"id": 8,
+		"bitmask": 128,
+		"name": "Bard",
+		"short_name": "BRD",
+		"spell_list_id": 11,
+		"create_points": 25,
+		"first_title": "Minstrel",
+		"second_title": "Troubadour",
+		"third_title": "Virtuoso"
+	},
+	{
+		"id": 9,
+		"bitmask": 256,
+		"name": "Rogue",
+		"short_name": "ROG",
+		"spell_list_id": null,
+		"create_points": 30,
+		"first_title": "Rake",
+		"second_title": "Blackguard",
+		"third_title": "Assassin"
+	},
+	{
+		"id": 10,
+		"bitmask": 512,
+		"name": "Shaman",
+		"short_name": "SHM",
+		"spell_list_id": 6,
+		"create_points": 30,
+		"first_title": "Mystic",
+		"second_title": "Luminary",
+		"third_title": "Oracle"
+	},
+	{
+		"id": 11,
+		"bitmask": 1024,
+		"name": "Necromancer",
+		"short_name": "NEC",
+		"spell_list_id": 3,
+		"create_points": 30,
+		"first_title": "Heretic",
+		"second_title": "Defiler",
+		"third_title": "Warlock"
+	},
+	{
+		"id": 12,
+		"bitmask": 2048,
+		"name": "Wizard",
+		"short_name": "WIZ",
+		"spell_list_id": 2,
+		"create_points": 30,
+		"first_title": "Channeler",
+		"second_title": "Evoker",
+		"third_title": "Sorcerer"
+	},
+	{
+		"id": 13,
+		"bitmask": 4096,
+		"name": "Magician",
+		"short_name": "MAG",
+		"spell_list_id": 4,
+		"create_points": 30,
+		"first_title": "Elementalist",
+		"second_title": "Conjurer",
+		"third_title": "Arch Mage"
+	},
+	{
+		"id": 14,
+		"bitmask": 8192,
+		"name": "Enchanter",
+		"short_name": "ENC",
+		"spell_list_id": 5,
+		"create_points": 30,
+		"first_title": "Illusionist",
+		"second_title": "Beguiler",
+		"third_title": "Phantasmist"
+	},
+	{
+		"id": 15,
+		"bitmask": 16384,
+		"name": "Beastlord",
+		"spell_list_id": 12,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 16,
+		"bitmask": 32768,
+		"name": "Berserker",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 17,
+		"bitmask": null,
+		"name": "Banker",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 20,
+		"bitmask": null,
+		"name": "GM Warrior",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 21,
+		"bitmask": null,
+		"name": "GM Cleric",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 22,
+		"bitmask": null,
+		"name": "GM Paladin",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 23,
+		"bitmask": null,
+		"name": "GM Ranger",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 24,
+		"bitmask": null,
+		"name": "GM Shadow Knight",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 25,
+		"bitmask": null,
+		"name": "GM Druid",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 26,
+		"bitmask": null,
+		"name": "GM Monk",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 27,
+		"bitmask": null,
+		"name": "GM Bard",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 28,
+		"bitmask": null,
+		"name": "GM Rogue",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 29,
+		"bitmask": null,
+		"name": "GM Shaman",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 30,
+		"bitmask": null,
+		"name": "GM Necromancer",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 31,
+		"bitmask": null,
+		"name": "GM Wizard",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 32,
+		"bitmask": null,
+		"name": "GM Magician",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 33,
+		"bitmask": null,
+		"name": "GM Enchanter",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 34,
+		"bitmask": null,
+		"name": "GM Beastlord",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 35,
+		"bitmask": null,
+		"name": "GM Berserker",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 40,
+		"bitmask": null,
+		"name": "Banker",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 41,
+		"bitmask": null,
+		"name": "Shopkeeper",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 59,
+		"bitmask": null,
+		"name": "Discord Merchant",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 60,
+		"bitmask": null,
+		"name": "Adventure Recruiter",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 61,
+		"bitmask": null,
+		"name": "Adventure Merchant",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 63,
+		"bitmask": null,
+		"name": "Tribute Master",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 64,
+		"bitmask": null,
+		"name": "Guild Tribute Master",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 66,
+		"bitmask": null,
+		"name": "Guild Bank",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 67,
+		"bitmask": null,
+		"name": "Radiant Crystal Merchant",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 68,
+		"bitmask": null,
+		"name": "Ebon Crystal Merchant",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 69,
+		"bitmask": null,
+		"name": "Fellowships",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 70,
+		"bitmask": null,
+		"name": "Alternate Currency Merchant",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	},
+	{
+		"id": 71,
+		"bitmask": null,
+		"name": "Mercenary Merchant",
+		"spell_list_id": null,
+		"create_points": 0,
+		"first_title": "",
+		"second_title": "",
+		"third_title": ""
+	}
+]

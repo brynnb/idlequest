@@ -4,13 +4,13 @@ import ZoneSelector from "../ZoneSelector";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 
-const MapContainer = styled.div<{ backgroundImage: string }>`
+const MapContainer = styled.div<{ $backgroundImage: string }>`
   height: 720px;
   width: 878px;
   position: absolute;
   left: 270px;
   top: 0px;
-  background: url(${(props) => props.backgroundImage}) 48px 36px /
+  background: url(${(props) => props.$backgroundImage}) 48px 36px /
       calc(100% - 92px) 648px,
     url("/images/ui/charactercreation/creationviewport.png") 20px 20px /
       calc(100% - 40px) 680px,
@@ -60,7 +60,7 @@ const MapAndZoneSelection: React.FC = () => {
   return (
     <>
       <ZoneSelector />
-      <MapContainer backgroundImage={backgroundImage}>
+      <MapContainer $backgroundImage={backgroundImage}>
         {zoneId && (
           <CurrentZoneDisplay>
             Current Zone: {getZoneLongNameById(zoneId)}

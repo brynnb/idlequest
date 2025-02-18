@@ -26,10 +26,10 @@ export const initDatabase = async (isTest = false) => {
 
         let data: Uint8Array;
         if (isTest) {
-          const dbPath = path.join(__dirname, "../../data/eq_data.db");
+          const dbPath = path.join(__dirname, "../../data/db/eq_data.db");
           data = new Uint8Array(fs.readFileSync(dbPath));
         } else {
-          const response = await fetch("/data/eq_data.db");
+          const response = await fetch("/data/db/eq_data.db");
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }

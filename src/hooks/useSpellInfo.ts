@@ -2,7 +2,7 @@ import React from "react";
 import { Item } from "@entities/Item";
 import { Spell } from "@entities/Spell";
 import { useDatabase } from "./useDatabase";
-import classesData from "/data/classes.json";
+import classesData from "@data/json/classes.json";
 import { calcSpellEffectValue } from "@utils/spellCalculations";
 
 interface SpellInfo {

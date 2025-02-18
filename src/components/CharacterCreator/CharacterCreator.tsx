@@ -7,7 +7,7 @@ import NameInput from "./NameInput";
 import ZoneSelector from "./StartingZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
 import styled from "styled-components";
-import classes from "/data/classes.json";
+import classes from "@data/json/classes.json";
 import CharacterClass from "@entities/CharacterClass";
 
 const MainContainer = styled.div`
@@ -47,12 +47,12 @@ const StyledButton = styled.button`
   color: white;
   border: none;
   border-radius: 4px;
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  
+
   &:not(:disabled):hover {
     background: #5a5a5a;
   }
@@ -121,8 +121,8 @@ const CharacterCreator = () => {
       case 4:
         return (
           <StoryText>
-            Your journey begins in the realm of Norrath, where destiny awaits. As a{" "}
-            {selectedRace?.name} {selectedClass?.name}, blessed by{" "}
+            Your journey begins in the realm of Norrath, where destiny awaits.
+            As a {selectedRace?.name} {selectedClass?.name}, blessed by{" "}
             {selectedDeity?.name}, you take your first steps in{" "}
             {selectedZone?.long_name}. The path ahead is filled with adventure,
             danger, and glory. Are you ready to begin?

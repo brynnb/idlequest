@@ -1,8 +1,8 @@
 import Race from "@entities/Race";
 import CharacterClass from "@entities/CharacterClass";
 import CharacterCreationAttributes from "@entities/CharacterCreationAttributes";
-import charCreateCombinations from "/data/char_create_combinations.json";
-import charCreatePointAllocations from "/data/char_create_point_allocations.json";
+import charCreateCombinations from "@data/json/char_create_combinations.json";
+import charCreatePointAllocations from "@data/json/char_create_point_allocations.json";
 
 const baseAttributeKeys = ["str", "sta", "dex", "agi", "int", "wis", "cha"];
 

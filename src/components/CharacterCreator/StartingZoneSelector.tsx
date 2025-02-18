@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
-import zones from "/data/zones.json";
+import zones from "@data/json/zones.json";
 import useCharacterStore from "@stores/CharacterCreatorStore";
-import charCreateCombinations from "/data/char_create_combinations.json";
+import charCreateCombinations from "@data/json/char_create_combinations.json";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
 

@@ -1,12 +1,10 @@
-import races from "../../../data/races.json";
+import races from "@data/json/races.json";
 import Race from "@entities/Race";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
 
-const RaceSelectorContainer = styled.div`
-
-`;
+const RaceSelectorContainer = styled.div``;
 
 const RaceSelector = () => {
   const { selectedRace, setSelectedRace, resetAttributes } =

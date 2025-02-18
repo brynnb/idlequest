@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import startingItemsData from "../../data/starting_items.json";
+import startingItemsData from "@data/json/starting_items.json";
 import { Item } from "@entities/Item";
 import { getItemById } from "@utils/databaseOperations";
 

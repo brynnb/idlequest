@@ -1,7 +1,7 @@
 import { initDatabase, getItemById } from "../src/utils/databaseOperations";
 import getItemScore from "../src/utils/getItemScore";
 import CharacterClass from "../src/entities/CharacterClass";
-import classes from "../data/classes.json";
+import classes from "@data/json/classes.json";
 
 describe("getItemScore", () => {
   beforeAll(async () => {

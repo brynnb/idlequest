@@ -108,11 +108,11 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
   characterProfile?.inventory?.forEach((item) => {
     if (
       item.slotid !== undefined &&
-      GENERAL_SLOTS.includes(item.slotid) &&
+      item.slotid >= 23 && // Only sell items in general inventory and bags
       item.itemDetails
     ) {
       if (item.itemDetails.itemclass == 1) {
-        // For bags, check their contents
+        // For bags, check their contents but don't sell the bag itself
         const bagStartSlot = getBagStartingSlot(item.slotid);
         const bagSize = item.itemDetails.bagslots || 0;
 
@@ -125,18 +125,30 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
           if (bagItem?.itemDetails) {
             if (isSellable(bagItem.itemDetails)) {
               totalCopper += Math.floor(bagItem.itemDetails.price || 0);
+              console.log(
+                `Selling ${bagItem.itemDetails.name} for ${
+                  bagItem.itemDetails.price || 0
+                } copper`
+              );
               removeInventoryItem(bagSlot);
               itemsSold++;
             } else if (deleteNoDrop && bagItem.itemDetails.nodrop === 0) {
+              console.log(`Deleting NO DROP item: ${bagItem.itemDetails.name}`);
               removeInventoryItem(bagSlot);
             }
           }
         }
       } else if (isSellable(item.itemDetails)) {
         totalCopper += Math.floor(item.itemDetails.price || 0);
+        console.log(
+          `Selling ${item.itemDetails.name} for ${
+            item.itemDetails.price || 0
+          } copper`
+        );
         removeInventoryItem(item.slotid);
         itemsSold++;
       } else if (deleteNoDrop && item.itemDetails.nodrop === 0) {
+        console.log(`Deleting NO DROP item: ${item.itemDetails.name}`);
         removeInventoryItem(item.slotid);
       }
     }
@@ -166,6 +178,10 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
       },
     };
   });
+
+  console.log(
+    `Sold ${itemsSold} items for a total of ${platinum}p ${gold}g ${silver}s ${copper}c`
+  );
 
   if (itemsSold > 0) {
     addMessage(

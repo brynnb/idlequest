@@ -1,0 +1,70 @@
+{
+    "Charm": 0,
+    "Ear1": 1,
+    "Head": 2,
+    "Face": 3,
+    "Ear2": 4,
+    "Neck": 5,
+    "Shoulders": 6,
+    "Arms": 7,
+    "Back": 8,
+    "Wrist1": 9,
+    "Wrist2": 10,
+    "Range": 11,
+    "Hands": 12,
+    "Primary": 13,
+    "Secondary": 14,
+    "Finger1": 15,
+    "Finger2": 16,
+    "Chest": 17,
+    "Legs": 18,
+    "Feet": 19,
+    "Waist": 20,
+    "PowerSource": 21,
+    "Ammo": 22,
+    "General1": 23,
+    "General2": 24,
+    "General3": 25,
+    "General4": 26,
+    "General5": 27,
+    "General6": 28,
+    "General7": 29,
+    "General8": 30,
+    "Cursor": 31,
+    "General1Bag": {
+        "start": 262,
+        "end": 271
+    },
+    "General2Bag": {
+        "start": 272,
+        "end": 281
+    },
+    "General3Bag": {
+        "start": 282,
+        "end": 291
+    },
+    "General4Bag": {
+        "start": 292,
+        "end": 301
+    },
+    "General5Bag": {
+        "start": 302,
+        "end": 311
+    },
+    "General6Bag": {
+        "start": 312,
+        "end": 321
+    },
+    "General7Bag": {
+        "start": 322,
+        "end": 331
+    },
+    "General8Bag": {
+        "start": 332,
+        "end": 341
+    },
+    "CursorBag": {
+        "start": 342,
+        "end": 351
+    }
+}

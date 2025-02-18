@@ -6,9 +6,9 @@ import CharacterClass from "@entities/CharacterClass";
 import Zone from "@entities/Zone";
 import Deity from "@entities/Deity";
 import { InventoryItem } from "@entities/InventoryItem";
-import races from "/data/races.json";
-import classes from "/data/classes.json";
-import charCreatePointsAvailable from "/data/char_create_points_available.json";
+import races from "@data/json/races.json";
+import classes from "@data/json/classes.json";
+import charCreatePointsAvailable from "@data/json/char_create_points_available.json";
 import getBaseAttributes from "@utils/getBaseAttributes";
 
 const humanRace = races.find((race: Race) => race.id === 1);

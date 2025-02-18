@@ -1,0 +1,72 @@
+[
+    {
+        "id": 23,
+        "description": "Erudin - City of the Erudites",
+        "welcome": "Welcome to Erudin, city of high men and knowledge!"
+    },
+    {
+        "id": 302,
+        "description": "Qeynos - City of Men",
+        "welcome": "Welcome to Qeynos! Qeynos is a busy human port city that is dedicated to the principles of law and ruled over by the strong, benevolent hand of Antonius Bayle."
+    },
+    {
+        "id": 29,
+        "description": "Halas - City of the Barbarians",
+        "welcome": "Welcome to Halas, the snowy northern home of the Barbarians!"
+    },
+    {
+        "id": 19,
+        "description": "Rivervale - City of the Halflings",
+        "welcome": "Welcome to Rivervale, home and heart of the Halflings!"
+    },
+    {
+        "id": 9,
+        "description": "Freeport - City of Men",
+        "welcome": "Welcome to Freeport! Freeport is a bustling human port town with more than its share of seedy characters."
+    },
+    {
+        "id": 249,
+        "description": "Neriak - City of the Dark Elves and Trolls",
+        "welcome": "Welcome to Neriak! Dark and damp, Neriak is home to the sons and daughters of Innoruuk, the Teir'Dal."
+    },
+    {
+        "id": 64,
+        "description": "Gukta - City of the Frogloks",
+        "welcome": "Welcome to Surefall Glade."
+    },
+    {
+        "id": 263,
+        "description": "Oggok - City of the Ogres",
+        "welcome": "Welcome to Oggok, mountain home of the Ogres!"
+    },
+    {
+        "id": 241,
+        "description": "Kaladim - City of the Dwarves",
+        "welcome": "Welcome to Kaladim, The Forge of Norrath!"
+    },
+    {
+        "id": 54,
+        "description": "Kelethin - City of the Elves",
+        "welcome": "Welcome to Kelethin, City in the Trees and home of the Woodland Elves!"
+    },
+    {
+        "id": 61,
+        "description": "Felwithe - City of the High Elves",
+        "welcome": "Welcome to Felwithe, the site of rebirth for the High Elves of Norrath!"
+    },
+    {
+        "id": 4,
+        "description": "Ak'Anon - City of the Gnomes",
+        "welcome": "Welcome to Ak'Anon, the mysterious, magical, mechanical home of the Gnomes!"
+    },
+    {
+        "id": 106,
+        "description": "Cabilis - City of the Iksar",
+        "welcome": "Welcome to Cabilis, the new capital of the reborn Iksar Empire. Cabilis, or New Sebilis as some call it, is a great walled city which lies deep in the heart of the continent of Kunark."
+    },
+    {
+        "id": 155,
+        "description": "Shar Vahl - City of the Vah Shir",
+        "welcome": "Welcome to the Palace of Shar Vahl, residence of the honorable Vah Shir themselves."
+    }
+]

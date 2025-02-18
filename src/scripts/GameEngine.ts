@@ -146,7 +146,7 @@ class GameEngine {
           addChatMessage,
           autoSellEnabled,
           sellItem: () => {
-            return sellGeneralInventory(false);
+            return sellGeneralInventory(true);
           },
         });
       })
