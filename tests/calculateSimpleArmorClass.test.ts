@@ -1,7 +1,7 @@
-import { calculateSimpleArmorClass } from "../src/utils/calculateSimpleArmorClass";
-import CharacterProfile from "../src/entities/CharacterProfile";
-import { ClassId } from "../src/entities/CharacterClass";
-import { RaceId } from "../src/entities/Race";
+import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
+import CharacterProfile from "@entities/CharacterProfile";
+import { ClassId } from "@entities/CharacterClass";
+import { RaceId } from "@entities/Race";
 
 describe("calculateSimpleArmorClass", () => {
   it("should calculate AC for a level 60 iksar warrior", () => {

@@ -1,11 +1,12 @@
-import CharacterProfile from "../src/entities/CharacterProfile";
-import classes from "../data/json/classes.json";
-import races from "../data/json/races.json";
-import deities from "../data/json/deities.json";
-import zones from "../data/json/zones.json";
-import { InventoryItem } from "../src/entities/InventoryItem";
-import usePlayerCharacterStore from "../src/stores/PlayerCharacterStore";
-import CharacterClass from "../src/entities/CharacterClass";
+import CharacterProfile from "@entities/CharacterProfile";
+import classes from "@data/json/classes.json";
+import races from "@data/json/races.json";
+import deities from "@data/json/deities.json";
+import zones from "@data/json/zones.json";
+import { InventoryItem } from "@entities/InventoryItem";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import CharacterClass from "@entities/CharacterClass";
+import { Item } from "@entities/Item";
 
 export const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -45,7 +46,7 @@ export const createBasicCharacterProfile = (
 export const createMockInventoryItem = (
   itemId: number,
   slotId: number,
-  itemDetails: Partial<any> = {}
+  itemDetails: Partial<Item> = {}
 ): InventoryItem => ({
   itemid: itemId,
   slotid: slotId,

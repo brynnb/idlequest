@@ -1,9 +1,9 @@
-import { initDatabase, getItemById } from "../src/utils/databaseOperations";
-import usePlayerCharacterStore from "../src/stores/PlayerCharacterStore";
-import { InventorySlot } from "../src/entities/InventorySlot";
-import { Item } from "../src/entities/Item";
-import { processLootItems } from "../src/utils/lootUtils";
-import useGameStatusStore from "../src/stores/GameStatusStore";
+import { initDatabase, getItemById } from "@utils/databaseOperations";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { InventorySlot } from "@entities/InventorySlot";
+import { Item } from "@entities/Item";
+import { processLootItems } from "@utils/lootUtils";
+import useGameStatusStore from "@stores/GameStatusStore";
 import {
   GENERAL_SLOTS,
   createBasicCharacterProfile,

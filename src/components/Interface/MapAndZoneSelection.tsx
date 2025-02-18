@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import ZoneSelector from "../ZoneSelector";
+import ZoneSelector from "@components/ZoneSelector";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 

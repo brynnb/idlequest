@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import PlayerStats from "../Interface/PlayerStats";
+import PlayerStats from "@components/Interface/PlayerStats";
 import TargetBar from "./TargetBar";
-import ActionButton from "../Interface/ActionButton";
+import ActionButton from "@components/Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
 import { useEffect, useState } from "react";
 

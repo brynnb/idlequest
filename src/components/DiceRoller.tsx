@@ -1,7 +1,7 @@
 //this component is loading external JS files in a sloppy get-it-working-now way because the dice library is someone's side project and not really meant for react-specific projects and i don't know best practices for implementing stuff that isn't in NPM etc
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import useChatStore, { MessageType } from "../stores/ChatStore";
+import useChatStore, { MessageType } from "@stores/ChatStore";
 
 declare global {
   interface Window {
@@ -70,33 +70,34 @@ function DiceRoller() {
         try {
           window.DICE.vars = {
             ...window.DICE.vars,
-            ambient_light_color: 0xFFFFFF,
-            spot_light_color: 0xFFFFFF,
-            desk_color: '#FFFFFF',
+            ambient_light_color: 0xffffff,
+            spot_light_color: 0xffffff,
+            desk_color: "#FFFFFF",
             desk_opacity: 0,
-       
           };
-          
+
           const originalDiceBox = window.DICE.dice_box;
-          window.DICE.dice_box = function(container, options) {
+          window.DICE.dice_box = function (container, options) {
             const instance = new originalDiceBox(container, options);
-            
+
             // Remove the desk from the scene
             if (instance.desk) {
               instance.scene.remove(instance.desk);
               instance.desk = null;
             }
-            
+
             // Set renderer to be transparent
             instance.renderer.setClearColor(0x000000, 0);
-            
+
             // Force an initial render
             instance.renderer.render(instance.scene, instance.camera);
-            
+
             return instance;
           };
-          
-          diceBoxRef.current = new window.DICE.dice_box(containerRef.current, { scale: 100 });
+
+          diceBoxRef.current = new window.DICE.dice_box(containerRef.current, {
+            scale: 100,
+          });
         } catch (error) {
           // Keep error handling but remove console.error
         }
@@ -130,7 +131,10 @@ function DiceRoller() {
       diceBoxRef.current.start_throw(
         (notation: any) => null,
         (notation: any) => {
-          addMessage(`Rolled a d20: ${notation.resultTotal}`, MessageType.SYSTEM);
+          addMessage(
+            `Rolled a d20: ${notation.resultTotal}`,
+            MessageType.SYSTEM
+          );
         }
       );
     } catch (error) {

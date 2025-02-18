@@ -11,8 +11,8 @@ import {
   isEquippableItem,
   isSpellItem,
 } from "@utils/itemUtils";
-import WeaponStats from "../WeaponStats";
-import SpellInfo from "../SpellInfo";
+import WeaponStats from "@components/WeaponStats";
+import SpellInfo from "@components/SpellInfo";
 
 const ItemDisplayContainer = styled.div.attrs({
   className: "item-display-container",
