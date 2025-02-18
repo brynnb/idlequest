@@ -191,7 +191,51 @@ export const findFirstAvailableGeneralSlot = (
       const bagStartSlot = getBagStartingSlot(baseSlot);
       for (let i = 0; i < bagSize; i++) {
         const bagSlot = bagStartSlot + i;
-        if (!inventory.some((item) => item.slotid === bagSlot)) {
+        const itemInSlot = inventory.find((item) => item.slotid === bagSlot);
+        if (!itemInSlot) {
+          return bagSlot;
+        }
+      }
+    }
+  }
+
+  return undefined;
+};
+
+export const findFirstAvailableSlotForItem = (
+  inventory: InventoryItem[],
+  item: InventoryItem
+): number | undefined => {
+  // Check base slots (23 to 30)
+  for (let slot = 23; slot <= 30; slot++) {
+    if (!inventory.some((invItem) => invItem.slotid === slot)) {
+      return slot;
+    }
+  }
+
+  // Check bag slots
+  for (let baseSlot = 23; baseSlot <= 30; baseSlot++) {
+    const bagItem = inventory.find(
+      (invItem) => invItem.slotid === baseSlot && invItem.itemDetails?.bagslots
+    );
+    if (bagItem?.itemDetails?.bagslots) {
+      const bagSize = bagItem.itemDetails.bagslots;
+      const bagStartSlot = getBagStartingSlot(baseSlot);
+      for (let i = 0; i < bagSize; i++) {
+        const bagSlot = bagStartSlot + i;
+        const itemInSlot = inventory.find(
+          (invItem) => invItem.slotid === bagSlot
+        );
+        if (
+          !itemInSlot &&
+          isItemAllowedInSlot(
+            item,
+            bagSlot as InventorySlot,
+            { id: 1, bitmask: 1 } as CharacterClass, // These don't matter for bag slots
+            { id: 1, bitmask: 1 } as Race, // These don't matter for bag slots
+            inventory
+          )
+        ) {
           return bagSlot;
         }
       }

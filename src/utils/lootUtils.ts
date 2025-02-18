@@ -2,7 +2,7 @@ import { Item } from "@entities/Item";
 import { InventoryItem } from "@entities/InventoryItem";
 import { getItemById } from "@utils/databaseOperations";
 import {
-  findFirstAvailableGeneralSlot,
+  findFirstAvailableSlotForItem,
   isEquippableItem,
   isEquippableWithClass,
   isEquippableWithRace,
@@ -173,10 +173,13 @@ export const addItemToInventory = async (
         `${itemDetails.name} is an upgrade over ${itemToReplace.itemDetails.name} in slot ${bestSlotToReplace}`
       );
       // Move existing item to general inventory first
-      const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
+      const generalSlot = findFirstAvailableSlotForItem(
+        updatedInventory,
+        itemToReplace
+      );
       if (generalSlot !== undefined) {
         console.log(
-          `Moving ${itemToReplace.itemDetails.name} to general inventory slot ${generalSlot}`
+          `Moving ${itemToReplace.itemDetails.name} to inventory slot ${generalSlot}`
         );
         // Add the old item to general inventory
         const movedItem = {
@@ -235,17 +238,16 @@ export const addItemToInventory = async (
   }
 
   // Step 4: If not equipped or an upgrade, try to find general inventory slot
-  const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
+  const newItem: InventoryItem = {
+    itemid: item.id,
+    charges: 1,
+    itemDetails,
+    slotid: undefined
+  };
+  const generalSlot = findFirstAvailableSlotForItem(updatedInventory, newItem);
   if (generalSlot !== undefined) {
-    console.log(
-      `Adding ${itemDetails.name} to general inventory slot ${generalSlot}`
-    );
-    const newItem = {
-      itemid: item.id,
-      slotid: generalSlot,
-      charges: 1,
-      itemDetails,
-    };
+    console.log(`Adding ${itemDetails.name} to inventory slot ${generalSlot}`);
+    newItem.slotid = generalSlot;
     updatedInventory.push(newItem);
     setInventory(updatedInventory);
   } else if (autoSellEnabled) {
@@ -283,14 +285,15 @@ export const addItemToInventory = async (
     });
 
     // After selling everything, try to add the new item again
-    const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
+    const generalSlot = findFirstAvailableSlotForItem(
+      updatedInventory,
+      newItem
+    );
     if (generalSlot !== undefined) {
-      const newItem = {
-        itemid: item.id,
-        slotid: generalSlot,
-        charges: 1,
-        itemDetails,
-      };
+      console.log(
+        `Adding ${itemDetails.name} to inventory slot ${generalSlot}`
+      );
+      newItem.slotid = generalSlot;
       updatedInventory.push(newItem);
       setInventory(updatedInventory);
     } else {
