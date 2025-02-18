@@ -1,16 +1,18 @@
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore from "@stores/ChatStore";
-import { isItemAllowedInSlot, getEquippableSlots } from "@utils/itemUtils";
+import {
+  isItemAllowedInSlot,
+  getEquippableSlots,
+  isSlotAvailableForItem,
+} from "@utils/itemUtils";
 import { Item } from "@entities/Item";
 import { InventorySlot } from "@entities/InventorySlot";
-import CharacterClass from "@entities/CharacterClass";
-import Race from "@entities/Race";
 import { addItemToInventory, processLootItems } from "@utils/lootUtils";
 import { useInventorySelling } from "./useInventorySelling";
 
 export const useInventoryActions = () => {
-  const { sellItem } = useInventorySelling();
+  const { sellGeneralInventory } = useInventorySelling();
 
   const handleLoot = (loot: Item[]) => {
     const { addInventoryItem, characterProfile, setInventory } =
@@ -22,7 +24,7 @@ export const useInventoryActions = () => {
       addInventoryItem,
       setInventory,
       addChatMessage,
-      sellItem,
+      sellItem: () => sellGeneralInventory(false),
       autoSellEnabled,
     });
   };
@@ -38,7 +40,7 @@ export const useInventoryActions = () => {
       addInventoryItem,
       setInventory,
       addChatMessage,
-      sellItem,
+      sellItem: () => sellGeneralInventory(false),
       autoSellEnabled,
     });
   };
@@ -64,9 +66,23 @@ export const useInventoryActions = () => {
               (invItem) => invItem.slotid === slotId
             );
 
-            if (isSlotEmpty) {
-              inventoryItem.slotid = slotId;
-              break;
+            if (
+              isSlotEmpty &&
+              characterProfile.class &&
+              characterProfile.race
+            ) {
+              if (
+                isSlotAvailableForItem(
+                  inventoryItem,
+                  slotId as InventorySlot,
+                  characterProfile.class,
+                  characterProfile.race,
+                  newInventory
+                )
+              ) {
+                inventoryItem.slotid = slotId;
+                break;
+              }
             }
           }
         }
@@ -100,8 +116,8 @@ export const handleItemClick = (slotId: InventorySlot) => {
       isItemAllowedInSlot(
         cursorItem,
         slotId,
-        { id: characterProfile.class, bitmask: 1 } as CharacterClass,
-        { id: characterProfile.race, bitmask: 1 } as Race,
+        characterProfile.class,
+        characterProfile.race,
         characterProfile.inventory
       )
     ) {

@@ -90,10 +90,21 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
         {showWeaponStats && item.itemclass === 0 && <WeaponStats item={item} />}
         {item.ac !== undefined && item.ac !== 0 && <p>AC: {item.ac}</p>}
         <p>{getStatString(item)}</p>
-        <p>
-          WT: {((item.weight || 0) / 10).toFixed(1)} Size:{" "}
-          {getItemSizeName(item.size as ItemSize)}
-        </p>
+        {item.itemclass === 1 ? (
+          <>
+            <p>WT: {((item.weight || 0) / 10).toFixed(1)}</p>
+            <p>
+              {item.bagslots !== undefined && `Capacity: ${item.bagslots}  `}
+              {item.bagsize !== undefined &&
+                ` Size Capacity: ${getItemSizeName(item.bagsize as ItemSize)}`}
+            </p>
+          </>
+        ) : (
+          <p>
+            WT: {((item.weight || 0) / 10).toFixed(1)} Size:{" "}
+            {getItemSizeName(item.size as ItemSize)}
+          </p>
+        )}
         {(isEquippable || isSpell) && (
           <>
             <p>Class: {getClassNames(item.classes)}</p>

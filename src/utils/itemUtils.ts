@@ -12,20 +12,34 @@ import {
 import classesData from "@data/json/classes.json";
 import racesData from "@data/json/races.json";
 import Race from "@entities/Race";
-import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { InventoryItem } from "@entities/InventoryItem";
-import getItemScore from "./getItemScore";
 import CharacterClass from "@entities/CharacterClass";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import getItemScore from "./getItemScore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { getItemById } from "./databaseOperations";
+import CharacterProfile from "@entities/CharacterProfile";
 
-export const isItemAllowedInSlot = (
+export const getCharacterClass = (classId: number): CharacterClass | null => {
+  const classData = classesData.find((c) => c.id === classId);
+  if (!classData) return null;
+  return classData as CharacterClass;
+};
+
+export const getCharacterRace = (raceId: number): Race | null => {
+  const raceData = racesData.find((r) => r.id === raceId);
+  if (!raceData) return null;
+  return raceData as Race;
+};
+
+export const isSlotAvailableForItem = (
   item: InventoryItem,
   slot: InventorySlot,
   characterClass: CharacterClass,
   characterRace: Race,
-  inventory?: InventoryItem[]
+  inventory: InventoryItem[]
 ): boolean => {
+  // Allow cursor and general inventory slots
   if (slot === InventorySlot.Cursor) return true;
   if (slot >= 23 && slot <= 30) return true;
 
@@ -35,28 +49,72 @@ export const isItemAllowedInSlot = (
   }
 
   // Check size restrictions for bag slots
-  if (slot >= 262 && slot <= 351 && inventory) {
+  if (slot >= 262 && slot <= 351) {
     const bagSlot = Math.floor((slot - 262) / 10) + 23;
     const bagItem = inventory.find((item) => item.slotid === bagSlot);
 
     if (
       bagItem?.itemDetails?.bagsize !== undefined &&
       item.itemDetails?.size !== undefined &&
-      item.itemDetails.size >= bagItem.itemDetails.bagsize
+      item.itemDetails.size > bagItem.itemDetails.bagsize
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  if (!item.itemDetails || item.itemDetails.slots === undefined) {
+    return false;
+  }
+
+  // Check if trying to equip in secondary slot while having a 2H weapon equipped
+  if (slot === InventorySlot.Secondary) {
+    const primaryItem = inventory.find(
+      (item) => item.slotid === InventorySlot.Primary
+    );
+    if (
+      primaryItem?.itemDetails?.itemtype !== undefined &&
+      [1, 4, 35].includes(primaryItem.itemDetails.itemtype)
     ) {
       return false;
     }
   }
 
-  // Allow other items in bag slots
-  if (slot >= 262 && slot <= 351) return true;
+  // Check if trying to equip a 2H weapon in primary while having something in secondary
+  if (
+    slot === InventorySlot.Primary &&
+    item.itemDetails?.itemtype !== undefined &&
+    [1, 4, 35].includes(item.itemDetails.itemtype)
+  ) {
+    const secondaryItem = inventory.find(
+      (item) => item.slotid === InventorySlot.Secondary
+    );
+    if (secondaryItem) {
+      return false;
+    }
+  }
 
-  if (!item.itemDetails || item.itemDetails.slots === undefined) return false;
   const itemSlots = parseInt(item.itemDetails.slots.toString());
-  return (
-    (itemSlots & SlotBitmasks[slot]) !== 0 &&
-    isEquippableWithClass(item.itemDetails, characterClass) &&
-    isEquippableWithRace(item.itemDetails, characterRace)
+  const slotCheck = (itemSlots & SlotBitmasks[slot]) !== 0;
+  const classCheck = isEquippableWithClass(item.itemDetails, characterClass);
+  const raceCheck = isEquippableWithRace(item.itemDetails, characterRace);
+
+  return slotCheck && classCheck && raceCheck;
+};
+
+export const isItemAllowedInSlot = (
+  item: InventoryItem,
+  slot: InventorySlot,
+  characterClass: CharacterClass,
+  characterRace: Race,
+  inventory?: InventoryItem[]
+): boolean => {
+  return isSlotAvailableForItem(
+    item,
+    slot,
+    characterClass,
+    characterRace,
+    inventory || []
   );
 };
 
@@ -149,16 +207,22 @@ export const isEquippableWithClass = (
   item: Item,
   characterClass: CharacterClass
 ): boolean => {
-  if (!item.classes || !characterClass.bitmask) return false;
-  return (parseInt(item.classes.toString()) & characterClass.bitmask) !== 0;
+  if (!item.classes || !characterClass.bitmask) {
+    return false;
+  }
+  const itemClassesBitmask = parseInt(item.classes.toString());
+  return (itemClassesBitmask & characterClass.bitmask) !== 0;
 };
 
 export const isEquippableWithRace = (
   item: Item,
   characterRace: Race
 ): boolean => {
-  if (!item.races || !characterRace.bitmask) return false;
-  return (parseInt(item.races.toString()) & characterRace.bitmask) !== 0;
+  if (!item.races || !characterRace.bitmask) {
+    return false;
+  }
+  const itemRacesBitmask = parseInt(item.races.toString());
+  return (itemRacesBitmask & characterRace.bitmask) !== 0;
 };
 
 export const getEquippableSlots = (item: Item): number[] => {

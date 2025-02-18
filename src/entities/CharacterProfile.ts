@@ -1,5 +1,7 @@
 import { InventoryItem } from "./InventoryItem";
 import Zone from "./Zone";
+import CharacterClass from "./CharacterClass";
+import Race from "./Race";
 
 export default interface CharacterProfile {
   id?: number;
@@ -18,8 +20,8 @@ export default interface CharacterProfile {
   };
   gender?: number;
   weightAllowance?: number;
-  race?: number;
-  class?: number;
+  race?: Race;
+  class?: CharacterClass;
   level?: number;
   deity?: number;
   birthday?: number;
