@@ -1,39 +1,72 @@
 import React from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import { addItemToInventory } from "@utils/lootUtils";
 import useChatStore from "@stores/ChatStore";
 import { MessageType } from "@stores/ChatStore";
 import { InventorySlot } from "@entities/InventorySlot";
+import { useInventoryActions } from "@hooks/useInventoryActions";
+import { isSlotAvailableForItem } from "@utils/itemUtils";
 
 const PersonaView: React.FC = () => {
-  const { characterProfile, setInventory } = usePlayerCharacterStore();
+  const { characterProfile } = usePlayerCharacterStore();
   const { addMessage } = useChatStore();
+  const { handleItemClick } = useInventoryActions();
 
   const cursorItem = characterProfile?.inventory?.find(
     (item) => item.slotid === InventorySlot.Cursor
   );
 
   const handleClick = async () => {
-    if (cursorItem?.itemDetails) {
-      // Create a new inventory without the cursor item
-      const inventoryWithoutCursor =
-        characterProfile.inventory?.filter(
-          (item) => item.slotid !== InventorySlot.Cursor
-        ) || [];
+    if (
+      cursorItem?.itemDetails &&
+      characterProfile.class &&
+      characterProfile.race
+    ) {
+      // If it's a bag, try to place it in general inventory slots
+      if (cursorItem.itemDetails.itemclass === 1) {
+        for (let slot = 23; slot <= 30; slot++) {
+          const isSlotTaken = characterProfile.inventory?.some(
+            (item) => item.slotid === slot
+          );
 
-      await addItemToInventory(
-        cursorItem.itemDetails,
-        {
-          inventory: inventoryWithoutCursor,
-          class: characterProfile.class,
-          race: characterProfile.race,
-        },
-        {
-          setInventory,
-          addChatMessage: (message: string) =>
-            addMessage(message, MessageType.LOOT),
+          if (
+            !isSlotTaken &&
+            isSlotAvailableForItem(
+              cursorItem,
+              slot as InventorySlot,
+              characterProfile.class,
+              characterProfile.race,
+              characterProfile.inventory || []
+            )
+          ) {
+            await handleItemClick(slot as InventorySlot);
+            break;
+          }
         }
-      );
+      } else {
+        // For non-bag items, check equipment slots
+        const slots = cursorItem.itemDetails.slots;
+        if (slots) {
+          for (let slot = 0; slot <= 22; slot++) {
+            const isSlotTaken = characterProfile.inventory?.some(
+              (item) => item.slotid === slot
+            );
+
+            if (
+              !isSlotTaken &&
+              isSlotAvailableForItem(
+                cursorItem,
+                slot as InventorySlot,
+                characterProfile.class,
+                characterProfile.race,
+                characterProfile.inventory || []
+              )
+            ) {
+              await handleItemClick(slot as InventorySlot);
+              break;
+            }
+          }
+        }
+      }
     }
   };
 

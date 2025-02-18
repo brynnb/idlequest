@@ -45,7 +45,7 @@ const sellSingleItem = (itemDetails: Item) => {
   return false;
 };
 
-export const addItemToInventory = async (
+const addItemToInventory = async (
   item: Item,
   characterProfile: {
     inventory?: InventoryItem[];
