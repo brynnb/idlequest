@@ -407,7 +407,7 @@ export const addItemToInventoryByItemId = async (itemId: number) => {
   const newItem = {
     itemid: itemId,
     slotid: generalSlot,
-    charges: 1,
+    charges: itemDetails.maxcharges || 0,
     itemDetails,
   };
 

@@ -50,7 +50,7 @@ export const createMockInventoryItem = (
 ): InventoryItem => ({
   itemid: itemId,
   slotid: slotId,
-  charges: 1,
+  charges: itemDetails.maxcharges || 0,
   itemDetails: {
     id: itemId,
     name: `Test Item ${itemId}`,

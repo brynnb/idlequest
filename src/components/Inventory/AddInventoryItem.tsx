@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { getNextAvailableSlot } from "@utils/inventoryUtils";
 import { InventoryItem } from "@entities/InventoryItem";
+import { getItemById } from "@utils/databaseOperations";
 
 const AddInventoryItem: React.FC = () => {
   const [itemId, setItemId] = useState("");
@@ -16,9 +17,15 @@ const AddInventoryItem: React.FC = () => {
 
   const handleAddItem = async () => {
     if (itemId) {
+      const itemDetails = await getItemById(parseInt(itemId));
+      if (!itemDetails) {
+        console.error(`Failed to fetch item details for item ID: ${itemId}`);
+        return;
+      }
+
       const newItem: InventoryItem = {
         itemid: parseInt(itemId),
-        charges: 1,
+        charges: itemDetails.maxcharges || 0,
         color: 0,
         augslot1: 0,
         augslot2: 0,
@@ -27,6 +34,7 @@ const AddInventoryItem: React.FC = () => {
         augslot5: 0,
         augslot6: 0,
         instnodrop: 0,
+        itemDetails,
       };
 
       await addInventoryItem(newItem);
