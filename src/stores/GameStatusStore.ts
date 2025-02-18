@@ -19,11 +19,13 @@ interface GameStatusStore {
   isRunning: boolean;
   quickMode: boolean;
   autoSellEnabled: boolean;
+  deleteNoDrop: boolean;
   isMuted: boolean;
   currentVideoIndex: number;
   setInitialVideoIndex: (index: number) => void;
   cycleVideo: () => void;
   toggleAutoSell: () => void;
+  toggleDeleteNoDrop: () => void;
   toggleMute: () => void;
   initializeZones: (forceReload?: boolean) => Promise<void>;
   getZoneNameById: (id: number) => string | undefined;
@@ -65,6 +67,7 @@ const useGameStatusStore = create<GameStatusStore>()(
             isRunning: defaultIsRunning,
             quickMode: defaultQuickMode,
             autoSellEnabled: false,
+            deleteNoDrop: true,
             isMuted: true,
             currentVideoIndex: -1,
 
@@ -225,6 +228,12 @@ const useGameStatusStore = create<GameStatusStore>()(
             toggleAutoSell: () => {
               set((state) => ({
                 autoSellEnabled: !state.autoSellEnabled,
+              }));
+            },
+
+            toggleDeleteNoDrop: () => {
+              set((state) => ({
+                deleteNoDrop: !state.deleteNoDrop,
               }));
             },
           };

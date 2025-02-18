@@ -50,11 +50,20 @@ export const addItemToInventory = async (
     inventory?: InventoryItem[];
     class?: number;
     race?: number;
+  },
+  options?: {
+    addInventoryItem?: (item: InventoryItem) => void;
+    setInventory?: (inventory: InventoryItem[]) => void;
+    addChatMessage?: (message: string, type: MessageType) => void;
+    autoSellEnabled?: boolean;
+    sellItem?: () => void;
   }
 ) => {
-  const setInventory = usePlayerCharacterStore.getState().setInventory;
-  const addChatMessage = useChatStore.getState().addMessage;
-  const autoSellEnabled = useGameStatusStore.getState().autoSellEnabled;
+  const setInventory =
+    options?.setInventory || usePlayerCharacterStore.getState().setInventory;
+  const addChatMessage =
+    options?.addChatMessage || useChatStore.getState().addMessage;
+  const { autoSellEnabled, deleteNoDrop } = useGameStatusStore.getState();
   let updatedInventory = [...(characterProfile.inventory || [])];
 
   if (!item.id) {
@@ -243,22 +252,34 @@ export const addItemToInventory = async (
     console.log(
       `Inventory full and auto-sell enabled, selling all eligible items`
     );
-    // Sell all eligible items in inventory
-    characterProfile?.inventory?.forEach((invItem) => {
+    // Sell all eligible items in inventory and delete NO DROP items if enabled
+    updatedInventory = updatedInventory.filter((invItem) => {
       if (
         invItem.slotid !== undefined &&
         invItem.slotid >= 23 && // Only sell items in general inventory and bags
-        invItem.itemDetails &&
-        invItem.itemDetails.itemclass != 1 && // Don't sell bags
-        invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
-        invItem.itemDetails.norent != 0 // Don't sell NO RENT
+        invItem.itemDetails
       ) {
-        if (sellSingleItem(invItem.itemDetails)) {
+        if (
+          invItem.itemDetails.itemclass != 1 && // Don't sell bags
+          invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
+          invItem.itemDetails.norent != 0 // Don't sell NO RENT
+        ) {
+          if (sellSingleItem(invItem.itemDetails)) {
+            usePlayerCharacterStore
+              .getState()
+              .removeInventoryItem(invItem.slotid);
+            return false; // Remove this item from updatedInventory
+          }
+        } else if (deleteNoDrop && invItem.itemDetails.nodrop === 0) {
+          // Delete NO DROP items if deleteNoDrop is enabled
+          console.log(`Deleting NO DROP item: ${invItem.itemDetails.name}`);
           usePlayerCharacterStore
             .getState()
             .removeInventoryItem(invItem.slotid);
+          return false; // Remove this item from updatedInventory
         }
       }
+      return true; // Keep this item in updatedInventory
     });
 
     // After selling everything, try to add the new item again
@@ -273,8 +294,12 @@ export const addItemToInventory = async (
       updatedInventory.push(newItem);
       setInventory(updatedInventory);
     } else {
-      // If still no space after selling everything, sell this item too
-      sellSingleItem(itemDetails);
+      // If still no space after selling everything, handle this item
+      if (deleteNoDrop && itemDetails.nodrop === 0) {
+        console.log(`Deleting NO DROP item: ${itemDetails.name}`);
+      } else {
+        sellSingleItem(itemDetails);
+      }
     }
   } else {
     console.log(
@@ -326,16 +351,16 @@ export const processLootItems = async (
           }${itemDetails.name}`,
           MessageType.LOOT
         );
-
-        if (options?.autoSellEnabled) {
-          options.sellItem?.();
-        }
       }
     }
-    await addItemToInventory(item, {
-      ...characterProfile,
-      inventory: currentInventory,
-    });
+    await addItemToInventory(
+      item,
+      {
+        ...characterProfile,
+        inventory: currentInventory,
+      },
+      options
+    );
 
     // Update currentInventory after each item is processed
     currentInventory =
