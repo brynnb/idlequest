@@ -23,10 +23,32 @@ export const isItemAllowedInSlot = (
   item: InventoryItem,
   slot: InventorySlot,
   characterClass: CharacterClass,
-  characterRace: Race
+  characterRace: Race,
+  inventory?: InventoryItem[]
 ): boolean => {
   if (slot === InventorySlot.Cursor) return true;
   if (slot >= 23 && slot <= 30) return true;
+
+  // Prevent placing bags inside bags
+  if (slot >= 262 && slot <= 351 && item.itemDetails?.itemclass === 1) {
+    return false;
+  }
+
+  // Check size restrictions for bag slots
+  if (slot >= 262 && slot <= 351 && inventory) {
+    const bagSlot = Math.floor((slot - 262) / 10) + 23;
+    const bagItem = inventory.find((item) => item.slotid === bagSlot);
+
+    if (
+      bagItem?.itemDetails?.bagsize !== undefined &&
+      item.itemDetails?.size !== undefined &&
+      item.itemDetails.size >= bagItem.itemDetails.bagsize
+    ) {
+      return false;
+    }
+  }
+
+  // Allow other items in bag slots
   if (slot >= 262 && slot <= 351) return true;
 
   if (!item.itemDetails || item.itemDetails.slots === undefined) return false;

@@ -101,7 +101,8 @@ export const handleItemClick = (slotId: InventorySlot) => {
         cursorItem,
         slotId,
         { id: characterProfile.class, bitmask: 1 } as CharacterClass,
-        { id: characterProfile.race, bitmask: 1 } as Race
+        { id: characterProfile.race, bitmask: 1 } as Race,
+        characterProfile.inventory
       )
     ) {
       if (currentSlotItem && cursorItem.slotid !== undefined) {

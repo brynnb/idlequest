@@ -49,14 +49,14 @@ const Level = styled.div`
 const ClassAndDeity = styled.div`
   position: absolute;
   left: 0px;
-  top: 30px;
+  top: 35px;
   width: 240px;
 `;
 
 const HpAcAtk = styled.div`
   position: absolute;
   top: 102px;
-  left: 80px;
+  left: 60px;
   height: 200px;
   width: 200px;
   line-height: 7px;
@@ -103,7 +103,7 @@ const StatInfoBar: React.FC = () => {
             </Level>
             <ClassAndDeity>
               <p>
-              {characterProfile.race?.name} {characterProfile.class?.name}
+                {characterProfile.race?.name} {characterProfile.class?.name}
               </p>
               <p>{characterProfile.deity?.name}</p>
             </ClassAndDeity>

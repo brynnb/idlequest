@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { formatPrice } from "../src/utils/itemUtils";
+import { formatPrice, isItemAllowedInSlot } from "../src/utils/itemUtils";
 import { useInventoryActions } from "../src/hooks/useInventoryActions";
 import usePlayerCharacterStore from "../src/stores/PlayerCharacterStore";
 import { InventorySlot } from "../src/entities/InventorySlot";
 import { getBagStartingSlot } from "../src/utils/inventoryUtils";
+import CharacterClass from "../src/entities/CharacterClass";
+import Race from "../src/entities/Race";
 
 vi.mock("../src/stores/PlayerCharacterStore");
 vi.mock("../src/hooks/useInventorySelling", () => ({
@@ -188,5 +190,106 @@ describe("Bag movement tests", () => {
         },
       },
     ]);
+  });
+});
+
+describe("Bag size restrictions", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should prevent placing large items in small bags", () => {
+    const mockInventory = [
+      {
+        itemid: 17003,
+        slotid: 23,
+        charges: 1,
+        itemDetails: {
+          id: 17003,
+          name: "Small Bag",
+          itemclass: 1,
+          bagsize: 2,
+          bagslots: 8,
+        },
+      },
+    ];
+
+    const largeItem = {
+      itemid: 5024,
+      slotid: InventorySlot.Cursor,
+      charges: 1,
+      itemDetails: {
+        id: 5024,
+        name: "Rusty Halberd",
+        itemclass: 0,
+        size: 4,
+      },
+    };
+
+    const mediumItem = {
+      itemid: 5025,
+      slotid: InventorySlot.Cursor,
+      charges: 1,
+      itemDetails: {
+        id: 5025,
+        name: "Fine Steel Rapier",
+        itemclass: 0,
+        size: 2,
+      },
+    };
+
+    const smallItem = {
+      itemid: 5026,
+      slotid: InventorySlot.Cursor,
+      charges: 1,
+      itemDetails: {
+        id: 5026,
+        name: "Small Dagger",
+        itemclass: 0,
+        size: 1,
+      },
+    };
+
+    // Try to place the large item in the small bag's first slot
+    const canPlaceLargeInBag = isItemAllowedInSlot(
+      largeItem,
+      262 as InventorySlot, // First slot of the bag in slot 23
+      { id: 1, bitmask: 1 } as CharacterClass,
+      { id: 1, bitmask: 1 } as Race,
+      mockInventory
+    );
+
+    // Try to place the medium item (same size as bag) in the small bag's first slot
+    const canPlaceMediumInBag = isItemAllowedInSlot(
+      mediumItem,
+      262 as InventorySlot,
+      { id: 1, bitmask: 1 } as CharacterClass,
+      { id: 1, bitmask: 1 } as Race,
+      mockInventory
+    );
+
+    // Try to place the small item in the small bag's first slot
+    const canPlaceSmallInBag = isItemAllowedInSlot(
+      smallItem,
+      262 as InventorySlot,
+      { id: 1, bitmask: 1 } as CharacterClass,
+      { id: 1, bitmask: 1 } as Race,
+      mockInventory
+    );
+
+    expect(canPlaceLargeInBag).toBe(false); // Size 4 > bagsize 2
+    expect(canPlaceMediumInBag).toBe(false); // Size 2 = bagsize 2
+    expect(canPlaceSmallInBag).toBe(true); // Size 1 < bagsize 2
+
+    // Verify we can still place items in regular inventory slots regardless of size
+    const canPlaceLargeInRegularSlot = isItemAllowedInSlot(
+      largeItem,
+      24 as InventorySlot,
+      { id: 1, bitmask: 1 } as CharacterClass,
+      { id: 1, bitmask: 1 } as Race,
+      mockInventory
+    );
+
+    expect(canPlaceLargeInRegularSlot).toBe(true);
   });
 });
