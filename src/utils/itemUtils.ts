@@ -274,6 +274,15 @@ export const findFirstAvailableSlotForItem = (
   inventory: InventoryItem[],
   item: InventoryItem
 ): number | undefined => {
+  const { characterProfile } = usePlayerCharacterStore.getState();
+
+  if (!characterProfile.class || !characterProfile.race) {
+    console.warn(
+      "Character class or race not found, cannot check slot availability"
+    );
+    return undefined;
+  }
+
   // Check base slots (23 to 30)
   for (let slot = 23; slot <= 30; slot++) {
     if (!inventory.some((invItem) => invItem.slotid === slot)) {
@@ -299,8 +308,8 @@ export const findFirstAvailableSlotForItem = (
           isItemAllowedInSlot(
             item,
             bagSlot as InventorySlot,
-            { id: 1, bitmask: 1 } as CharacterClass, // These don't matter for bag slots
-            { id: 1, bitmask: 1 } as Race, // These don't matter for bag slots
+            characterProfile.class,
+            characterProfile.race,
             inventory
           )
         ) {
