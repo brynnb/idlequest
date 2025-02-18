@@ -2,6 +2,7 @@
 
 import React from "react";
 import styled from "styled-components";
+import { XPBarSub } from "./XPBarSub";
 
 interface BarProps {
   type: "health" | "mana" | "xp";
