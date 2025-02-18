@@ -1,3 +1,5 @@
+import { ItemSize } from "./ItemSize";
+
 export interface Item {
   id?: number; // Unique Item Identifier
   description?: string; // Adding this for when we import a description form a spell for a spell scroll
@@ -29,7 +31,7 @@ export interface Item {
   augtype?: number; // Augment Type
   avoidance?: number; // Avoidance
   awis?: number; // Wisdom: -128 to 127
-  bagsize?: number; // Bag Size
+  bagsize?: ItemSize; // Bag Size
   bagslots?: number; // Bag Slots: 1 = Minimum, 10 = Maximum
   bagtype?: number; // Bag Type
   bagwr?: number; // Bag Weight Reduction: 0 = 0%, 100 = 100%
@@ -109,7 +111,7 @@ export interface Item {
   reqlevel?: number; // Required Level
   sellrate?: number; // Sell Rate - this is multipled times the price for when a vendor is selling the item, but not a player is selling to a vendor. Used to ensure players couldn't make money in automated ways, or for balance reasons
   shielding?: number; // Shielding: 5 = 5%, 20 = 20%, 50 = 50%
-  size?: number; // Size
+  size?: ItemSize; // Size
   skillmodtype?: number; // Skill Modifier Type
   skillmodvalue?: number; // Skill Modifier Value
   slots?: number; // Slots

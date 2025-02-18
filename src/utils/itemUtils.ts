@@ -19,6 +19,7 @@ import getItemScore from "./getItemScore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { getItemById } from "./databaseOperations";
 import CharacterProfile from "@entities/CharacterProfile";
+import { ItemSize } from "@entities/ItemSize";
 
 export const getCharacterClass = (classId: number): CharacterClass | null => {
   const classData = classesData.find((c) => c.id === classId);
@@ -55,10 +56,13 @@ export const isSlotAvailableForItem = (
 
     if (
       bagItem?.itemDetails?.bagsize !== undefined &&
-      item.itemDetails?.size !== undefined &&
-      item.itemDetails.size > bagItem.itemDetails.bagsize
+      item.itemDetails?.size !== undefined
     ) {
-      return false;
+      const itemSize = item.itemDetails.size as ItemSize;
+      const bagMaxSize = bagItem.itemDetails.bagsize as ItemSize;
+      if (itemSize > bagMaxSize) {
+        return false;
+      }
     }
     return true;
   }

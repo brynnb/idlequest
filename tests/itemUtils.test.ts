@@ -1,20 +1,21 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { formatPrice, isItemAllowedInSlot } from "../src/utils/itemUtils";
-import { useInventoryActions } from "../src/hooks/useInventoryActions";
-import usePlayerCharacterStore from "../src/stores/PlayerCharacterStore";
-import { InventorySlot } from "../src/entities/InventorySlot";
-import { getBagStartingSlot } from "../src/utils/inventoryUtils";
-import CharacterClass from "../src/entities/CharacterClass";
-import Race from "../src/entities/Race";
+import { formatPrice, isItemAllowedInSlot } from "@utils/itemUtils";
+import { useInventoryActions } from "@hooks/useInventoryActions";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { InventorySlot } from "@entities/InventorySlot";
+import { getBagStartingSlot } from "@utils/inventoryUtils";
+import CharacterClass from "@entities/CharacterClass";
+import Race from "@entities/Race";
+import { ItemSize } from "@entities/ItemSize";
 
-vi.mock("../src/stores/PlayerCharacterStore");
-vi.mock("../src/hooks/useInventorySelling", () => ({
+vi.mock("@stores/PlayerCharacterStore");
+vi.mock("@hooks/useInventorySelling", () => ({
   useInventorySelling: () => ({
     sellItem: vi.fn(),
   }),
 }));
 
-vi.mock("../src/utils/inventoryUtils", () => ({
+vi.mock("@utils/inventoryUtils", () => ({
   getBagStartingSlot: (slot: number) => {
     if (slot === 23) return 262;
     if (slot === InventorySlot.Cursor) return 342;
@@ -208,7 +209,7 @@ describe("Bag size restrictions", () => {
           id: 17003,
           name: "Small Bag",
           itemclass: 1,
-          bagsize: 2,
+          bagsize: ItemSize.SMALL,
           bagslots: 8,
         },
       },
@@ -222,7 +223,7 @@ describe("Bag size restrictions", () => {
         id: 5024,
         name: "Rusty Halberd",
         itemclass: 0,
-        size: 4,
+        size: ItemSize.LARGE,
       },
     };
 
@@ -234,7 +235,7 @@ describe("Bag size restrictions", () => {
         id: 5025,
         name: "Fine Steel Rapier",
         itemclass: 0,
-        size: 2,
+        size: ItemSize.MEDIUM,
       },
     };
 
@@ -246,7 +247,7 @@ describe("Bag size restrictions", () => {
         id: 5026,
         name: "Small Dagger",
         itemclass: 0,
-        size: 1,
+        size: ItemSize.SMALL,
       },
     };
 
