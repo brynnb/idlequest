@@ -15,6 +15,7 @@ import { MessageType } from "@stores/ChatStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore from "@stores/ChatStore";
+import classes from "../../data/json/classes.json";
 
 const sellSingleItem = (itemDetails: Item) => {
   if (
@@ -120,14 +121,23 @@ export const addItemToInventory = async (
       );
 
       if (existingItem?.itemDetails) {
-        const newItemScore = getItemScore(itemDetails, {
-          id: characterProfile.class,
-          bitmask: 1,
-        } as CharacterClass);
-        const existingItemScore = getItemScore(existingItem.itemDetails, {
-          id: characterProfile.class,
-          bitmask: 1,
-        } as CharacterClass);
+        const characterClassId =
+          typeof characterProfile.class === "object" &&
+          characterProfile.class !== null
+            ? (characterProfile.class as CharacterClass).id
+            : characterProfile.class;
+        const characterClass =
+          classes.find((c) => c.id === characterClassId) ||
+          ({
+            id: characterClassId,
+            bitmask: 1,
+          } as CharacterClass);
+
+        const newItemScore = getItemScore(itemDetails, characterClass);
+        const existingItemScore = getItemScore(
+          existingItem.itemDetails,
+          characterClass
+        );
         const scoreDifference = newItemScore - existingItemScore;
 
         console.log(

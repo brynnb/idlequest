@@ -88,6 +88,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
         <p>{getItemFlags(item)}</p>
         {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
         {showWeaponStats && item.itemclass === 0 && <WeaponStats item={item} />}
+        {item.ac !== undefined && item.ac !== 0 && <p>AC: {item.ac}</p>}
         <p>{getStatString(item)}</p>
         <p>
           WT: {((item.weight || 0) / 10).toFixed(1)} Size:{" "}

@@ -9,8 +9,11 @@ function getItemScore(item: Item, characterClass: CharacterClass): number {
   let ratioScore = 0;
   let attributeScore = 0;
 
+  const isWeapon =
+    item.damage !== undefined && item.delay !== undefined && item.delay > 0;
+
   // Calculate ratio score for weapons
-  if (item.delay && item.damage && item.delay > 0) {
+  if (isWeapon && item.damage && item.delay) {
     const damagePerSecond = item.damage / (item.delay / 100);
     ratioScore = damagePerSecond * 2;
   }
@@ -32,17 +35,22 @@ function getItemScore(item: Item, characterClass: CharacterClass): number {
   if (item.proceffect) attributeScore += 10;
   if (item.clickeffect) attributeScore += 5;
 
-  // Determine the ratio of ratio score to attribute score based on class type
-  let ratioWeight = 0.05;
-  if (MELEE_CLASSES.includes(characterClass.id)) {
-    ratioWeight = 0.9;
-  } else if (HYBRID_CLASSES.includes(characterClass.id)) {
-    ratioWeight = 0.75;
+  // Determine the ratio of ratio score to attribute score based on class type and item type
+  let ratioWeight = 0;
+  if (isWeapon) {
+    if (MELEE_CLASSES.includes(characterClass.id)) {
+      ratioWeight = 0.9;
+    } else if (HYBRID_CLASSES.includes(characterClass.id)) {
+      ratioWeight = 0.75;
+    } else if (CASTER_CLASSES.includes(characterClass.id)) {
+      ratioWeight = 0.05;
+    }
   }
 
   // Calculate final score
-  let finalScore =
-    ratioScore * ratioWeight + attributeScore * (1 - ratioWeight);
+  let finalScore = isWeapon
+    ? ratioScore * ratioWeight + attributeScore * (1 - ratioWeight)
+    : attributeScore;
 
   // Adjust score based on required level
   if (item.reqlevel) {

@@ -31,4 +31,32 @@ describe("getItemScore", () => {
     expect(typeof score10908).toBe("number");
     expect(score10908).toBeGreaterThan(score5019);
   });
+
+  it("compares scores for raw-hide tunic and brigandine tunic for Paladin class", async () => {
+    const paladin = classes.find((c: CharacterClass) => c.id === 3);
+    if (!paladin) {
+      throw new Error("Paladin class not found in classes.json");
+    }
+
+    const rawHideTunic = await getItemById(2140);
+    const brigandineTunic = await getItemById(3307);
+
+    if (!rawHideTunic || !brigandineTunic) {
+      throw new Error("One or both items not found in the database");
+    }
+
+    const rawHideScore = getItemScore(rawHideTunic, paladin);
+    const brigandineScore = getItemScore(brigandineTunic, paladin);
+
+    console.log(
+      `Score for item ${rawHideTunic.name} (ID: 2140): ${rawHideScore}`
+    );
+    console.log(
+      `Score for item ${brigandineTunic.name} (ID: 3307): ${brigandineScore}`
+    );
+
+    expect(typeof rawHideScore).toBe("number");
+    expect(typeof brigandineScore).toBe("number");
+    expect(brigandineScore).toBeGreaterThan(rawHideScore);
+  });
 });

@@ -89,7 +89,6 @@ export const getStatString = (item: Item) => {
     item.awis && `WIS +${item.awis}`,
     item.aint && `INT +${item.aint}`,
     item.acha && `CHA +${item.acha}`,
-    item.ac && `AC +${item.ac}`,
     item.hp && `HP +${item.hp}`,
     item.mana && `MANA +${item.mana}`,
     item.endur && `ENDUR +${item.endur}`,
