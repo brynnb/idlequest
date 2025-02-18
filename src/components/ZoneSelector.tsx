@@ -1,12 +1,61 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { getAdjacentZones } from "@utils/zoneUtils";
 import Zone from "@entities/Zone";
 import ActionButton from "./Interface/ActionButton";
 import useGameStatusStore from "@/stores/GameStatusStore";
+import styled from "styled-components";
+
+const ZoneListContainer = styled.div`
+  position: absolute;
+  left: 19px;
+  top: 80px;
+  bottom: 20px;
+  right: 20px;
+  height: 900px;
+  width: 240px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+  }
+`;
+
+const ParentContainer = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 246px;
+  height: 1080px;
+  background-image: url("/images/ui/lootpanebackground.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: white;
+  overflow-y: auto;
+  padding-left: 24px;
+`;
+
+const PaneTitle = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  top: 35px;
+  left: 25px;
+  position: absolute;
+`;
 
 const ZoneSelector: React.FC = () => {
-  const [adjacentZones, setAdjacentZones] = useState<Zone[]>([]);
+  const [adjacentZones, setAdjacentZones] = React.useState<Zone[]>([]);
   const { characterProfile, setCharacterZone } = usePlayerCharacterStore();
   const { setCurrentZone } = useGameStatusStore();
 
@@ -22,26 +71,36 @@ const ZoneSelector: React.FC = () => {
   }, [fetchAdjacentZones]);
 
   const handleZoneClick = async (zone: Zone) => {
-    setCharacterZone(zone.zoneidnumber); //TODO: we shouldn't update in two places, need to either connect or make the game engine rely on the player zone
+    setCharacterZone(zone.zoneidnumber);
     setCurrentZone(zone.zoneidnumber);
     await fetchAdjacentZones();
   };
 
   return (
-    <div>
-      <h3 style={{ color: "white", fontSize: "35px" }}>Select New Zone:</h3>
-      <div>
+    <ParentContainer>
+      <PaneTitle>Travel to...</PaneTitle>
+      <ZoneListContainer>
         {adjacentZones.map((zone) => (
           <ActionButton
             key={zone.id}
             text={zone.long_name}
+            customCSS="
+              font-size: 22px;
+              width: 230px;
+              min-height: 30px;
+              height: auto;
+              margin-bottom: 5px;
+              white-space: normal;
+              padding: 10px 8px;
+              line-height: 1.2;
+              text-transform: none;
+              
+            "
             onClick={() => handleZoneClick(zone)}
-            marginBottom="10px"
-            customCSS="font-size: 16px; height: 80px"
           />
         ))}
-      </div>
-    </div>
+      </ZoneListContainer>
+    </ParentContainer>
   );
 };
 

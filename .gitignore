@@ -31,3 +31,23 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Large data files
+data/eq_data.db
+data/npc_types.csv
+data/spawnlocation.csv
+data/spells.csv
+data/lootdrop_entries.csv
+
+# Node modules and build files
+node_modules/
+dist/
+build/
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

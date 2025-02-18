@@ -12,14 +12,9 @@ import getItemScore from "@utils/getItemScore";
 import CharacterClass from "@entities/CharacterClass";
 import Race from "@entities/Race";
 import { MessageType } from "@stores/ChatStore";
-
-interface LootHandlerDependencies {
-  addInventoryItem?: (item: InventoryItem, itemDetails: Item) => Promise<void>;
-  setInventory: (inventory: InventoryItem[]) => void;
-  addChatMessage: (message: string, type: MessageType) => void;
-  sellItem?: (item: Item) => void;
-  autoSellEnabled?: boolean;
-}
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useGameStatusStore from "@stores/GameStatusStore";
+import useChatStore from "@stores/ChatStore";
 
 export const addItemToInventory = async (
   item: Item,
@@ -27,10 +22,11 @@ export const addItemToInventory = async (
     inventory?: InventoryItem[];
     class?: number;
     race?: number;
-  },
-  deps: LootHandlerDependencies
+  }
 ) => {
-  const { setInventory, addChatMessage, sellItem, autoSellEnabled } = deps;
+  const setInventory = usePlayerCharacterStore.getState().setInventory;
+  const addChatMessage = useChatStore.getState().addMessage;
+  const autoSellEnabled = useGameStatusStore.getState().autoSellEnabled;
   let updatedInventory = [...(characterProfile.inventory || [])];
 
   if (!item.id) {
@@ -159,11 +155,13 @@ export const addItemToInventory = async (
         updatedInventory.push(newItem);
         setInventory(updatedInventory);
         return;
-      } else if (autoSellEnabled && sellItem) {
+      } else if (autoSellEnabled) {
         console.log(
           `Inventory full and auto-sell enabled, selling ${itemToReplace.itemDetails.name}`
         );
-        sellItem(itemToReplace.itemDetails);
+        if (itemToReplace.slotid !== undefined) {
+          usePlayerCharacterStore.getState().removeInventoryItem(itemToReplace.slotid);
+        }
         updatedInventory = updatedInventory.filter(
           (invItem) => invItem.slotid !== bestSlotToReplace
         );
@@ -202,11 +200,13 @@ export const addItemToInventory = async (
     };
     updatedInventory.push(newItem);
     setInventory(updatedInventory);
-  } else if (autoSellEnabled && sellItem) {
+  } else if (autoSellEnabled) {
     console.log(
       `Inventory full and auto-sell enabled, selling ${itemDetails.name}`
     );
-    sellItem(itemDetails);
+    if (itemDetails.id !== undefined) {
+      usePlayerCharacterStore.getState().removeInventoryItem(itemDetails.id);
+    }
   } else {
     console.log(
       `Inventory full and auto-sell disabled, dropping ${itemDetails.name}`
@@ -224,8 +224,7 @@ export const processLootItems = async (
     inventory?: InventoryItem[];
     class?: number;
     race?: number;
-  },
-  deps: LootHandlerDependencies
+  }
 ) => {
   if (!loot || loot.length === 0) {
     return;
@@ -241,27 +240,28 @@ export const processLootItems = async (
     }
     if (item.id) {
       const itemDetails = await getItemById(item.id);
-      if (itemDetails) {
-        if (itemDetails?.name) {
-          const startsWithArticle = /^(a|an)\s+/i.test(itemDetails.name);
-          deps.addChatMessage(
-            `You have looted ${startsWithArticle ? '' : (/^[aeiou]/i.test(itemDetails.name) ? 'an' : 'a') + ' '}${itemDetails.name}`,
+      if (itemDetails?.name) {
+        const startsWithArticle = /^(a|an)\s+/i.test(itemDetails.name);
+        useChatStore
+          .getState()
+          .addMessage(
+            `You have looted ${
+              startsWithArticle
+                ? ""
+                : (/^[aeiou]/i.test(itemDetails.name) ? "an" : "a") + " "
+            }${itemDetails.name}`,
             MessageType.LOOT
           );
-        }
       }
     }
-    await addItemToInventory(
-      item,
-      { ...characterProfile, inventory: currentInventory },
-      {
-        ...deps,
-        setInventory: (newInventory) => {
-          currentInventory = newInventory;
-          deps.setInventory(newInventory);
-        },
-      }
-    );
+    await addItemToInventory(item, {
+      ...characterProfile,
+      inventory: currentInventory,
+    });
+
+    // Update currentInventory after each item is processed
+    currentInventory =
+      usePlayerCharacterStore.getState().characterProfile.inventory || [];
   }
   console.log("Finished processing all loot items");
 };

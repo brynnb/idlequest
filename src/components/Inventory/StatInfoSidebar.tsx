@@ -48,7 +48,7 @@ const Level = styled.div`
 
 const ClassAndDeity = styled.div`
   position: absolute;
-  left: 00px;
+  left: 0px;
   top: 30px;
   width: 240px;
 `;
@@ -102,7 +102,9 @@ const StatInfoBar: React.FC = () => {
               <p>{characterProfile.level}</p>
             </Level>
             <ClassAndDeity>
-              <p>{characterProfile.class?.name}</p>
+              <p>
+              {characterProfile.race?.name} {characterProfile.class?.name}
+              </p>
               <p>{characterProfile.deity?.name}</p>
             </ClassAndDeity>
           </LevelClassDeity>

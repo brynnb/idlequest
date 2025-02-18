@@ -47,6 +47,10 @@ The data in the SQLite file is fairly comprehensive at this point though, so it 
 * Lots of NPC descriptions here: https://wiki.project1999.com/Biggle_Limbokker (look for h3 containing "Description" then look for contenst of the next <p> )
 * Really good NPC descriptions here but URL isn't easy to use for automated retrieval: https://www.giantbomb.com/brutol-rhaksen/3005-19742/
 * Info on stats: https://wiki.project1999.com/Mana#Primary_Stats
+* Scans of tons of books/player guides/maps: https://archive.org/search?query=Everquest&and%5B%5D=mediatype%3A%22texts%22
+* Scan of origial manual with lots of good UI screenshots to reference: https://archive.org/details/everquesttrilogy-manual/page/n17/mode/2up
+
+
 
 ## Looting System Breakdown
 
