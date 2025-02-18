@@ -48,3 +48,6 @@ Thumbs.db
 # Atlas art raw files
 data/rawatlasart/*
 !data/rawatlasart/.gitkeep
+
+# Database files
+eq_data.db
