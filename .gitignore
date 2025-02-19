@@ -50,4 +50,7 @@ data/rawatlasart/*
 !data/rawatlasart/.gitkeep
 
 # Database files
-eq_data.db
+/data/db/eq_data.db
+
+# Quest data
+/data/projecteqquests-master

@@ -16,6 +16,9 @@ Usage:
     python convert_atlas_images.py
 """
 
+#the source for these images comes from "EverQuest Atlas: The Maps Of Myrist", which is available on archive.org at https://archive.org/details/ever-uest-atlas-the-maps-of-myrist/mode/2up
+#screenshots were taken of each map by hand, they're not readily available in the format used by this script
+
 from PIL import Image
 import os
 from pathlib import Path
