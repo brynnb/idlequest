@@ -1,7 +1,10 @@
 import { InventoryItem } from "./InventoryItem";
+import { CharacterAttributes } from "./CharacterAttributes";
+import { CharacterStats } from "./CharacterStats";
 import Zone from "./Zone";
 import CharacterClass from "./CharacterClass";
 import Race from "./Race";
+import Deity from "./Deity";
 
 export default interface CharacterProfile {
   id?: number;
@@ -23,7 +26,7 @@ export default interface CharacterProfile {
   race?: Race;
   class?: CharacterClass;
   level?: number;
-  deity?: number;
+  deity?: Deity;
   birthday?: number;
   lastLogin?: number;
   timePlayed?: number;
@@ -51,19 +54,9 @@ export default interface CharacterProfile {
   maxMana?: number;
   endurance?: number;
   intoxication?: number;
-  attributes?: {
-    str?: number;
-    sta?: number;
-    cha?: number;
-    dex?: number;
-    int?: number;
-    agi?: number;
-    wis?: number;
-  };
-  stats?: {
-    ac?: number;
-    atk?: number;
-  };
+  stats?: CharacterStats;
+  attributes: CharacterAttributes;
+  totalAttributes: CharacterAttributes;
   zoneChangeCount?: number;
   hungerLevel?: number;
   thirstLevel?: number;
@@ -87,4 +80,5 @@ export default interface CharacterProfile {
   gold?: number;
   silver?: number;
   copper?: number;
+  weight?: number;
 }

@@ -9,15 +9,24 @@ import useChatStore, { MessageType } from "./ChatStore";
 import useGameStatusStore from "./GameStatusStore";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 import { getExperienceLevel } from "@entities/ExperienceLevel";
-import { calculatePlayerHP } from "@utils/playerCharacterUtils";
-import { calculatePlayerMana } from "@utils/playerCharacterUtils";
-import { calculateTotalWeight } from "@/utils/inventoryUtils";
+import {
+  calculatePlayerHP,
+  calculatePlayerMana,
+} from "@utils/playerCharacterUtils";
+import {
+  calculateTotalWeight,
+  calculateTotalResistances,
+  calculateTotalAttributes,
+} from "@utils/inventoryUtils";
 import { getBagStartingSlot } from "@utils/inventoryUtils";
 import { ItemClass } from "@entities/ItemClass";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {
     inventory: [],
+    attributes: {},
+    totalAttributes: {},
+    stats: {},
   } as CharacterProfile;
 }
 
@@ -75,7 +84,19 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
     persist(
       (set, get) => ({
         characterProfile: createDefaultCharacterProfile(),
-        setCharacterProfile: (profile) => set({ characterProfile: profile }),
+        setCharacterProfile: (profile) => {
+          const totalAttributes = calculateTotalAttributes(profile);
+          set({
+            characterProfile: {
+              ...createDefaultCharacterProfile(),
+              ...profile,
+              attributes: profile.attributes || {},
+              totalAttributes,
+              stats: profile.stats || {},
+            },
+          });
+          get().updateAllStats();
+        },
         setInventory: async (inventory) => {
           set((state) => {
             // Deduplicate inventory items
@@ -112,7 +133,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           }
 
           set((state) => {
-            const existingItem = state.characterProfile.inventory.find(
+            const existingItem = (state.characterProfile.inventory || []).find(
               (i) => i.slotid === item.slotid
             );
 
@@ -125,7 +146,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               characterProfile: {
                 ...state.characterProfile,
                 inventory: [
-                  ...state.characterProfile.inventory,
+                  ...(state.characterProfile.inventory || []),
                   { ...item, itemDetails },
                 ],
               },
@@ -134,15 +155,17 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
           get().updateAllStats();
         },
-        removeInventoryItem: (slotId) =>
+        removeInventoryItem: (slotId) => {
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
-              inventory: state.characterProfile?.inventory?.filter(
+              inventory: (state.characterProfile.inventory || []).filter(
                 (item) => item.slotid !== slotId
               ),
             },
-          })),
+          }));
+          get().updateAllStats();
+        },
         clearInventory: () => {
           set((state) => ({
             characterProfile: {
@@ -210,20 +233,70 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             },
           }));
         },
+        moveItemToSlot: (fromSlot: number, toSlot: number) => {
+          set((state) => {
+            if (!state.characterProfile) return state;
+            const existingItem = state.characterProfile.inventory?.find(
+              (item) => item.slotid === toSlot
+            );
+            if (existingItem) {
+              console.warn("Attempted to move item to occupied slot:", toSlot);
+              return state;
+            }
+
+            const movingItem = state.characterProfile.inventory?.find(
+              (item) => item.slotid === fromSlot
+            );
+
+            let updatedInventory = state.characterProfile.inventory || [];
+            if (movingItem?.itemDetails?.itemclass === ItemClass.CONTAINER) {
+              console.log(
+                `Moving bag from ${fromSlot} to ${toSlot} with size ${movingItem.itemDetails.bagslots}`
+              );
+              updatedInventory = moveBagContents(
+                updatedInventory,
+                fromSlot,
+                toSlot,
+                movingItem.itemDetails?.bagslots || 0
+              );
+            } else {
+              updatedInventory = updatedInventory.map((item) => {
+                if (item.slotid === fromSlot) {
+                  return { ...item, slotid: toSlot };
+                }
+                return item;
+              });
+            }
+
+            const newState = {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: updatedInventory,
+                totalAttributes: calculateTotalAttributes({
+                  ...state.characterProfile,
+                  inventory: updatedInventory,
+                }),
+              },
+            };
+
+            return newState;
+          });
+          get().updateAllStats();
+        },
         swapItems: (fromSlot: number, toSlot: number) =>
           set((state) => {
             if (!state.characterProfile) return state;
 
-            const fromItem = state.characterProfile.inventory.find(
+            const fromItem = state.characterProfile.inventory?.find(
               (item) => item.slotid === fromSlot
             );
-            const toItem = state.characterProfile.inventory.find(
+            const toItem = state.characterProfile.inventory?.find(
               (item) => item.slotid === toSlot
             );
 
             if (!fromItem) return state;
 
-            let newInventory = [...state.characterProfile.inventory];
+            let newInventory = [...(state.characterProfile.inventory || [])];
 
             const fromItemIsBag =
               fromItem.itemDetails?.itemclass === ItemClass.CONTAINER;
@@ -237,13 +310,13 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               const firstBagItems = newInventory.filter(
                 (item) =>
                   item.slotid >= getBagStartingSlot(fromSlot) &&
-                  item.slotid < getBagStartingSlot(fromSlot) + 10 //max number of bag slots
+                  item.slotid < getBagStartingSlot(fromSlot) + 10
               );
 
               const secondBagItems = newInventory.filter(
                 (item) =>
                   item.slotid >= getBagStartingSlot(toSlot) &&
-                  item.slotid < getBagStartingSlot(toSlot) + 10 //max number of bag slots
+                  item.slotid < getBagStartingSlot(toSlot) + 10
               );
 
               newInventory = newInventory.filter(
@@ -280,14 +353,14 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 newInventory,
                 fromSlot,
                 toSlot,
-                fromItem.itemDetails.bagslots
+                fromItem.itemDetails?.bagslots || 0
               );
             } else if (toItemIsBag) {
               newInventory = moveBagContents(
                 newInventory,
                 toSlot,
                 fromSlot,
-                toItem.itemDetails.bagslots
+                toItem.itemDetails?.bagslots || 0
               );
             }
 
@@ -300,68 +373,32 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 ...(toItem ? [{ ...toItem, slotid: fromSlot }] : []),
               ]);
 
-            get().updateAllStats();
-
-            return {
+            const newState = {
               characterProfile: {
                 ...state.characterProfile,
                 inventory: newInventory,
+                totalAttributes: calculateTotalAttributes({
+                  ...state.characterProfile,
+                  inventory: newInventory,
+                }),
               },
             };
-          }),
-        moveItemToSlot: (fromSlot: number, toSlot: number) =>
-          set((state) => {
-            if (!state.characterProfile) return state;
 
-            const existingItem = state.characterProfile.inventory.find(
-              (item) => item.slotid === toSlot
-            );
-            if (existingItem) {
-              console.warn("Attempted to move item to occupied slot:", toSlot);
-              return state;
-            }
-
-            const movingItem = state.characterProfile.inventory.find(
-              (item) => item.slotid === fromSlot
-            );
-
-            let updatedInventory = state.characterProfile.inventory;
-            if (movingItem?.itemDetails?.itemclass === ItemClass.CONTAINER) {
-              console.log(
-                `Moving bag from ${fromSlot} to ${toSlot} with size ${movingItem.itemDetails.bagslots}`
-              );
-              updatedInventory = moveBagContents(
-                updatedInventory,
-                fromSlot,
-                toSlot,
-                movingItem.itemDetails.bagslots
-              );
-            } else {
-              updatedInventory = updatedInventory.map((item) => {
-                if (item.slotid === fromSlot) {
-                  return { ...item, slotid: toSlot };
-                }
-                return item;
-              });
-            }
-
-            get().updateAllStats();
-            return {
-              characterProfile: {
-                ...state.characterProfile,
-                inventory: updatedInventory,
-              },
-            };
+            return newState;
           }),
         deleteItemOnCursor: () =>
-          set((state) => ({
-            characterProfile: {
-              ...state.characterProfile,
-              inventory: state.characterProfile.inventory.filter(
-                (item) => item.slotid !== InventorySlot.Cursor
-              ),
-            },
-          })),
+          set((state) => {
+            const newState = {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: state.characterProfile.inventory.filter(
+                  (item) => item.slotid !== InventorySlot.Cursor
+                ),
+              },
+            };
+            get().updateAllStats();
+            return newState;
+          }),
         updateArmorClass: () => {
           const { characterProfile } = get();
           const newAC = calculateSimpleArmorClass(characterProfile);
@@ -456,10 +493,37 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           }));
         },
         updateAllStats: () => {
-          get().updateArmorClass();
-          get().updateMaxHP();
-          get().updateMaxMana();
-          get().updateWeight();
+          const resistances = calculateTotalResistances(get().characterProfile);
+          const totalAttributes = calculateTotalAttributes(
+            get().characterProfile
+          );
+          const ac = calculateSimpleArmorClass(get().characterProfile);
+          const newMaxHp = calculatePlayerHP({
+            ...get().characterProfile,
+            totalAttributes,
+          });
+
+          set((state) => {
+            const hpRatio =
+              state.characterProfile.curHp / state.characterProfile.maxHp;
+            const newCurHp = Math.floor(hpRatio * newMaxHp);
+
+            return {
+              characterProfile: {
+                ...state.characterProfile,
+                stats: {
+                  ...resistances,
+                  ac,
+                  atk: 100 + Math.floor((totalAttributes.str ?? 0) / 4),
+                },
+                attributes: state.characterProfile.attributes || {},
+                totalAttributes: { ...totalAttributes },
+                maxHp: newMaxHp,
+                curHp: newCurHp || newMaxHp,
+                weightAllowance: totalAttributes.str ?? 0,
+              },
+            };
+          });
         },
       }),
       { name: "player-character-storage" }

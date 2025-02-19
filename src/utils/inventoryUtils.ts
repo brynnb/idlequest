@@ -205,3 +205,101 @@ const isSellable = (item: Item): boolean => {
     item.norent != 0
   );
 };
+
+export const calculateTotalResistances = (character: CharacterProfile) => {
+  const equippedItems =
+    character.inventory?.filter(
+      (item) =>
+        item.slotid !== undefined &&
+        item.itemDetails &&
+        (item.slotid === InventorySlot.Helmet ||
+          (item.slotid >= InventorySlot.Charm &&
+            item.slotid <= InventorySlot.Ammo))
+    ) || [];
+
+  const resistances = equippedItems.reduce(
+    (acc, item) => {
+      if (!item.itemDetails) return acc;
+      const newResistances = {
+        pr: acc.pr + (item.itemDetails.pr || 0),
+        mr: acc.mr + (item.itemDetails.mr || 0),
+        dr: acc.dr + (item.itemDetails.dr || 0),
+        fr: acc.fr + (item.itemDetails.fr || 0),
+        cr: acc.cr + (item.itemDetails.cr || 0),
+      };
+      return newResistances;
+    },
+    { pr: 25, mr: 25, dr: 25, fr: 25, cr: 25 }
+  );
+
+  return resistances;
+};
+
+export const calculateTotalAttributes = (character: CharacterProfile) => {
+  const equippedItems =
+    character.inventory?.filter(
+      (item) =>
+        item.slotid !== undefined &&
+        item.slotid >= InventorySlot.Charm &&
+        item.slotid <= InventorySlot.Ammo &&
+        item.slotid !== InventorySlot.Cursor &&
+        item.itemDetails
+    ) || [];
+
+  const baseAttributes = character.attributes || {};
+
+  // Calculate total bonuses from items
+  const itemBonuses = equippedItems.reduce(
+    (acc, item) => {
+      if (!item.itemDetails) return acc;
+      const newBonuses = {
+        str: (acc.str || 0) + (item.itemDetails.astr || 0),
+        sta: (acc.sta || 0) + (item.itemDetails.asta || 0),
+        agi: (acc.agi || 0) + (item.itemDetails.aagi || 0),
+        dex: (acc.dex || 0) + (item.itemDetails.adex || 0),
+        wis: (acc.wis || 0) + (item.itemDetails.awis || 0),
+        int: (acc.int || 0) + (item.itemDetails.aint || 0),
+        cha: (acc.cha || 0) + (item.itemDetails.acha || 0),
+      };
+      return newBonuses;
+    },
+    {
+      str: 0,
+      sta: 0,
+      agi: 0,
+      dex: 0,
+      wis: 0,
+      int: 0,
+      cha: 0,
+    }
+  );
+
+  // Add bonuses to base attributes
+  const finalAttributes = {
+    str: (baseAttributes.str || 0) + itemBonuses.str,
+    sta: (baseAttributes.sta || 0) + itemBonuses.sta,
+    agi: (baseAttributes.agi || 0) + itemBonuses.agi,
+    dex: (baseAttributes.dex || 0) + itemBonuses.dex,
+    wis: (baseAttributes.wis || 0) + itemBonuses.wis,
+    int: (baseAttributes.int || 0) + itemBonuses.int,
+    cha: (baseAttributes.cha || 0) + itemBonuses.cha,
+  };
+
+  return finalAttributes;
+};
+
+export const calculateTotalHPBonus = (character: CharacterProfile): number => {
+  const equippedItems =
+    character.inventory?.filter(
+      (item) =>
+        item.slotid !== undefined &&
+        item.slotid >= InventorySlot.Charm &&
+        item.slotid <= InventorySlot.Ammo &&
+        item.slotid !== InventorySlot.Cursor &&
+        item.itemDetails
+    ) || [];
+
+  return equippedItems.reduce((totalHP, item) => {
+    return totalHP + (item.itemDetails?.hp || 0);
+  }, 0);
+};

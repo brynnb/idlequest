@@ -170,23 +170,29 @@ export const getRaceNames = (races: number | undefined) => {
 };
 
 export const getStatString = (item: Item) => {
+  const formatStat = (value: number | undefined, label: string) => {
+    if (!value) return null;
+    const sign = value >= 0 ? "+" : "-";
+    return `${label} ${sign}${Math.abs(value)}`;
+  };
+
   const stats = [
-    item.astr && `STR +${item.astr}`,
-    item.asta && `STA +${item.asta}`,
-    item.aagi && `AGI +${item.aagi}`,
-    item.adex && `DEX +${item.adex}`,
-    item.awis && `WIS +${item.awis}`,
-    item.aint && `INT +${item.aint}`,
-    item.acha && `CHA +${item.acha}`,
-    item.hp && `HP +${item.hp}`,
-    item.mana && `MANA +${item.mana}`,
-    item.endur && `ENDUR +${item.endur}`,
-    item.fr && `FR +${item.fr}`,
-    item.cr && `CR +${item.cr}`,
-    item.dr && `DR +${item.dr}`,
-    item.pr && `PR +${item.pr}`,
-    item.mr && `MR +${item.mr}`,
-    item.svcorruption && `SV CORRUPT +${item.svcorruption}`,
+    formatStat(item.astr, "STR"),
+    formatStat(item.asta, "STA"),
+    formatStat(item.aagi, "AGI"),
+    formatStat(item.adex, "DEX"),
+    formatStat(item.awis, "WIS"),
+    formatStat(item.aint, "INT"),
+    formatStat(item.acha, "CHA"),
+    formatStat(item.hp, "HP"),
+    formatStat(item.mana, "MANA"),
+    formatStat(item.endur, "ENDUR"),
+    formatStat(item.fr, "FR"),
+    formatStat(item.cr, "CR"),
+    formatStat(item.dr, "DR"),
+    formatStat(item.pr, "PR"),
+    formatStat(item.mr, "MR"),
+    formatStat(item.svcorruption, "SV CORRUPT"),
   ].filter(Boolean);
   return stats.join(" ");
 };

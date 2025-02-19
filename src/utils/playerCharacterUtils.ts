@@ -5,6 +5,7 @@ import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 import useInventoryCreator from "@hooks/useInventoryCreator";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import { useInventoryActions } from "@hooks/useInventoryActions";
+import { calculateTotalHPBonus } from "@utils/inventoryUtils";
 
 const getHpLevelMultiplier = (
   characterClass: number,
@@ -54,18 +55,22 @@ const getHpLevelMultiplier = (
 };
 
 export const calculatePlayerHP = (character: CharacterProfile): number => {
-  if (!character.level || !character.class || !character.attributes?.sta) {
-    return 0;
+  if (!character.level || !character.class || !character.totalAttributes?.sta) {
+    if (!character.level || !character.class || !character.attributes?.sta) {
+      return 0;
+    }
   }
 
   const level = character.level;
-  const stamina = character.attributes.sta;
+  const stamina =
+    character.totalAttributes?.sta ?? character.attributes?.sta ?? 0;
   const levelMultiplier = getHpLevelMultiplier(character.class.id, level);
 
   const term1 = level * levelMultiplier;
   const term2 = ((level * levelMultiplier) / 300) * stamina + 5;
+  const hpBonus = calculateTotalHPBonus(character);
 
-  return Math.floor(term1 + term2);
+  return Math.floor(term1 + term2 + hpBonus);
 };
 
 export const calculatePlayerMana = (character: CharacterProfile): number => {
