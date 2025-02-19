@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Item } from "@entities/Item";
 import { ItemSize, getItemSizeName } from "@entities/ItemSize";
+import { ItemClass } from "@entities/ItemClass";
 import { useSpellInfo } from "@hooks/useSpellInfo";
 import {
   getSlotNames,
@@ -87,10 +88,10 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
         <p>{item.name}</p>
         <p>{getItemFlags(item)}</p>
         {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
-        {showWeaponStats && item.itemclass === 0 && <WeaponStats item={item} />}
+        {showWeaponStats && item.itemclass === ItemClass.COMMON_ITEM && <WeaponStats item={item} />}
         {item.ac !== undefined && item.ac !== 0 && <p>AC: {item.ac}</p>}
         <p>{getStatString(item)}</p>
-        {item.itemclass === 1 ? (
+        {item.itemclass === ItemClass.CONTAINER ? (
           <>
             <p>WT: {((item.weight || 0) / 10).toFixed(1)}</p>
             <p>

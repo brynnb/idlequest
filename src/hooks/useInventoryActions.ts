@@ -10,6 +10,7 @@ import { Item } from "@entities/Item";
 import { InventorySlot } from "@entities/InventorySlot";
 import { processLootItems } from "@utils/lootUtils";
 import { useInventorySelling } from "./useInventorySelling";
+import { ItemClass } from "@entities/ItemClass";
 
 export const useInventoryActions = () => {
   const { sellGeneralInventory } = useInventorySelling();
@@ -72,14 +73,14 @@ export const useInventoryActions = () => {
       "Items found in general inventory:",
       generalItems.map((item) => {
         const bagContents =
-          item.itemDetails?.itemclass === 1 && item.slotid !== undefined
+          item.itemDetails?.itemclass === ItemClass.CONTAINER && item.slotid !== undefined
             ? getBagContents(item.slotid, item.itemDetails.bagslots || 0)
             : [];
 
         return {
           name: item.itemDetails?.name,
           slot: item.slotid,
-          isBag: item.itemDetails?.itemclass === 1,
+          isBag: item.itemDetails?.itemclass === ItemClass.CONTAINER,
           bagSlots: item.itemDetails?.bagslots,
           contents: bagContents,
         };
@@ -102,7 +103,7 @@ export const useInventoryActions = () => {
               (invItem) => invItem.slotid === slotId
             );
 
-            if (itemDetails.itemclass === 1) {
+            if (itemDetails.itemclass === ItemClass.CONTAINER) {
               console.log("Processing bag move:", {
                 bagName: itemDetails.name,
                 fromSlot: originalSlot,
@@ -134,7 +135,7 @@ export const useInventoryActions = () => {
                 }
 
                 // Log the state after the move if it's a bag
-                if (itemDetails.itemclass === 1) {
+                if (itemDetails.itemclass === ItemClass.CONTAINER) {
                   console.log("Bag move complete:", {
                     bagName: itemDetails.name,
                     newSlot: slotId,

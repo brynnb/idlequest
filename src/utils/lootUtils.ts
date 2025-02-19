@@ -17,6 +17,7 @@ import useChatStore from "@stores/ChatStore";
 import { InventorySlot } from "@entities/InventorySlot";
 import CharacterClass from "@entities/CharacterClass";
 import Race from "@entities/Race";
+import { ItemClass } from "@entities/ItemClass";
 
 const sellSingleItem = (itemDetails: Item) => {
   if (
@@ -231,7 +232,7 @@ const addItemToInventory = async (
         invItem.itemDetails
       ) {
         if (
-          invItem.itemDetails.itemclass != 1 && // Don't sell bags
+          invItem.itemDetails.itemclass !== ItemClass.CONTAINER && // Don't sell bags
           invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
           invItem.itemDetails.norent != 0 // Don't sell NO RENT
         ) {

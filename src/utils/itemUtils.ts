@@ -20,6 +20,7 @@ import useChatStore, { MessageType } from "@stores/ChatStore";
 import { getItemById } from "./databaseOperations";
 import CharacterProfile from "@entities/CharacterProfile";
 import { ItemSize } from "@entities/ItemSize";
+import { ItemClass } from "@entities/ItemClass";
 
 export const getCharacterClass = (classId: number): CharacterClass | null => {
   const classData = classesData.find((c) => c.id === classId);
@@ -45,7 +46,11 @@ export const isSlotAvailableForItem = (
   if (slot >= 23 && slot <= 30) return true;
 
   // Prevent placing bags inside bags
-  if (slot >= 262 && slot <= 351 && item.itemDetails?.itemclass === 1) {
+  if (
+    slot >= 262 &&
+    slot <= 351 &&
+    item.itemDetails?.itemclass === ItemClass.CONTAINER
+  ) {
     return false;
   }
 

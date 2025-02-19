@@ -1,3 +1,8 @@
+# The CSV files processed by this script come from SQL table dumps from The Al'Kabor Project:
+# https://github.com/EQMacEmu/Server/tree/main/utils/sql/database_full
+# This is an EverQuest emulator specifically for MacOS that maintains a comprehensive public database
+# of the original game data. The SQL dumps should be converted to CSV format before using this script.
+
 import csv
 import sqlite3
 import os

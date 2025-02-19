@@ -1,14 +1,11 @@
 import React from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import useChatStore from "@stores/ChatStore";
-import { MessageType } from "@stores/ChatStore";
 import { InventorySlot } from "@entities/InventorySlot";
 import { useInventoryActions } from "@hooks/useInventoryActions";
-import { isSlotAvailableForItem } from "@utils/itemUtils";
+import { getEquippableSlots } from "@utils/itemUtils";
 
 const PersonaView: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();
-  const { addMessage } = useChatStore();
   const { handleItemClick } = useInventoryActions();
 
   const cursorItem = characterProfile?.inventory?.find(
@@ -21,50 +18,16 @@ const PersonaView: React.FC = () => {
       characterProfile.class &&
       characterProfile.race
     ) {
-      // If it's a bag, try to place it in general inventory slots
-      if (cursorItem.itemDetails.itemclass === 1) {
-        for (let slot = 23; slot <= 30; slot++) {
-          const isSlotTaken = characterProfile.inventory?.some(
-            (item) => item.slotid === slot
+      const slots = cursorItem.itemDetails.slots;
+      if (slots) {
+        const possibleSlots = getEquippableSlots(cursorItem.itemDetails);
+        for (const slot of possibleSlots) {
+          await handleItemClick(slot as InventorySlot);
+          // If the cursor is now empty, we successfully placed the item
+          const newCursorItem = characterProfile?.inventory?.find(
+            (item) => item.slotid === InventorySlot.Cursor
           );
-
-          if (
-            !isSlotTaken &&
-            isSlotAvailableForItem(
-              cursorItem,
-              slot as InventorySlot,
-              characterProfile.class,
-              characterProfile.race,
-              characterProfile.inventory || []
-            )
-          ) {
-            await handleItemClick(slot as InventorySlot);
-            break;
-          }
-        }
-      } else {
-        // For non-bag items, check equipment slots
-        const slots = cursorItem.itemDetails.slots;
-        if (slots) {
-          for (let slot = 0; slot <= 22; slot++) {
-            const isSlotTaken = characterProfile.inventory?.some(
-              (item) => item.slotid === slot
-            );
-
-            if (
-              !isSlotTaken &&
-              isSlotAvailableForItem(
-                cursorItem,
-                slot as InventorySlot,
-                characterProfile.class,
-                characterProfile.race,
-                characterProfile.inventory || []
-              )
-            ) {
-              await handleItemClick(slot as InventorySlot);
-              break;
-            }
-          }
+          if (!newCursorItem) break;
         }
       }
     }

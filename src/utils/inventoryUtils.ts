@@ -4,6 +4,7 @@ import CharacterProfile from "@entities/CharacterProfile";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { Item } from "@entities/Item";
 import useChatStore, { MessageType } from "@stores/ChatStore";
+import { ItemClass } from "@entities/ItemClass";
 
 const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -48,7 +49,9 @@ export const getNextAvailableSlot = (
   // Then check bag slots, but only for bags that exist
   for (const baseSlot of GENERAL_SLOTS) {
     const bagItem = deduplicatedInventory.find(
-      (item) => item.slotid === baseSlot && item.itemDetails?.itemclass === 1
+      (item) =>
+        item.slotid === baseSlot &&
+        item.itemDetails?.itemclass === ItemClass.CONTAINER
     );
 
     if (bagItem?.itemDetails?.bagslots) {
@@ -111,7 +114,7 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
       item.slotid >= 23 && // Only sell items in general inventory and bags
       item.itemDetails
     ) {
-      if (item.itemDetails.itemclass == 1) {
+      if (item.itemDetails.itemclass === ItemClass.CONTAINER) {
         // For bags, check their contents but don't sell the bag itself
         const bagStartSlot = getBagStartingSlot(item.slotid);
         const bagSize = item.itemDetails.bagslots || 0;
@@ -196,5 +199,9 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
 };
 
 const isSellable = (item: Item): boolean => {
-  return item.itemclass != 1 && item.nodrop != 0 && item.norent != 0;
+  return (
+    item.itemclass !== ItemClass.CONTAINER &&
+    item.nodrop != 0 &&
+    item.norent != 0
+  );
 };

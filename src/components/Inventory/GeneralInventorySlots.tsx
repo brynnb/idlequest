@@ -5,6 +5,7 @@ import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import { InventorySlot } from "@entities/InventorySlot";
 import ContainerInventoryModal from "./ContainerInventoryModal";
+import { ItemClass } from "@entities/ItemClass";
 
 const GeneralInventoryContainer = styled.div``;
 
@@ -82,7 +83,7 @@ const GeneralInventorySlots: React.FC = () => {
               onClick={() => handleItemClick(slot as InventorySlot)}
               onContextMenu={(e) => {
                 e.preventDefault();
-                if (itemDetails?.itemclass == 1) {
+                if (itemDetails?.itemclass === ItemClass.CONTAINER) {
                   handleBagClick(slot);
                 }
               }}

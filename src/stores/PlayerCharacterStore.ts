@@ -13,6 +13,7 @@ import { calculatePlayerHP } from "@utils/playerCharacterUtils";
 import { calculatePlayerMana } from "@utils/playerCharacterUtils";
 import { calculateTotalWeight } from "@/utils/inventoryUtils";
 import { getBagStartingSlot } from "@utils/inventoryUtils";
+import { ItemClass } from "@entities/ItemClass";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {
@@ -57,13 +58,14 @@ const moveBagContents = (
     if (item.slotid === bagSlot) {
       return { ...item, slotid: newSlot };
     }
-    
-    const isInOldBag = item.slotid >= oldStartingSlot && item.slotid < oldStartingSlot + bagSize;
+
+    const isInOldBag =
+      item.slotid >= oldStartingSlot && item.slotid < oldStartingSlot + bagSize;
     if (isInOldBag) {
       const relativeSlot = item.slotid - oldStartingSlot;
       return { ...item, slotid: newStartingSlot + relativeSlot };
     }
-    
+
     return item;
   });
 };
@@ -223,39 +225,47 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
             let newInventory = [...state.characterProfile.inventory];
 
-            const fromItemIsBag = fromItem.itemDetails?.itemclass == 1;
-            const toItemIsBag = toItem?.itemDetails?.itemclass == 1;
-
+            const fromItemIsBag =
+              fromItem.itemDetails?.itemclass === ItemClass.CONTAINER;
+            const toItemIsBag =
+              toItem?.itemDetails?.itemclass === ItemClass.CONTAINER;
 
             if (fromItemIsBag && toItemIsBag) {
               const firstBag = fromItem;
               const secondBag = toItem;
 
               const firstBagItems = newInventory.filter(
-                item => item.slotid >= getBagStartingSlot(fromSlot) && 
-                        item.slotid < getBagStartingSlot(fromSlot) + 10 //max number of bag slots
+                (item) =>
+                  item.slotid >= getBagStartingSlot(fromSlot) &&
+                  item.slotid < getBagStartingSlot(fromSlot) + 10 //max number of bag slots
               );
 
               const secondBagItems = newInventory.filter(
-                item => item.slotid >= getBagStartingSlot(toSlot) && 
-                        item.slotid < getBagStartingSlot(toSlot) + 10 //max number of bag slots
+                (item) =>
+                  item.slotid >= getBagStartingSlot(toSlot) &&
+                  item.slotid < getBagStartingSlot(toSlot) + 10 //max number of bag slots
               );
 
-              newInventory = newInventory.filter(item => 
-                !firstBagItems.includes(item) && 
-                !secondBagItems.includes(item) &&
-                item.slotid !== fromSlot &&
-                item.slotid !== toSlot
+              newInventory = newInventory.filter(
+                (item) =>
+                  !firstBagItems.includes(item) &&
+                  !secondBagItems.includes(item) &&
+                  item.slotid !== fromSlot &&
+                  item.slotid !== toSlot
               );
 
-              const relocatedFirstBagItems = firstBagItems.map(item => ({
+              const relocatedFirstBagItems = firstBagItems.map((item) => ({
                 ...item,
-                slotid: getBagStartingSlot(toSlot) + (item.slotid - getBagStartingSlot(fromSlot))
+                slotid:
+                  getBagStartingSlot(toSlot) +
+                  (item.slotid - getBagStartingSlot(fromSlot)),
               }));
 
-              const relocatedSecondBagItems = secondBagItems.map(item => ({
+              const relocatedSecondBagItems = secondBagItems.map((item) => ({
                 ...item,
-                slotid: getBagStartingSlot(fromSlot) + (item.slotid - getBagStartingSlot(toSlot))
+                slotid:
+                  getBagStartingSlot(fromSlot) +
+                  (item.slotid - getBagStartingSlot(toSlot)),
               }));
 
               newInventory = [
@@ -263,7 +273,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 { ...firstBag, slotid: toSlot },
                 { ...secondBag, slotid: fromSlot },
                 ...relocatedFirstBagItems,
-                ...relocatedSecondBagItems
+                ...relocatedSecondBagItems,
               ];
             } else if (fromItemIsBag) {
               newInventory = moveBagContents(
@@ -282,7 +292,9 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             }
 
             newInventory = newInventory
-              .filter((item) => item.slotid !== fromSlot && item.slotid !== toSlot)
+              .filter(
+                (item) => item.slotid !== fromSlot && item.slotid !== toSlot
+              )
               .concat([
                 { ...fromItem, slotid: toSlot },
                 ...(toItem ? [{ ...toItem, slotid: fromSlot }] : []),
@@ -314,7 +326,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             );
 
             let updatedInventory = state.characterProfile.inventory;
-            if (movingItem?.itemDetails?.itemclass == 1) {
+            if (movingItem?.itemDetails?.itemclass === ItemClass.CONTAINER) {
               console.log(
                 `Moving bag from ${fromSlot} to ${toSlot} with size ${movingItem.itemDetails.bagslots}`
               );
