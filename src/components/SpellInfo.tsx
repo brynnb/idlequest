@@ -4,7 +4,7 @@ import { getSpellLevels } from "@hooks/useSpellInfo";
 interface SpellInfoProps {
   spellInfo: {
     spell: any;
-    description: string;
+    description: string | null;
   };
 }
 
@@ -12,7 +12,7 @@ const SpellInfo: React.FC<SpellInfoProps> = ({ spellInfo }) => {
   return (
     <>
       <p>{getSpellLevels(spellInfo.spell)}</p>
-      <p>{spellInfo.description}</p>
+      {spellInfo.description && <p>{spellInfo.description}</p>}
     </>
   );
 };

@@ -9,6 +9,9 @@ interface SpellInfo {
   spell: Spell;
   description: string | null;
 }
+
+type SpellTableKey = "spells" | "eqstr_us";
+
 function processSpellDescription(description: string, spell: Spell): string {
   // console.log("Processing spell:", spell);
   return description.replace(/[#$@](\d+)|%z/g, (match, number) => {
@@ -20,7 +23,7 @@ function processSpellDescription(description: string, spell: Spell): string {
 
     const index = parseInt(number, 10);
     switch (match[0]) {
-      case "#":
+      case "#": {
         const baseValue = Number(
           spell[`effect_base_value${index}` as keyof Spell]
         );
@@ -43,11 +46,13 @@ function processSpellDescription(description: string, spell: Spell): string {
         }
         // console.warn(`Invalid effect_base_value${index} for spell:`, spell);
         return match;
-      case "$":
+      }
+      case "$": {
         const limitValue = spell[`effect_limit_value${index}` as keyof Spell];
         // console.log(`$${index}: limitValue=${limitValue}`);
         return limitValue?.toString() ?? match;
-      case "@":
+      }
+      case "@": {
         const maxVal = Number(spell[`max${index}` as keyof Spell]);
         const baseVal = Number(
           spell[`effect_base_value${index}` as keyof Spell]
@@ -57,6 +62,7 @@ function processSpellDescription(description: string, spell: Spell): string {
           return Math.abs(baseVal).toString();
         }
         return maxVal.toString();
+      }
       default:
         return match;
     }
@@ -69,13 +75,16 @@ export const useSpellInfo = (item: Item | null) => {
 
   React.useEffect(() => {
     const fetchSpellInfo = async () => {
-      if (item && item.itemtype === "20" && item.scrolleffect) {
+      if (item && Number(item.itemtype) === 20 && item.scrolleffect) {
         try {
-          const spell = await getById("spells", Number(item.scrolleffect));
+          const spell = await getById(
+            "spells" as SpellTableKey,
+            Number(item.scrolleffect)
+          );
 
           if (spell) {
             const descriptionEntry = await getById(
-              "eqstr_us",
+              "eqstr_us" as SpellTableKey,
               Number(spell.descnum)
             );
             let description = descriptionEntry ? descriptionEntry.text : null;
@@ -110,7 +119,8 @@ export const getSpellLevels = (spell: Spell) => {
   const classes = classesData.slice(0, 14);
   const levels = classes
     .map((c, index) => {
-      const level = spell[`classes${index + 1}`];
+      const classKey = `classes${index + 1}` as keyof Spell;
+      const level = spell[classKey] as number;
       return level > 0 && level < 255
         ? { shortName: c.short_name, level }
         : null;

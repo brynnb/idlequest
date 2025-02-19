@@ -31,12 +31,6 @@ Running:
 
 `pnpm run dev`
 
-There is also an assortment of one-off scripts in the /data folder, for example:
-
-`python ./data/add_table_to_db_from_csv.py` as needed, but also don't do this bc it makes all fields text values
-
-The data in the SQLite file is fairly comprehensive at this point though, so it is unlikely much more data import work will need to be done.
-
 
 ## Resources
 

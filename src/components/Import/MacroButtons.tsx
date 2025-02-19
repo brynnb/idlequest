@@ -90,7 +90,7 @@ const MacroButtons = () => {
   };
 
   const handleAddTestItem = async () => {
-    addItemToInventoryByItemId(17003);
+    addItemToInventoryByItemId(15093);
   };
 
   const handleAddTestItem2 = async () => {

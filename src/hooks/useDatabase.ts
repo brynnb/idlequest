@@ -8,10 +8,19 @@ import {
 import { Item } from "@entities/Item";
 import { Zone } from "@entities/Zone";
 import { NPCType } from "@entities/NPCType";
+import { Spell } from "@entities/Spell";
+
+interface EqString {
+  //this is the data for localized strings, like spell descriptions
+  id: number;
+  text: string;
+}
 
 type TableTypes = {
   items: Item;
   zone: Zone;
+  spells: Spell;
+  eqstr_us: EqString;
 };
 
 export const useDatabase = <T extends keyof TableTypes>() => {
