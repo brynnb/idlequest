@@ -87,9 +87,12 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
       <ItemDisplayContent>
         <p>{item.name}</p>
         <p>{getItemFlags(item)}</p>
-        {!isSpell && item.maxcharges !== undefined && item.maxcharges > 0 && 
-         (item.clickeffect || item.scrolleffect || item.proceffect) && 
-         <p>Charges: {item.maxcharges}</p>}
+        {!isSpell &&
+          item.maxcharges !== undefined &&
+          item.maxcharges > 0 &&
+          (item.clickeffect || item.scrolleffect || item.proceffect) && (
+            <p>Charges: {item.maxcharges}</p>
+          )}
         {slotNames !== "NONE" && <p>Slot: {slotNames}</p>}
         {showWeaponStats && item.itemclass === ItemClass.COMMON_ITEM && (
           <WeaponStats item={item} />
@@ -117,7 +120,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ item, isVisible }) => {
             <p>Race: {getRaceNames(item.races)}</p>
           </>
         )}
-        
+
         {isSpell && spellInfo && <SpellInfo spellInfo={spellInfo} />}
       </ItemDisplayContent>
     </ItemDisplayContainer>
