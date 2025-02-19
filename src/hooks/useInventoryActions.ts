@@ -73,7 +73,8 @@ export const useInventoryActions = () => {
       "Items found in general inventory:",
       generalItems.map((item) => {
         const bagContents =
-          item.itemDetails?.itemclass === ItemClass.CONTAINER && item.slotid !== undefined
+          item.itemDetails?.itemclass === ItemClass.CONTAINER &&
+          item.slotid !== undefined
             ? getBagContents(item.slotid, item.itemDetails.bagslots || 0)
             : [];
 
