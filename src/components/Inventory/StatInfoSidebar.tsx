@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { calculateTotalWeight } from "@utils/inventoryUtils";
-import CharacterProfile from "@entities/CharacterProfile";
+import { calculateExperienceProgress } from "@utils/experienceUtils";
+import StatBar from "@components/Interface/StatBar";
 
 const StatInfoBarWrapper = styled.div.attrs({
   className: "stat-info-bar-wrapper",
@@ -63,6 +64,15 @@ const HpAcAtk = styled.div.attrs({ className: "hp-ac-atk" })`
   line-height: 7px;
 `;
 
+const ExperienceBarContainer = styled.div.attrs({
+  className: "experience-bar-container",
+})`
+  position: absolute;
+  top: 200px;
+  left: 0px;
+  width: 200px;
+`;
+
 const MiddleLevelAttributes = styled.div.attrs({
   className: "middle-level-attributes",
 })`
@@ -106,11 +116,16 @@ const StatInfoBar: React.FC = () => {
       maxHp: state.characterProfile.maxHp,
       weightAllowance: state.characterProfile.weightAllowance,
       inventory: state.characterProfile.inventory,
+      exp: state.characterProfile.exp,
     }));
 
   if (!attributes || !stats) {
     return <div>Loading character information...</div>;
   }
+
+  const currentExp = rest.exp || 0;
+  const { xpPercent, xpPercentSubbar } =
+    calculateExperienceProgress(currentExp);
 
   return (
     <>
@@ -139,6 +154,14 @@ const StatInfoBar: React.FC = () => {
             <p>{stats?.atk ?? 0}</p>
           </HpAcAtk>
         </TopLevelStats>
+        <ExperienceBarContainer>
+          <StatBar
+            type="xp"
+            percent={xpPercent}
+            top={0}
+            subbarPercent={xpPercentSubbar}
+          />
+        </ExperienceBarContainer>
         <MiddleLevelAttributes>
           <p>{totalAttributes?.str ?? attributes?.str}</p>
           <p>{totalAttributes?.sta ?? attributes?.sta}</p>

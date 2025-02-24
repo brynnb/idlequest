@@ -90,16 +90,24 @@ export const calculateTotalEquippedAC = (
   }, 0);
 };
 
-export const calculateTotalWeight = (character: CharacterProfile): number => {
-  if (!character.inventory) return 0;
+export function calculateTotalWeight(character: CharacterProfile): number;
+export function calculateTotalWeight(params: {
+  inventory: InventoryItem[] | undefined;
+}): number;
+export function calculateTotalWeight(
+  param: CharacterProfile | { inventory: InventoryItem[] | undefined }
+): number {
+  const inventory = "inventory" in param ? param.inventory : param.inventory;
 
-  const total = character.inventory.reduce((totalWeight, item) => {
+  if (!inventory) return 0;
+
+  const total = inventory.reduce((totalWeight, item) => {
     const itemWeight = Number(item.itemDetails?.weight) || 0;
 
     return totalWeight + itemWeight;
   }, 0);
   return Math.round(total / 10);
-};
+}
 
 export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
   const { characterProfile, removeInventoryItem } =
@@ -212,7 +220,7 @@ export const calculateTotalResistances = (character: CharacterProfile) => {
       (item) =>
         item.slotid !== undefined &&
         item.itemDetails &&
-        (item.slotid === InventorySlot.Helmet ||
+        (item.slotid === InventorySlot.Head ||
           (item.slotid >= InventorySlot.Charm &&
             item.slotid <= InventorySlot.Ammo))
     ) || [];
