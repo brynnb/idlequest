@@ -53,6 +53,10 @@ const ItemIcon = styled.img.attrs({
   width: 80px;
   height: 80px;
   object-fit: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const EquippedItemsInventory: React.FC = () => {

@@ -36,6 +36,10 @@ const ItemIcon = styled.img`
   width: 80px;
   height: 80px;
   object-fit: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const GeneralInventorySlots: React.FC = () => {

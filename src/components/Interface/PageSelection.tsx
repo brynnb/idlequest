@@ -21,6 +21,10 @@ const PageButton = styled.button.attrs({ className: "page-button" })<{
   border: none;
   cursor: pointer;
   outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
   &:last-child {
     background-image: ${({ $isPressed }) =>
@@ -43,6 +47,10 @@ const PageName = styled.p.attrs({ className: "page-name" })<{
   color: white;
   min-width: ${({ $isNumeric }) => ($isNumeric ? "20px" : "100px")};
   text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
   ${({ $useAttributeBackground }) =>
     $useAttributeBackground &&

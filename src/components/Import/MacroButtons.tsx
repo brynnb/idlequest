@@ -38,6 +38,10 @@ const MacroButton = styled.button.attrs({ className: "macro-button" })<{
   font-weight: bold;
   outline: none;
   text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   &:focus {
     outline: none;
   }

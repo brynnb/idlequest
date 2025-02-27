@@ -16,6 +16,10 @@ const BarContainer = styled.div<{ $top: number }>`
   left: 26px;
   top: ${(props) => props.$top}px;
   width: 200px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const EmptyBar = styled.img`
@@ -23,6 +27,10 @@ const EmptyBar = styled.img`
   position: relative;
   top: 0;
   left: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const FullBarContainer = styled.div<{ width: string }>`
@@ -31,10 +39,18 @@ const FullBarContainer = styled.div<{ width: string }>`
   position: absolute;
   top: 0;
   left: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const FullBarImage = styled.img`
   width: 200px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const StatBar: React.FC<BarProps> = ({
@@ -93,6 +109,10 @@ const XPBarSubContainer = styled.div.attrs({ className: "xp-bar-sub" })<{
   left: 26px;
   top: ${(props) => props.$topOffset}px;
   width: 200px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const FullXPContainerSub = styled.div.attrs({
@@ -106,10 +126,18 @@ const FullXPContainerSub = styled.div.attrs({
   position: absolute;
   top: ${(props) => (props.$topOffset === 10 ? "-11px" : "15px")};
   left: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 const FullXPImageSub = styled.img.attrs({ className: "full-xp-image-sub" })`
   width: 200px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 `;
 
 export default StatBar;

@@ -31,6 +31,10 @@ const StyledActionButton = styled.button.attrs({ className: "action-button" })<{
   justify-content: center;
   text-transform: uppercase;
   margin-bottom: ${({ $marginBottom }) => $marginBottom};
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   &:focus {
     outline: none;
   }
