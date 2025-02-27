@@ -108,6 +108,25 @@ export const EXPERIENCE_TABLE: Experience[] = [
 ];
 
 export function getExperienceLevel(experience: number): Experience {
+  // Maximum level cap at 60.999999
+  const maxLevel = 60;
+  const level61Threshold =
+    EXPERIENCE_TABLE.find((exp) => exp.level === 61)?.totalExperience ||
+    703641088;
+
+  // If experience is at or above level 61 threshold
+  if (experience >= level61Threshold) {
+    // Return a modified level 60 entry that shows full XP bar
+    return {
+      level: maxLevel,
+      totalExperience:
+        EXPERIENCE_TABLE.find((exp) => exp.level === maxLevel)
+          ?.totalExperience || 669600000,
+      experienceToLevelUp: level61Threshold - 669600000, // The XP needed to go from 60 to 61
+    };
+  }
+
+  // Normal behavior for levels 60 and below
   for (let i = EXPERIENCE_TABLE.length - 1; i >= 0; i--) {
     if (experience >= EXPERIENCE_TABLE[i].totalExperience) {
       return EXPERIENCE_TABLE[i];

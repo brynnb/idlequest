@@ -446,7 +446,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             const { characterProfile } = state;
             if (!characterProfile) return state;
 
-            const oldLevel = characterProfile.level;
+            const oldLevel = characterProfile.level || 0;
             const newExp = characterProfile.exp + experience;
             const { level } = getExperienceLevel(newExp);
 
