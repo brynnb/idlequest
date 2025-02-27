@@ -160,6 +160,7 @@ const StatInfoBar: React.FC = () => {
             percent={xpPercent}
             top={0}
             subbarPercent={xpPercentSubbar}
+            subbarOffset={10}
           />
         </ExperienceBarContainer>
         <MiddleLevelAttributes>

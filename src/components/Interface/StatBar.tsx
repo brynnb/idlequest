@@ -2,13 +2,13 @@
 
 import React from "react";
 import styled from "styled-components";
-import { XPBarSub } from "./XPBarSub";
 
 interface BarProps {
   type: "health" | "mana" | "xp";
   percent: number;
   top: number;
   subbarPercent?: number;
+  subbarOffset?: number;
 }
 
 const BarContainer = styled.div<{ $top: number }>`
@@ -37,7 +37,13 @@ const FullBarImage = styled.img`
   width: 200px;
 `;
 
-const StatBar: React.FC<BarProps> = ({ type, percent, top, subbarPercent }) => {
+const StatBar: React.FC<BarProps> = ({
+  type,
+  percent,
+  top,
+  subbarPercent,
+  subbarOffset = 24,
+}) => {
   return (
     <>
       <BarContainer $top={top}>
@@ -55,39 +61,22 @@ const StatBar: React.FC<BarProps> = ({ type, percent, top, subbarPercent }) => {
         </FullBarContainer>
       </BarContainer>
       {type === "xp" && subbarPercent !== undefined && (
-        <XPBarSub percent={subbarPercent} />
+        <CustomXPBarSub percent={subbarPercent} topOffset={subbarOffset} />
       )}
     </>
   );
 };
 
-const XPBarSubContainer = styled.div.attrs({ className: "xp-bar-sub" })`
-  position: absolute;
-  left: 26px;
-  top: 24px;
-  width: 200px;
-`;
-
-const FullXPContainerSub = styled.div.attrs({
-  className: "full-xp-container-sub",
-})<{
-  width: string;
-}>`
-  width: ${(props) => props.width};
-  overflow: hidden;
-  position: absolute;
-  top: 15px;
-  left: 0;
-`;
-
-const FullXPImageSub = styled.img.attrs({ className: "full-xp-image-sub" })`
-  width: 200px;
-`;
-
-const XPBarSub: React.FC<{ percent: number }> = ({ percent }) => {
+const CustomXPBarSub: React.FC<{ percent: number; topOffset: number }> = ({
+  percent,
+  topOffset,
+}) => {
   return (
-    <XPBarSubContainer>
-      <FullXPContainerSub width={`calc((${percent} * 174px) + 13px)`}>
+    <XPBarSubContainer $topOffset={topOffset}>
+      <FullXPContainerSub
+        width={`calc((${percent} * 174px) + 13px)`}
+        $topOffset={topOffset}
+      >
         <FullXPImageSub
           src="/images/xpbar_subbar_full.png"
           alt="Full XP subbar"
@@ -96,5 +85,31 @@ const XPBarSub: React.FC<{ percent: number }> = ({ percent }) => {
     </XPBarSubContainer>
   );
 };
+
+const XPBarSubContainer = styled.div.attrs({ className: "xp-bar-sub" })<{
+  $topOffset: number;
+}>`
+  position: absolute;
+  left: 26px;
+  top: ${(props) => props.$topOffset}px;
+  width: 200px;
+`;
+
+const FullXPContainerSub = styled.div.attrs({
+  className: "full-xp-container-sub",
+})<{
+  width: string;
+  $topOffset: number;
+}>`
+  width: ${(props) => props.width};
+  overflow: hidden;
+  position: absolute;
+  top: ${(props) => (props.$topOffset === 10 ? "-11px" : "15px")};
+  left: 0;
+`;
+
+const FullXPImageSub = styled.img.attrs({ className: "full-xp-image-sub" })`
+  width: 200px;
+`;
 
 export default StatBar;

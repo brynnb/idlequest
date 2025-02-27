@@ -1,0 +1,9 @@
+---
+description: makes the AI not try to run the project
+globs: 
+---
+
+# Your rule content
+
+- Do not try to run the project (e.g. the server that serves it), assume it is already running and I (the user) will visually check the results
+- It is okay to try to run tests and commands as needed and instructed. Just don't do `pnpm dev` or similar because it's probably already running
