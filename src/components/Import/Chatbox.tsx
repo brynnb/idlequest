@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import PageSelection from "../Interface/PageSelection";
+import { io, Socket } from "socket.io-client";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
   width: 902px;
@@ -89,6 +90,13 @@ interface ChatMessage {
   text: string;
 }
 
+interface ServerMessage {
+  id: number | string;
+  text: string;
+  timestamp: number;
+  type: MessageType;
+}
+
 const getFilteredMessages = (messages: ChatMessage[], chatType: ChatType) => {
   switch (chatType) {
     case "Combat":
@@ -171,9 +179,42 @@ const getMessageClass = (type: MessageType): string => {
 };
 
 const ChatBox: React.FC = () => {
-  const { messages } = useChatStore();
+  const { messages, addMessage } = useChatStore();
   const chatContentRef = useRef<HTMLDivElement>(null);
   const [currentChatType, setCurrentChatType] = useState<ChatType>("Default");
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    // Connect to the WebSocket server
+    const socket = io("http://localhost:3001", {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    socketRef.current = socket;
+
+    // Listen for chat messages from the server
+    socket.on("chat-message", (message: ServerMessage) => {
+      addMessage(message.text, message.type);
+    });
+
+    // Handle connection errors
+    socket.on("connect_error", (error: Error) => {
+      console.error("Connection error:", error);
+      addMessage(
+        "Failed to connect to combat server.",
+        MessageType.SYSTEM_ERROR
+      );
+    });
+
+    // Cleanup on unmount
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [addMessage]);
 
   useEffect(() => {
     if (chatContentRef.current) {
