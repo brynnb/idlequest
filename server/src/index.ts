@@ -10,6 +10,8 @@ import {
   broadcastCombatEvent,
   broadcastLootEvent,
 } from "./utils/broadcast.js";
+import { initDatabase } from "./database/init.js";
+import characterRoutes from "./routes/characterRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -43,8 +45,8 @@ const io = new Server(server, {
   maxHttpBufferSize: 1e6, // 1MB
 });
 
-// Setup socket handlers
-setupSocketHandlers(io);
+// API Routes
+app.use("/api/characters", characterRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -95,11 +97,28 @@ app.post("/api/loot", (req, res) => {
   return res.status(200).json({ success: true });
 });
 
-// Start server
-server.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-  logger.info(`WebSocket server accepting connections from ${CLIENT_URL}`);
-});
+// Initialize database and start server
+const startServer = async () => {
+  try {
+    // Initialize database
+    await initDatabase();
+    logger.info("Database initialized successfully");
+
+    // Setup socket handlers
+    setupSocketHandlers(io);
+
+    // Start server
+    server.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`WebSocket server accepting connections from ${CLIENT_URL}`);
+    });
+  } catch (error) {
+    logger.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 // Handle graceful shutdown
 process.on("SIGTERM", () => {
