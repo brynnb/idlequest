@@ -6,16 +6,17 @@ dotenv.config();
 
 // Database configuration
 const DB_NAME = process.env.DB_NAME || "idlequest";
-const DB_USER = process.env.DB_USER || "postgres";
-const DB_PASSWORD = process.env.DB_PASSWORD || "postgres";
-const DB_HOST = process.env.DB_HOST || "localhost";
-const DB_PORT = parseInt(process.env.DB_PORT || "5432");
+const DB_USER = process.env.DB_USER || "user_name";
+const DB_PASSWORD = process.env.DB_PASSWORD || "user_password";
+const DB_HOST = process.env.DB_HOST || "0.0.0.0";
+const DB_PORT = parseInt(process.env.DB_PORT || "3306");
+const DB_DIALECT = process.env.DB_DIALECT || "mysql";
 
 // Create Sequelize instance
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
   port: DB_PORT,
-  dialect: "postgres",
+  dialect: DB_DIALECT as any,
   logging: process.env.NODE_ENV === "development" ? console.log : false,
   pool: {
     max: 5,

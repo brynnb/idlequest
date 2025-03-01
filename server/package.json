@@ -8,14 +8,15 @@
         "start": "node dist/index.js",
         "dev": "ts-node --esm src/index.ts",
         "test": "jest",
-        "test:client": "ts-node --esm src/test-client.ts",
-        "test:api": "ts-node --esm src/test-api.ts"
+        "test:client": "ts-node --esm src/tests/test-client.ts",
+        "test:api": "ts-node --esm src/tests/test-api.ts",
+        "test:db": "ts-node --esm src/tests/test-db.ts"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
         "express": "^4.18.2",
-        "mongoose": "^8.11.0",
+        "mysql2": "^3.9.2",
         "node-fetch": "^3.3.2",
         "pg": "^8.13.3",
         "pg-hstore": "^2.3.4",

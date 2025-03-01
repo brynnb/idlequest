@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import { MessageType } from "./types/message.js";
+import { MessageType } from "../types/message.js";
 
 // Number of clients to simulate
 const NUM_CLIENTS = 10;
