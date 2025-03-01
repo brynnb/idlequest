@@ -12,6 +12,8 @@ import {
 } from "./utils/broadcast.js";
 import { initDatabase } from "./database/init.js";
 import characterRoutes from "./routes/characterRoutes.js";
+import zoneRoutes from "./routes/zoneRoutes.js";
+import { execSync } from "child_process";
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +49,7 @@ const io = new Server(server, {
 
 // API Routes
 app.use("/api/characters", characterRoutes);
+app.use("/api/zones", zoneRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -106,6 +109,65 @@ const startServer = async () => {
 
     // Setup socket handlers
     setupSocketHandlers(io);
+
+    // Start server with error handling for EADDRINUSE
+    server.on("error", (error: NodeJS.ErrnoException) => {
+      if (error.code === "EADDRINUSE") {
+        logger.error(
+          `Port ${PORT} is already in use. Please close the other application or use a different port.`
+        );
+        logger.info("Attempting to find and kill the process...");
+
+        try {
+          // Try to find and kill the process using the port
+          if (process.platform === "win32") {
+            // Windows
+            const findCommand = `netstat -ano | findstr :${PORT} | findstr LISTENING`;
+            const output = execSync(findCommand, { encoding: "utf8" });
+            const match = output.match(/LISTENING\s+(\d+)/);
+            if (match && match[1]) {
+              const pid = match[1];
+              logger.info(
+                `Found process with PID ${pid}. Attempting to kill it...`
+              );
+              execSync(`taskkill /F /PID ${pid}`);
+              logger.info(
+                `Process with PID ${pid} has been killed. Retrying server start...`
+              );
+              // Retry starting the server after a short delay
+              setTimeout(() => server.listen(PORT), 1000);
+            }
+          } else {
+            // Unix-like
+            const findCommand = `lsof -i :${PORT} | grep LISTEN`;
+            const output = execSync(findCommand, { encoding: "utf8" });
+            const lines = output.split("\n").filter(Boolean);
+            if (lines.length > 0) {
+              const parts = lines[0].trim().split(/\s+/);
+              const pid = parts[1];
+              logger.info(
+                `Found process with PID ${pid}. Attempting to kill it...`
+              );
+              execSync(`kill -9 ${pid}`);
+              logger.info(
+                `Process with PID ${pid} has been killed. Retrying server start...`
+              );
+              // Retry starting the server after a short delay
+              setTimeout(() => server.listen(PORT), 1000);
+            }
+          }
+        } catch (killError) {
+          logger.error("Failed to kill the process:", killError);
+          logger.error(
+            "Please manually kill the process using the port and restart the server."
+          );
+          process.exit(1);
+        }
+      } else {
+        logger.error("Server error:", error);
+        process.exit(1);
+      }
+    });
 
     // Start server
     server.listen(PORT, () => {

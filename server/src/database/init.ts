@@ -10,7 +10,7 @@ export const initDatabase = async (): Promise<void> => {
 
     // Sync all models with database
     // Note: In production, you might want to use migrations instead of sync
-    await sequelize.sync({ alter: process.env.NODE_ENV === "development" });
+    await sequelize.sync({ force: false, alter: false });
     logger.info("Database models synchronized successfully.");
   } catch (error) {
     logger.error("Unable to connect to the database:", error);

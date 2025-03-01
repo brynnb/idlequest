@@ -2,10 +2,21 @@ import { Server, Socket } from "socket.io";
 import { logger } from "./utils/logger.js";
 import { MessageType } from "./types/message.js";
 import CharacterService from "./services/CharacterService.js";
+import ZoneService from "./services/ZoneService.js";
+
+// Define Zone interface to fix type issues
+interface Zone {
+  id: number;
+  zoneidnumber: number;
+  short_name: string;
+  long_name: string;
+  [key: string]: any; // Allow other properties
+}
 
 // Track connected clients
 const connectedClients = new Map<string, Socket>();
 const clientCharacters = new Map<string, number>(); // Map of client ID to character ID
+const clientZones = new Map<string, number>(); // Map of client ID to zone ID
 
 export const setupSocketHandlers = (io: Server): void => {
   // Middleware for authentication (can be expanded later)
@@ -55,59 +66,114 @@ export const setupSocketHandlers = (io: Server): void => {
             // Store the character ID for this client
             clientCharacters.set(clientId, character.id);
 
-            // Send the character data to the client
-            socket.emit("character-data", character);
+            // Store the zone ID for this client
+            if (character.zoneId) {
+              clientZones.set(clientId, character.zoneId);
 
+              // Join the zone room for zone-specific broadcasts
+              socket.join(`zone:${character.zoneId}`);
+            }
+
+            // Send character data to the client
+            socket.emit("character-loaded", character);
             logger.info(
-              `Character ${character.id} loaded for client ${clientId}`
+              `Character loaded for client ${clientId}: ${character.name}`
             );
           } else {
-            socket.emit("error", { message: "Character not found" });
-            logger.warn(`Character not found for client ${clientId}`);
+            socket.emit("error", {
+              message: "Character not found",
+            });
+            logger.warn(
+              `Character not found for client ${clientId}: ${JSON.stringify(
+                data
+              )}`
+            );
           }
         } catch (error) {
-          logger.error(
-            `Error loading character for client ${clientId}:`,
-            error
-          );
-          socket.emit("error", { message: "Error loading character" });
+          logger.error("Error loading character:", error);
+          socket.emit("error", {
+            message: "Error loading character",
+          });
         }
       }
     );
 
-    // Handle character update
-    socket.on("update-character", async (characterData: any) => {
+    // Handle zone change
+    socket.on("change-zone", async (data: { zoneId: number }) => {
       try {
         const characterId = clientCharacters.get(clientId);
-
         if (!characterId) {
-          socket.emit("error", { message: "No character loaded" });
+          socket.emit("error", {
+            message: "No character loaded",
+          });
           return;
         }
 
-        // Update the character
-        const updatedCharacter = await CharacterService.updateCharacter(
+        const { zoneId } = data;
+
+        // Get the zone data
+        const zoneData = await ZoneService.getZoneById(zoneId);
+        if (!zoneData) {
+          socket.emit("error", {
+            message: "Zone not found",
+          });
+          return;
+        }
+
+        // Cast to Zone type after null check
+        const zone = zoneData as Zone;
+
+        // Update character's zone in the database
+        await CharacterService.updateCharacter(characterId, { zoneId });
+
+        // Leave the old zone room if any
+        const oldZoneId = clientZones.get(clientId);
+        if (oldZoneId) {
+          socket.leave(`zone:${oldZoneId}`);
+        }
+
+        // Join the new zone room
+        socket.join(`zone:${zoneId}`);
+
+        // Update the client's zone
+        clientZones.set(clientId, zoneId);
+
+        // Send zone data to the client
+        socket.emit("zone-changed", {
+          zone,
+          message: `You have entered ${zone.long_name}`,
+        });
+
+        // Broadcast to other players in the zone
+        socket.to(`zone:${zoneId}`).emit("player-entered-zone", {
           characterId,
-          characterData
+          zoneName: zone.long_name,
+        });
+
+        logger.info(
+          `Character ${characterId} changed zone to ${zone.long_name} (${zoneId})`
         );
-
-        // Send the updated character data to the client
-        socket.emit("character-data", updatedCharacter);
-
-        logger.info(`Character ${characterId} updated for client ${clientId}`);
       } catch (error) {
-        logger.error(`Error updating character for client ${clientId}:`, error);
-        socket.emit("error", { message: "Error updating character" });
+        logger.error("Error changing zone:", error);
+        socket.emit("error", {
+          message: "Error changing zone",
+        });
       }
     });
 
-    // Handle disconnection
-    socket.on("disconnect", (reason) => {
-      // Remove client from connected clients
+    // Handle disconnect
+    socket.on("disconnect", () => {
+      // Remove client from tracking maps
       connectedClients.delete(clientId);
       clientCharacters.delete(clientId);
 
-      logger.info(`Client disconnected: ${clientId}, reason: ${reason}`);
+      // Leave zone room if in one
+      const zoneId = clientZones.get(clientId);
+      if (zoneId) {
+        clientZones.delete(clientId);
+      }
+
+      logger.info(`Client disconnected: ${clientId}`);
       logger.info(`Total connected clients: ${connectedClients.size}`);
     });
 

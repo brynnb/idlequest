@@ -1,8 +1,23 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Load environment variables
-dotenv.config();
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from the correct path
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
+// Debug: Log environment variables
+console.log("Database Environment Variables:");
+console.log(`DB_HOST: ${process.env.DB_HOST}`);
+console.log(`DB_PORT: ${process.env.DB_PORT}`);
+console.log(`DB_USER: ${process.env.DB_USER}`);
+console.log(`DB_PASSWORD: ${process.env.DB_PASSWORD ? "[SET]" : "[NOT SET]"}`);
+console.log(`DB_NAME: ${process.env.DB_NAME}`);
+console.log(`DB_DIALECT: ${process.env.DB_DIALECT}`);
 
 // Database configuration
 const DB_NAME = process.env.DB_NAME || "idlequest";

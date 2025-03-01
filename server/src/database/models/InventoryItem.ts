@@ -76,9 +76,9 @@ InventoryItem.init(
       defaultValue: false,
     },
     customData: {
-      type: DataTypes.JSONB,
-      allowNull: false,
-      defaultValue: {},
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: null,
     },
   },
   {

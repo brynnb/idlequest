@@ -2,6 +2,12 @@ import { Character, InventoryItem, Item } from "../database/models/index.js";
 import { logger } from "../utils/logger.js";
 import { Op } from "sequelize";
 
+// Define a type that extends CharacterAttributes with inventory
+interface CharacterWithInventory {
+  inventory: any[];
+  [key: string]: any;
+}
+
 // Define the character service
 class CharacterService {
   // Get a character by ID
@@ -21,7 +27,8 @@ class CharacterService {
       }
 
       // Format the character data to match the client-side structure
-      const formattedCharacter = character.toJSON();
+      const formattedCharacter =
+        character.toJSON() as unknown as CharacterWithInventory;
 
       // Get item details for inventory items
       if (
@@ -78,7 +85,8 @@ class CharacterService {
       }
 
       // Format the character data to match the client-side structure
-      const formattedCharacter = character.toJSON();
+      const formattedCharacter =
+        character.toJSON() as unknown as CharacterWithInventory;
 
       // Get item details for inventory items
       if (

@@ -1,73 +1,102 @@
-# IdleQuest Combat Server
+# IdleQuest Server
 
-A Node.js/TypeScript WebSocket server for handling combat calculations and real-time messaging for the IdleQuest game.
-
-## Features
-
-- Real-time WebSocket communication using Socket.IO
-- Scalable architecture designed to handle hundreds of concurrent users
-- Efficient message broadcasting system
-- Structured logging with Winston
-- TypeScript for type safety and better developer experience
+Combat server for IdleQuest game.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 16.x or higher
-- npm or yarn
+- Node.js v18+
+- MySQL database
 
 ### Installation
 
-1. Install dependencies:
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Create a `.env` file in the server directory with the following variables:
+   ```
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USER=your_db_user
+   DB_PASSWORD=your_db_password
+   DB_NAME=your_db_name
+   DB_DIALECT=mysql
+   PORT=3000
+   CLIENT_URL=http://localhost:5173
+   ```
 
-```bash
-npm install
+### Running the Server
+
+There are two ways to start the server:
+
+1. Standard start (may fail if port is in use):
+
+   ```
+   npm run start
+   ```
+
+2. Safe start (automatically kills any process using the port):
+   ```
+   npm run start:safe
+   ```
+
+The safe start option will:
+
+1. Check if port 3000 is already in use
+2. If it is, kill the process using that port
+3. Build the project
+4. Start the server
+
+### Running Tests
+
+Run API tests:
+
+```
+npm run test:api
 ```
 
-2. Create a `.env` file based on the example:
+Run client tests:
 
 ```
-PORT=3001
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
+npm run test:client
 ```
 
-### Development
+Run database tests:
 
-Start the development server with hot reloading:
-
-```bash
-npm run dev
+```
+npm run test:db
 ```
 
-### Production
+## API Endpoints
 
-Build the project:
+- `GET /health` - Health check endpoint
+- `GET /api/zones` - Get all zones
+- `GET /api/zones/:id` - Get zone by ID
+- `GET /api/zones/name/:shortName` - Get zone by short name
+- `GET /api/zones/:id/adjacent` - Get adjacent zones
+- `GET /api/zones/:shortName/npcs` - Get NPCs in a zone
+- `POST /api/broadcast` - Send a broadcast message
+- `POST /api/combat` - Send a combat event
+- `POST /api/loot` - Send a loot event
 
-```bash
-npm run build
-```
+## Error Handling
 
-Start the production server:
+The server includes robust error handling for:
 
-```bash
-npm start
-```
+- Database connection issues
+- Missing database tables
+- Port already in use (EADDRINUSE errors)
 
-## Architecture
+## Troubleshooting
 
-The server is designed with scalability in mind:
+If you encounter the "address already in use" error:
 
-- **Socket Management**: Efficient tracking of connected clients
-- **Message Broadcasting**: Optimized for high-throughput messaging
-- **Error Handling**: Comprehensive error catching and logging
-- **Graceful Shutdown**: Proper cleanup of resources on server shutdown
-
-## Future Enhancements
-
-- Combat calculation engine
-- User authentication and authorization
-- Horizontal scaling with Redis adapter
-- Metrics and monitoring
-- Load testing and performance optimization
+1. Use `npm run start:safe` instead of `npm run start`
+2. Or manually kill the process using port 3000:
+   ```
+   lsof -i :3000 | grep LISTEN
+   kill -9 <PID>
+   ```

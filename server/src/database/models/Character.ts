@@ -143,19 +143,19 @@ Character.init(
       defaultValue: 0,
     },
     attributes: {
-      type: DataTypes.JSONB,
-      allowNull: false,
-      defaultValue: {},
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: null,
     },
     totalAttributes: {
-      type: DataTypes.JSONB,
-      allowNull: false,
-      defaultValue: {},
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: null,
     },
     stats: {
-      type: DataTypes.JSONB,
-      allowNull: false,
-      defaultValue: {},
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: null,
     },
     lastUpdated: {
       type: DataTypes.DATE,
