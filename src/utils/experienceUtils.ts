@@ -7,10 +7,17 @@ export function calculateExperienceProgress(currentExp: number) {
   const currentLevelData = getExperienceLevel(currentExp);
   const nextLevelData = EXPERIENCE_TABLE[currentLevelData.level];
 
-  const expForCurrentLevel = currentLevelData.totalExperience;
+  // For players who haven't reached their current level's threshold yet (e.g., new characters
+  // with < 1000 exp who are level 1), use 0 as the base. Otherwise, use the current level's
+  // threshold as the starting point.
+  const expForCurrentLevel = currentExp < currentLevelData.totalExperience
+    ? 0
+    : currentLevelData.totalExperience;
+
   const expForNextLevel = nextLevelData
     ? nextLevelData.totalExperience
     : currentLevelData.totalExperience;
+
   const expIntoCurrentLevel = currentExp - expForCurrentLevel;
   const expNeededForNextLevel = expForNextLevel - expForCurrentLevel;
 
