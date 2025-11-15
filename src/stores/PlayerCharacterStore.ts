@@ -99,8 +99,21 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         },
         setInventory: async (inventory) => {
           set((state) => {
+            // Filter out items without valid slots first
+            const validItems = inventory.filter((item) => {
+              if (item.slotid === undefined || item.slotid === null) {
+                console.warn(
+                  "Filtered out item without valid slot:",
+                  item.itemid,
+                  item.itemDetails?.name || "unknown"
+                );
+                return false;
+              }
+              return true;
+            });
+
             // Deduplicate inventory items
-            const deduplicatedInventory = inventory.reduce((acc, item) => {
+            const deduplicatedInventory = validItems.reduce((acc, item) => {
               const existingItem = acc.find((i) => i.slotid === item.slotid);
               if (!existingItem) {
                 acc.push(item);

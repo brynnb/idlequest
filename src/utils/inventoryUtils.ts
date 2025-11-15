@@ -80,6 +80,7 @@ export const calculateTotalEquippedAC = (
   return character.inventory.reduce((totalAC, item) => {
     if (
       item.slotid !== undefined &&
+      item.slotid !== null &&
       item.slotid >= InventorySlot.Charm &&
       item.slotid <= InventorySlot.Ammo
     ) {
@@ -102,6 +103,11 @@ export function calculateTotalWeight(
   if (!inventory) return 0;
 
   const total = inventory.reduce((totalWeight, item) => {
+    // Only count items that have a valid slot assignment
+    if (item.slotid === undefined || item.slotid === null) {
+      return totalWeight;
+    }
+
     const itemWeight = Number(item.itemDetails?.weight) || 0;
 
     return totalWeight + itemWeight;
@@ -219,6 +225,7 @@ export const calculateTotalResistances = (character: CharacterProfile) => {
     character.inventory?.filter(
       (item) =>
         item.slotid !== undefined &&
+        item.slotid !== null &&
         item.itemDetails &&
         (item.slotid === InventorySlot.Head ||
           (item.slotid >= InventorySlot.Charm &&
@@ -248,6 +255,7 @@ export const calculateTotalAttributes = (character: CharacterProfile) => {
     character.inventory?.filter(
       (item) =>
         item.slotid !== undefined &&
+        item.slotid !== null &&
         item.slotid >= InventorySlot.Charm &&
         item.slotid <= InventorySlot.Ammo &&
         item.slotid !== InventorySlot.Cursor &&
@@ -301,6 +309,7 @@ export const calculateTotalHPBonus = (character: CharacterProfile): number => {
     character.inventory?.filter(
       (item) =>
         item.slotid !== undefined &&
+        item.slotid !== null &&
         item.slotid >= InventorySlot.Charm &&
         item.slotid <= InventorySlot.Ammo &&
         item.slotid !== InventorySlot.Cursor &&
