@@ -232,6 +232,7 @@ const addItemToInventory = async (
         invItem.itemDetails
       ) {
         if (
+          !invItem.locked && // Don't sell locked items
           invItem.itemDetails.itemclass !== ItemClass.CONTAINER && // Don't sell bags
           invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
           invItem.itemDetails.norent != 0 // Don't sell NO RENT
@@ -242,8 +243,8 @@ const addItemToInventory = async (
               .removeInventoryItem(invItem.slotid);
             return false; // Remove this item from updatedInventory
           }
-        } else if (deleteNoDrop && invItem.itemDetails.nodrop === 0) {
-          // Delete NO DROP items if deleteNoDrop is enabled
+        } else if (deleteNoDrop && !invItem.locked && invItem.itemDetails.nodrop === 0) {
+          // Delete NO DROP items if deleteNoDrop is enabled (but not if locked)
           usePlayerCharacterStore
             .getState()
             .removeInventoryItem(invItem.slotid);

@@ -11,6 +11,7 @@ interface InventoryItemAttributes {
   quantity: number;
   charges: number;
   attuned: boolean;
+  locked: boolean;
   customData: object;
 }
 
@@ -30,6 +31,7 @@ class InventoryItem
   public quantity!: number;
   public charges!: number;
   public attuned!: boolean;
+  public locked!: boolean;
   public customData!: object;
 
   // Timestamps
@@ -71,6 +73,11 @@ InventoryItem.init(
       defaultValue: 0,
     },
     attuned: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    locked: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,

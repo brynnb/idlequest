@@ -134,7 +134,7 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
           );
 
           if (bagItem?.itemDetails) {
-            if (isSellable(bagItem.itemDetails)) {
+            if (!bagItem.locked && isSellable(bagItem.itemDetails)) {
               totalCopper += Math.floor(bagItem.itemDetails.price || 0);
               console.log(
                 `Selling ${bagItem.itemDetails.name} for ${
@@ -143,13 +143,13 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
               );
               removeInventoryItem(bagSlot);
               itemsSold++;
-            } else if (deleteNoDrop && bagItem.itemDetails.nodrop === 0) {
+            } else if (deleteNoDrop && !bagItem.locked && bagItem.itemDetails.nodrop === 0) {
               console.log(`Deleting NO DROP item: ${bagItem.itemDetails.name}`);
               removeInventoryItem(bagSlot);
             }
           }
         }
-      } else if (isSellable(item.itemDetails)) {
+      } else if (!item.locked && isSellable(item.itemDetails)) {
         totalCopper += Math.floor(item.itemDetails.price || 0);
         console.log(
           `Selling ${item.itemDetails.name} for ${
@@ -158,7 +158,7 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
         );
         removeInventoryItem(item.slotid);
         itemsSold++;
-      } else if (deleteNoDrop && item.itemDetails.nodrop === 0) {
+      } else if (deleteNoDrop && !item.locked && item.itemDetails.nodrop === 0) {
         console.log(`Deleting NO DROP item: ${item.itemDetails.name}`);
         removeInventoryItem(item.slotid);
       }

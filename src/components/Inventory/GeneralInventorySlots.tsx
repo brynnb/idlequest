@@ -6,6 +6,7 @@ import { useInventoryActions } from "@hooks/useInventoryActions";
 import { InventorySlot } from "@entities/InventorySlot";
 import ContainerInventoryModal from "./ContainerInventoryModal";
 import { ItemClass } from "@entities/ItemClass";
+import { FaLock } from "react-icons/fa";
 
 const GeneralInventoryContainer = styled.div``;
 
@@ -42,8 +43,18 @@ const ItemIcon = styled.img`
   -ms-user-select: none;
 `;
 
+const LockIcon = styled(FaLock)`
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: #ffd700;
+  font-size: 16px;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+`;
+
 const GeneralInventorySlots: React.FC = () => {
-  const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
+  const { characterProfile, setHoveredItem, toggleItemLock } = usePlayerCharacterStore();
   const { handleItemClick } = useInventoryActions();
   const [openBagSlots, setOpenBagSlots] = useState<Set<number>>(new Set());
 
@@ -84,7 +95,15 @@ const GeneralInventorySlots: React.FC = () => {
               $col={col}
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
-              onClick={() => handleItemClick(slot as InventorySlot)}
+              onClick={(e) => {
+                if (e.shiftKey && inventoryItem) {
+                  // Shift+click to toggle lock
+                  e.preventDefault();
+                  toggleItemLock(slot);
+                } else {
+                  handleItemClick(slot as InventorySlot);
+                }
+              }}
               onContextMenu={(e) => {
                 e.preventDefault();
                 if (itemDetails?.itemclass === ItemClass.CONTAINER) {
@@ -93,11 +112,14 @@ const GeneralInventorySlots: React.FC = () => {
               }}
             >
               {itemDetails && (
-                <ItemIcon
-                  src={`/icons/${itemDetails.icon}.gif`}
-                  alt={itemDetails.name}
-                  title={itemDetails.name}
-                />
+                <>
+                  <ItemIcon
+                    src={`/icons/${itemDetails.icon}.gif`}
+                    alt={itemDetails.name}
+                    title={itemDetails.name}
+                  />
+                  {inventoryItem?.locked && <LockIcon />}
+                </>
               )}
             </Slot>
           );

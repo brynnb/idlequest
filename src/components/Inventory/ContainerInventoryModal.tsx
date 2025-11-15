@@ -6,6 +6,7 @@ import useGameStatusStore from "@stores/GameStatusStore";
 import { getBagStartingSlot } from "@utils/itemUtils";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import ActionButton from "@components/Interface/ActionButton";
+import { FaLock } from "react-icons/fa";
 
 const ModalContainer = styled.div.attrs({
   className: "modal-container",
@@ -79,6 +80,7 @@ const Slot = styled.div.attrs({
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 `;
 
 const ItemIcon = styled.img.attrs({
@@ -87,6 +89,16 @@ const ItemIcon = styled.img.attrs({
   width: 80px;
   height: 80px;
   object-fit: contain;
+`;
+
+const LockIcon = styled(FaLock)`
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: #ffd700;
+  font-size: 16px;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+  pointer-events: none;
 `;
 
 const BottomBorder = styled.div.attrs({
@@ -122,7 +134,7 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
   bagSlot,
   onClose,
 }) => {
-  const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
+  const { characterProfile, setHoveredItem, toggleItemLock } = usePlayerCharacterStore();
   const { containerPositions, setContainerPosition } = useGameStatusStore();
   const { handleItemClick } = useInventoryActions();
   const [position, setPosition] = useState(() => {
@@ -189,14 +201,25 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
                   key={`container-slot-${slotId}`}
                   onMouseEnter={() => setHoveredItem(itemDetails || null)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  onClick={() => handleItemClick(slotId)}
+                  onClick={(e) => {
+                    if (e.shiftKey && inventoryItem) {
+                      // Shift+click to toggle lock
+                      e.preventDefault();
+                      toggleItemLock(slotId);
+                    } else {
+                      handleItemClick(slotId);
+                    }
+                  }}
                 >
                   {itemDetails && (
-                    <ItemIcon
-                      src={`/icons/${itemDetails.icon}.gif`}
-                      alt={itemDetails.name}
-                      title={itemDetails.name}
-                    />
+                    <>
+                      <ItemIcon
+                        src={`/icons/${itemDetails.icon}.gif`}
+                        alt={itemDetails.name}
+                        title={itemDetails.name}
+                      />
+                      {inventoryItem?.locked && <LockIcon />}
+                    </>
                   )}
                 </Slot>
               );

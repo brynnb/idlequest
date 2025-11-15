@@ -17,5 +17,6 @@ export interface InventoryItem {
   ornamenticon?: number; // Ornamentation Icon
   ornamentidfile?: number; // Ornamentation Texture
   ornament_hero_model?: number; // Ornamentation Hero's Forge Model
+  locked?: boolean; // Locked: true = Do not auto-sell/discard
   itemDetails?: Item;
 }

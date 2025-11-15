@@ -44,6 +44,7 @@ interface PlayerCharacterStore {
   moveItemToSlot: (fromSlot: number, toSlot: number) => void;
   swapItems: (fromSlot: number, toSlot: number) => void;
   deleteItemOnCursor: () => void;
+  toggleItemLock: (slotId: number) => void;
   updateArmorClass: () => void;
   updateMaxHP: () => void;
   addExperience: (experience: number) => void;
@@ -399,6 +400,17 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             get().updateAllStats();
             return newState;
           }),
+        toggleItemLock: (slotId: number) =>
+          set((state) => ({
+            characterProfile: {
+              ...state.characterProfile,
+              inventory: state.characterProfile.inventory.map((item) =>
+                item.slotid === slotId
+                  ? { ...item, locked: !item.locked }
+                  : item
+              ),
+            },
+          })),
         updateArmorClass: () => {
           const { characterProfile } = get();
           const newAC = calculateSimpleArmorClass(characterProfile);
