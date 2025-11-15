@@ -5,6 +5,7 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { Item } from "@entities/Item";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { ItemClass } from "@entities/ItemClass";
+import { ItemType } from "@entities/ItemType";
 
 const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
 
@@ -207,10 +208,20 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
 };
 
 const isSellable = (item: Item): boolean => {
+  // Don't sell consumables (food, drink, potions, etc.)
+  const consumableTypes = [
+    ItemType.Food,
+    ItemType.Drink,
+    ItemType.Potions,
+    ItemType.AlcoholicBeverages,
+    ItemType.Poisons,
+  ];
+
   return (
     item.itemclass !== ItemClass.CONTAINER &&
     item.nodrop != 0 &&
-    item.norent != 0
+    item.norent != 0 &&
+    !consumableTypes.includes(item.itemtype as ItemType)
   );
 };
 

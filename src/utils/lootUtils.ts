@@ -18,12 +18,23 @@ import { InventorySlot } from "@entities/InventorySlot";
 import CharacterClass from "@entities/CharacterClass";
 import Race from "@entities/Race";
 import { ItemClass } from "@entities/ItemClass";
+import { ItemType } from "@entities/ItemType";
 
 const sellSingleItem = (itemDetails: Item) => {
+  // Don't sell consumables (food, drink, potions, etc.)
+  const consumableTypes = [
+    ItemType.Food,
+    ItemType.Drink,
+    ItemType.Potions,
+    ItemType.AlcoholicBeverages,
+    ItemType.Poisons,
+  ];
+
   if (
     itemDetails.itemclass != 1 &&
     itemDetails.nodrop != 0 &&
-    itemDetails.norent != 0
+    itemDetails.norent != 0 &&
+    !consumableTypes.includes(itemDetails.itemtype as ItemType)
   ) {
     const price = Math.floor(itemDetails.price || 0);
     const platinum = Math.floor(price / 1000);
@@ -225,6 +236,14 @@ const addItemToInventory = async (
     setInventory(updatedInventory);
   } else if (autoSellEnabled) {
     // Sell all eligible items in inventory and delete NO DROP items if enabled
+    const consumableTypes = [
+      ItemType.Food,
+      ItemType.Drink,
+      ItemType.Potions,
+      ItemType.AlcoholicBeverages,
+      ItemType.Poisons,
+    ];
+
     updatedInventory = updatedInventory.filter((invItem) => {
       if (
         invItem.slotid !== undefined &&
@@ -234,7 +253,8 @@ const addItemToInventory = async (
         if (
           invItem.itemDetails.itemclass !== ItemClass.CONTAINER && // Don't sell bags
           invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
-          invItem.itemDetails.norent != 0 // Don't sell NO RENT
+          invItem.itemDetails.norent != 0 && // Don't sell NO RENT
+          !consumableTypes.includes(invItem.itemDetails.itemtype as ItemType) // Don't sell consumables
         ) {
           if (sellSingleItem(invItem.itemDetails)) {
             usePlayerCharacterStore
