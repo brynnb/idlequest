@@ -18,11 +18,43 @@ This project is very much in its early phase, and the casual nature of the READM
 
 ## Development
 
-This project is built using React/TypeScript and Zustand. Long term this will probably transition to having a RESTful API backend but is currently all running locally off a SQLite database.
+This project is built using React/TypeScript and Zustand for the client, with a Node.js/Express server using Socket.IO for real-time multiplayer features. The server uses MySQL for data persistence and Sequelize as the ORM.
 
 Install:
 
 `pnpm install`
+
+Server Setup:
+
+1. Install server dependencies:
+
+   ```
+   cd server && npm install
+   ```
+
+2. Create a `.env` file in the `server/` directory:
+
+   ```
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_USER=root
+   DB_PASSWORD=
+   DB_NAME=idlequest
+   DB_DIALECT=mysql
+   PORT=3000
+   CLIENT_URL=http://localhost:5173
+   ```
+
+3. Ensure MySQL is running:
+
+   ```
+   brew services start mysql
+   ```
+
+4. Create the database:
+   ```
+   mysql -u root -e "CREATE DATABASE IF NOT EXISTS idlequest;"
+   ```
 
 Database Setup:
 
@@ -68,7 +100,25 @@ python3 data/scripts/convert_atlas_images.py
 
 Running dev environment:
 
-`pnpm run dev`
+**Run both client and server (recommended):**
+
+```
+npm run dev:all
+```
+
+**Run client only:**
+
+```
+pnpm run dev
+```
+
+**Run server only:**
+
+```
+cd server && npm run dev
+```
+
+The `dev:all` command runs both the React client (Vite) and the Node.js server with Socket.IO for real-time multiplayer features.
 
 Testing:
 
@@ -236,7 +286,7 @@ export default tseslint.config({
 
 Similar to ProgressQuest, this project falls under fair use because it transforms elements of the original EverQuest game for a different purpose—an idle game experience rather than an active MMORPG. It does not replicate the gameplay mechanics or experience in a 1:1 manner but instead serves as a commentary and nostalgic parody of EverQuest's legacy, which fits within the definition of transformative use. Additionally, IdleQuest is non-commercial, and the use of EverQuest's content is limited and for purposes that add new meaning, context, and value.
 
-This project uses images from the "EverQuest Atlas: The Maps Of Myrist" book from 2001, created by  Ryan Barker and Amanda Flock, and published by Sony (SOE).
+This project uses images from the "EverQuest Atlas: The Maps Of Myrist" book from 2001, created by Ryan Barker and Amanda Flock, and published by Sony (SOE).
 
 Many game elements and assets are owned by Daybreak Game Company LLC. This project has no affiliation with them and probably no one else either.
 

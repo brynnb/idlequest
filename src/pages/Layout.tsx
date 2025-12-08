@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Outlet, useLocation } from "react-router-dom";
+import WebTransportDebugPanel from "../components/WebTransportDebugPanel";
 
 interface MainContainerProps {
   $isCharacterCreation: boolean;
@@ -35,13 +36,16 @@ const Layout = () => {
   };
 
   return (
-    <MainContainer
-      id="main"
-      onContextMenu={handleContextMenu}
-      $isCharacterCreation={isCharacterCreation}
-    >
-      <Outlet />
-    </MainContainer>
+    <>
+      <MainContainer
+        id="main"
+        onContextMenu={handleContextMenu}
+        $isCharacterCreation={isCharacterCreation}
+      >
+        <Outlet />
+      </MainContainer>
+      <WebTransportDebugPanel />
+    </>
   );
 };
 

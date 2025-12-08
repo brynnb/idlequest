@@ -1,9 +1,8 @@
 import { create } from "zustand";
 import { devtools, persist, subscribeWithSelector } from "zustand/middleware";
 import { NPCType } from "@entities/NPCType";
-import { getZoneNPCs } from "@utils/getZoneNPCs";
 import Zone from "@entities/Zone";
-import { useDatabase } from "@hooks/useDatabase";
+import { eqDataService } from "@utils/eqDataService";
 
 interface ContainerPosition {
   x: number;
@@ -94,15 +93,38 @@ const useGameStatusStore = create<GameStatusStore>()(
               const { zones } = get();
               if (!forceReload && zones.length > 0) return;
 
-              const { getAllFromTable, loading } = useDatabase<"zone">();
-              if (loading) return;
-
               try {
-                const newZones = await getAllFromTable("zone");
-                set({ zones: newZones });
+                // Use eqDataService for consistent data access (will show warning until WebTransport is implemented)
+                const newZones = await eqDataService.getAllZones();
+                if (newZones.length > 0) {
+                  set({ zones: newZones });
+                } else {
+                  // Fallback to old database operations if eqDataService returns empty
+                  const { getAllFromTable } = await import(
+                    "@utils/databaseOperations"
+                  );
+                  const fallbackZones = await getAllFromTable("zone");
+                  set({ zones: fallbackZones });
+                  console.warn(
+                    "Using fallback database operations for zones - WebTransport not yet implemented"
+                  );
+                }
               } catch (error) {
                 console.error("Error initializing zones:", error);
-                throw new Error("Failed to initialize zones");
+                // Try fallback as well
+                try {
+                  const { getAllFromTable } = await import(
+                    "@utils/databaseOperations"
+                  );
+                  const fallbackZones = await getAllFromTable("zone");
+                  set({ zones: fallbackZones });
+                  console.warn(
+                    "Used fallback database operations due to error in eqDataService"
+                  );
+                } catch (fallbackError) {
+                  console.error("Fallback also failed:", fallbackError);
+                  throw new Error("Failed to initialize zones");
+                }
               }
             },
 
@@ -132,10 +154,39 @@ const useGameStatusStore = create<GameStatusStore>()(
                 const zoneName = getZoneNameById(currentZone);
                 if (zoneName) {
                   try {
-                    const npcs = await getZoneNPCs(zoneName);
-                    set({ currentZoneNPCs: npcs });
+                    // Use eqDataService for consistent data access
+                    const npcs = await eqDataService.getZoneNPCs(zoneName);
+                    if (npcs.length > 0) {
+                      set({ currentZoneNPCs: npcs });
+                    } else {
+                      // Fallback to old getZoneNPCs function if eqDataService returns empty
+                      const { getZoneNPCs } = await import(
+                        "@utils/getZoneNPCs"
+                      );
+                      const fallbackNpcs = await getZoneNPCs(zoneName);
+                      set({ currentZoneNPCs: fallbackNpcs });
+                      console.warn(
+                        "Used fallback getZoneNPCs function - WebTransport not yet implemented"
+                      );
+                    }
                   } catch (error) {
                     console.error("Failed to update current zone NPCs:", error);
+                    // Try fallback
+                    try {
+                      const { getZoneNPCs } = await import(
+                        "@utils/getZoneNPCs"
+                      );
+                      const fallbackNpcs = await getZoneNPCs(zoneName);
+                      set({ currentZoneNPCs: fallbackNpcs });
+                      console.warn(
+                        "Used fallback getZoneNPCs due to error in eqDataService"
+                      );
+                    } catch (fallbackError) {
+                      console.error(
+                        "Fallback getZoneNPCs also failed:",
+                        fallbackError
+                      );
+                    }
                   }
                 } else {
                   console.error(

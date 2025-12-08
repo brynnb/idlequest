@@ -1,19 +1,45 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
+import type { Plugin } from "vite";
+
+// Middleware to proxy /api/hash to the Go server (like eqrequiem)
+// This avoids CORS/TLS issues by fetching from same origin
+function hashProxyPlugin(): Plugin {
+  return {
+    name: "hash-proxy",
+    configureServer({ middlewares }) {
+      middlewares.use(async (req, res, next) => {
+        if (req.url?.startsWith("/api/hash")) {
+          try {
+            // Fetch from Go server's HTTP hash endpoint on port 7100
+            const response = await fetch("http://127.0.0.1:7100/hash");
+            if (response.ok) {
+              const hash = await response.text();
+              res.setHeader("Content-Type", "text/plain");
+              res.end(hash);
+            } else {
+              res.statusCode = 502;
+              res.end("Failed to fetch hash from Go server");
+            }
+          } catch (err) {
+            console.error("Hash proxy error:", err);
+            res.statusCode = 502;
+            res.end("Failed to connect to Go server hash endpoint");
+          }
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
-  define: {
-    "import.meta.env.REACT_APP_OPENAI_API_KEY": JSON.stringify(
-      process.env.REACT_APP_OPENAI_API_KEY
-    ),
-    "import.meta.env.REACT_APP_OPENAI_PROJECT_ID": JSON.stringify(
-      process.env.REACT_APP_OPENAI_PROJECT_ID
-    ),
-  },
+  plugins: [react(), tsconfigPaths(), hashProxyPlugin()],
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

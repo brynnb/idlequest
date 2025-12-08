@@ -54,3 +54,17 @@ data/rawatlasart/*
 
 # Quest data
 /data/projecteqquests-master
+
+#reference repo
+eqrequiem-ref/
+
+# Local Go server config override (contains real DB credentials, not committed)
+server-go/internal/config/eqgo_config.local.json
+
+# Go server build artifacts
+server-go/server
+server-go/daemon
+server-go/server.pid
+server-go/server.log
+items.dat
+
