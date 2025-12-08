@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QuestGlobals = newQuestGlobalsTable("eqgo", "quest_globals", "")
+var QuestGlobals = newQuestGlobalsTable("peq", "quest_globals", "")
 
 type questGlobalsTable struct {
 	mysql.Table

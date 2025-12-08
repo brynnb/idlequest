@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var RaidLeaders = newRaidLeadersTable("eqgo", "raid_leaders", "")
+var RaidLeaders = newRaidLeadersTable("peq", "raid_leaders", "")
 
 type raidLeadersTable struct {
 	mysql.Table

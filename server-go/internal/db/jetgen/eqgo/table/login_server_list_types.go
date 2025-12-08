@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var LoginServerListTypes = newLoginServerListTypesTable("eqgo", "login_server_list_types", "")
+var LoginServerListTypes = newLoginServerListTypesTable("peq", "login_server_list_types", "")
 
 type loginServerListTypesTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var SpellBuckets = newSpellBucketsTable("eqgo", "spell_buckets", "")
+var SpellBuckets = newSpellBucketsTable("peq", "spell_buckets", "")
 
 type spellBucketsTable struct {
 	mysql.Table

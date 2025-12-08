@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Damageshieldtypes = newDamageshieldtypesTable("eqgo", "damageshieldtypes", "")
+var Damageshieldtypes = newDamageshieldtypesTable("peq", "damageshieldtypes", "")
 
 type damageshieldtypesTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DbVersion = newDbVersionTable("eqgo", "db_version", "")
+var DbVersion = newDbVersionTable("peq", "db_version", "")
 
 type dbVersionTable struct {
 	mysql.Table

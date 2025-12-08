@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Spawn2Disabled = newSpawn2DisabledTable("eqgo", "spawn2_disabled", "")
+var Spawn2Disabled = newSpawn2DisabledTable("peq", "spawn2_disabled", "")
 
 type spawn2DisabledTable struct {
 	mysql.Table

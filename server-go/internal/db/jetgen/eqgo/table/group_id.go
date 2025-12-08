@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GroupID = newGroupIDTable("eqgo", "group_id", "")
+var GroupID = newGroupIDTable("peq", "group_id", "")
 
 type groupIDTable struct {
 	mysql.Table

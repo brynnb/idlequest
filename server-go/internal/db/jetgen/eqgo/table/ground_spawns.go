@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GroundSpawns = newGroundSpawnsTable("eqgo", "ground_spawns", "")
+var GroundSpawns = newGroundSpawnsTable("peq", "ground_spawns", "")
 
 type groundSpawnsTable struct {
 	mysql.Table

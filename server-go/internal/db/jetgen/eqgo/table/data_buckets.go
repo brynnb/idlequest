@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DataBuckets = newDataBucketsTable("eqgo", "data_buckets", "")
+var DataBuckets = newDataBucketsTable("peq", "data_buckets", "")
 
 type dataBucketsTable struct {
 	mysql.Table

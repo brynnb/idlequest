@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var RespawnTimes = newRespawnTimesTable("eqgo", "respawn_times", "")
+var RespawnTimes = newRespawnTimesTable("peq", "respawn_times", "")
 
 type respawnTimesTable struct {
 	mysql.Table

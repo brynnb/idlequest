@@ -286,24 +286,57 @@ class WebTransportClient {
 
     const reader = this.controlStream.readable.getReader();
     const textDecoder = new TextDecoder();
+    let buffer = new Uint8Array(0);
+
+    // Helper to concatenate Uint8Arrays
+    const concat = (a: Uint8Array, b: Uint8Array): Uint8Array => {
+      const result = new Uint8Array(a.length + b.length);
+      result.set(a, 0);
+      result.set(b, a.length);
+      return result;
+    };
 
     try {
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
 
-        // Parse length-prefixed frame
-        const dataView = new DataView(value.buffer);
-        const length = dataView.getUint32(0, true); // little endian
-        const payloadBytes = value.slice(4, 4 + length);
-        const payloadStr = textDecoder.decode(payloadBytes);
+        // Append incoming data to buffer
+        buffer = concat(buffer, value);
 
-        try {
-          const response = JSON.parse(payloadStr) as WebTransportMessage;
-          this.emitDebug({ kind: "receive", message: response });
-          this.handleResponse(response);
-        } catch (parseError) {
-          console.error("Failed to parse response:", parseError);
+        // Process complete frames from buffer
+        while (buffer.length >= 4) {
+          const dataView = new DataView(
+            buffer.buffer,
+            buffer.byteOffset,
+            buffer.byteLength
+          );
+          const frameLength = dataView.getUint32(0, true); // little endian
+
+          // Check if we have the complete frame
+          if (buffer.length < 4 + frameLength) {
+            // Not enough data yet, wait for more
+            break;
+          }
+
+          // Extract the complete frame payload
+          const payloadBytes = buffer.slice(4, 4 + frameLength);
+          const payloadStr = textDecoder.decode(payloadBytes);
+
+          // Remove processed frame from buffer
+          buffer = buffer.slice(4 + frameLength);
+
+          try {
+            const response = JSON.parse(payloadStr) as WebTransportMessage;
+            this.emitDebug({ kind: "receive", message: response });
+            this.handleResponse(response);
+          } catch (parseError) {
+            console.error(
+              "Failed to parse response:",
+              parseError,
+              payloadStr.substring(0, 200)
+            );
+          }
         }
       }
     } catch (error) {
@@ -334,18 +367,8 @@ class WebTransportClient {
       clearTimeout(pendingRequest.timeout);
       this.pendingRequests.delete(requestId);
 
-      if (response.type.endsWith("_RESPONSE")) {
-        const typedResponse = response as ItemResponse;
-        if (typedResponse.success) {
-          pendingRequest.resolve(typedResponse.item || typedResponse.payload);
-        } else {
-          pendingRequest.reject(
-            new Error(typedResponse.error || "Request failed")
-          );
-        }
-      } else {
-        pendingRequest.resolve(response.payload);
-      }
+      // Resolve with the full response object so callers can access all fields
+      pendingRequest.resolve(response);
     }
   }
 
@@ -549,6 +572,8 @@ class WebTransportClient {
     if (!response.success) {
       throw new Error(response.error || "Failed to get zone NPCs");
     }
+
+    // Server now sends lowerCamelCase field names, no client-side normalization needed
     return response.npcs || [];
   }
 

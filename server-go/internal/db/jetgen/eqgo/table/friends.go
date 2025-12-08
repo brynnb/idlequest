@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Friends = newFriendsTable("eqgo", "friends", "")
+var Friends = newFriendsTable("peq", "friends", "")
 
 type friendsTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DynamicZoneMembers = newDynamicZoneMembersTable("eqgo", "dynamic_zone_members", "")
+var DynamicZoneMembers = newDynamicZoneMembersTable("peq", "dynamic_zone_members", "")
 
 type dynamicZoneMembersTable struct {
 	mysql.Table

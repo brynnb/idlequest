@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerEventSpeech = newPlayerEventSpeechTable("eqgo", "player_event_speech", "")
+var PlayerEventSpeech = newPlayerEventSpeechTable("peq", "player_event_speech", "")
 
 type playerEventSpeechTable struct {
 	mysql.Table

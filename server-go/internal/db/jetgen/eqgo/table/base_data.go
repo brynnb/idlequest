@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var BaseData = newBaseDataTable("eqgo", "base_data", "")
+var BaseData = newBaseDataTable("peq", "base_data", "")
 
 type baseDataTable struct {
 	mysql.Table

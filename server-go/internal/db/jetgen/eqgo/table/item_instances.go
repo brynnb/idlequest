@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ItemInstances = newItemInstancesTable("eqgo", "item_instances", "")
+var ItemInstances = newItemInstancesTable("peq", "item_instances", "")
 
 type itemInstancesTable struct {
 	mysql.Table

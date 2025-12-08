@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterAuras = newCharacterAurasTable("eqgo", "character_auras", "")
+var CharacterAuras = newCharacterAurasTable("peq", "character_auras", "")
 
 type characterAurasTable struct {
 	mysql.Table

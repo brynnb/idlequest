@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterInstanceSafereturns = newCharacterInstanceSafereturnsTable("eqgo", "character_instance_safereturns", "")
+var CharacterInstanceSafereturns = newCharacterInstanceSafereturnsTable("peq", "character_instance_safereturns", "")
 
 type characterInstanceSafereturnsTable struct {
 	mysql.Table

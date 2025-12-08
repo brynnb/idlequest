@@ -5,7 +5,10 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"log"
+	"reflect"
+	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/knervous/eqgo/internal/db"
 	db_character "github.com/knervous/eqgo/internal/db/character"
@@ -14,6 +17,112 @@ import (
 	"github.com/knervous/eqgo/internal/session"
 	"github.com/knervous/eqgo/internal/zone"
 )
+
+// toLowerCamelCase converts a string from PascalCase to lowerCamelCase
+// Handles special cases like "ID" -> "id", "URL" -> "url", "NPCType" -> "npcType"
+func toLowerCamelCase(s string) string {
+	if s == "" {
+		return s
+	}
+	runes := []rune(s)
+
+	// Find the end of the leading uppercase sequence
+	upperEnd := 0
+	for i, r := range runes {
+		if unicode.IsLower(r) {
+			break
+		}
+		upperEnd = i + 1
+	}
+
+	// If all uppercase (like "ID", "NPC", "URL"), lowercase the whole thing
+	if upperEnd == len(runes) {
+		return strings.ToLower(s)
+	}
+
+	// If multiple leading uppercase (like "NPCType"), lowercase all but the last
+	if upperEnd > 1 {
+		for i := 0; i < upperEnd-1; i++ {
+			runes[i] = unicode.ToLower(runes[i])
+		}
+		return string(runes)
+	}
+
+	// Single leading uppercase, just lowercase the first character
+	runes[0] = unicode.ToLower(runes[0])
+	return string(runes)
+}
+
+// toLowerCamelJSON recursively converts a value to a map with lowerCamelCase keys
+// This allows Jet-generated structs (with PascalCase fields) to serialize as lowerCamelCase JSON
+func toLowerCamelJSON(v interface{}) interface{} {
+	if v == nil {
+		return nil
+	}
+
+	val := reflect.ValueOf(v)
+
+	// Handle pointers
+	if val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			return nil
+		}
+		return toLowerCamelJSON(val.Elem().Interface())
+	}
+
+	switch val.Kind() {
+	case reflect.Struct:
+		result := make(map[string]interface{})
+		t := val.Type()
+		for i := 0; i < val.NumField(); i++ {
+			field := t.Field(i)
+			if !field.IsExported() {
+				continue
+			}
+			// Use json tag if present, otherwise convert field name
+			jsonTag := field.Tag.Get("json")
+			var key string
+			if jsonTag != "" && jsonTag != "-" {
+				// Extract just the name part (before any comma)
+				for i, c := range jsonTag {
+					if c == ',' {
+						jsonTag = jsonTag[:i]
+						break
+					}
+				}
+				key = jsonTag
+			} else {
+				key = toLowerCamelCase(field.Name)
+			}
+			result[key] = toLowerCamelJSON(val.Field(i).Interface())
+		}
+		return result
+
+	case reflect.Slice, reflect.Array:
+		if val.IsNil() {
+			return nil
+		}
+		result := make([]interface{}, val.Len())
+		for i := 0; i < val.Len(); i++ {
+			result[i] = toLowerCamelJSON(val.Index(i).Interface())
+		}
+		return result
+
+	case reflect.Map:
+		if val.IsNil() {
+			return nil
+		}
+		result := make(map[string]interface{})
+		for _, k := range val.MapKeys() {
+			keyStr := k.String()
+			result[keyStr] = toLowerCamelJSON(val.MapIndex(k).Interface())
+		}
+		return result
+
+	default:
+		return v
+	}
+}
 
 // JSON Message structures for WebTransport API
 type JSONMessage struct {
@@ -198,8 +307,12 @@ func (wh *WorldHandler) HandleJSONMessage(session *session.Session, data []byte)
 }
 
 // SendJSONResponse sends a JSON response back to the client
+// It automatically converts struct fields from PascalCase to lowerCamelCase for TypeScript compatibility
 func (wh *WorldHandler) SendJSONResponse(session *session.Session, response interface{}) {
-	responseBytes, err := json.Marshal(response)
+	// Convert to lowerCamelCase keys for TypeScript client compatibility
+	normalizedResponse := toLowerCamelJSON(response)
+
+	responseBytes, err := json.Marshal(normalizedResponse)
 	if err != nil {
 		log.Printf("Failed to marshal JSON response: %v", err)
 		return

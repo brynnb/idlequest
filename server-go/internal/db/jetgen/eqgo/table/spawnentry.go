@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Spawnentry = newSpawnentryTable("eqgo", "spawnentry", "")
+var Spawnentry = newSpawnentryTable("peq", "spawnentry", "")
 
 type spawnentryTable struct {
 	mysql.Table

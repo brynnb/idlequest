@@ -61,7 +61,8 @@ const PaneTitle = styled.div`
 `;
 
 const QuestNPCList: React.FC = () => {
-  const { currentZoneNPCs, currentZone, getZoneLongNameById } = useGameStatusStore();
+  const { currentZoneNPCs, currentZone, getZoneLongNameById } =
+    useGameStatusStore();
   const {
     setCurrentDialogue,
     setCurrentNPC,
@@ -76,7 +77,10 @@ const QuestNPCList: React.FC = () => {
       const dialogue = await getNPCDialogue(npc.name);
       if (dialogue) {
         setCurrentDialogue(dialogue);
-        addDialogueEntry(npc.name, { npcDialogue: dialogue.dialogue, isPlayer: false });
+        addDialogueEntry(npc.name, {
+          npcDialogue: dialogue.dialogue,
+          isPlayer: false,
+        });
       }
     } else {
       setCurrentDialogue(null);
@@ -87,11 +91,17 @@ const QuestNPCList: React.FC = () => {
     <ParentContainer>
       <PaneTitle>{getZoneLongNameById(currentZone)}</PaneTitle>
       <NPCListContainer>
-        {currentZoneNPCs.sort((a, b) => a.name.localeCompare(b.name)).map((npc: NPCType) => (
-          <NPCItem key={npc.id} onClick={() => handleNPCClick(npc)}>
-            {npc.name.replace(/_/g, ' ')}
-          </NPCItem>
-        ))}
+        {currentZoneNPCs
+          .filter((npc) => npc.name) // Filter out NPCs with missing names
+          .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+          .map((npc: NPCType, index: number) => (
+            <NPCItem
+              key={`${npc.id ?? "no-id"}-${npc.name ?? "no-name"}-${index}`}
+              onClick={() => handleNPCClick(npc)}
+            >
+              {(npc.name || "Unknown").replace(/_/g, " ")}
+            </NPCItem>
+          ))}
       </NPCListContainer>
     </ParentContainer>
   );

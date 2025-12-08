@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerEventLogs = newPlayerEventLogsTable("eqgo", "player_event_logs", "")
+var PlayerEventLogs = newPlayerEventLogsTable("peq", "player_event_logs", "")
 
 type playerEventLogsTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerAaRateHourly = newQsPlayerAaRateHourlyTable("eqgo", "qs_player_aa_rate_hourly", "")
+var QsPlayerAaRateHourly = newQsPlayerAaRateHourlyTable("peq", "qs_player_aa_rate_hourly", "")
 
 type qsPlayerAaRateHourlyTable struct {
 	mysql.Table

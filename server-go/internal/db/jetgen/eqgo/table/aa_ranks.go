@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var AaRanks = newAaRanksTable("eqgo", "aa_ranks", "")
+var AaRanks = newAaRanksTable("peq", "aa_ranks", "")
 
 type aaRanksTable struct {
 	mysql.Table

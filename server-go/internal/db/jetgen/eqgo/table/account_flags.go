@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var AccountFlags = newAccountFlagsTable("eqgo", "account_flags", "")
+var AccountFlags = newAccountFlagsTable("peq", "account_flags", "")
 
 type accountFlagsTable struct {
 	mysql.Table

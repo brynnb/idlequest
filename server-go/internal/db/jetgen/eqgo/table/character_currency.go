@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterCurrency = newCharacterCurrencyTable("eqgo", "character_currency", "")
+var CharacterCurrency = newCharacterCurrencyTable("peq", "character_currency", "")
 
 type characterCurrencyTable struct {
 	mysql.Table

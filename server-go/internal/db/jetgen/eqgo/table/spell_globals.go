@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var SpellGlobals = newSpellGlobalsTable("eqgo", "spell_globals", "")
+var SpellGlobals = newSpellGlobalsTable("peq", "spell_globals", "")
 
 type spellGlobalsTable struct {
 	mysql.Table

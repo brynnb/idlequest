@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GuildPermissions = newGuildPermissionsTable("eqgo", "guild_permissions", "")
+var GuildPermissions = newGuildPermissionsTable("peq", "guild_permissions", "")
 
 type guildPermissionsTable struct {
 	mysql.Table

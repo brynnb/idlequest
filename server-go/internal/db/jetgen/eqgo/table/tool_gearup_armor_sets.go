@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ToolGearupArmorSets = newToolGearupArmorSetsTable("eqgo", "tool_gearup_armor_sets", "")
+var ToolGearupArmorSets = newToolGearupArmorSetsTable("peq", "tool_gearup_armor_sets", "")
 
 type toolGearupArmorSetsTable struct {
 	mysql.Table

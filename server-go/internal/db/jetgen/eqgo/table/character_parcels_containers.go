@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterParcelsContainers = newCharacterParcelsContainersTable("eqgo", "character_parcels_containers", "")
+var CharacterParcelsContainers = newCharacterParcelsContainersTable("peq", "character_parcels_containers", "")
 
 type characterParcelsContainersTable struct {
 	mysql.Table

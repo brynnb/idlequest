@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ProfanityList = newProfanityListTable("eqgo", "profanity_list", "")
+var ProfanityList = newProfanityListTable("peq", "profanity_list", "")
 
 type profanityListTable struct {
 	mysql.Table

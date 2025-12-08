@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var TaskActivities = newTaskActivitiesTable("eqgo", "task_activities", "")
+var TaskActivities = newTaskActivitiesTable("peq", "task_activities", "")
 
 type taskActivitiesTable struct {
 	mysql.Table

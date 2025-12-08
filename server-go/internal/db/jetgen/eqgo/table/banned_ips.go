@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var BannedIps = newBannedIpsTable("eqgo", "banned_ips", "")
+var BannedIps = newBannedIpsTable("peq", "banned_ips", "")
 
 type bannedIpsTable struct {
 	mysql.Table

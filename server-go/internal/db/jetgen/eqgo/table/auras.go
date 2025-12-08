@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Auras = newAurasTable("eqgo", "auras", "")
+var Auras = newAurasTable("peq", "auras", "")
 
 type aurasTable struct {
 	mysql.Table

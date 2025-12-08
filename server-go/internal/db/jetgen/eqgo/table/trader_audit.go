@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var TraderAudit = newTraderAuditTable("eqgo", "trader_audit", "")
+var TraderAudit = newTraderAuditTable("peq", "trader_audit", "")
 
 type traderAuditTable struct {
 	mysql.Table

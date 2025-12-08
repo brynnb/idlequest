@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterInspectMessages = newCharacterInspectMessagesTable("eqgo", "character_inspect_messages", "")
+var CharacterInspectMessages = newCharacterInspectMessagesTable("peq", "character_inspect_messages", "")
 
 type characterInspectMessagesTable struct {
 	mysql.Table

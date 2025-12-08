@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GuildRelations = newGuildRelationsTable("eqgo", "guild_relations", "")
+var GuildRelations = newGuildRelationsTable("peq", "guild_relations", "")
 
 type guildRelationsTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharCreatePointAllocations = newCharCreatePointAllocationsTable("eqgo", "char_create_point_allocations", "")
+var CharCreatePointAllocations = newCharCreatePointAllocationsTable("peq", "char_create_point_allocations", "")
 
 type charCreatePointAllocationsTable struct {
 	mysql.Table

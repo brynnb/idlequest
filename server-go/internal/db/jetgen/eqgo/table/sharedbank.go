@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Sharedbank = newSharedbankTable("eqgo", "sharedbank", "")
+var Sharedbank = newSharedbankTable("peq", "sharedbank", "")
 
 type sharedbankTable struct {
 	mysql.Table

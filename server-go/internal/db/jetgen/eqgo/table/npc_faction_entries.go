@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var NpcFactionEntries = newNpcFactionEntriesTable("eqgo", "npc_faction_entries", "")
+var NpcFactionEntries = newNpcFactionEntriesTable("peq", "npc_faction_entries", "")
 
 type npcFactionEntriesTable struct {
 	mysql.Table

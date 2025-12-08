@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Timers = newTimersTable("eqgo", "timers", "")
+var Timers = newTimersTable("peq", "timers", "")
 
 type timersTable struct {
 	mysql.Table

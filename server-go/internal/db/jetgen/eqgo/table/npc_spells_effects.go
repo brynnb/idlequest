@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var NpcSpellsEffects = newNpcSpellsEffectsTable("eqgo", "npc_spells_effects", "")
+var NpcSpellsEffects = newNpcSpellsEffectsTable("peq", "npc_spells_effects", "")
 
 type npcSpellsEffectsTable struct {
 	mysql.Table

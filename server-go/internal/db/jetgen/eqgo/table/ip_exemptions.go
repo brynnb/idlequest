@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var IPExemptions = newIPExemptionsTable("eqgo", "ip_exemptions", "")
+var IPExemptions = newIPExemptionsTable("peq", "ip_exemptions", "")
 
 type iPExemptionsTable struct {
 	mysql.Table

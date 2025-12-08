@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GroupLeaders = newGroupLeadersTable("eqgo", "group_leaders", "")
+var GroupLeaders = newGroupLeadersTable("peq", "group_leaders", "")
 
 type groupLeadersTable struct {
 	mysql.Table

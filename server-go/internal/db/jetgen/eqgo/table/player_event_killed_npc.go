@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerEventKilledNpc = newPlayerEventKilledNpcTable("eqgo", "player_event_killed_npc", "")
+var PlayerEventKilledNpc = newPlayerEventKilledNpcTable("peq", "player_event_killed_npc", "")
 
 type playerEventKilledNpcTable struct {
 	mysql.Table

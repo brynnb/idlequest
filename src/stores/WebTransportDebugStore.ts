@@ -18,7 +18,7 @@ interface WebTransportDebugStore {
 const useWebTransportDebugStore = create<WebTransportDebugStore>()(
   (set, get) => ({
     events: [],
-    isPanelOpen: false,
+    isPanelOpen: true,
     isPaused: false,
     connectionState: "disconnected",
 

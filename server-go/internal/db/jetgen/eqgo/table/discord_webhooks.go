@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DiscordWebhooks = newDiscordWebhooksTable("eqgo", "discord_webhooks", "")
+var DiscordWebhooks = newDiscordWebhooksTable("peq", "discord_webhooks", "")
 
 type discordWebhooksTable struct {
 	mysql.Table

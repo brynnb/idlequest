@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Inventory = newInventoryTable("eqgo", "inventory", "")
+var Inventory = newInventoryTable("peq", "inventory", "")
 
 type inventoryTable struct {
 	mysql.Table

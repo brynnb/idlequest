@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GuildBank = newGuildBankTable("eqgo", "guild_bank", "")
+var GuildBank = newGuildBankTable("peq", "guild_bank", "")
 
 type guildBankTable struct {
 	mysql.Table

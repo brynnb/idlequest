@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var SkillCaps = newSkillCapsTable("eqgo", "skill_caps", "")
+var SkillCaps = newSkillCapsTable("peq", "skill_caps", "")
 
 type skillCapsTable struct {
 	mysql.Table

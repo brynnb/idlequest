@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DbStr = newDbStrTable("eqgo", "db_str", "")
+var DbStr = newDbStrTable("peq", "db_str", "")
 
 type dbStrTable struct {
 	mysql.Table

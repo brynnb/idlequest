@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Forage = newForageTable("eqgo", "forage", "")
+var Forage = newForageTable("peq", "forage", "")
 
 type forageTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GuildRanks = newGuildRanksTable("eqgo", "guild_ranks", "")
+var GuildRanks = newGuildRanksTable("peq", "guild_ranks", "")
 
 type guildRanksTable struct {
 	mysql.Table

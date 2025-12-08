@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var TradeskillRecipeEntries = newTradeskillRecipeEntriesTable("eqgo", "tradeskill_recipe_entries", "")
+var TradeskillRecipeEntries = newTradeskillRecipeEntriesTable("peq", "tradeskill_recipe_entries", "")
 
 type tradeskillRecipeEntriesTable struct {
 	mysql.Table

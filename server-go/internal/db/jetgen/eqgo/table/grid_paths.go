@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GridPaths = newGridPathsTable("eqgo", "grid_paths", "")
+var GridPaths = newGridPathsTable("peq", "grid_paths", "")
 
 type gridPathsTable struct {
 	mysql.Table

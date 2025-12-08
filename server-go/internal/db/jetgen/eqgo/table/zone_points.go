@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ZonePoints = newZonePointsTable("eqgo", "zone_points", "")
+var ZonePoints = newZonePointsTable("peq", "zone_points", "")
 
 type zonePointsTable struct {
 	mysql.Table

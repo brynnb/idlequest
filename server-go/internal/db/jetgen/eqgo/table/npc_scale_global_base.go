@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var NpcScaleGlobalBase = newNpcScaleGlobalBaseTable("eqgo", "npc_scale_global_base", "")
+var NpcScaleGlobalBase = newNpcScaleGlobalBaseTable("peq", "npc_scale_global_base", "")
 
 type npcScaleGlobalBaseTable struct {
 	mysql.Table

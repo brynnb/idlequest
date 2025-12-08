@@ -40,6 +40,7 @@ const RightSidebar = () => {
     toggleMap,
     isNoteOpen,
     toggleNote,
+    updateCurrentZoneNPCs,
     autoSellEnabled,
     toggleAutoSell,
     isMuted,
@@ -58,6 +59,21 @@ const RightSidebar = () => {
     return () => document.removeEventListener("click", handleInteraction);
   }, []);
 
+  const handleQuestsClick = async () => {
+    // Capture previous state so we know if we're opening or closing the pane
+    const wasOpen = isNoteOpen;
+    toggleNote();
+    // When transitioning from closed -> open, refresh NPCs for the current zone
+    if (!wasOpen) {
+      try {
+        await updateCurrentZoneNPCs();
+      } catch (e) {
+        // Fail silently in UI; fallback logic inside the store will handle errors
+        console.error("Failed to refresh zone NPCs on Quests click:", e);
+      }
+    }
+  };
+
   return (
     <StyledRightSidebar>
       <PlayerStats />
@@ -72,7 +88,7 @@ const RightSidebar = () => {
         />
         <ActionButton
           text="Quests"
-          onClick={toggleNote}
+          onClick={handleQuestsClick}
           isPressed={isNoteOpen}
           isToggleable={true}
         />

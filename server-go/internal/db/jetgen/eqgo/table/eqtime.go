@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Eqtime = newEqtimeTable("eqgo", "eqtime", "")
+var Eqtime = newEqtimeTable("peq", "eqtime", "")
 
 type eqtimeTable struct {
 	mysql.Table

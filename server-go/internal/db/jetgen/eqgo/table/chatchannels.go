@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Chatchannels = newChatchannelsTable("eqgo", "chatchannels", "")
+var Chatchannels = newChatchannelsTable("peq", "chatchannels", "")
 
 type chatchannelsTable struct {
 	mysql.Table

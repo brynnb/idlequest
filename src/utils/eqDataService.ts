@@ -98,21 +98,9 @@ class EQDataService {
       const npcs = await webTransportClient.getZoneNPCs(zoneName);
       return npcs as NPCType[];
     } catch (error) {
-      console.warn(
-        "WebTransport getZoneNPCs failed, falling back to local DB:",
-        error
-      );
-      // Fallback to local database if WebTransport fails
-      try {
-        const { getZoneNPCs } = await import("@utils/getZoneNPCs");
-        return await getZoneNPCs(zoneName);
-      } catch (fallbackError) {
-        console.error(
-          "eqDataService.getZoneNPCs fallback failed:",
-          fallbackError
-        );
-        return [];
-      }
+      // No local fallback - WebTransport is the only source for zone NPCs
+      console.error("Failed to fetch zone NPCs via WebTransport:", error);
+      return [];
     }
   }
 

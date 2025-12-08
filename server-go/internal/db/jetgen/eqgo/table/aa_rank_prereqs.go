@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var AaRankPrereqs = newAaRankPrereqsTable("eqgo", "aa_rank_prereqs", "")
+var AaRankPrereqs = newAaRankPrereqsTable("peq", "aa_rank_prereqs", "")
 
 type aaRankPrereqsTable struct {
 	mysql.Table

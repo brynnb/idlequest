@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var LevelExpMods = newLevelExpModsTable("eqgo", "level_exp_mods", "")
+var LevelExpMods = newLevelExpModsTable("peq", "level_exp_mods", "")
 
 type levelExpModsTable struct {
 	mysql.Table

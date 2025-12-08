@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Traps = newTrapsTable("eqgo", "traps", "")
+var Traps = newTrapsTable("peq", "traps", "")
 
 type trapsTable struct {
 	mysql.Table

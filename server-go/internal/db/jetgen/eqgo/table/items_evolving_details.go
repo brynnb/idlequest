@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ItemsEvolvingDetails = newItemsEvolvingDetailsTable("eqgo", "items_evolving_details", "")
+var ItemsEvolvingDetails = newItemsEvolvingDetailsTable("peq", "items_evolving_details", "")
 
 type itemsEvolvingDetailsTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Object = newObjectTable("eqgo", "object", "")
+var Object = newObjectTable("peq", "object", "")
 
 type objectTable struct {
 	mysql.Table

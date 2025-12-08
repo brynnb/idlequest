@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerDeleteRecord = newQsPlayerDeleteRecordTable("eqgo", "qs_player_delete_record", "")
+var QsPlayerDeleteRecord = newQsPlayerDeleteRecordTable("peq", "qs_player_delete_record", "")
 
 type qsPlayerDeleteRecordTable struct {
 	mysql.Table

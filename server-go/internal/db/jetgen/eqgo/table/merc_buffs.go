@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var MercBuffs = newMercBuffsTable("eqgo", "merc_buffs", "")
+var MercBuffs = newMercBuffsTable("peq", "merc_buffs", "")
 
 type mercBuffsTable struct {
 	mysql.Table
