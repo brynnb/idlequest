@@ -129,17 +129,23 @@ const useGameStatusStore = create<GameStatusStore>()(
             },
 
             getZoneNameById: (id) => {
-              const zone = get().zones.find((z) => z.zoneidnumber == id);
+              const zones = get().zones;
+              if (!Array.isArray(zones)) return undefined;
+              const zone = zones.find((z) => z.zoneidnumber == id);
               return zone?.short_name;
             },
 
             getZoneIdByName: (name) => {
-              const zone = get().zones.find((z) => z.short_name == name);
+              const zones = get().zones;
+              if (!Array.isArray(zones)) return undefined;
+              const zone = zones.find((z) => z.short_name == name);
               return zone?.zoneidnumber;
             },
 
             getZoneLongNameById: (id) => {
-              const zone = get().zones.find((z) => z.zoneidnumber == id);
+              const zones = get().zones;
+              if (!Array.isArray(zones)) return undefined;
+              const zone = zones.find((z) => z.zoneidnumber == id);
               return zone?.long_name;
             },
 

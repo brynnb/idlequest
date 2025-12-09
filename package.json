@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "server:go": "cd server-go && go run ./cmd/server",
+    "server": "npm run server:go",
     "dev:all": "npm run server:go & sleep 3 && npm run dev"
   },
   "dependencies": {

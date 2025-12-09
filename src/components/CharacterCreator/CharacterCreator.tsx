@@ -9,6 +9,13 @@ import SubmitCharacter from "./SubmitCharacter";
 import styled from "styled-components";
 import classes from "@data/json/classes.json";
 import CharacterClass from "@entities/CharacterClass";
+import SelectionButton from "../Interface/SelectionButton";
+
+const Wrapper = styled.div`
+  position: relative;
+  width: 1400px;
+  height: 1040px;
+`;
 
 const MainContainer = styled.div`
   display: grid;
@@ -19,7 +26,7 @@ const MainContainer = styled.div`
 `;
 
 const NavigationContainer = styled.div`
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   right: 20px;
   display: flex;
@@ -37,25 +44,6 @@ const StoryText = styled.div`
   padding: 20px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 8px;
-`;
-
-const StyledButton = styled.button`
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  background: #4a4a4a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:not(:disabled):hover {
-    background: #5a5a5a;
-  }
 `;
 
 const CharacterCreator = () => {
@@ -134,21 +122,28 @@ const CharacterCreator = () => {
   };
 
   return (
-    <>
+    <Wrapper>
       {renderStep()}
       <NavigationContainer>
         {currentStep > 1 && (
-          <StyledButton onClick={handleBack}>Back</StyledButton>
+          <SelectionButton onClick={handleBack} $isSelected={false}>
+            Back
+          </SelectionButton>
         )}
         {currentStep === 4 ? (
           <SubmitCharacter />
         ) : (
-          <StyledButton onClick={handleNext} disabled={!canProceedToNextStep()}>
+          <SelectionButton
+            onClick={handleNext}
+            disabled={!canProceedToNextStep()}
+            $isSelected={false}
+            $isDisabled={!canProceedToNextStep()}
+          >
             Next
-          </StyledButton>
+          </SelectionButton>
         )}
       </NavigationContainer>
-    </>
+    </Wrapper>
   );
 };
 

@@ -1,13 +1,17 @@
 package world
 
 import (
+	"bytes"
 	"context"
 	"encoding/binary"
 	"encoding/json"
 	"log"
+	"net/http"
+	"os"
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 	"unicode"
 
 	"github.com/knervous/eqgo/internal/db"
@@ -152,6 +156,102 @@ type ItemsResponse struct {
 	Error   string        `json:"error,omitempty"`
 }
 
+// Dialogue request/response types
+type DialogueEntry struct {
+	NpcDialogue    string  `json:"npcDialogue"`
+	PlayerQuestion *string `json:"playerQuestion,omitempty"`
+	IsPlayer       *bool   `json:"isPlayer,omitempty"`
+}
+
+type DialogueRequest struct {
+	Type            string          `json:"type"`
+	NpcName         string          `json:"npcName"`
+	DialogueHistory []DialogueEntry `json:"dialogueHistory,omitempty"`
+}
+
+type DialogueResponse struct {
+	Type      string   `json:"type"`
+	Success   bool     `json:"success"`
+	Dialogue  string   `json:"dialogue,omitempty"`
+	Responses []string `json:"responses,omitempty"`
+	NpcName   string   `json:"npcName,omitempty"`
+	Error     string   `json:"error,omitempty"`
+}
+
+// HandleGetNPCDialogue handles dialogue requests by proxying to the external dialogue service
+func (wh *WorldHandler) HandleGetNPCDialogue(session *session.Session, data []byte) {
+	var req DialogueRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Invalid GET_NPC_DIALOGUE request")
+		return
+	}
+
+	if strings.TrimSpace(req.NpcName) == "" {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Missing npcName in request")
+		return
+	}
+
+	dialogueURL := os.Getenv("DIALOGUE_API_URL")
+	if dialogueURL == "" {
+		dialogueURL = "http://localhost:3001/api/dialogue"
+	}
+
+	payload, err := json.Marshal(map[string]interface{}{
+		"npcName":         req.NpcName,
+		"dialogueHistory": req.DialogueHistory,
+	})
+	if err != nil {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to marshal dialogue request")
+		return
+	}
+
+	client := &http.Client{Timeout: 15 * time.Second}
+	httpReq, err := http.NewRequest("POST", dialogueURL, bytes.NewBuffer(payload))
+	if err != nil {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to create dialogue request")
+		return
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Dialogue service unavailable")
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Dialogue service error")
+		return
+	}
+
+	var external map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&external); err != nil {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to parse dialogue response")
+		return
+	}
+
+	dialogueStr, _ := external["dialogue"].(string)
+	var responses []string
+	if arr, ok := external["responses"].([]interface{}); ok {
+		for _, v := range arr {
+			if s, ok := v.(string); ok {
+				responses = append(responses, s)
+			}
+		}
+	}
+
+	response := DialogueResponse{
+		Type:      "DIALOGUE_RESPONSE",
+		Success:   true,
+		Dialogue:  dialogueStr,
+		Responses: responses,
+		NpcName:   req.NpcName,
+	}
+
+	wh.SendJSONResponse(session, response)
+}
+
 type ZoneRequest struct {
 	Type         string `json:"type"`
 	ZoneId       *int   `json:"zoneId,omitempty"`
@@ -294,12 +394,16 @@ func (wh *WorldHandler) HandleJSONMessage(session *session.Session, data []byte)
 		wh.HandleGetZone(session, data)
 	case "GET_ZONE_NPCS":
 		wh.HandleGetZoneNPCs(session, data)
+	case "GET_NPC_DIALOGUE":
+		wh.HandleGetNPCDialogue(session, data)
 	case "GET_CHARACTER":
 		wh.HandleGetCharacter(session, data)
 	case "GET_CHARACTERS":
 		wh.HandleGetCharacters(session, data)
 	case "SEND_CHAT_MESSAGE":
 		wh.HandleSendChatMessage(session, data)
+	case "CREATE_CHARACTER":
+		wh.HandleCreateCharacter(session, data)
 	default:
 		log.Printf("Unknown JSON message type: %s", baseMsg.Type)
 		wh.SendJSONError(session, "UNKNOWN_TYPE", "Unknown message type: "+baseMsg.Type)
@@ -369,7 +473,7 @@ func (wh *WorldHandler) HandleGetAllItems(session *session.Session, data []byte)
 
 // HandleGetAllZones handles GET_ALL_ZONES requests
 func (wh *WorldHandler) HandleGetAllZones(session *session.Session, data []byte) {
-	// Query all zones from database
+	// Query all zones from database - use minimal essential columns only
 	ctx := context.Background()
 	query := `
 		SELECT id, short_name, long_name, zoneidnumber, safe_x, safe_y, safe_z, safe_heading,
@@ -380,9 +484,7 @@ func (wh *WorldHandler) HandleGetAllZones(session *session.Session, data []byte)
 		       fog_maxclip1, fog_density, flag_needed, canbind, cancombat,
 		       canlevitate, castoutdoor, hotzone, peqzone, expansion, suspendbuffs,
 		       rain_chance1, rain_duration1, snow_chance1, snow_duration1,
-		       type, skylock, skip_los, music, random_loc, never_idle, castdungeon,
-		       pull_limit, graveyard_time, max_z, min_expansion, max_expansion,
-		       content_flags, content_flags_disabled, file_name, map_file_name
+		       type, skylock
 		FROM zone
 		ORDER BY zoneidnumber
 	`
@@ -403,11 +505,9 @@ func (wh *WorldHandler) HandleGetAllZones(session *session.Session, data []byte)
 			underworld, minclip, maxclip, fog_minclip, fog_maxclip, fog_blue, fog_red, fog_green, sky, ztype int
 			time_type, fog_red1, fog_green1, fog_blue1, fog_minclip1, fog_maxclip1                           int
 			canbind, cancombat, canlevitate, castoutdoor, hotzone, peqzone, expansion, suspendbuffs          int
-			rain_chance1, rain_duration1, snow_chance1, snow_duration1, type_field, skylock, skip_los, music int
-			random_loc, never_idle, castdungeon, pull_limit, graveyard_time, min_expansion, max_expansion    int
-			safe_x, safe_y, safe_z, safe_heading, zone_exp_multiplier, gravity, fog_density, max_z           float64
-			short_name, long_name, note, flag_needed, content_flags, content_flags_disabled                  string
-			file_name, map_file_name                                                                         *string
+			rain_chance1, rain_duration1, snow_chance1, snow_duration1, type_field, skylock                  int
+			safe_x, safe_y, safe_z, safe_heading, zone_exp_multiplier, gravity, fog_density                  float64
+			short_name, long_name, note, flag_needed                                                         string
 		)
 
 		err := rows.Scan(
@@ -419,9 +519,7 @@ func (wh *WorldHandler) HandleGetAllZones(session *session.Session, data []byte)
 			&fog_maxclip1, &fog_density, &flag_needed, &canbind, &cancombat,
 			&canlevitate, &castoutdoor, &hotzone, &peqzone, &expansion, &suspendbuffs,
 			&rain_chance1, &rain_duration1, &snow_chance1, &snow_duration1,
-			&type_field, &skylock, &skip_los, &music, &random_loc, &never_idle, &castdungeon,
-			&pull_limit, &graveyard_time, &max_z, &min_expansion, &max_expansion,
-			&content_flags, &content_flags_disabled, &file_name, &map_file_name,
+			&type_field, &skylock,
 		)
 		if err != nil {
 			log.Printf("Error scanning zone row: %v", err)
@@ -478,20 +576,21 @@ func (wh *WorldHandler) HandleGetAllZones(session *session.Session, data []byte)
 		zone["snow_duration1"] = snow_duration1
 		zone["type"] = type_field
 		zone["skylock"] = skylock
-		zone["skip_los"] = skip_los
-		zone["music"] = music
-		zone["random_loc"] = random_loc
-		zone["never_idle"] = never_idle
-		zone["castdungeon"] = castdungeon
-		zone["pull_limit"] = pull_limit
-		zone["graveyard_time"] = graveyard_time
-		zone["max_z"] = max_z
-		zone["min_expansion"] = min_expansion
-		zone["max_expansion"] = max_expansion
-		zone["content_flags"] = content_flags
-		zone["content_flags_disabled"] = content_flags_disabled
-		zone["file_name"] = file_name
-		zone["map_file_name"] = map_file_name
+		// Set missing columns to defaults
+		zone["skip_los"] = 0
+		zone["music"] = 0
+		zone["random_loc"] = 0
+		zone["never_idle"] = 0
+		zone["castdungeon"] = 0
+		zone["pull_limit"] = 0
+		zone["graveyard_time"] = 0
+		zone["max_z"] = 0.0
+		zone["min_expansion"] = 0
+		zone["max_expansion"] = 0
+		zone["content_flags"] = ""
+		zone["content_flags_disabled"] = ""
+		zone["file_name"] = nil
+		zone["map_file_name"] = nil
 
 		zones = append(zones, zone)
 	}
@@ -669,6 +768,212 @@ func (wh *WorldHandler) HandleSendChatMessage(session *session.Session, data []b
 
 	wh.SendJSONResponse(session, response)
 	log.Printf("Chat message from session %d: [%s] %s", session.SessionID, req.MessageType, req.Text)
+}
+
+// CreateCharacterRequest represents a request to create a new character
+type CreateCharacterRequest struct {
+	Type   string `json:"type"`
+	Name   string `json:"name"`
+	Race   uint16 `json:"race"`
+	Class  uint8  `json:"class"`
+	Deity  uint32 `json:"deity"`
+	ZoneID uint32 `json:"zoneId"`
+	Gender uint8  `json:"gender"`
+	Face   uint32 `json:"face"`
+	Str    uint32 `json:"str"`
+	Sta    uint32 `json:"sta"`
+	Cha    uint32 `json:"cha"`
+	Dex    uint32 `json:"dex"`
+	Int    uint32 `json:"int"`
+	Agi    uint32 `json:"agi"`
+	Wis    uint32 `json:"wis"`
+}
+
+// InventoryItemResponse represents an inventory item in the response
+type InventoryItemResponse struct {
+	SlotID  uint32 `json:"slotId"`
+	ItemID  uint32 `json:"itemId"`
+	Charges uint16 `json:"charges"`
+}
+
+// CreateCharacterResponse represents the ack response after creating a character
+type CreateCharacterResponse struct {
+	Type          string `json:"type"`
+	Success       bool   `json:"success"`
+	CharacterID   uint32 `json:"characterId,omitempty"`
+	CharacterName string `json:"characterName,omitempty"` // Echoed back for request matching
+	Error         string `json:"error,omitempty"`
+}
+
+// CharacterStateMessage is pushed to client with full character state (source of truth)
+type CharacterStateMessage struct {
+	Type      string                  `json:"type"`
+	Character interface{}             `json:"character"`
+	Inventory []InventoryItemResponse `json:"inventory"`
+}
+
+// HandleCreateCharacter handles CREATE_CHARACTER requests
+func (wh *WorldHandler) HandleCreateCharacter(session *session.Session, data []byte) {
+	var req CreateCharacterRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		wh.SendJSONError(session, "CHARACTER_CREATED_RESPONSE", "Invalid CREATE_CHARACTER request")
+		return
+	}
+
+	log.Printf("Creating character: %s (race=%d, class=%d, deity=%d, zone=%d)",
+		req.Name, req.Race, req.Class, req.Deity, req.ZoneID)
+
+	ctx := context.Background()
+
+	// 1. Insert new character into character_data table
+	timestamp := uint32(time.Now().Unix())
+	// Use a normal double-quoted string so we can include the `int` column name safely
+	insertQuery := "INSERT INTO character_data (" +
+		"account_id, name, last_name, title, suffix, " +
+		"zone_id, zone_instance, x, y, z, heading, " +
+		"gender, race, class, level, deity, " +
+		"birthday, last_login, time_played, anon, gm, face, " +
+		"exp, exp_enabled, cur_hp, mana, endurance, intoxication, " +
+		"str, sta, cha, dex, `int`, agi, wis, " +
+		"hunger_level, thirst_level" +
+		") VALUES (" +
+		"?, ?, '', '', '', " +
+		"?, 0, 0, 0, 0, 0, " +
+		"?, ?, ?, 1, ?, " +
+		"?, ?, 0, 0, 0, ?, " +
+		"0, 1, 100, 100, 100, 0, " +
+		"?, ?, ?, ?, ?, ?, ?, " +
+		"6000, 6000" +
+		")"
+
+	// Use account_id = 1 for now (single-player mode)
+	accountID := int32(1)
+
+	result, err := db.GlobalWorldDB.DB.ExecContext(ctx, insertQuery,
+		accountID, req.Name,
+		req.ZoneID,
+		req.Gender, req.Race, req.Class, req.Deity,
+		timestamp, timestamp, req.Face,
+		req.Str, req.Sta, req.Cha, req.Dex, req.Int, req.Agi, req.Wis,
+	)
+	if err != nil {
+		log.Printf("Failed to insert character: %v", err)
+		// Send error response with character name for request matching
+		errorResponse := CreateCharacterResponse{
+			Type:          "CHARACTER_CREATED_RESPONSE",
+			Success:       false,
+			CharacterName: req.Name,
+			Error:         "Failed to create character: " + err.Error(),
+		}
+		wh.SendJSONResponse(session, errorResponse)
+		return
+	}
+
+	characterID, err := result.LastInsertId()
+	if err != nil {
+		log.Printf("Failed to get character ID: %v", err)
+		errorResponse := CreateCharacterResponse{
+			Type:          "CHARACTER_CREATED_RESPONSE",
+			Success:       false,
+			CharacterName: req.Name,
+			Error:         "Failed to get character ID",
+		}
+		wh.SendJSONResponse(session, errorResponse)
+		return
+	}
+
+	log.Printf("Created character with ID: %d", characterID)
+
+	// 2. Query starting_items for matching race/class/deity/zone
+	// The starting_items table uses comma-separated lists for race_list, class_list, deity_list, zone_id_list
+	// A value of NULL or empty string means "any"
+	startingItemsQuery := `
+		SELECT item_id, item_charges, inventory_slot
+		FROM starting_items
+		WHERE (class_list IS NULL OR class_list = '' OR FIND_IN_SET(?, class_list) > 0)
+		  AND (race_list IS NULL OR race_list = '' OR FIND_IN_SET(?, race_list) > 0)
+		  AND (deity_list IS NULL OR deity_list = '' OR FIND_IN_SET(?, deity_list) > 0)
+		  AND (zone_id_list IS NULL OR zone_id_list = '' OR FIND_IN_SET(?, zone_id_list) > 0)
+	`
+
+	rows, err := db.GlobalWorldDB.DB.QueryContext(ctx, startingItemsQuery,
+		req.Class, req.Race, req.Deity, req.ZoneID)
+	if err != nil {
+		log.Printf("Failed to query starting items: %v", err)
+		// Continue anyway - character is created, just no starting items
+	}
+
+	var inventoryItems []InventoryItemResponse
+	if rows != nil {
+		defer rows.Close()
+
+		// 3. Insert starting items into inventory table
+		slotCounter := uint32(22) // Start at general inventory slot 22 (first general slot)
+		for rows.Next() {
+			var itemID uint32
+			var itemCharges uint8
+			var inventorySlot int32
+
+			if err := rows.Scan(&itemID, &itemCharges, &inventorySlot); err != nil {
+				log.Printf("Error scanning starting item: %v", err)
+				continue
+			}
+
+			// Use the specified slot if valid, otherwise auto-assign
+			var slotID uint32
+			if inventorySlot >= 0 {
+				slotID = uint32(inventorySlot)
+			} else {
+				slotID = slotCounter
+				slotCounter++
+			}
+
+			// Insert into inventory table
+			insertInvQuery := `
+				INSERT INTO inventory (charid, slotid, itemid, charges)
+				VALUES (?, ?, ?, ?)
+			`
+			_, err := db.GlobalWorldDB.DB.ExecContext(ctx, insertInvQuery,
+				characterID, slotID, itemID, itemCharges)
+			if err != nil {
+				log.Printf("Failed to insert inventory item %d: %v", itemID, err)
+				continue
+			}
+
+			inventoryItems = append(inventoryItems, InventoryItemResponse{
+				SlotID:  slotID,
+				ItemID:  itemID,
+				Charges: uint16(itemCharges),
+			})
+
+			log.Printf("Added starting item %d to slot %d for character %d", itemID, slotID, characterID)
+		}
+	}
+
+	// 4. Fetch the created character to return
+	character, err := db_character.GetCharacterByName(req.Name)
+	if err != nil {
+		log.Printf("Failed to fetch created character: %v", err)
+	}
+
+	// Send ack response first (for request/response matching)
+	ackResponse := CreateCharacterResponse{
+		Type:          "CHARACTER_CREATED_RESPONSE",
+		Success:       true,
+		CharacterID:   uint32(characterID),
+		CharacterName: req.Name,
+	}
+	wh.SendJSONResponse(session, ackResponse)
+
+	// Then push the full character state (source of truth for client)
+	stateMessage := CharacterStateMessage{
+		Type:      "CHARACTER_STATE",
+		Character: character,
+		Inventory: inventoryItems,
+	}
+	wh.SendJSONResponse(session, stateMessage)
+
+	log.Printf("Character %s created successfully with %d starting items", req.Name, len(inventoryItems))
 }
 
 // RemoveSession cleans up session data.

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import useChatStore, { MessageType } from "@stores/ChatStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import PageSelection from "../Interface/PageSelection";
 
 const ChatContainer = styled.div.attrs({ className: "chat-container" })`
@@ -178,14 +179,17 @@ const ChatBox: React.FC = () => {
     isConnected,
     connectionError,
   } = useChatStore();
+  const { initializeCharacterSync } = usePlayerCharacterStore();
   const chatContentRef = useRef<HTMLDivElement>(null);
   const [currentChatType, setCurrentChatType] = useState<ChatType>("Default");
 
   useEffect(() => {
-    // Initialize WebTransport connection
+    // Initialize WebTransport connection and character sync
     const initializeConnection = async () => {
       try {
         await initializeWebTransport();
+        // Subscribe to CHARACTER_STATE messages from server
+        initializeCharacterSync();
       } catch (error) {
         console.error("Failed to initialize WebTransport:", error);
         addMessage(
@@ -199,7 +203,7 @@ const ChatBox: React.FC = () => {
 
     // No cleanup needed - WebTransport client is a singleton
     // and will handle its own connection lifecycle
-  }, [initializeWebTransport, addMessage]);
+  }, [initializeWebTransport, addMessage, initializeCharacterSync]);
 
   // Display connection status in chat
   useEffect(() => {

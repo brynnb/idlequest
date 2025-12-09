@@ -20,6 +20,15 @@ import {
 } from "@utils/inventoryUtils";
 import { getBagStartingSlot } from "@utils/inventoryUtils";
 import { ItemClass } from "@entities/ItemClass";
+import {
+  webTransportClient,
+  CharacterStateMessage,
+  ServerCharacter,
+  InventoryItemResponse,
+} from "@utils/webTransportClient";
+import races from "@data/json/races.json";
+import classes from "@data/json/classes.json";
+import deities from "@data/json/deities.json";
 
 function createDefaultCharacterProfile(): CharacterProfile {
   return {
@@ -52,6 +61,8 @@ interface PlayerCharacterStore {
   updateWeight: () => void;
   updateWeightAllowance: () => void;
   updateAllStats: () => void;
+  initializeCharacterSync: () => void;
+  applyServerCharacterState: (state: CharacterStateMessage) => Promise<void>;
 }
 
 const moveBagContents = (
@@ -524,6 +535,89 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               },
             };
           });
+        },
+
+        // Subscribe to CHARACTER_STATE messages from server
+        initializeCharacterSync: () => {
+          webTransportClient.onCharacterState((state) => {
+            get().applyServerCharacterState(state);
+          });
+        },
+
+        // Apply server-pushed character state (single source of truth)
+        applyServerCharacterState: async (state: CharacterStateMessage) => {
+          console.log("Received CHARACTER_STATE:", state);
+
+          if (!state.character) {
+            console.warn(
+              "CHARACTER_STATE received with null character, ignoring"
+            );
+            return;
+          }
+
+          const serverChar = state.character as ServerCharacter;
+
+          // Look up race/class/deity from JSON data
+          const raceData = races.find(
+            (r: { id: number }) => r.id === serverChar.race
+          );
+          const classData = classes.find(
+            (c: { id: number }) => c.id === serverChar.class
+          );
+          const deityData = deities.find(
+            (d: { id: number }) => d.id === serverChar.deity
+          );
+
+          // Build inventory items with item details
+          const inventoryItems: InventoryItem[] = await Promise.all(
+            (state.inventory || []).map(async (item: InventoryItemResponse) => {
+              const itemDetails = await getItemById(item.itemId);
+              return {
+                slotid: item.slotId,
+                itemid: item.itemId,
+                charges: item.charges,
+                itemDetails: itemDetails || undefined,
+              } as InventoryItem;
+            })
+          );
+
+          const newProfile: CharacterProfile = {
+            id: serverChar.id,
+            name: serverChar.name,
+            lastName: serverChar.lastName,
+            race: raceData,
+            class: classData,
+            deity: deityData,
+            zoneId: serverChar.zoneId,
+            level: serverChar.level,
+            exp: serverChar.exp,
+            curHp: serverChar.curHp,
+            mana: serverChar.mana,
+            endurance: serverChar.endurance,
+            attributes: {
+              str: serverChar.str,
+              sta: serverChar.sta,
+              cha: serverChar.cha,
+              dex: serverChar.dex,
+              int: serverChar.int,
+              agi: serverChar.agi,
+              wis: serverChar.wis,
+            },
+            inventory: inventoryItems,
+            stats: {
+              ac: 0,
+              atk: 100,
+            },
+          };
+
+          // Calculate derived stats
+          newProfile.maxHp = calculatePlayerHP(newProfile);
+          newProfile.maxMana = calculatePlayerMana(newProfile);
+
+          set({ characterProfile: newProfile });
+          get().updateAllStats();
+
+          console.log("Applied server character state:", serverChar.name);
         },
       }),
       { name: "player-character-storage" }

@@ -1,15 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useInventoryCreator from "@hooks/useInventoryCreator";
-import { createNewCharacterProfile } from "@utils/playerCharacterUtils";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import { useInventoryActions } from "@hooks/useInventoryActions";
+import { webTransportClient } from "@utils/webTransportClient";
+import SelectionButton from "../Interface/SelectionButton";
 
 const SubmitCharacter: React.FC = () => {
   const navigate = useNavigate();
-  const { loading, createInventory } = useInventoryCreator();
-  const { handleLoot } = useInventoryActions();
+  const [loading, setLoading] = useState(false);
   const {
     characterName,
     selectedRace,
@@ -18,43 +15,76 @@ const SubmitCharacter: React.FC = () => {
     selectedZone,
     allPointsAllocated,
     attributes,
+    resetStore,
   } = useCharacterCreatorStore();
 
-  const { setCharacterProfile } = usePlayerCharacterStore();
-
   const handleSubmit = async () => {
-    const startingItems = await createNewCharacterProfile(
-      {
-        characterName,
-        selectedRace,
-        selectedClass,
-        selectedDeity,
-        selectedZone,
-        attributes,
-        allPointsAllocated,
-      },
-      createInventory,
-      setCharacterProfile
-    );
-    handleLoot(startingItems);
-    navigate("/");
+    if (!selectedRace || !selectedClass || !selectedDeity || !selectedZone) {
+      console.error("Missing required character creation fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Send character creation request to server
+      // Server will push CHARACTER_STATE which updates the store automatically
+      await webTransportClient.createCharacter({
+        name: characterName,
+        race: selectedRace.id,
+        class: selectedClass.id,
+        deity: selectedDeity.id,
+        zoneId: selectedZone.zoneidnumber,
+        gender: 0, // Default gender, could be added to character creator
+        face: 0, // Default face, could be added to character creator
+        str: attributes.str + attributes.base_str,
+        sta: attributes.sta + attributes.base_sta,
+        cha: attributes.cha + attributes.base_cha,
+        dex: attributes.dex + attributes.base_dex,
+        int: attributes.int + attributes.base_int,
+        agi: attributes.agi + attributes.base_agi,
+        wis: attributes.wis + attributes.base_wis,
+      });
+
+      console.log("Character creation request sent, navigating to main page");
+      navigate("/", { state: { fromCreate: true } });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : String(error ?? "");
+
+      if (message.includes("Duplicate entry")) {
+        // Name is already taken - fully reset the character creator to step 1
+        resetStore();
+
+        window.alert(
+          "That name is already taken. Please choose a different character name."
+        );
+      } else {
+        // Log unexpected errors
+        console.error("Failed to create character:", error);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const disabled =
+    !characterName ||
+    !selectedRace ||
+    !selectedClass ||
+    !selectedDeity ||
+    !selectedZone ||
+    !allPointsAllocated ||
+    loading;
+
   return (
-    <button
+    <SelectionButton
       onClick={handleSubmit}
-      disabled={
-        !characterName ||
-        !selectedRace ||
-        !selectedClass ||
-        !selectedDeity ||
-        !selectedZone ||
-        !allPointsAllocated ||
-        loading
-      }
+      disabled={disabled}
+      $isSelected={false}
+      $isDisabled={disabled}
     >
-      Create Character
-    </button>
+      Create
+    </SelectionButton>
   );
 };
 

@@ -41,12 +41,12 @@ const DialogueDisplay = styled.div.attrs({
 
 const DialogueEntry = styled.div.attrs({
   className: "dialogue-entry",
-})<{ isPlayer: boolean }>`
+})<{ $isPlayer: boolean }>`
   max-width: 80%;
   padding: 8px 12px;
   margin: 4px 0;
   border-radius: 12px;
-  align-self: ${(props) => (props.isPlayer ? "flex-end" : "flex-start")};
+  align-self: ${(props) => (props.$isPlayer ? "flex-end" : "flex-start")};
 `;
 
 const QuestionsList = styled.ul`
@@ -137,12 +137,12 @@ const NoteDisplay: React.FC = () => {
           {currentNPC ? (
             <>
               {dialogueHistory.map((entry, index) => (
-                <DialogueEntry key={index} isPlayer={entry.isPlayer}>
+                <DialogueEntry key={index} $isPlayer={!!entry.isPlayer}>
                   {entry.isPlayer ? entry.playerQuestion : entry.npcDialogue}
                 </DialogueEntry>
               ))}
               {(isLoading || dialogueHistory.length === 0) && (
-                <DialogueEntry isPlayer={false}>
+                <DialogueEntry $isPlayer={false}>
                   <LoadingText>Loading</LoadingText>
                 </DialogueEntry>
               )}

@@ -25,7 +25,7 @@ function b64ToBytes(b64: string): Uint8Array {
 
 export interface WebTransportMessage {
   type: string;
-  payload: any;
+  payload?: unknown;
 }
 
 export interface ItemRequest {
@@ -119,6 +119,98 @@ export interface ZoneNPCsResponse {
   error?: string;
 }
 
+export interface DialogueEntry {
+  npcDialogue: string;
+  playerQuestion?: string;
+  isPlayer?: boolean;
+}
+
+export interface DialogueRequest {
+  type: "GET_NPC_DIALOGUE";
+  npcName: string;
+  dialogueHistory?: DialogueEntry[];
+  payload?: unknown;
+}
+
+export interface DialogueResponse {
+  type: "DIALOGUE_RESPONSE";
+  success: boolean;
+  dialogue?: string;
+  responses?: string[];
+  npcName?: string;
+  error?: string;
+  payload?: unknown;
+}
+
+export interface CreateCharacterRequest {
+  type: "CREATE_CHARACTER";
+  name: string;
+  race: number;
+  class: number;
+  deity: number;
+  zoneId: number;
+  gender: number;
+  face: number;
+  str: number;
+  sta: number;
+  cha: number;
+  dex: number;
+  int: number;
+  agi: number;
+  wis: number;
+}
+
+export interface InventoryItemResponse {
+  slotId: number;
+  itemId: number;
+  charges: number;
+}
+
+export interface CreateCharacterResponse {
+  type: "CHARACTER_CREATED_RESPONSE";
+  success: boolean;
+  characterId?: number;
+  characterName?: string; // Echoed back for request matching
+  error?: string;
+}
+
+// Server-pushed character state (source of truth for client)
+export interface CharacterStateMessage {
+  type: "CHARACTER_STATE";
+  character: ServerCharacter;
+  inventory: InventoryItemResponse[];
+}
+
+// Server's representation of a character
+export interface ServerCharacter {
+  id: number;
+  accountId: number;
+  name: string;
+  lastName: string;
+  zoneId: number;
+  zoneInstance: number;
+  x: number;
+  y: number;
+  z: number;
+  heading: number;
+  gender: number;
+  race: number;
+  class: number;
+  level: number;
+  deity: number;
+  exp: number;
+  curHp: number;
+  mana: number;
+  endurance: number;
+  str: number;
+  sta: number;
+  cha: number;
+  dex: number;
+  int: number;
+  agi: number;
+  wis: number;
+}
+
 // Debug event types for the debug panel
 export type DebugEventKind = "state" | "send" | "receive";
 export type ConnectionState =
@@ -149,7 +241,10 @@ class WebTransportClient {
     }
   >();
   private chatMessageCallbacks: ((message: ChatMessage) => void)[] = [];
+  private characterStateCallbacks: ((state: CharacterStateMessage) => void)[] =
+    [];
   private debugCallbacks: ((event: DebugEvent) => void)[] = [];
+  private writeQueue: Promise<void> = Promise.resolve();
 
   // Subscribe to debug events for the debug panel
   onDebug(callback: (event: DebugEvent) => void): () => void {
@@ -255,8 +350,16 @@ class WebTransportClient {
         console.info("WebTransport: connecting", serverUrl);
         this.transport = new WebTransport(serverUrl, opts);
         this.transport.closed.then(
-          () => console.warn("WebTransport: closed"),
-          (err) => console.error("WebTransport: closed with error", err)
+          () => console.info("WebTransport: closed"),
+          (err) => {
+            // Treat normal remote closes as non-fatal; only log unexpected ones as errors
+            const msg = String((err as any)?.message ?? "");
+            if (msg.includes("remote WebTransport close")) {
+              console.info("WebTransport: remote close", err);
+            } else {
+              console.error("WebTransport: closed with error", err);
+            }
+          }
         );
         await this.transport.ready;
 
@@ -340,7 +443,12 @@ class WebTransportClient {
         }
       }
     } catch (error) {
-      console.error("Error reading from control stream:", error);
+      const msg = String((error as any)?.message ?? "");
+      if (msg.includes("remote WebTransport close")) {
+        console.info("WebTransport: control stream closed by remote");
+      } else {
+        console.error("Error reading from control stream:", error);
+      }
       this.handleDisconnect();
     }
   }
@@ -354,6 +462,19 @@ class WebTransportClient {
           callback(chatMessage);
         } catch (error) {
           console.error("Error in chat message callback:", error);
+        }
+      });
+      return;
+    }
+
+    // Handle character state updates - server-pushed, not request responses
+    if (response.type === "CHARACTER_STATE") {
+      const characterState = response as CharacterStateMessage;
+      this.characterStateCallbacks.forEach((callback) => {
+        try {
+          callback(characterState);
+        } catch (error) {
+          console.error("Error in character state callback:", error);
         }
       });
       return;
@@ -401,9 +522,17 @@ class WebTransportClient {
     if (response.type === "ZONE_NPCS_RESPONSE") {
       return "GET_ZONE_NPCS";
     }
+    if (response.type === "DIALOGUE_RESPONSE") {
+      const dlg = response as DialogueResponse;
+      return `GET_NPC_DIALOGUE_${dlg.npcName || "unknown"}`;
+    }
     if (response.type === "CHAT_MESSAGE") {
       // Chat messages are broadcasted, not responses to requests
       return `CHAT_MESSAGE_${Date.now()}`;
+    }
+    if (response.type === "CHARACTER_CREATED_RESPONSE") {
+      const createResponse = response as CreateCharacterResponse;
+      return `CREATE_CHARACTER_${createResponse.characterName || "unknown"}`;
     }
     return response.type;
   }
@@ -435,8 +564,19 @@ class WebTransportClient {
       frame.set(lengthBytes, 0);
       frame.set(payloadBytes, 4);
 
-      const writer = this.controlStream!.writable.getWriter();
-      writer.write(frame).then(() => writer.releaseLock());
+      // Serialize writes to avoid "WritableStream is already locked" errors
+      this.writeQueue = this.writeQueue
+        .then(async () => {
+          const writer = this.controlStream!.writable.getWriter();
+          try {
+            await writer.write(frame);
+          } finally {
+            writer.releaseLock();
+          }
+        })
+        .catch((err) => {
+          console.error("Write queue error:", err);
+        });
     });
   }
 
@@ -469,8 +609,16 @@ class WebTransportClient {
     if (message.type === "GET_ZONE_NPCS") {
       return "GET_ZONE_NPCS";
     }
+    if (message.type === "GET_NPC_DIALOGUE") {
+      const dlg = message as DialogueRequest;
+      return `GET_NPC_DIALOGUE_${dlg.npcName || "unknown"}`;
+    }
     if (message.type === "SEND_CHAT_MESSAGE") {
       return `SEND_CHAT_MESSAGE_${Date.now()}`;
+    }
+    if (message.type === "CREATE_CHARACTER") {
+      const createReq = message as CreateCharacterRequest;
+      return `CREATE_CHARACTER_${createReq.name}`;
     }
     return message.type;
   }
@@ -577,6 +725,23 @@ class WebTransportClient {
     return response.npcs || [];
   }
 
+  async getNPCDialogue(
+    npcName: string,
+    dialogueHistory: DialogueEntry[] = []
+  ): Promise<DialogueResponse> {
+    const request: DialogueRequest = {
+      type: "GET_NPC_DIALOGUE",
+      npcName,
+      dialogueHistory,
+    };
+
+    const response = (await this.sendMessage(request)) as DialogueResponse;
+    if (!response.success) {
+      throw new Error(response.error || "Failed to get dialogue");
+    }
+    return response;
+  }
+
   async sendChatMessage(
     text: string,
     messageType: string = "say"
@@ -618,11 +783,55 @@ class WebTransportClient {
     };
   }
 
+  onCharacterState(
+    callback: (state: CharacterStateMessage) => void
+  ): () => void {
+    this.characterStateCallbacks.push(callback);
+
+    // Return unsubscribe function
+    return () => {
+      const index = this.characterStateCallbacks.indexOf(callback);
+      if (index > -1) {
+        this.characterStateCallbacks.splice(index, 1);
+      }
+    };
+  }
+
   async disconnect(): Promise<void> {
     if (this.transport) {
       this.transport.close();
       this.handleDisconnect();
     }
+  }
+
+  async createCharacter(params: {
+    name: string;
+    race: number;
+    class: number;
+    deity: number;
+    zoneId: number;
+    gender: number;
+    face: number;
+    str: number;
+    sta: number;
+    cha: number;
+    dex: number;
+    int: number;
+    agi: number;
+    wis: number;
+  }): Promise<CreateCharacterResponse> {
+    const request: CreateCharacterRequest = {
+      type: "CREATE_CHARACTER",
+      ...params,
+    };
+
+    const response = (await this.sendMessage(
+      request
+    )) as CreateCharacterResponse;
+    if (!response.success) {
+      throw new Error(response.error || "Failed to create character");
+    }
+    return response;
   }
 }
 

@@ -69,7 +69,7 @@ const addItemToInventory = async (
   let updatedInventory = [...(characterProfile.inventory || [])];
 
   if (!item.id) {
-    console.error("Encountered item without ID");
+    console.error("Encountered item without ID:", item);
     return;
   }
 
@@ -303,6 +303,10 @@ export const processLootItems = async (
   for (const item of loot) {
     if (!item) {
       console.error("Encountered undefined item in loot");
+      continue;
+    }
+    if (!item.id) {
+      console.error("Encountered item without ID in loot:", item);
       continue;
     }
     if (item.id) {
