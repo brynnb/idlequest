@@ -2,13 +2,14 @@ package world
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"log"
 
 	eq "github.com/knervous/eqgo/internal/api/capnp"
 	"github.com/knervous/eqgo/internal/api/opcodes"
 	"github.com/knervous/eqgo/internal/config"
 	db_character "github.com/knervous/eqgo/internal/db/character"
+	"github.com/knervous/eqgo/internal/db/items"
 	"github.com/knervous/eqgo/internal/discord"
 	"github.com/knervous/eqgo/internal/session"
 	"github.com/knervous/eqgo/internal/zone/client"
@@ -98,10 +99,10 @@ func HandleJWTLogin(ses *session.Session, payload []byte, wh *WorldHandler) bool
 func HandleEnterWorld(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	req, err := session.Deserialize(ses, payload, eq.ReadRootEnterWorld)
 	if err != nil {
-		log.Printf("failed to read JWTLogin struct: %v", err)
+		log.Printf("failed to read EnterWorld struct: %v", err)
 		return false
 	}
-	fmt.Println("Got enter world")
+	log.Printf("Got EnterWorld request")
 
 	name, err := req.Name()
 	if err != nil {
@@ -114,14 +115,98 @@ func HandleEnterWorld(ses *session.Session, payload []byte, wh *WorldHandler) bo
 	}
 	ses.CharacterName = name
 
+	// Send PostEnterWorld success
 	enterWorld, err := session.NewMessage(ses, eq.NewRootInt)
 	if err != nil {
-		log.Printf("failed to create EnterWorld message: %v", err)
+		log.Printf("failed to create PostEnterWorld message: %v", err)
 		return false
 	}
 	enterWorld.SetValue(1)
 	ses.SendData(enterWorld.Message(), opcodes.PostEnterWorld)
+
+	// For IdleQuest, send PlayerProfile immediately (no zone server)
+	sendPlayerProfile(ses, name)
 	return false
+}
+
+// sendPlayerProfile sends the full PlayerProfile for the specified character
+func sendPlayerProfile(ses *session.Session, characterName string) {
+	charData, err := db_character.GetCharacterByName(characterName)
+	if err != nil {
+		log.Printf("failed to get character %q: %v", characterName, err)
+		return
+	}
+
+	// Create client for this character (loads inventory, etc.)
+	ses.Client, err = client.NewClient(charData)
+	if err != nil {
+		log.Printf("failed to create client for character %q: %v", characterName, err)
+		return
+	}
+
+	// Build PlayerProfile message
+	playerProfile, err := session.NewMessage(ses, eq.NewRootPlayerProfile)
+	if err != nil {
+		log.Printf("failed to create PlayerProfile message: %v", err)
+		return
+	}
+
+	playerProfile.SetName(charData.Name)
+	playerProfile.SetLevel(int32(charData.Level))
+	playerProfile.SetRace(int32(charData.Race))
+	playerProfile.SetCharClass(int32(charData.Class))
+	playerProfile.SetGender(int32(charData.Gender))
+	playerProfile.SetDeity(int32(charData.Deity))
+	playerProfile.SetExp(int32(charData.Exp))
+	playerProfile.SetStr(int32(charData.Str))
+	playerProfile.SetSta(int32(charData.Sta))
+	playerProfile.SetDex(int32(charData.Dex))
+	playerProfile.SetAgi(int32(charData.Agi))
+	playerProfile.SetWis(int32(charData.Wis))
+	playerProfile.SetIntel(int32(charData.Int))
+	playerProfile.SetCha(int32(charData.Cha))
+	playerProfile.SetZoneId(int32(charData.ZoneID))
+	playerProfile.SetZoneInstance(int32(charData.ZoneInstance))
+	playerProfile.SetX(float32(charData.X))
+	playerProfile.SetY(float32(charData.Y))
+	playerProfile.SetZ(float32(charData.Z))
+	playerProfile.SetHeading(float32(charData.Heading))
+	playerProfile.SetCurHp(int32(charData.CurHp))
+	playerProfile.SetMana(int32(charData.Mana))
+
+	// Add inventory items to PlayerProfile
+	charItems := ses.Client.Items()
+	charItemsLength := int32(len(charItems))
+	if charItemsLength > 0 {
+		capCharItems, err := playerProfile.NewInventoryItems(charItemsLength)
+		if err != nil {
+			log.Printf("failed to create InventoryItems array: %v", err)
+		} else {
+			itemIdx := 0
+			for slot, charItem := range charItems {
+				if charItem == nil {
+					continue
+				}
+				mods, err := json.Marshal(charItem.Instance.Mods)
+				if err != nil {
+					log.Printf("failed to marshal mods for itemID %d: %v", charItem.Instance.ItemID, err)
+					continue
+				}
+
+				item := capCharItems.At(itemIdx)
+				itemIdx++
+				item.SetCharges(uint32(charItem.Instance.Charges))
+				item.SetQuantity(uint32(charItem.Instance.Quantity))
+				item.SetMods(string(mods))
+				item.SetSlot(int32(slot.Slot))
+				item.SetBagSlot(int32(slot.Bag))
+				items.ConvertItemTemplateToCapnp(ses, &charItem.Item, &item)
+			}
+		}
+	}
+
+	log.Printf("Sending PlayerProfile for %s (level %d, %d items)", charData.Name, charData.Level, charItemsLength)
+	ses.SendStream(playerProfile.Message(), opcodes.PlayerProfile)
 }
 
 func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) bool {

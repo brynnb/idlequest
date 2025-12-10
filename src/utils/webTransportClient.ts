@@ -609,6 +609,10 @@ class WebTransportClient {
     if (message.type === "GET_ZONE_NPCS") {
       return "GET_ZONE_NPCS";
     }
+    if (message.type === "GET_ADJACENT_ZONES") {
+      const adjReq = message as unknown as { zoneId: number };
+      return `GET_ADJACENT_ZONES_${adjReq.zoneId}`;
+    }
     if (message.type === "GET_NPC_DIALOGUE") {
       const dlg = message as DialogueRequest;
       return `GET_NPC_DIALOGUE_${dlg.npcName || "unknown"}`;
@@ -723,6 +727,25 @@ class WebTransportClient {
 
     // Server now sends lowerCamelCase field names, no client-side normalization needed
     return response.npcs || [];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getAdjacentZones(zoneId: number): Promise<any[]> {
+    const request = {
+      type: "GET_ADJACENT_ZONES",
+      zoneId,
+    };
+
+    const response = (await this.sendMessage(request)) as {
+      success: boolean;
+      zones?: any[];
+      error?: string;
+    };
+    if (!response.success) {
+      throw new Error(response.error || "Failed to get adjacent zones");
+    }
+
+    return response.zones || [];
   }
 
   async getNPCDialogue(

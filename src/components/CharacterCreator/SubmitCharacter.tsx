@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { WorldSocket, OpCodes, CharCreate, Int } from "@/net";
+import useCharacterSelectStore from "@stores/CharacterSelectStore";
+import {
+  WorldSocket,
+  OpCodes,
+  CharCreate,
+  Int,
+  CharacterSelect,
+  capnpToPlainObject,
+} from "@/net";
 import SelectionButton from "../Interface/SelectionButton";
 
 const SubmitCharacter: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { setCharacters } = useCharacterSelectStore();
   const {
     characterName,
     selectedRace,
@@ -26,6 +35,17 @@ const SubmitCharacter: React.FC = () => {
 
     setLoading(true);
 
+    // Register handler for updated character list after creation
+    WorldSocket.registerOpCodeHandler(
+      OpCodes.SendCharInfo,
+      CharacterSelect,
+      (charSelect) => {
+        console.log("Received updated character list after creation");
+        const plainData = capnpToPlainObject(charSelect);
+        setCharacters(plainData.characters || []);
+      }
+    );
+
     // Register handler for the server's response
     WorldSocket.registerOpCodeHandler(
       OpCodes.ApproveName_Server,
@@ -33,9 +53,10 @@ const SubmitCharacter: React.FC = () => {
       (data) => {
         setLoading(false);
         if (data.value === 1) {
-          // Success - navigate to main page
+          // Success - navigate to character select to pick the new character
           console.log("Character created successfully");
-          navigate("/", { state: { fromCreate: true } });
+          resetStore();
+          navigate("/characterselect");
         } else {
           // Name rejected (likely duplicate)
           resetStore();

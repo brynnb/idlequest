@@ -5,6 +5,7 @@ import Zone from "@entities/Zone";
 import ActionButton from "./Interface/ActionButton";
 import useGameStatusStore from "@/stores/GameStatusStore";
 import styled from "styled-components";
+import { WorldSocket, OpCodes, RequestClientZoneChange } from "@/net";
 
 const ZoneListContainer = styled.div`
   position: absolute;
@@ -71,6 +72,27 @@ const ZoneSelector: React.FC = () => {
   }, [fetchAdjacentZones]);
 
   const handleZoneClick = async (zone: Zone) => {
+    // Send zone change request to server
+    console.log(
+      "Requesting zone change to:",
+      zone.long_name,
+      zone.zoneidnumber
+    );
+    await WorldSocket.sendMessage(
+      OpCodes.RequestClientZoneChange,
+      RequestClientZoneChange,
+      {
+        zoneId: zone.zoneidnumber,
+        instanceId: 0,
+        x: zone.safe_x || 0,
+        y: zone.safe_y || 0,
+        z: zone.safe_z || 0,
+        heading: 0,
+        type: 1, // fromZone = 1
+      }
+    );
+
+    // Update local state
     setCharacterZone(zone.zoneidnumber);
     setCurrentZone(zone.zoneidnumber);
     await fetchAdjacentZones();

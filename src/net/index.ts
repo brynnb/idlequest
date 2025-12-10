@@ -14,7 +14,13 @@ export { OpCodes } from "./opcodes";
 export { setStructFields, capnpToPlainObject } from "./capnp-utils";
 
 // Re-export commonly used Cap'n Proto types
-export { CharCreate, Int, Spawn, Spawns } from "./capnp/common";
+export {
+  CharCreate,
+  Int,
+  Spawn,
+  Spawns,
+  String as CapnpString,
+} from "./capnp/common";
 
 export {
   CharacterSelect,
@@ -22,4 +28,5 @@ export {
   PlayerProfile,
 } from "./capnp/player";
 
-export { JWTLogin, JWTResponse } from "./capnp/world";
+export { JWTLogin, JWTResponse, EnterWorld } from "./capnp/world";
+export { RequestClientZoneChange } from "./capnp/zone";

@@ -212,6 +212,11 @@ func GetCharSelectInfo(ses *session.Session, ctx context.Context, accountID int6
 
 		return eq.CharacterSelect{}, fmt.Errorf("query character_data: %w", err)
 	}
+
+	log.Printf("GetCharSelectInfo: Found %d characters for account %d", len(chars), accountID)
+	for i, c := range chars {
+		log.Printf("Character %d: ID=%d, Name='%s', DeletedAt='%v'", i, c.ID, c.Name, c.DeletedAt)
+	}
 	info, err := session.NewMessage(ses, eq.NewRootCharacterSelect)
 	if err != nil {
 		return eq.CharacterSelect{}, fmt.Errorf("create character select message: %w", err)
@@ -718,8 +723,6 @@ func SaveCharacterCreate(ctx context.Context, accountID int64, pp *eq.PlayerProf
 	return true
 }
 
-// DeleteCharacter soft-deletes a character by setting the deleted_at timestamp
-// and appending -DELETED-<uuid> to the character's name.
 func DeleteCharacter(ctx context.Context, accountID int64, characterName string) error {
 	uuidStr := uuid.New().String()
 	newNameSuffix := fmt.Sprintf("-DELETED-%s", uuidStr)
@@ -743,6 +746,8 @@ func DeleteCharacter(ctx context.Context, accountID int64, characterName string)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve character name (name=%s): %w", characterName, err)
 	}
+
+	log.Printf("DeleteCharacter: Found character to delete: ID=%d, Name='%s', DeletedAt='%v'", currentChar.ID, currentChar.Name, currentChar.DeletedAt)
 
 	// Append -DELETED-<uuid> to the name
 	newName := currentChar.Name + newNameSuffix
@@ -775,6 +780,8 @@ func DeleteCharacter(ctx context.Context, accountID int64, characterName string)
 	if rowsAffected == 0 {
 		return fmt.Errorf("no character found with id %s for account %d or already deleted", characterName, accountID)
 	}
+
+	log.Printf("DeleteCharacter: Successfully marked %d rows as deleted (name=%s -> %s)", rowsAffected, characterName, newName)
 
 	// Commit transaction
 	if err := tx.Commit(); err != nil {

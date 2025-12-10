@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import PlayerStats from "@components/Interface/PlayerStats";
 import TargetBar from "./TargetBar";
 import ActionButton from "@components/Interface/ActionButton";
@@ -33,6 +34,7 @@ const BottomActionButtonContainer = styled.div.attrs({
 const marginBottomForBottomButtons = "12px";
 
 const RightSidebar = () => {
+  const navigate = useNavigate();
   const {
     isRunning,
     toggleRunning,
@@ -113,7 +115,7 @@ const RightSidebar = () => {
         />
         <ActionButton
           text="Camp"
-          onClick={() => {}}
+          onClick={() => navigate("/characterselect")}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton

@@ -395,6 +395,8 @@ func (wh *WorldHandler) HandleJSONMessage(session *session.Session, data []byte)
 		wh.HandleGetZone(session, data)
 	case "GET_ZONE_NPCS":
 		wh.HandleGetZoneNPCs(session, data)
+	case "GET_ADJACENT_ZONES":
+		wh.HandleGetAdjacentZones(session, data)
 	case "GET_NPC_DIALOGUE":
 		wh.HandleGetNPCDialogue(session, data)
 	case "GET_CHARACTER":
@@ -695,6 +697,73 @@ func (wh *WorldHandler) HandleGetZoneNPCs(session *session.Session, data []byte)
 	}
 	wh.SendJSONResponse(session, response)
 	log.Printf("Sent %d NPCs for zone %s to session %d", len(npcs), zoneName, session.SessionID)
+}
+
+// AdjacentZonesRequest represents a request for adjacent zones
+type AdjacentZonesRequest struct {
+	Type   string `json:"type"`
+	ZoneId int    `json:"zoneId"`
+}
+
+// AdjacentZonesResponse represents the response with adjacent zones
+type AdjacentZonesResponse struct {
+	Type    string        `json:"type"`
+	Success bool          `json:"success"`
+	Zones   []interface{} `json:"zones,omitempty"`
+	Error   string        `json:"error,omitempty"`
+}
+
+// HandleGetAdjacentZones handles GET_ADJACENT_ZONES requests
+func (wh *WorldHandler) HandleGetAdjacentZones(session *session.Session, data []byte) {
+	var req AdjacentZonesRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		wh.SendJSONError(session, "ADJACENT_ZONES_RESPONSE", "Invalid GET_ADJACENT_ZONES request")
+		return
+	}
+
+	if req.ZoneId == 0 {
+		wh.SendJSONError(session, "ADJACENT_ZONES_RESPONSE", "Missing zoneId in request")
+		return
+	}
+
+	// Get the current zone to find its short name
+	currentZone, err := db_zone.GetZoneById(context.Background(), req.ZoneId)
+	if err != nil || currentZone == nil {
+		wh.SendJSONError(session, "ADJACENT_ZONES_RESPONSE", "Current zone not found")
+		return
+	}
+
+	// Get zone points (connections) from this zone
+	zonePoints, err := db_zone.GetZonePointsByZoneName(*currentZone.ShortName)
+	if err != nil {
+		log.Printf("Failed to get zone points for zone %s: %v", *currentZone.ShortName, err)
+		wh.SendJSONError(session, "ADJACENT_ZONES_RESPONSE", "Failed to fetch zone connections")
+		return
+	}
+
+	// Get unique target zone IDs
+	targetZoneIds := make(map[uint32]bool)
+	for _, zp := range zonePoints {
+		targetZoneIds[zp.TargetZoneID] = true
+	}
+
+	// Fetch zone details for each target zone
+	zones := make([]interface{}, 0, len(targetZoneIds))
+	for targetZoneId := range targetZoneIds {
+		zone, err := db_zone.GetZoneById(context.Background(), int(targetZoneId))
+		if err != nil || zone == nil {
+			continue
+		}
+		zones = append(zones, zone)
+	}
+
+	response := AdjacentZonesResponse{
+		Type:    "ADJACENT_ZONES_RESPONSE",
+		Success: true,
+		Zones:   zones,
+	}
+	wh.SendJSONResponse(session, response)
+	log.Printf("Sent %d adjacent zones for zone %d to session %d", len(zones), req.ZoneId, session.SessionID)
 }
 
 // HandleGetCharacter handles GET_CHARACTER requests

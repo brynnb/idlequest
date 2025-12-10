@@ -110,10 +110,14 @@ class EQDataService {
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAdjacentZones(_zoneId: number): Promise<Zone[]> {
-    console.warn("getAdjacentZones not yet migrated to WebTransport");
-    return [];
+  async getAdjacentZones(zoneId: number): Promise<Zone[]> {
+    try {
+      const zones = await webTransportClient.getAdjacentZones(zoneId);
+      return zones as Zone[];
+    } catch (error) {
+      console.error("Error fetching adjacent zones via WebTransport:", error);
+      return [];
+    }
   }
 
   // Character operations via WebTransport

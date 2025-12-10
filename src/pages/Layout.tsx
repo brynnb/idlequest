@@ -29,7 +29,10 @@ const MainContainer = styled.div<MainContainerProps>`
 
 const Layout = () => {
   const location = useLocation();
-  const isCharacterCreation = location.pathname === "/create";
+  const isCharacterCreation =
+    location.pathname === "/create" ||
+    location.pathname === "/login" ||
+    location.pathname === "/characterselect";
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
