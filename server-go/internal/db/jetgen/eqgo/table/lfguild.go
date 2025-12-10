@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Lfguild = newLfguildTable("peq", "lfguild", "")
+var Lfguild = newLfguildTable("eqgo", "lfguild", "")
 
 type lfguildTable struct {
 	mysql.Table

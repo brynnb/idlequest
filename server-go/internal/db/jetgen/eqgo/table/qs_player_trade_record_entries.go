@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerTradeRecordEntries = newQsPlayerTradeRecordEntriesTable("peq", "qs_player_trade_record_entries", "")
+var QsPlayerTradeRecordEntries = newQsPlayerTradeRecordEntriesTable("eqgo", "qs_player_trade_record_entries", "")
 
 type qsPlayerTradeRecordEntriesTable struct {
 	mysql.Table

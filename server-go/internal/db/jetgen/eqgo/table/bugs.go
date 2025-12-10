@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Bugs = newBugsTable("peq", "bugs", "")
+var Bugs = newBugsTable("eqgo", "bugs", "")
 
 type bugsTable struct {
 	mysql.Table

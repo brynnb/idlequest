@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var MerchantlistTemp = newMerchantlistTempTable("peq", "merchantlist_temp", "")
+var MerchantlistTemp = newMerchantlistTempTable("eqgo", "merchantlist_temp", "")
 
 type merchantlistTempTable struct {
 	mysql.Table

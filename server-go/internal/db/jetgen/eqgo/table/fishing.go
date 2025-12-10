@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Fishing = newFishingTable("peq", "fishing", "")
+var Fishing = newFishingTable("eqgo", "fishing", "")
 
 type fishingTable struct {
 	mysql.Table

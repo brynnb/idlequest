@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var LoginAPITokens = newLoginAPITokensTable("peq", "login_api_tokens", "")
+var LoginAPITokens = newLoginAPITokensTable("eqgo", "login_api_tokens", "")
 
 type loginAPITokensTable struct {
 	mysql.Table

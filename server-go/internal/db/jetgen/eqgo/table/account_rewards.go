@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var AccountRewards = newAccountRewardsTable("peq", "account_rewards", "")
+var AccountRewards = newAccountRewardsTable("eqgo", "account_rewards", "")
 
 type accountRewardsTable struct {
 	mysql.Table

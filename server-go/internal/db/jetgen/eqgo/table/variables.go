@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Variables = newVariablesTable("peq", "variables", "")
+var Variables = newVariablesTable("eqgo", "variables", "")
 
 type variablesTable struct {
 	mysql.Table

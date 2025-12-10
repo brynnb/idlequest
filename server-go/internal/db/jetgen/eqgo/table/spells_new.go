@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var SpellsNew = newSpellsNewTable("peq", "spells_new", "")
+var SpellsNew = newSpellsNewTable("eqgo", "spells_new", "")
 
 type spellsNewTable struct {
 	mysql.Table

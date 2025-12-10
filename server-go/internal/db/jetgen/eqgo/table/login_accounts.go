@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var LoginAccounts = newLoginAccountsTable("peq", "login_accounts", "")
+var LoginAccounts = newLoginAccountsTable("eqgo", "login_accounts", "")
 
 type loginAccountsTable struct {
 	mysql.Table

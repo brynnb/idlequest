@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var LogsysCategories = newLogsysCategoriesTable("peq", "logsys_categories", "")
+var LogsysCategories = newLogsysCategoriesTable("eqgo", "logsys_categories", "")
 
 type logsysCategoriesTable struct {
 	mysql.Table

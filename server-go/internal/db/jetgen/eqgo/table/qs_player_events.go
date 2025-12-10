@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerEvents = newQsPlayerEventsTable("peq", "qs_player_events", "")
+var QsPlayerEvents = newQsPlayerEventsTable("eqgo", "qs_player_events", "")
 
 type qsPlayerEventsTable struct {
 	mysql.Table

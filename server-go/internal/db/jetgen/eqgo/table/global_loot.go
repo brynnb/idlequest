@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GlobalLoot = newGlobalLootTable("peq", "global_loot", "")
+var GlobalLoot = newGlobalLootTable("eqgo", "global_loot", "")
 
 type globalLootTable struct {
 	mysql.Table

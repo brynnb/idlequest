@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Saylink = newSaylinkTable("peq", "saylink", "")
+var Saylink = newSaylinkTable("eqgo", "saylink", "")
 
 type saylinkTable struct {
 	mysql.Table

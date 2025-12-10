@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterMaterial = newCharacterMaterialTable("peq", "character_material", "")
+var CharacterMaterial = newCharacterMaterialTable("eqgo", "character_material", "")
 
 type characterMaterialTable struct {
 	mysql.Table

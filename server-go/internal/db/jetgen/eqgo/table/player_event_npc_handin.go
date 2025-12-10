@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerEventNpcHandin = newPlayerEventNpcHandinTable("peq", "player_event_npc_handin", "")
+var PlayerEventNpcHandin = newPlayerEventNpcHandinTable("eqgo", "player_event_npc_handin", "")
 
 type playerEventNpcHandinTable struct {
 	mysql.Table

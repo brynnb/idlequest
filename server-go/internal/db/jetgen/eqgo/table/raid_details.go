@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var RaidDetails = newRaidDetailsTable("peq", "raid_details", "")
+var RaidDetails = newRaidDetailsTable("eqgo", "raid_details", "")
 
 type raidDetailsTable struct {
 	mysql.Table

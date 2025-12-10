@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsMerchantTransactionRecordEntries = newQsMerchantTransactionRecordEntriesTable("peq", "qs_merchant_transaction_record_entries", "")
+var QsMerchantTransactionRecordEntries = newQsMerchantTransactionRecordEntriesTable("eqgo", "qs_merchant_transaction_record_entries", "")
 
 type qsMerchantTransactionRecordEntriesTable struct {
 	mysql.Table

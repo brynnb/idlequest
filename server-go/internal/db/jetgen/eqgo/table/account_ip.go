@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var AccountIP = newAccountIPTable("peq", "account_ip", "")
+var AccountIP = newAccountIPTable("eqgo", "account_ip", "")
 
 type accountIPTable struct {
 	mysql.Table

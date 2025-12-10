@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var AaAbility = newAaAbilityTable("peq", "aa_ability", "")
+var AaAbility = newAaAbilityTable("eqgo", "aa_ability", "")
 
 type aaAbilityTable struct {
 	mysql.Table

@@ -143,7 +143,9 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 		log.Printf("failed to create new Skills list: %v", err)
 		return false
 	}
-	_, err = pp.NewLanguages(18)
+	// Allocate enough language slots to safely set class-specific languages
+	// like Thieves' Cant at index 18 in SetClassLanguages.
+	_, err = pp.NewLanguages(19)
 	if err != nil {
 		log.Printf("failed to create new Languages list: %v", err)
 		return false
@@ -186,11 +188,16 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 	skills.Set(55, 50) // Sense Heading
 
 	// Set racial and class skills and languages
+	log.Printf("Setting racial languages for race %d", pp.Race())
 	SetRacialLanguages(&pp)
+	log.Printf("Setting race starting skills for race %d", pp.Race())
 	SetRaceStartingSkills(&pp)
+	log.Printf("Setting class starting skills for class %d", pp.CharClass())
 	SetClassStartingSkills(&pp)
+	log.Printf("Setting class languages for class %d", pp.CharClass())
 	SetClassLanguages(&pp)
 
+	log.Printf("Getting start zone for class %d, deity %d, race %d", pp.CharClass(), pp.Deity(), pp.Race())
 	startZone, err := GetStartZone(ctx, uint8(pp.CharClass()), uint32(pp.Deity()), uint32(pp.Race()))
 	if err == nil {
 		pp.SetZoneId(int32(startZone.ZoneID))
@@ -214,6 +221,7 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 	binds, _ := pp.Binds()
 
 	// Set bind points
+	log.Printf("Setting bind points")
 	for i := range 5 {
 		bind, _ := eq.NewBind(segment)
 		bind.SetZoneId(pp.ZoneId())
@@ -225,7 +233,10 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 	}
 
 	// Store character
-	return StoreCharacter(accountId, &pp)
+	log.Printf("Storing character to database")
+	result := StoreCharacter(accountId, &pp)
+	log.Printf("StoreCharacter returned: %v", result)
+	return result
 }
 
 func CheckCharCreateInfo(cc eq.CharCreate) bool {

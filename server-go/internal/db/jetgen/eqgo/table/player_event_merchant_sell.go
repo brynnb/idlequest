@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerEventMerchantSell = newPlayerEventMerchantSellTable("peq", "player_event_merchant_sell", "")
+var PlayerEventMerchantSell = newPlayerEventMerchantSellTable("eqgo", "player_event_merchant_sell", "")
 
 type playerEventMerchantSellTable struct {
 	mysql.Table

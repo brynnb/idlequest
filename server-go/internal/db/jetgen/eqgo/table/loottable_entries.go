@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var LoottableEntries = newLoottableEntriesTable("peq", "loottable_entries", "")
+var LoottableEntries = newLoottableEntriesTable("eqgo", "loottable_entries", "")
 
 type loottableEntriesTable struct {
 	mysql.Table

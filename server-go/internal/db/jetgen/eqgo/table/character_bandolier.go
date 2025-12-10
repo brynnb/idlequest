@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterBandolier = newCharacterBandolierTable("peq", "character_bandolier", "")
+var CharacterBandolier = newCharacterBandolierTable("eqgo", "character_bandolier", "")
 
 type characterBandolierTable struct {
 	mysql.Table

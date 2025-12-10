@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var RuleSets = newRuleSetsTable("peq", "rule_sets", "")
+var RuleSets = newRuleSetsTable("eqgo", "rule_sets", "")
 
 type ruleSetsTable struct {
 	mysql.Table

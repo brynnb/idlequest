@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ContentFlags = newContentFlagsTable("peq", "content_flags", "")
+var ContentFlags = newContentFlagsTable("eqgo", "content_flags", "")
 
 type contentFlagsTable struct {
 	mysql.Table

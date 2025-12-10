@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerSpeech = newQsPlayerSpeechTable("peq", "qs_player_speech", "")
+var QsPlayerSpeech = newQsPlayerSpeechTable("eqgo", "qs_player_speech", "")
 
 type qsPlayerSpeechTable struct {
 	mysql.Table

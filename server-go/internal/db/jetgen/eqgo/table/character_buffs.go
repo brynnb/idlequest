@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterBuffs = newCharacterBuffsTable("peq", "character_buffs", "")
+var CharacterBuffs = newCharacterBuffsTable("eqgo", "character_buffs", "")
 
 type characterBuffsTable struct {
 	mysql.Table

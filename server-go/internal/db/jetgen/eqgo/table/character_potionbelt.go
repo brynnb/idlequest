@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterPotionbelt = newCharacterPotionbeltTable("peq", "character_potionbelt", "")
+var CharacterPotionbelt = newCharacterPotionbeltTable("eqgo", "character_potionbelt", "")
 
 type characterPotionbeltTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharRecipeList = newCharRecipeListTable("peq", "char_recipe_list", "")
+var CharRecipeList = newCharRecipeListTable("eqgo", "char_recipe_list", "")
 
 type charRecipeListTable struct {
 	mysql.Table

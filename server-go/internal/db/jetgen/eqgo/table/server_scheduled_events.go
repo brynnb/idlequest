@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ServerScheduledEvents = newServerScheduledEventsTable("peq", "server_scheduled_events", "")
+var ServerScheduledEvents = newServerScheduledEventsTable("eqgo", "server_scheduled_events", "")
 
 type serverScheduledEventsTable struct {
 	mysql.Table

@@ -20,6 +20,7 @@ import (
 	db_zone "github.com/knervous/eqgo/internal/db/zone"
 	"github.com/knervous/eqgo/internal/session"
 	"github.com/knervous/eqgo/internal/zone"
+	"github.com/knervous/eqgo/internal/zone/client"
 )
 
 // toLowerCamelCase converts a string from PascalCase to lowerCamelCase
@@ -825,7 +826,8 @@ func (wh *WorldHandler) HandleCreateCharacter(session *session.Session, data []b
 
 	ctx := context.Background()
 
-	// 1. Insert new character into character_data table
+	// 1. Insert new character into character_data table with placeholder HP
+	// We'll update it after creating a Client which calculates proper stats
 	timestamp := uint32(time.Now().Unix())
 	// Use a normal double-quoted string so we can include the `int` column name safely
 	insertQuery := "INSERT INTO character_data (" +
@@ -841,7 +843,7 @@ func (wh *WorldHandler) HandleCreateCharacter(session *session.Session, data []b
 		"?, 0, 0, 0, 0, 0, " +
 		"?, ?, ?, 1, ?, " +
 		"?, ?, 0, 0, 0, ?, " +
-		"0, 1, 100, 100, 100, 0, " +
+		"0, 1, 1, 0, 0, 0, " + // cur_hp=1 placeholder, will be updated
 		"?, ?, ?, ?, ?, ?, ?, " +
 		"6000, 6000" +
 		")"
@@ -950,10 +952,43 @@ func (wh *WorldHandler) HandleCreateCharacter(session *session.Session, data []b
 		}
 	}
 
-	// 4. Fetch the created character to return
+	// 4. Fetch the created character
 	character, err := db_character.GetCharacterByName(req.Name)
 	if err != nil {
 		log.Printf("Failed to fetch created character: %v", err)
+		errorResponse := CreateCharacterResponse{
+			Type:          "CHARACTER_CREATED_RESPONSE",
+			Success:       false,
+			CharacterName: req.Name,
+			Error:         "Failed to fetch created character",
+		}
+		wh.SendJSONResponse(session, errorResponse)
+		return
+	}
+
+	// 5. Create a Client to calculate proper stats using existing zone/client logic
+	// This calls CalcBonuses() which runs CalcMaxHP(), CalcMaxMana(), etc.
+	playerClient, err := client.NewClient(character)
+	if err != nil {
+		log.Printf("Failed to create client for stat calculation: %v", err)
+		// Continue with raw character data if client creation fails
+	} else {
+		// Get the calculated HP/mana from the Client's mob
+		mob := playerClient.Mob()
+		calculatedHP := mob.MaxHp
+		calculatedMana := mob.MaxMana
+
+		// Update the character in DB with calculated values
+		updateQuery := "UPDATE character_data SET cur_hp = ?, mana = ? WHERE id = ?"
+		_, err = db.GlobalWorldDB.DB.ExecContext(ctx, updateQuery, calculatedHP, calculatedMana, characterID)
+		if err != nil {
+			log.Printf("Failed to update character HP/mana: %v", err)
+		} else {
+			// Update the character struct with calculated values for the response
+			character.CurHp = uint32(calculatedHP)
+			character.Mana = uint32(calculatedMana)
+			log.Printf("Updated character %s with calculated HP=%d, Mana=%d", req.Name, calculatedHP, calculatedMana)
+		}
 	}
 
 	// Send ack response first (for request/response matching)

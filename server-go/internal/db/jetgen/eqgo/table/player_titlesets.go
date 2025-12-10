@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerTitlesets = newPlayerTitlesetsTable("peq", "player_titlesets", "")
+var PlayerTitlesets = newPlayerTitlesetsTable("eqgo", "player_titlesets", "")
 
 type playerTitlesetsTable struct {
 	mysql.Table

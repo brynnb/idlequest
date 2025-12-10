@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterExpModifiers = newCharacterExpModifiersTable("peq", "character_exp_modifiers", "")
+var CharacterExpModifiers = newCharacterExpModifiersTable("eqgo", "character_exp_modifiers", "")
 
 type characterExpModifiersTable struct {
 	mysql.Table

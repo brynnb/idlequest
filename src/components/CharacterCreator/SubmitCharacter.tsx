@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { webTransportClient } from "@utils/webTransportClient";
+import { WorldSocket, OpCodes, CharCreate, Int } from "@/net";
 import SelectionButton from "../Interface/SelectionButton";
 
 const SubmitCharacter: React.FC = () => {
@@ -25,44 +25,63 @@ const SubmitCharacter: React.FC = () => {
     }
 
     setLoading(true);
-    try {
-      // Send character creation request to server
-      // Server will push CHARACTER_STATE which updates the store automatically
-      await webTransportClient.createCharacter({
-        name: characterName,
-        race: selectedRace.id,
-        class: selectedClass.id,
-        deity: selectedDeity.id,
-        zoneId: selectedZone.zoneidnumber,
-        gender: 0, // Default gender, could be added to character creator
-        face: 0, // Default face, could be added to character creator
-        str: attributes.str + attributes.base_str,
-        sta: attributes.sta + attributes.base_sta,
-        cha: attributes.cha + attributes.base_cha,
-        dex: attributes.dex + attributes.base_dex,
-        int: attributes.int + attributes.base_int,
-        agi: attributes.agi + attributes.base_agi,
-        wis: attributes.wis + attributes.base_wis,
-      });
 
-      console.log("Character creation request sent, navigating to main page");
-      navigate("/", { state: { fromCreate: true } });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : String(error ?? "");
-
-      if (message.includes("Duplicate entry")) {
-        // Name is already taken - fully reset the character creator to step 1
-        resetStore();
-
-        window.alert(
-          "That name is already taken. Please choose a different character name."
-        );
-      } else {
-        // Log unexpected errors
-        console.error("Failed to create character:", error);
+    // Register handler for the server's response
+    WorldSocket.registerOpCodeHandler(
+      OpCodes.ApproveName_Server,
+      Int,
+      (data) => {
+        setLoading(false);
+        if (data.value === 1) {
+          // Success - navigate to main page
+          console.log("Character created successfully");
+          navigate("/", { state: { fromCreate: true } });
+        } else {
+          // Name rejected (likely duplicate)
+          resetStore();
+          window.alert(
+            "That name is already taken. Please choose a different character name."
+          );
+        }
       }
-    } finally {
+    );
+
+    // Build the CharCreate message matching the Cap'n Proto schema
+    const charData = {
+      name: characterName,
+      race: selectedRace.id,
+      charClass: selectedClass.id,
+      deity: selectedDeity.id,
+      startZone: selectedZone.zoneidnumber,
+      gender: 0, // Default gender, could be added to character creator
+      face: 0, // Default face, could be added to character creator
+      str: attributes.str + attributes.base_str,
+      sta: attributes.sta + attributes.base_sta,
+      cha: attributes.cha + attributes.base_cha,
+      dex: attributes.dex + attributes.base_dex,
+      intel: attributes.int + attributes.base_int,
+      agi: attributes.agi + attributes.base_agi,
+      wis: attributes.wis + attributes.base_wis,
+      tutorial: 0,
+      haircolor: 0,
+      beardcolor: 0,
+      beard: 0,
+      hairstyle: 0,
+      eyecolor1: 0,
+      eyecolor2: 0,
+    };
+
+    console.log("Sending CharCreate:", charData);
+
+    // Send the Cap'n Proto message via datagram (server expects Cap'n Proto on datagrams)
+    try {
+      await WorldSocket.sendMessage(
+        OpCodes.CharacterCreate,
+        CharCreate,
+        charData
+      );
+    } catch (error) {
+      console.error("Failed to send CharCreate:", error);
       setLoading(false);
     }
   };

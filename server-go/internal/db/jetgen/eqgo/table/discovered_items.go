@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DiscoveredItems = newDiscoveredItemsTable("peq", "discovered_items", "")
+var DiscoveredItems = newDiscoveredItemsTable("eqgo", "discovered_items", "")
 
 type discoveredItemsTable struct {
 	mysql.Table

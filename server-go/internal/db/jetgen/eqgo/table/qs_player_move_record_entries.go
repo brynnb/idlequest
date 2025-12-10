@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerMoveRecordEntries = newQsPlayerMoveRecordEntriesTable("peq", "qs_player_move_record_entries", "")
+var QsPlayerMoveRecordEntries = newQsPlayerMoveRecordEntriesTable("eqgo", "qs_player_move_record_entries", "")
 
 type qsPlayerMoveRecordEntriesTable struct {
 	mysql.Table

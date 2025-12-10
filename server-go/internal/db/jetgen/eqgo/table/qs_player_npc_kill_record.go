@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var QsPlayerNpcKillRecord = newQsPlayerNpcKillRecordTable("peq", "qs_player_npc_kill_record", "")
+var QsPlayerNpcKillRecord = newQsPlayerNpcKillRecordTable("eqgo", "qs_player_npc_kill_record", "")
 
 type qsPlayerNpcKillRecordTable struct {
 	mysql.Table

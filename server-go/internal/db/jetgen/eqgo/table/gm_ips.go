@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var GmIps = newGmIpsTable("peq", "gm_ips", "")
+var GmIps = newGmIpsTable("eqgo", "gm_ips", "")
 
 type gmIpsTable struct {
 	mysql.Table

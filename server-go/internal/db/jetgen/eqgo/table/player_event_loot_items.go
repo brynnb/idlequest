@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var PlayerEventLootItems = newPlayerEventLootItemsTable("peq", "player_event_loot_items", "")
+var PlayerEventLootItems = newPlayerEventLootItemsTable("eqgo", "player_event_loot_items", "")
 
 type playerEventLootItemsTable struct {
 	mysql.Table

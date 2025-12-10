@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Tasksets = newTasksetsTable("peq", "tasksets", "")
+var Tasksets = newTasksetsTable("eqgo", "tasksets", "")
 
 type tasksetsTable struct {
 	mysql.Table

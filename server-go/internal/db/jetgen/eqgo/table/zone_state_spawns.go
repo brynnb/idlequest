@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ZoneStateSpawns = newZoneStateSpawnsTable("peq", "zone_state_spawns", "")
+var ZoneStateSpawns = newZoneStateSpawnsTable("eqgo", "zone_state_spawns", "")
 
 type zoneStateSpawnsTable struct {
 	mysql.Table

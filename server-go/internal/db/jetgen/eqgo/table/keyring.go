@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Keyring = newKeyringTable("peq", "keyring", "")
+var Keyring = newKeyringTable("eqgo", "keyring", "")
 
 type keyringTable struct {
 	mysql.Table

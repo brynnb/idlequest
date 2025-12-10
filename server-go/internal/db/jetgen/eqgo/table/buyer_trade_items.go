@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var BuyerTradeItems = newBuyerTradeItemsTable("peq", "buyer_trade_items", "")
+var BuyerTradeItems = newBuyerTradeItemsTable("eqgo", "buyer_trade_items", "")
 
 type buyerTradeItemsTable struct {
 	mysql.Table

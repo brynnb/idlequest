@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterLanguages = newCharacterLanguagesTable("peq", "character_languages", "")
+var CharacterLanguages = newCharacterLanguagesTable("eqgo", "character_languages", "")
 
 type characterLanguagesTable struct {
 	mysql.Table

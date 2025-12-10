@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CommandSettings = newCommandSettingsTable("peq", "command_settings", "")
+var CommandSettings = newCommandSettingsTable("eqgo", "command_settings", "")
 
 type commandSettingsTable struct {
 	mysql.Table

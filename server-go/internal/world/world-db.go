@@ -152,9 +152,54 @@ func GetCharSelectInfo(ses *session.Session, ctx context.Context, accountID int6
 	const limit = 8
 
 	var chars []model.CharacterData
+	// NOTE: We explicitly select only the columns that exist in the stock PEQ
+	// character_data schema, instead of using AllColumns (which expects extra
+	// fields like firstlogon that may not be present).
 	if err := table.CharacterData.
 		SELECT(
-			table.CharacterData.AllColumns,
+			table.CharacterData.ID,
+			table.CharacterData.AccountID,
+			table.CharacterData.Name,
+			table.CharacterData.LastName,
+			table.CharacterData.Title,
+			table.CharacterData.Suffix,
+			table.CharacterData.ZoneID,
+			table.CharacterData.ZoneInstance,
+			table.CharacterData.Y,
+			table.CharacterData.X,
+			table.CharacterData.Z,
+			table.CharacterData.Heading,
+			table.CharacterData.Gender,
+			table.CharacterData.Race,
+			table.CharacterData.Class,
+			table.CharacterData.Level,
+			table.CharacterData.Deity,
+			table.CharacterData.Birthday,
+			table.CharacterData.LastLogin,
+			table.CharacterData.TimePlayed,
+			table.CharacterData.Anon,
+			table.CharacterData.Gm,
+			table.CharacterData.Face,
+			table.CharacterData.Exp,
+			table.CharacterData.CurHp,
+			table.CharacterData.Mana,
+			table.CharacterData.Endurance,
+			table.CharacterData.Intoxication,
+			table.CharacterData.Str,
+			table.CharacterData.Sta,
+			table.CharacterData.Cha,
+			table.CharacterData.Dex,
+			table.CharacterData.Int,
+			table.CharacterData.Agi,
+			table.CharacterData.Wis,
+			table.CharacterData.ZoneChangeCount,
+			table.CharacterData.HungerLevel,
+			table.CharacterData.ThirstLevel,
+			table.CharacterData.ShowHelm,
+			table.CharacterData.GroupAutoConsent,
+			table.CharacterData.RaidAutoConsent,
+			table.CharacterData.GuildAutoConsent,
+			table.CharacterData.DeletedAt,
 		).
 		FROM(table.CharacterData).
 		WHERE(

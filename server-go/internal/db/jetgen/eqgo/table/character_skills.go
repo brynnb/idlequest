@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterSkills = newCharacterSkillsTable("peq", "character_skills", "")
+var CharacterSkills = newCharacterSkillsTable("eqgo", "character_skills", "")
 
 type characterSkillsTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var SpawnConditionValues = newSpawnConditionValuesTable("peq", "spawn_condition_values", "")
+var SpawnConditionValues = newSpawnConditionValuesTable("eqgo", "spawn_condition_values", "")
 
 type spawnConditionValuesTable struct {
 	mysql.Table

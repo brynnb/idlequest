@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterPetInventory = newCharacterPetInventoryTable("peq", "character_pet_inventory", "")
+var CharacterPetInventory = newCharacterPetInventoryTable("eqgo", "character_pet_inventory", "")
 
 type characterPetInventoryTable struct {
 	mysql.Table

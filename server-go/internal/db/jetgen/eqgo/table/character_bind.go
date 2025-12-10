@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterBind = newCharacterBindTable("peq", "character_bind", "")
+var CharacterBind = newCharacterBindTable("eqgo", "character_bind", "")
 
 type characterBindTable struct {
 	mysql.Table

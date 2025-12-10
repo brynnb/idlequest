@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var NpcEmotes = newNpcEmotesTable("peq", "npc_emotes", "")
+var NpcEmotes = newNpcEmotesTable("eqgo", "npc_emotes", "")
 
 type npcEmotesTable struct {
 	mysql.Table

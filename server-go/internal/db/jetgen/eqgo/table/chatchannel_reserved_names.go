@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ChatchannelReservedNames = newChatchannelReservedNamesTable("peq", "chatchannel_reserved_names", "")
+var ChatchannelReservedNames = newChatchannelReservedNamesTable("eqgo", "chatchannel_reserved_names", "")
 
 type chatchannelReservedNamesTable struct {
 	mysql.Table

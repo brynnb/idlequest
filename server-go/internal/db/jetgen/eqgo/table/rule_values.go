@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var RuleValues = newRuleValuesTable("peq", "rule_values", "")
+var RuleValues = newRuleValuesTable("eqgo", "rule_values", "")
 
 type ruleValuesTable struct {
 	mysql.Table

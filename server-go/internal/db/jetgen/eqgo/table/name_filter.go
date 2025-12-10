@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var NameFilter = newNameFilterTable("peq", "name_filter", "")
+var NameFilter = newNameFilterTable("eqgo", "name_filter", "")
 
 type nameFilterTable struct {
 	mysql.Table

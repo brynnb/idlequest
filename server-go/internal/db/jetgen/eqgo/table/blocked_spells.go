@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var BlockedSpells = newBlockedSpellsTable("peq", "blocked_spells", "")
+var BlockedSpells = newBlockedSpellsTable("eqgo", "blocked_spells", "")
 
 type blockedSpellsTable struct {
 	mysql.Table

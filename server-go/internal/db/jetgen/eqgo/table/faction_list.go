@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var FactionList = newFactionListTable("peq", "faction_list", "")
+var FactionList = newFactionListTable("eqgo", "faction_list", "")
 
 type factionListTable struct {
 	mysql.Table

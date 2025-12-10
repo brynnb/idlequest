@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var BuyerBuyLines = newBuyerBuyLinesTable("peq", "buyer_buy_lines", "")
+var BuyerBuyLines = newBuyerBuyLinesTable("eqgo", "buyer_buy_lines", "")
 
 type buyerBuyLinesTable struct {
 	mysql.Table

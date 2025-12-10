@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Lootdrop = newLootdropTable("peq", "lootdrop", "")
+var Lootdrop = newLootdropTable("eqgo", "lootdrop", "")
 
 type lootdropTable struct {
 	mysql.Table

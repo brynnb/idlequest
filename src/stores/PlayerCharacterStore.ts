@@ -21,11 +21,11 @@ import {
 import { getBagStartingSlot } from "@utils/inventoryUtils";
 import { ItemClass } from "@entities/ItemClass";
 import {
-  webTransportClient,
-  CharacterStateMessage,
-  ServerCharacter,
-  InventoryItemResponse,
-} from "@utils/webTransportClient";
+  WorldSocket,
+  OpCodes,
+  CharacterSelect,
+  capnpToPlainObject,
+} from "@/net";
 import races from "@data/json/races.json";
 import classes from "@data/json/classes.json";
 import deities from "@data/json/deities.json";
@@ -62,7 +62,8 @@ interface PlayerCharacterStore {
   updateWeightAllowance: () => void;
   updateAllStats: () => void;
   initializeCharacterSync: () => void;
-  applyServerCharacterState: (state: CharacterStateMessage) => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  applyServerCharacterState: (state: any) => Promise<void>;
 }
 
 const moveBagContents = (
@@ -537,71 +538,91 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           });
         },
 
-        // Subscribe to CHARACTER_STATE messages from server
+        // Subscribe to SendCharInfo messages from server (Cap'n Proto)
         initializeCharacterSync: () => {
-          webTransportClient.onCharacterState((state) => {
-            get().applyServerCharacterState(state);
-          });
+          WorldSocket.registerOpCodeHandler(
+            OpCodes.SendCharInfo,
+            CharacterSelect,
+            (charSelect) => {
+              console.log("Received SendCharInfo:", charSelect);
+              // Convert Cap'n Proto object to plain JS object
+              const plainData = capnpToPlainObject(charSelect);
+              get().applyServerCharacterState(plainData);
+            }
+          );
         },
 
-        // Apply server-pushed character state (single source of truth)
-        applyServerCharacterState: async (state: CharacterStateMessage) => {
-          console.log("Received CHARACTER_STATE:", state);
+        // Apply server-pushed character state from Cap'n Proto CharacterSelect
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        applyServerCharacterState: async (charSelectData: any) => {
+          console.log("Processing CharacterSelect:", charSelectData);
 
-          if (!state.character) {
-            console.warn(
-              "CHARACTER_STATE received with null character, ignoring"
-            );
+          if (
+            !charSelectData.characters ||
+            charSelectData.characters.length === 0
+          ) {
+            console.warn("CharacterSelect has no characters, ignoring");
             return;
           }
 
-          const serverChar = state.character as ServerCharacter;
+          // Get the first (or most recently created) character
+          const serverChar = charSelectData.characters[0];
 
           // Look up race/class/deity from JSON data
           const raceData = races.find(
             (r: { id: number }) => r.id === serverChar.race
           );
           const classData = classes.find(
-            (c: { id: number }) => c.id === serverChar.class
+            (c: { id: number }) => c.id === serverChar.charClass
           );
-          const deityData = deities.find(
-            (d: { id: number }) => d.id === serverChar.deity
-          );
+          // CharacterSelectEntry doesn't include deity, default to first
+          const deityData = deities[0];
 
-          // Build inventory items with item details
+          // Build inventory items from the character's items
           const inventoryItems: InventoryItem[] = await Promise.all(
-            (state.inventory || []).map(async (item: InventoryItemResponse) => {
-              const itemDetails = await getItemById(item.itemId);
-              return {
-                slotid: item.slotId,
-                itemid: item.itemId,
-                charges: item.charges,
-                itemDetails: itemDetails || undefined,
-              } as InventoryItem;
-            })
+            (serverChar.items || [])
+              .filter((item: any) => {
+                const itemId = item.itemId || item.id;
+                return itemId && itemId > 0; // Skip items with no valid ID
+              })
+              .map(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                async (item: any) => {
+                  const itemId = item.itemId || item.id;
+                  const itemDetails = await getItemById(itemId);
+                  return {
+                    slotid: item.slotId || item.slot || 0,
+                    itemid: itemId,
+                    charges: item.charges || 0,
+                    itemDetails: itemDetails || undefined,
+                  } as InventoryItem;
+                }
+              )
           );
 
           const newProfile: CharacterProfile = {
-            id: serverChar.id,
+            id: serverChar.id || 0,
             name: serverChar.name,
-            lastName: serverChar.lastName,
+            lastName: "",
             race: raceData,
             class: classData,
             deity: deityData,
-            zoneId: serverChar.zoneId,
+            zoneId: serverChar.zone,
             level: serverChar.level,
-            exp: serverChar.exp,
-            curHp: serverChar.curHp,
-            mana: serverChar.mana,
-            endurance: serverChar.endurance,
+            exp: 0,
+            // For new characters, set curHp to maxHp (calculated below)
+            curHp: 0,
+            mana: 0,
+            endurance: 0,
             attributes: {
-              str: serverChar.str,
-              sta: serverChar.sta,
-              cha: serverChar.cha,
-              dex: serverChar.dex,
-              int: serverChar.int,
-              agi: serverChar.agi,
-              wis: serverChar.wis,
+              // CharacterSelectEntry doesn't have attributes, use defaults
+              str: 75,
+              sta: 75,
+              cha: 75,
+              dex: 75,
+              int: 75,
+              agi: 75,
+              wis: 75,
             },
             inventory: inventoryItems,
             stats: {
@@ -610,9 +631,11 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             },
           };
 
-          // Calculate derived stats
+          // Calculate derived stats from attributes
           newProfile.maxHp = calculatePlayerHP(newProfile);
           newProfile.maxMana = calculatePlayerMana(newProfile);
+          // For new characters, start at full HP
+          newProfile.curHp = newProfile.maxHp;
 
           set({ characterProfile: newProfile });
           get().updateAllStats();

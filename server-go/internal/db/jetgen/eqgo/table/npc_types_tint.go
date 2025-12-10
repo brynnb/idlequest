@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var NpcTypesTint = newNpcTypesTintTable("peq", "npc_types_tint", "")
+var NpcTypesTint = newNpcTypesTintTable("eqgo", "npc_types_tint", "")
 
 type npcTypesTintTable struct {
 	mysql.Table

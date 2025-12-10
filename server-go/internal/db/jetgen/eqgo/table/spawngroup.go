@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Spawngroup = newSpawngroupTable("peq", "spawngroup", "")
+var Spawngroup = newSpawngroupTable("eqgo", "spawngroup", "")
 
 type spawngroupTable struct {
 	mysql.Table

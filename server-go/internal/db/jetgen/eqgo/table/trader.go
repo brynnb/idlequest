@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Trader = newTraderTable("peq", "trader", "")
+var Trader = newTraderTable("eqgo", "trader", "")
 
 type traderTable struct {
 	mysql.Table

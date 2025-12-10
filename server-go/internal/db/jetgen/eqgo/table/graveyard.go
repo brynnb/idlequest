@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Graveyard = newGraveyardTable("peq", "graveyard", "")
+var Graveyard = newGraveyardTable("eqgo", "graveyard", "")
 
 type graveyardTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Mail = newMailTable("peq", "mail", "")
+var Mail = newMailTable("eqgo", "mail", "")
 
 type mailTable struct {
 	mysql.Table

@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ToolGameObjects = newToolGameObjectsTable("peq", "tool_game_objects", "")
+var ToolGameObjects = newToolGameObjectsTable("eqgo", "tool_game_objects", "")
 
 type toolGameObjectsTable struct {
 	mysql.Table

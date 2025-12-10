@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterItemRecast = newCharacterItemRecastTable("peq", "character_item_recast", "")
+var CharacterItemRecast = newCharacterItemRecastTable("eqgo", "character_item_recast", "")
 
 type characterItemRecastTable struct {
 	mysql.Table

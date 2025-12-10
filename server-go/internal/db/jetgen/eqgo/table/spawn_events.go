@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var SpawnEvents = newSpawnEventsTable("peq", "spawn_events", "")
+var SpawnEvents = newSpawnEventsTable("eqgo", "spawn_events", "")
 
 type spawnEventsTable struct {
 	mysql.Table

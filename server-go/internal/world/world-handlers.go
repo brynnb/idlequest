@@ -37,9 +37,15 @@ func HandleJWTLogin(ses *session.Session, payload []byte, wh *WorldHandler) bool
 		log.Printf("failed to get token from JWTLogin struct: %v", err)
 		return false
 	}
-	var discordID string
 	serverConfig, _ := config.Get()
-	if !serverConfig.Local {
+	var accountID int64
+
+	if serverConfig.Local {
+		// Local development: bypass Discord/account lookup and use a fixed test account.
+		// This avoids requiring a discord_id column in the account table.
+		accountID = 1
+	} else {
+		var discordID string
 		discordID, err = discord.ValidateJWT(token)
 		if err != nil {
 			log.Printf("failed to validate JWT token: %v", err)
@@ -52,21 +58,19 @@ func HandleJWTLogin(ses *session.Session, payload []byte, wh *WorldHandler) bool
 			err = ses.SendData(jwtResponse.Message(), opcodes.JWTResponse)
 			return false
 		}
-	} else {
-		discordID = "local"
-	}
 
-	accountID, err := GetOrCreateAccount(ctx, discordID)
-	if err != nil {
-		log.Printf("failed to get or create account for discordID %q: %v", discordID, err)
-		jwtResponse, err := session.NewMessage(ses, eq.NewRootJWTResponse)
-		jwtResponse.SetStatus(0)
-		ses.SendData(jwtResponse.Message(), opcodes.JWTResponse)
-
+		accountID, err = GetOrCreateAccount(ctx, discordID)
 		if err != nil {
-			log.Printf("failed to send JWTResponse: %v", err)
+			log.Printf("failed to get or create account for discordID %q: %v", discordID, err)
+			jwtResponse, err := session.NewMessage(ses, eq.NewRootJWTResponse)
+			jwtResponse.SetStatus(0)
+			ses.SendData(jwtResponse.Message(), opcodes.JWTResponse)
+
+			if err != nil {
+				log.Printf("failed to send JWTResponse: %v", err)
+			}
+			return false
 		}
-		return false
 	}
 
 	ses.AccountID = accountID
@@ -82,12 +86,12 @@ func HandleJWTLogin(ses *session.Session, payload []byte, wh *WorldHandler) bool
 		log.Printf("failed to send JWTResponse: %v", err)
 	}
 
-	if err != nil {
-		log.Printf("failed to send JWTResponse: %v", err)
+	if !serverConfig.Local {
+		// Only record login IPs in non-local / real auth mode.
+		LoginIP(ctx, accountID, ses.IP)
 	}
 
 	sendCharInfo(ses, accountID)
-	LoginIP(ctx, accountID, ses.IP)
 	return false
 }
 
@@ -169,11 +173,20 @@ func HandleCharacterCreate(ses *session.Session, payload []byte, wh *WorldHandle
 		return false
 	}
 
+	serverConfig, _ := config.Get()
 	if !CharacterCreate(ses, ses.AccountID, req) {
-		enterWorld, _ := session.NewMessage(ses, eq.NewRootInt)
-		enterWorld.SetValue(0)
-		ses.SendData(enterWorld.Message(), opcodes.ApproveName_Server)
-		return false
+		if !serverConfig.Local {
+			// In non-local / production mode, preserve strict behavior: treat any
+			// CharacterCreate failure as a name-creation failure.
+			enterWorld, _ := session.NewMessage(ses, eq.NewRootInt)
+			enterWorld.SetValue(0)
+			ses.SendData(enterWorld.Message(), opcodes.ApproveName_Server)
+			return false
+		}
+		// Local development: CharacterCreate can fail due to missing PEQ tables
+		// like item_instances/character_inventory. For local dev we still want to
+		// allow character names that pass validation, so log and continue.
+		log.Printf("CharacterCreate failed in local mode, continuing anyway")
 	}
 	enterWorld, _ := session.NewMessage(ses, eq.NewRootInt)
 	enterWorld.SetValue(1)

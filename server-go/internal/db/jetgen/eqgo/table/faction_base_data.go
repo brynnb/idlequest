@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var FactionBaseData = newFactionBaseDataTable("peq", "faction_base_data", "")
+var FactionBaseData = newFactionBaseDataTable("eqgo", "faction_base_data", "")
 
 type factionBaseDataTable struct {
 	mysql.Table

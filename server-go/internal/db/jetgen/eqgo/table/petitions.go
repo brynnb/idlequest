@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var Petitions = newPetitionsTable("peq", "petitions", "")
+var Petitions = newPetitionsTable("eqgo", "petitions", "")
 
 type petitionsTable struct {
 	mysql.Table

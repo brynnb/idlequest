@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharacterExpeditionLockouts = newCharacterExpeditionLockoutsTable("peq", "character_expedition_lockouts", "")
+var CharacterExpeditionLockouts = newCharacterExpeditionLockoutsTable("eqgo", "character_expedition_lockouts", "")
 
 type characterExpeditionLockoutsTable struct {
 	mysql.Table

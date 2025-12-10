@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var RaidMembers = newRaidMembersTable("peq", "raid_members", "")
+var RaidMembers = newRaidMembersTable("eqgo", "raid_members", "")
 
 type raidMembersTable struct {
 	mysql.Table

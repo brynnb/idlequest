@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var DynamicZoneLockouts = newDynamicZoneLockoutsTable("peq", "dynamic_zone_lockouts", "")
+var DynamicZoneLockouts = newDynamicZoneLockoutsTable("eqgo", "dynamic_zone_lockouts", "")
 
 type dynamicZoneLockoutsTable struct {
 	mysql.Table

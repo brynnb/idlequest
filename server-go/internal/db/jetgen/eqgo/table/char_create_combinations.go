@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var CharCreateCombinations = newCharCreateCombinationsTable("peq", "char_create_combinations", "")
+var CharCreateCombinations = newCharCreateCombinationsTable("eqgo", "char_create_combinations", "")
 
 type charCreateCombinationsTable struct {
 	mysql.Table

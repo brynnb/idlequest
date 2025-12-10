@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var ZoneFlags = newZoneFlagsTable("peq", "zone_flags", "")
+var ZoneFlags = newZoneFlagsTable("eqgo", "zone_flags", "")
 
 type zoneFlagsTable struct {
 	mysql.Table

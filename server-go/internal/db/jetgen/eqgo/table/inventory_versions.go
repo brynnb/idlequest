@@ -11,7 +11,7 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
-var InventoryVersions = newInventoryVersionsTable("peq", "inventory_versions", "")
+var InventoryVersions = newInventoryVersionsTable("eqgo", "inventory_versions", "")
 
 type inventoryVersionsTable struct {
 	mysql.Table
