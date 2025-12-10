@@ -179,7 +179,7 @@ type DialogueResponse struct {
 	Error     string   `json:"error,omitempty"`
 }
 
-// HandleGetNPCDialogue handles dialogue requests by proxying to the external dialogue service
+// HandleGetNPCDialogue handles dialogue requests by calling OpenRouter API
 func (wh *WorldHandler) HandleGetNPCDialogue(session *session.Session, data []byte) {
 	var req DialogueRequest
 	if err := json.Unmarshal(data, &req); err != nil {
@@ -192,65 +192,166 @@ func (wh *WorldHandler) HandleGetNPCDialogue(session *session.Session, data []by
 		return
 	}
 
-	dialogueURL := os.Getenv("DIALOGUE_API_URL")
-	if dialogueURL == "" {
-		dialogueURL = "http://localhost:3001/api/dialogue"
+	// Get OpenRouter API key from environment
+	apiKey := os.Getenv("OPENROUTER_API_KEY")
+	if apiKey == "" {
+		// Fall back to OpenAI key if OpenRouter not set
+		apiKey = os.Getenv("OPENAI_API_KEY")
+	}
+	if apiKey == "" {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "API key not configured")
+		return
+	}
+
+	// TODO: Add SQLite support to look up NPC's quest script from eq_database.db
+	// For now, we generate dialogue without the Lua script context
+	luaScript := ""
+
+	// Build the prompt
+	nonDialogueInstruction := "You are an AI assistant creating dialogue for NPCs in a fantasy MMORPG setting, EverQuest. " +
+		"Generate a brief, context-appropriate response for an NPC when approached by a player. " +
+		"The player is interacting with this NPC despite the NPC not having any dialogue for the player, often because it's a non-speaking creature like an animal. Simply describe what the NPC is doing in response to being talked at, but do not give it any speaking lines. For example, the NPC might look at the player and walk away. Or ignore them entirely. " +
+		"Format your response as a JSON object with 'dialogue' property. "
+
+	sharedInstruction := "Do not make up details about an NPC's species if you do not know. Do not make up details about an NPC's species if you do not know (e.g. don't make the NPC a unicorn unless it's obvious from the name). Do not make inanimate objects act like they're alive (they don't look at things). Things like boats may have dialogue associated in the LUA script but still do not treat them like they can speak. SirensBane and Stormbreaker are ships, do not make them talk or look at things. Do not refer to 'the player' and instead say 'you'. "
+
+	var messages []map[string]string
+
+	if luaScript != "" {
+		messages = []map[string]string{
+			{
+				"role": "system",
+				"content": "You are an AI assistant that analyzes Lua scripts for NPCs from the 1999 MMORPG EverQuest. " +
+					"Extract the dialogue from the NPC script and provide one to three responses for the user to choose from " +
+					"to further progress the dialogue. Only provide multiple responses if there are multiple areas for the " +
+					"conversation to progress to. Only present the opening dialogue from the script. Format your response as " +
+					"a JSON object with 'dialogue' and 'responses' fields. If the LUA script has no dialogue and is only event scripting, then " +
+					nonDialogueInstruction + sharedInstruction,
+			},
+			{
+				"role":    "user",
+				"content": "NPC named " + req.NpcName + " and LUA script:\n\n" + luaScript,
+			},
+		}
+	} else {
+		messages = []map[string]string{
+			{
+				"role":    "system",
+				"content": nonDialogueInstruction + sharedInstruction,
+			},
+			{
+				"role": "user",
+				"content": "Create a description of the actions of an NPC named " + req.NpcName + " when approached by a player. " +
+					"No specific script is available, so use your knowledge of EverQuest to create an appropriate response. ",
+			},
+		}
+	}
+
+	// Add dialogue history if present
+	if len(req.DialogueHistory) > 0 {
+		var historyContent strings.Builder
+		for _, entry := range req.DialogueHistory {
+			historyContent.WriteString(entry.NpcDialogue)
+			if entry.PlayerQuestion != nil && *entry.PlayerQuestion != "" {
+				historyContent.WriteString("\nPlayer: ")
+				historyContent.WriteString(*entry.PlayerQuestion)
+			}
+			historyContent.WriteString("\n")
+		}
+		messages = append(messages, map[string]string{
+			"role":    "user",
+			"content": "Previous dialogue:\n" + historyContent.String() + "\n\nContinue the conversation based on this context.",
+		})
+	}
+
+	// Determine API URL - use OpenRouter by default, fall back to OpenAI
+	apiURL := os.Getenv("LLM_API_URL")
+	if apiURL == "" {
+		apiURL = "https://openrouter.ai/api/v1/chat/completions"
+	}
+
+	// Get model from env or use default
+	model := os.Getenv("LLM_MODEL")
+	if model == "" {
+		model = "openai/gpt-4o-mini"
 	}
 
 	payload, err := json.Marshal(map[string]interface{}{
-		"npcName":         req.NpcName,
-		"dialogueHistory": req.DialogueHistory,
+		"model":    model,
+		"messages": messages,
+		"response_format": map[string]string{
+			"type": "json_object",
+		},
 	})
 	if err != nil {
-		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to marshal dialogue request")
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to marshal API request")
 		return
 	}
 
-	client := &http.Client{Timeout: 15 * time.Second}
-	httpReq, err := http.NewRequest("POST", dialogueURL, bytes.NewBuffer(payload))
+	httpClient := &http.Client{Timeout: 30 * time.Second}
+	httpReq, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(payload))
 	if err != nil {
-		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to create dialogue request")
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to create API request")
 		return
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+apiKey)
+	// OpenRouter-specific headers
+	httpReq.Header.Set("HTTP-Referer", "https://idlequest.app")
+	httpReq.Header.Set("X-Title", "IdleQuest")
 
-	resp, err := client.Do(httpReq)
+	resp, err := httpClient.Do(httpReq)
 	if err != nil {
-		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Dialogue service unavailable")
+		log.Printf("LLM API error: %v", err)
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "LLM service unavailable")
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Dialogue service error")
+		log.Printf("LLM API returned status %d", resp.StatusCode)
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "LLM service error")
 		return
 	}
 
-	var external map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&external); err != nil {
-		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to parse dialogue response")
+	var apiResponse struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "Failed to parse API response")
 		return
 	}
 
-	dialogueStr, _ := external["dialogue"].(string)
-	var responses []string
-	if arr, ok := external["responses"].([]interface{}); ok {
-		for _, v := range arr {
-			if s, ok := v.(string); ok {
-				responses = append(responses, s)
-			}
-		}
+	if len(apiResponse.Choices) == 0 {
+		wh.SendJSONError(session, "DIALOGUE_RESPONSE", "No response from LLM")
+		return
+	}
+
+	// Parse the JSON content from the LLM response
+	var dialogueContent struct {
+		Dialogue  string   `json:"dialogue"`
+		Responses []string `json:"responses"`
+	}
+	if err := json.Unmarshal([]byte(apiResponse.Choices[0].Message.Content), &dialogueContent); err != nil {
+		log.Printf("Failed to parse dialogue JSON: %v, content: %s", err, apiResponse.Choices[0].Message.Content)
+		// If parsing fails, use the raw content as dialogue
+		dialogueContent.Dialogue = apiResponse.Choices[0].Message.Content
 	}
 
 	response := DialogueResponse{
 		Type:      "DIALOGUE_RESPONSE",
 		Success:   true,
-		Dialogue:  dialogueStr,
-		Responses: responses,
+		Dialogue:  dialogueContent.Dialogue,
+		Responses: dialogueContent.Responses,
 		NpcName:   req.NpcName,
 	}
 
 	wh.SendJSONResponse(session, response)
+	log.Printf("Sent dialogue for NPC %s to session %d", req.NpcName, session.SessionID)
 }
 
 type ZoneRequest struct {
@@ -748,12 +849,40 @@ func (wh *WorldHandler) HandleGetAdjacentZones(session *session.Session, data []
 	}
 
 	// Fetch zone details for each target zone
-	zones := make([]interface{}, 0, len(targetZoneIds))
+	// Track zones by long_name to filter out duplicate high-ID versions (instanced zones)
+	// Use long_name because instanced zones often have the same display name but different short_name
+	zonesByLongName := make(map[string]interface{})
+	zoneIdByLongName := make(map[string]uint32)
+
 	for targetZoneId := range targetZoneIds {
+		// Skip the current zone - no need to show it as an adjacent option
+		if int(targetZoneId) == req.ZoneId {
+			continue
+		}
+
 		zone, err := db_zone.GetZoneById(context.Background(), int(targetZoneId))
 		if err != nil || zone == nil {
 			continue
 		}
+
+		longName := zone.LongName
+
+		// If we already have this zone by long_name, keep the one with the lower ID
+		// Higher IDs are typically instanced/special versions
+		if existingId, exists := zoneIdByLongName[longName]; exists {
+			if targetZoneId < existingId {
+				zonesByLongName[longName] = zone
+				zoneIdByLongName[longName] = targetZoneId
+			}
+		} else {
+			zonesByLongName[longName] = zone
+			zoneIdByLongName[longName] = targetZoneId
+		}
+	}
+
+	// Convert map to slice
+	zones := make([]interface{}, 0, len(zonesByLongName))
+	for _, zone := range zonesByLongName {
 		zones = append(zones, zone)
 	}
 

@@ -87,12 +87,8 @@ func NewZoneInstance(zoneID, instanceID int) *ZoneInstance {
 		spawnTimers[spawn2ID] = time.Now()
 	}
 
-	// Grid entries
-	gridEntries, err := db_zone.GetZoneGridEntries(zone.Zoneidnumber)
-	if err != nil {
-		fmt.Println("Error getting grid entries:", err)
-		return nil
-	}
+	// Grid entries - not needed for idle game
+	gridEntries := make(map[int64][]db_zone.GridEntries)
 
 	// Register quests
 	QuestInterface := questregistry.GetQuestInterface(*zone.ShortName)

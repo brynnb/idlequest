@@ -1,4 +1,8 @@
-import useDialogueStore from '@stores/DialogueStore';
+import useDialogueStore from "@stores/DialogueStore";
+import {
+  webTransportClient,
+  DialogueEntry as WTDialogueEntry,
+} from "./webTransportClient";
 
 export interface DialogueResponse {
   dialogue: string;
@@ -14,10 +18,8 @@ interface DialogueEntry {
   playerQuestion?: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
 export async function getNPCDialogue(
-  npcName: string, 
+  npcName: string,
   dialogueHistory: DialogueEntry[] = []
 ): Promise<DialogueResponse | NonDialogueResponse | null> {
   const { setIsLoading } = useDialogueStore.getState();
@@ -26,28 +28,32 @@ export async function getNPCDialogue(
   console.log(`getNPCDialogue called with npcName: ${npcName}`);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/dialogue`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        npcName,
-        dialogueHistory,
-      }),
-    });
+    // Convert to WebTransport dialogue entry format
+    const wtDialogueHistory: WTDialogueEntry[] = dialogueHistory.map(
+      (entry) => ({
+        npcDialogue: entry.npcDialogue,
+        playerQuestion: entry.playerQuestion,
+      })
+    );
 
-    if (!response.ok) {
-      console.error('Failed to fetch dialogue:', response.statusText);
+    const response = await webTransportClient.getNPCDialogue(
+      npcName,
+      wtDialogueHistory
+    );
+
+    if (!response.success) {
+      console.error("Failed to fetch dialogue:", response.error);
       return null;
     }
 
-    const data = await response.json();
-    console.log('Dialogue response:', data);
-    
-    return data;
+    console.log("Dialogue response:", response);
+
+    return {
+      dialogue: response.dialogue || "",
+      responses: response.responses || [],
+    };
   } catch (error) {
-    console.error('Error in getNPCDialogue:', error);
+    console.error("Error in getNPCDialogue:", error);
     return null;
   } finally {
     setIsLoading(false);

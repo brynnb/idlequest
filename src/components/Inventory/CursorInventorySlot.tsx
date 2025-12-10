@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { InventorySlot } from "@entities/InventorySlot";
-import { useDatabase } from "@hooks/useDatabase";
 
 const CursorSlot = styled.div`
   position: fixed;
@@ -23,12 +22,12 @@ const ItemIcon = styled.img`
 const CursorInventorySlot: React.FC = () => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const { getById } = useDatabase();
-  const [itemDetails, setItemDetails] = useState<any>(null);
 
   const cursorItem = characterProfile?.inventory?.find(
     (item) => item.slotid === InventorySlot.Cursor
   );
+
+  const itemDetails = cursorItem?.itemDetails;
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -41,19 +40,6 @@ const CursorInventorySlot: React.FC = () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
-
-  useEffect(() => {
-    const fetchItemDetails = async () => {
-      if (cursorItem && cursorItem.itemid) {
-        const details = await getById("items", cursorItem.itemid);
-        setItemDetails(details);
-      } else {
-        setItemDetails(null);
-      }
-    };
-
-    fetchItemDetails();
-  }, [cursorItem, getById]);
 
   if (!cursorItem || !itemDetails) {
     return null;

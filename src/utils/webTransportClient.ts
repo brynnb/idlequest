@@ -542,7 +542,13 @@ class WebTransportClient {
     return response.type;
   }
 
-  private async sendMessage(message: WebTransportMessage): Promise<any> {
+  private async sendMessage(
+    message: WebTransportMessage,
+    retryCount = 0
+  ): Promise<any> {
+    const maxRetries = 3;
+    const baseTimeout = 10000; // 10 seconds
+
     if (!this.isConnected || !this.controlStream) {
       await this.connect();
     }
@@ -551,8 +557,19 @@ class WebTransportClient {
       const requestId = this.generateRequestIdFromMessage(message);
       const timeout = setTimeout(() => {
         this.pendingRequests.delete(requestId);
-        reject(new Error("Request timeout"));
-      }, 10000); // 10 second timeout
+        if (retryCount < maxRetries) {
+          console.log(
+            `Request ${requestId} timed out, retrying (${
+              retryCount + 1
+            }/${maxRetries})...`
+          );
+          this.sendMessage(message, retryCount + 1)
+            .then(resolve)
+            .catch(reject);
+        } else {
+          reject(new Error(`Request timeout after ${maxRetries} retries`));
+        }
+      }, baseTimeout * (retryCount + 1)); // Increase timeout with each retry
 
       this.pendingRequests.set(requestId, { resolve, reject, timeout });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { getAdjacentZones } from "@utils/zoneUtils";
 import Zone from "@entities/Zone";
@@ -59,17 +59,35 @@ const ZoneSelector: React.FC = () => {
   const [adjacentZones, setAdjacentZones] = React.useState<Zone[]>([]);
   const { characterProfile, setCharacterZone } = usePlayerCharacterStore();
   const { setCurrentZone } = useGameStatusStore();
+  const fetchingRef = useRef(false);
+  const lastZoneIdRef = useRef<number | null>(null);
 
-  const fetchAdjacentZones = useCallback(async () => {
-    if (characterProfile.zoneId) {
-      const zones = await getAdjacentZones(characterProfile.zoneId);
-      setAdjacentZones(zones);
+  const fetchAdjacentZones = useCallback(async (zoneId: number) => {
+    // Prevent duplicate requests for the same zone
+    if (fetchingRef.current || zoneId === lastZoneIdRef.current) {
+      return;
     }
-  }, [characterProfile.zoneId]);
 
+    fetchingRef.current = true;
+    lastZoneIdRef.current = zoneId;
+
+    try {
+      const zones = await getAdjacentZones(zoneId);
+      setAdjacentZones(zones);
+    } catch (error) {
+      console.error("Failed to fetch adjacent zones:", error);
+      setAdjacentZones([]);
+    } finally {
+      fetchingRef.current = false;
+    }
+  }, []);
+
+  // Refresh adjacent zones when character's zone changes
   useEffect(() => {
-    fetchAdjacentZones();
-  }, [fetchAdjacentZones]);
+    if (characterProfile.zoneId) {
+      fetchAdjacentZones(characterProfile.zoneId);
+    }
+  }, [fetchAdjacentZones, characterProfile.zoneId]);
 
   const handleZoneClick = async (zone: Zone) => {
     // Send zone change request to server
@@ -92,10 +110,11 @@ const ZoneSelector: React.FC = () => {
       }
     );
 
-    // Update local state
+    // Update local state - this will trigger the useEffect to fetch adjacent zones
     setCharacterZone(zone.zoneidnumber);
     setCurrentZone(zone.zoneidnumber);
-    await fetchAdjacentZones();
+    // Reset lastZoneIdRef so the new zone's adjacent zones will be fetched
+    lastZoneIdRef.current = null;
   };
 
   return (

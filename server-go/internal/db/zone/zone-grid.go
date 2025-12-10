@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/knervous/eqgo/internal/cache"
 	"github.com/knervous/eqgo/internal/db"
@@ -28,6 +29,7 @@ type GridEntries struct {
 
 // GetZoneGridEntries loads every Grid and its pruned GridEntries for a zone using jet-go against grid_paths.
 // Returns a map: gridID → slice of entries (ordered by original sequence).
+// If the grid_paths table doesn't exist, returns an empty map.
 func GetZoneGridEntries(zoneID int32) (map[int64][]GridEntries, error) {
 	cacheKey := fmt.Sprintf("zone:grid_paths:%d", zoneID)
 	if val, found, err := cache.GetCache().Get(cacheKey); err == nil && found {
@@ -40,6 +42,7 @@ func GetZoneGridEntries(zoneID int32) (map[int64][]GridEntries, error) {
 
 	// Query gridid and JSON points via jet-go
 	var paths []model.GridPaths
+
 	err := table.GridPaths.
 		SELECT(
 			table.GridPaths.AllColumns,
@@ -48,6 +51,13 @@ func GetZoneGridEntries(zoneID int32) (map[int64][]GridEntries, error) {
 		WHERE(table.GridPaths.Zoneid.EQ(mysql.Int32(zoneID))).
 		ORDER_BY(table.GridPaths.Gridid).
 		QueryContext(ctx, db.GlobalWorldDB.DB, &paths)
+
+	// If the table doesn't exist, return an empty map instead of failing
+	if err != nil && strings.Contains(err.Error(), "Table 'eqgo.grid_paths' doesn't exist") {
+		// Cache the empty result
+		cache.GetCache().Set(cacheKey, make(map[int64][]GridEntries))
+		return make(map[int64][]GridEntries), nil
+	}
 	if err != nil {
 		return nil, fmt.Errorf("query grid_paths: %w", err)
 	}
