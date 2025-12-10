@@ -282,22 +282,26 @@ func HandleCharacterCreate(ses *session.Session, payload []byte, wh *WorldHandle
 }
 
 func HandleCharacterDelete(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	log.Printf("HandleCharacterDelete called for session %d, payload len=%d", ses.SessionID, len(payload))
 	req, err := session.Deserialize(ses, payload, eq.ReadRootString)
 	if err != nil {
-		log.Printf("failed to read JWTLogin struct: %v", err)
+		log.Printf("failed to read String struct for delete: %v", err)
 		return false
 	}
 
 	ctx := context.Background()
 	name, err := req.Value()
 	if err != nil {
-		log.Printf("failed to get name from CharCreate struct: %v", err)
+		log.Printf("failed to get name from String struct: %v", err)
 		return false
 	}
+	log.Printf("Deleting character: %s for account %d", name, ses.AccountID)
 	if err := DeleteCharacter(ctx, ses.AccountID, name); err != nil {
+		log.Printf("DeleteCharacter failed: %v", err)
 		return false
 	}
 
+	log.Printf("Character %s deleted successfully, sending updated char info", name)
 	sendCharInfo(ses, ses.AccountID)
 	return false
 }

@@ -522,6 +522,11 @@ class WebTransportClient {
     if (response.type === "ZONE_NPCS_RESPONSE") {
       return "GET_ZONE_NPCS";
     }
+    if (response.type === "ADJACENT_ZONES_RESPONSE") {
+      // The server doesn't send back the zoneId, so we match by type only
+      // This means we can only have one pending adjacent zones request at a time
+      return "GET_ADJACENT_ZONES";
+    }
     if (response.type === "DIALOGUE_RESPONSE") {
       const dlg = response as DialogueResponse;
       return `GET_NPC_DIALOGUE_${dlg.npcName || "unknown"}`;
@@ -610,8 +615,8 @@ class WebTransportClient {
       return "GET_ZONE_NPCS";
     }
     if (message.type === "GET_ADJACENT_ZONES") {
-      const adjReq = message as unknown as { zoneId: number };
-      return `GET_ADJACENT_ZONES_${adjReq.zoneId}`;
+      // Use simple key since server doesn't echo back zoneId
+      return "GET_ADJACENT_ZONES";
     }
     if (message.type === "GET_NPC_DIALOGUE") {
       const dlg = message as DialogueRequest;
@@ -745,7 +750,22 @@ class WebTransportClient {
       throw new Error(response.error || "Failed to get adjacent zones");
     }
 
-    return response.zones || [];
+    // Normalize zone data from server camelCase to client snake_case
+    const zones = (response.zones || []).map((zone: any) => ({
+      id: zone.id,
+      short_name: zone.shortName,
+      long_name: zone.longName,
+      zoneidnumber: zone.zoneidnumber,
+      safe_x: zone.safeX,
+      safe_y: zone.safeY,
+      safe_z: zone.safeZ,
+      safe_heading: zone.safeHeading,
+      min_level: zone.minLevel,
+      max_level: zone.maxLevel,
+      ...zone, // Include any other fields
+    }));
+
+    return zones;
   }
 
   async getNPCDialogue(

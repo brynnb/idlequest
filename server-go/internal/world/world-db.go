@@ -733,9 +733,15 @@ func DeleteCharacter(ctx context.Context, accountID int64, characterName string)
 	}
 	defer tx.Rollback()
 
+	// Only select the columns we need to avoid schema mismatch issues
 	var currentChar model.CharacterData
 	err = table.CharacterData.
-		SELECT(table.CharacterData.AllColumns).
+		SELECT(
+			table.CharacterData.ID,
+			table.CharacterData.Name,
+			table.CharacterData.AccountID,
+			table.CharacterData.DeletedAt,
+		).
 		FROM(table.CharacterData).
 		WHERE(
 			table.CharacterData.Name.EQ(mysql.String(characterName)).

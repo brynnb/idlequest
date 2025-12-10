@@ -225,7 +225,6 @@ const CharacterSelectPage = () => {
       OpCodes.PlayerProfile,
       PlayerProfile,
       async (profile) => {
-        console.log("Received PlayerProfile:", profile);
         const plainProfile = capnpToPlainObject(profile);
 
         // Build character profile from PlayerProfile data
@@ -270,27 +269,54 @@ const CharacterSelectPage = () => {
         });
 
         // Build inventory items from PlayerProfile inventoryItems
+        // The server sends full item data embedded in each ItemInstance
         const inventoryItems = (plainProfile.inventoryItems || [])
-          .filter((item: { id?: number; itemId?: number }) => {
-            const itemId = item.id || item.itemId;
-            return itemId && itemId > 0;
+          .filter((item: { name?: string }) => {
+            // Valid items have a name
+            return item.name && item.name.length > 0;
           })
           .map(
-            (item: {
-              slot?: number;
-              slotId?: number;
-              id?: number;
-              itemId?: number;
-              charges?: number;
-            }) => ({
-              slotid: item.slot ?? item.slotId ?? 0,
-              itemid: item.id || item.itemId || 0,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (item: any) => ({
+              slotid: item.slot ?? 0,
+              itemid: 0, // Not needed - we have full item details
               charges: item.charges || 0,
+              // Include embedded item details directly from server
+              itemDetails: {
+                name: item.name,
+                icon: item.icon,
+                ac: item.ac,
+                damage: item.damage,
+                delay: item.delay,
+                hp: item.hp,
+                mana: item.mana,
+                weight: item.weight,
+                slots: item.slots,
+                classes: item.classes,
+                races: item.races,
+                itemclass: item.itemclass,
+                itemtype: item.itemtype,
+                bagslots: item.bagslots,
+                bagsize: item.bagsize,
+                // Include stat bonuses
+                astr: item.astr,
+                asta: item.asta,
+                aagi: item.aagi,
+                adex: item.adex,
+                awis: item.awis,
+                aint: item.aint,
+                acha: item.acha,
+                // Resistances
+                mr: item.mr,
+                fr: item.fr,
+                cr: item.cr,
+                dr: item.dr,
+                pr: item.pr,
+              },
             })
           );
 
         if (inventoryItems.length > 0) {
-          console.log("Setting inventory with", inventoryItems.length, "items");
           await setInventory(inventoryItems);
         }
 
@@ -312,6 +338,12 @@ const CharacterSelectPage = () => {
 
   const handleCreateNew = () => {
     navigate("/create");
+  };
+
+  const handleLogout = () => {
+    // Close connection and navigate to login
+    WorldSocket.close(false); // false = don't attempt reconnect
+    navigate("/");
   };
 
   const handleDeleteClick = (
@@ -386,6 +418,13 @@ const CharacterSelectPage = () => {
         )}
       </CharacterList>
       <ButtonContainer>
+        <SelectionButton
+          onClick={handleLogout}
+          $isSelected={false}
+          $isDisabled={false}
+        >
+          Log Out
+        </SelectionButton>
         <SelectionButton
           onClick={handleCreateNew}
           $isSelected={false}
