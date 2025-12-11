@@ -81,7 +81,7 @@ const CharacterCreator = () => {
 
   const handleBackToCharacterSelect = () => {
     resetStore();
-    navigate("/character-select");
+    navigate("/characterselect");
   };
 
   const renderStep = () => {

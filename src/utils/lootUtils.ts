@@ -1,6 +1,6 @@
 import { Item } from "@entities/Item";
 import { InventoryItem } from "@entities/InventoryItem";
-import { getItemById } from "@utils/databaseOperations";
+import { eqDataService } from "@utils/eqDataService";
 import {
   findFirstAvailableSlotForItem,
   isEquippableItem,
@@ -73,7 +73,7 @@ const addItemToInventory = async (
     return;
   }
 
-  const itemDetails = await getItemById(item.id);
+  const itemDetails = await eqDataService.getItemById(item.id);
   if (!itemDetails) {
     console.error(`Failed to fetch item details for item ID: ${item.id}`);
     return;
@@ -310,7 +310,7 @@ export const processLootItems = async (
       continue;
     }
     if (item.id) {
-      const itemDetails = await getItemById(item.id);
+      const itemDetails = await eqDataService.getItemById(item.id);
       if (itemDetails?.name) {
         const startsWithArticle = /^(a|an)\s+/i.test(itemDetails.name);
         (options?.addChatMessage || useChatStore.getState().addMessage)(

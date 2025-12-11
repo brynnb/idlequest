@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import CharacterProfile from "@entities/CharacterProfile";
 import { InventoryItem } from "@entities/InventoryItem";
-import { getItemById } from "@utils/databaseOperations";
+import { eqDataService } from "@utils/eqDataService";
 import { Item } from "@entities/Item";
 import { InventorySlot } from "@entities/InventorySlot";
 import useChatStore, { MessageType } from "./ChatStore";
@@ -138,7 +138,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
         addInventoryItem: async (item: InventoryItem, itemDetails?: Item) => {
           if (!itemDetails) {
-            itemDetails = await getItemById(item.itemid || 0);
+            itemDetails = (await eqDataService.getItemById(item.itemid || 0)) ?? undefined;
           }
           if (!itemDetails) {
             console.error(
@@ -205,7 +205,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           const loadedItems = await Promise.all(
             itemsToLoad.map(async (item) => {
               try {
-                const itemDetails = await getItemById(item.itemid);
+                const itemDetails = (await eqDataService.getItemById(item.itemid ?? 0)) ?? undefined;
                 return { ...item, itemDetails };
               } catch (error) {
                 console.error(
@@ -639,7 +639,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 async (item: any) => {
                   const itemId = item.itemId || item.id;
-                  const itemDetails = await getItemById(itemId);
+                  const itemDetails = await eqDataService.getItemById(itemId);
                   return {
                     slotid: item.slotId || item.slot || 0,
                     itemid: itemId,

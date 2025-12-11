@@ -41,9 +41,9 @@ export const isSlotAvailableForItem = (
   characterRace: Race,
   inventory: InventoryItem[]
 ): boolean => {
-  // Allow cursor and general inventory slots
+  // Allow cursor and general inventory slots (22-29)
   if (slot === InventorySlot.Cursor) return true;
-  if (slot >= 23 && slot <= 30) return true;
+  if (slot >= 22 && slot <= 29) return true;
 
   // Prevent placing bags inside bags
   if (

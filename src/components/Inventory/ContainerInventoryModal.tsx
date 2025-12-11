@@ -125,15 +125,22 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
   const { containerPositions, setContainerPosition } = useGameStatusStore();
   const { handleItemClick } = useInventoryActions();
-  const [position, setPosition] = useState(() => {
-    if (containerPositions[bagSlot]) {
-      return containerPositions[bagSlot];
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!initialized) {
+      if (containerPositions[bagSlot]) {
+        setPosition(containerPositions[bagSlot]);
+      } else {
+        const randomX = Math.floor(Math.random() * 401);
+        const newPosition = { x: randomX, y: -300 };
+        setContainerPosition(bagSlot, newPosition);
+        setPosition(newPosition);
+      }
+      setInitialized(true);
     }
-    const randomX = Math.floor(Math.random() * 401);
-    const newPosition = { x: randomX, y: -300 };
-    setContainerPosition(bagSlot, newPosition);
-    return newPosition;
-  });
+  }, [bagSlot, containerPositions, setContainerPosition, initialized]);
 
   const nodeRef = useRef(null);
 

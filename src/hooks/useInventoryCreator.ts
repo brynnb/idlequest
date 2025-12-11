@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import startingItemsData from "@data/json/starting_items.json";
 import { Item } from "@entities/Item";
-import { getItemById } from "@utils/databaseOperations";
+import { eqDataService } from "@utils/eqDataService";
 
 const useInventoryCreator = () => {
   const [loading, setLoading] = useState(false);
@@ -23,9 +23,9 @@ const useInventoryCreator = () => {
           (item.zoneid === zone || item.zoneid === 0)
       );
 
-      const inventoryItems: Item[] = await Promise.all(
+      const inventoryItems = await Promise.all(
         matchingStartingItems.slice(0, 8).map(async (startingItem) => {
-          const item = await getItemById(startingItem.itemid);
+          const item = await eqDataService.getItemById(startingItem.itemid);
           if (item) {
             item.charges = startingItem.item_charges || 0;
           }
@@ -34,7 +34,7 @@ const useInventoryCreator = () => {
       );
 
       setLoading(false);
-      return inventoryItems.filter((item): item is Item => item !== undefined);
+      return inventoryItems.filter((item): item is Item => item !== null);
     },
     []
   );

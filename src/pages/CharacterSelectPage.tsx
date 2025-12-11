@@ -15,6 +15,7 @@ import useCharacterSelectStore, {
   CharacterSelectEntry,
 } from "@stores/CharacterSelectStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useGameStatusStore from "@stores/GameStatusStore";
 import races from "@data/json/races.json";
 import classes from "@data/json/classes.json";
 import deities from "@data/json/deities.json";
@@ -24,96 +25,102 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 60px;
+  justify-content: center;
   height: 100%;
   width: 100%;
 `;
 
-const Title = styled.h1`
-  font-family: "Times New Roman", Times, serif;
-  font-size: 42px;
-  color: #2c2c2c;
-  margin-bottom: 30px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+const ContentContainer = styled.div`
+  display: grid;
+  grid-template-columns: 280px 500px;
+  gap: 60px;
+  padding: 40px;
+`;
+
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 `;
 
 const CharacterList = styled.div`
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-width: 500px;
-  max-height: 600px;
-  overflow-y: auto;
-`;
-
-const CharacterCard = styled.div<{ $isSelected: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  background: ${({ $isSelected }) =>
-    $isSelected ? "rgba(100, 150, 200, 0.3)" : "rgba(0, 0, 0, 0.05)"};
-  border: 2px solid
-    ${({ $isSelected }) => ($isSelected ? "#4a90d9" : "transparent")};
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(100, 150, 200, 0.2);
-  }
-`;
-
-const CharacterInfo = styled.div`
+  gap: 5px;
   flex: 1;
 `;
 
-const CharacterName = styled.div`
+
+const BottomButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: space-between;
+`;
+
+const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const CharacterPreview = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+`;
+
+const CharacterImageContainer = styled.div`
+  position: relative;
+  width: 500px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CharacterImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+`;
+
+const CharacterLabel = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: "Times New Roman", Times, serif;
   font-size: 24px;
   font-weight: bold;
-  color: #2c2c2c;
+  color: white;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  line-height: 1.4;
 `;
 
-const CharacterDetails = styled.div`
+const LocationInfo = styled.div`
   font-family: "Times New Roman", Times, serif;
-  font-size: 16px;
-  color: #666;
-  margin-top: 4px;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  line-height: 1.6;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  font-weight: bold;
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 15px;
-  margin-top: 30px;
-`;
 
 const EmptyMessage = styled.div`
   font-family: "Times New Roman", Times, serif;
   font-size: 18px;
-  color: #666;
+  color: white;
   text-align: center;
   padding: 40px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 `;
 
-const DeleteButton = styled.button`
-  background: rgba(200, 50, 50, 0.8);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 14px;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: rgba(200, 50, 50, 1);
-  }
-`;
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -253,6 +260,10 @@ const CharacterSelectPage = () => {
           mana: plainProfile.mana || 0,
           maxMana: Number(plainProfile.maxMana) || 0,
           endurance: plainProfile.endurance || 0,
+          platinum: plainProfile.platinum || 0,
+          gold: plainProfile.gold || 0,
+          silver: plainProfile.silver || 0,
+          copper: plainProfile.copper || 0,
           attributes: {
             str: plainProfile.str || 75,
             sta: plainProfile.sta || 75,
@@ -379,7 +390,9 @@ const CharacterSelectPage = () => {
 
   // Redirect to login if not connected
   useEffect(() => {
+    console.log("CharacterSelectPage: Checking connection status:", WorldSocket.isConnected);
     if (!WorldSocket.isConnected) {
+      console.log("CharacterSelectPage: Not connected, redirecting to login");
       navigate("/");
     }
   }, [navigate]);
@@ -387,64 +400,97 @@ const CharacterSelectPage = () => {
   if (isLoading) {
     return (
       <Wrapper>
-        <Title>Loading Characters...</Title>
+        <EmptyMessage>Loading Characters...</EmptyMessage>
       </Wrapper>
     );
   }
 
+  const getZoneName = (zoneId: number) => {
+    const zones = useGameStatusStore.getState().zones;
+    const zone = zones.find((z: any) => z.zoneidnumber === zoneId);
+    return zone?.long_name || zone?.short_name || "Unknown Location";
+  };
+
+  // Create array of 8 slots, filling empty ones with null
+  const characterSlots = Array.from({ length: 8 }, (_, i) => characters[i] || null);
+
   return (
     <Wrapper>
-      <Title>Select Your Character</Title>
-      <CharacterList>
-        {characters.length === 0 ? (
-          <EmptyMessage>
-            No characters found. Create a new character to begin your adventure!
-          </EmptyMessage>
-        ) : (
-          characters.map((character) => (
-            <CharacterCard
-              key={character.id || character.name}
-              $isSelected={selectedCharacter?.name === character.name}
-              onClick={() => handleSelectCharacter(character)}
+      <ContentContainer>
+        {/* Left Column - Character Selection */}
+        <LeftColumn>
+          <CharacterList>
+            {characterSlots.map((character, index) => (
+              <SelectionButton
+                key={character?.name || `empty-${index}`}
+                $isSelected={selectedCharacter?.name === character?.name}
+                onClick={() => {
+                  if (character) {
+                    handleSelectCharacter(character);
+                  } else {
+                    handleCreateNew();
+                  }
+                }}
+              >
+                {character ? character.name : "CREATE NEW CHARACTER"}
+              </SelectionButton>
+            ))}
+          </CharacterList>
+          <BottomButtons>
+            <SelectionButton
+              onClick={handleEnterWorld}
+              $isSelected={false}
+              $isDisabled={!selectedCharacter}
+              disabled={!selectedCharacter}
             >
-              <CharacterInfo>
-                <CharacterName>{character.name}</CharacterName>
-                <CharacterDetails>
-                  Level {character.level} {getRaceName(character.race)}{" "}
-                  {getClassName(character.charClass)}
-                </CharacterDetails>
-              </CharacterInfo>
-              <DeleteButton onClick={(e) => handleDeleteClick(e, character)}>
-                Delete
-              </DeleteButton>
-            </CharacterCard>
-          ))
-        )}
-      </CharacterList>
-      <ButtonContainer>
-        <SelectionButton
-          onClick={handleLogout}
-          $isSelected={false}
-          $isDisabled={false}
-        >
-          Log Out
-        </SelectionButton>
-        <SelectionButton
-          onClick={handleCreateNew}
-          $isSelected={false}
-          $isDisabled={false}
-        >
-          Create New
-        </SelectionButton>
-        <SelectionButton
-          onClick={handleEnterWorld}
-          $isSelected={false}
-          $isDisabled={!selectedCharacter}
-          disabled={!selectedCharacter}
-        >
-          Enter World
-        </SelectionButton>
-      </ButtonContainer>
+              ENTER WORLD
+            </SelectionButton>
+            <SelectionButton
+              onClick={() => {
+                if (selectedCharacter) {
+                  setDeleteTarget(selectedCharacter);
+                }
+              }}
+              $isSelected={false}
+              $isDisabled={!selectedCharacter}
+              disabled={!selectedCharacter}
+            >
+              DELETE
+            </SelectionButton>
+            <SelectionButton onClick={handleLogout} $isSelected={false}>
+              QUIT
+            </SelectionButton>
+          </BottomButtons>
+        </LeftColumn>
+
+        {/* Right Column - Character Preview */}
+        <RightColumn>
+          {selectedCharacter ? (
+            <>
+              <CharacterPreview>
+                <CharacterImageContainer>
+                  <CharacterImage
+                    src="/images/ui/charactercreation/creationviewport.png"
+                    alt="Character Preview"
+                  />
+                  <CharacterLabel>
+                    {getClassName(selectedCharacter.charClass)}
+                    <br />
+                    Level {selectedCharacter.level}
+                  </CharacterLabel>
+                </CharacterImageContainer>
+              </CharacterPreview>
+              <LocationInfo>
+                CURRENT LOCATION
+                <br />
+                {getZoneName(selectedCharacter.zone)}
+              </LocationInfo>
+            </>
+          ) : (
+            <EmptyMessage>Select a character to view details</EmptyMessage>
+          )}
+        </RightColumn>
+      </ContentContainer>
 
       {/* Delete Confirmation Modal */}
       {deleteTarget && (

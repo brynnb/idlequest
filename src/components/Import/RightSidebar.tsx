@@ -115,7 +115,10 @@ const RightSidebar = () => {
         />
         <ActionButton
           text="Camp"
-          onClick={() => navigate("/characterselect")}
+          onClick={() => {
+            console.log("Camp clicked, navigating to /characterselect");
+            navigate("/characterselect");
+          }}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton
