@@ -144,12 +144,17 @@ export class EqSocket {
       console.log("Datagram writer started", this.datagramWriter);
 
       // Accept server-opened control stream(s)
-      const streamReader = this.webtransport.incomingBidirectionalStreams.getReader();
+      const streamReader =
+        this.webtransport.incomingBidirectionalStreams.getReader();
       (async () => {
         while (true) {
           const { value: stream, done } = await streamReader.read();
-          if (done) {break;}
-          if (!stream) {continue;}
+          if (done) {
+            break;
+          }
+          if (!stream) {
+            continue;
+          }
           // grab writer & start reader
           this.controlWriter = stream.writable.getWriter();
           this.startControlReadLoop(stream.readable);
