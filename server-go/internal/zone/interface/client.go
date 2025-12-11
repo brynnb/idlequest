@@ -24,4 +24,11 @@ type Client interface {
 	Name() string
 	Say(msg string)
 	Type() int32 // EntityTypePlayer, EntityTypeNPC, etc.
+
+	// Inventory manipulation methods
+	MoveItem(fromKey, toKey constants.InventoryKey) error
+	SwapItems(fromKey, toKey constants.InventoryKey) error
+	DeleteItem(key constants.InventoryKey) *constants.ItemWithInstance
+	GetItem(key constants.InventoryKey) *constants.ItemWithInstance
+	SetItem(key constants.InventoryKey, item *constants.ItemWithInstance)
 }

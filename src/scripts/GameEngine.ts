@@ -4,6 +4,7 @@ import useChatStore, { MessageType } from "@stores/ChatStore";
 import { getNPCLoot } from "@utils/getNPCLoot";
 import { sellGeneralInventory } from "@utils/inventoryUtils";
 import { processLootItems } from "@utils/lootUtils";
+import { WorldSocket } from "../net";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
@@ -28,18 +29,27 @@ class GameEngine {
   private initialize() {
     console.log("Initializing GameEngine");
     const { characterProfile } = playerCharacterStore.getState();
-    const { setCurrentZone, updateCurrentZoneNPCs, isRunning } =
-      gameStatusStore.getState();
+    const { isRunning } = gameStatusStore.getState();
 
+    // Set zone ID directly without triggering NPC fetch
     if (characterProfile.zoneId) {
-      setCurrentZone(characterProfile.zoneId);
-      updateCurrentZoneNPCs();
-      this.fetchAndSetTargetNPC();
+      gameStatusStore.setState({ currentZone: characterProfile.zoneId });
+      // Only fetch zone data if WebTransport is connected
+      if (WorldSocket.isConnected) {
+        this.loadZoneData();
+      }
     }
 
     if (isRunning) {
       this.startEngine();
     }
+  }
+
+  // Public method to load zone data - can be called after connection is established
+  public loadZoneData() {
+    const { updateCurrentZoneNPCs } = gameStatusStore.getState();
+    updateCurrentZoneNPCs();
+    this.fetchAndSetTargetNPC();
   }
 
   private setupRunningListener() {

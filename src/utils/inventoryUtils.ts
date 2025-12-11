@@ -6,21 +6,25 @@ import { Item } from "@entities/Item";
 import useChatStore, { MessageType } from "@stores/ChatStore";
 import { ItemClass } from "@entities/ItemClass";
 
-const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
+// General inventory slots match server: 22-29
+const GENERAL_SLOTS = [22, 23, 24, 25, 26, 27, 28, 29];
 
+// Maps general inventory slot to bag content starting slot
+// Server uses: bag 1-8 for contents of items in general slots 22-29
+// Bag contents start at slot 251 (10 slots per bag)
 export const getBagStartingSlot = (baseSlot: number): number => {
-  const slotMap = {
-    23: 262,
-    24: 272,
-    25: 282,
-    26: 292,
-    27: 302,
-    28: 312,
-    29: 322,
-    30: 332,
-    31: 342,
+  const slotMap: Record<number, number> = {
+    22: 251, // General1 bag contents
+    23: 261, // General2 bag contents
+    24: 271, // General3 bag contents
+    25: 281, // General4 bag contents
+    26: 291, // General5 bag contents
+    27: 301, // General6 bag contents
+    28: 311, // General7 bag contents
+    29: 321, // General8 bag contents
+    30: 331, // Cursor bag contents
   };
-  return slotMap[baseSlot as keyof typeof slotMap] ?? -1;
+  return slotMap[baseSlot] ?? -1;
 };
 
 export const getNextAvailableSlot = (

@@ -613,4 +613,18 @@ const (
 	ZoneServerReady
 	ResetAA
 	UnderWorld
+
+	// IdleQuest data query opcodes
+	GetItemRequest
+	GetItemResponse
+	GetZoneRequest
+	GetZoneResponse
+	GetZoneNPCsRequest
+	GetZoneNPCsResponse
+	GetAdjacentZonesRequest
+	GetAdjacentZonesResponse
+	SendChatMessage
+	ChatMessageBroadcast
+	GetNPCDialogueRequest
+	GetNPCDialogueResponse
 )

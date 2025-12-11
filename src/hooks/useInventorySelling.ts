@@ -4,7 +4,8 @@ import { Item } from "@entities/Item";
 import { getBagStartingSlot } from "@utils/itemUtils";
 import { sellGeneralInventory as sellGeneralInventoryUtil } from "@utils/inventoryUtils";
 
-const GENERAL_SLOTS = [23, 24, 25, 26, 27, 28, 29, 30];
+// General inventory slots match server: 22-29
+const GENERAL_SLOTS = [22, 23, 24, 25, 26, 27, 28, 29];
 
 export const useInventorySelling = () => {
   const sellGeneralInventory = useCallback((deleteNoDrop: boolean) => {

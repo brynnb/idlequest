@@ -6,7 +6,7 @@ export class Vector3 extends $.Struct {
   static readonly _capnp = {
     displayName: "Vector3",
     id: "e708bba061e0cc77",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get x(): number {
     return $.utils.getFloat32(0, this);
@@ -34,7 +34,7 @@ export class InventorySlot extends $.Struct {
   static readonly _capnp = {
     displayName: "InventorySlot",
     id: "e9a04e0d39785218",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get type(): number {
     return $.utils.getInt32(0, this);
@@ -62,7 +62,7 @@ export class TypelessInventorySlot extends $.Struct {
   static readonly _capnp = {
     displayName: "TypelessInventorySlot",
     id: "899e3334be65d957",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get slot(): number {
     return $.utils.getInt32(0, this);
@@ -84,7 +84,7 @@ export class EntityId extends $.Struct {
   static readonly _capnp = {
     displayName: "EntityId",
     id: "dd9072d437eab9a1",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get entityId(): number {
     return $.utils.getInt32(0, this);
@@ -100,7 +100,7 @@ export class Duel extends $.Struct {
   static readonly _capnp = {
     displayName: "Duel",
     id: "b745aa7de9c39191",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get duelInitiator(): number {
     return $.utils.getInt32(0, this);
@@ -122,7 +122,7 @@ export class DuelResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "DuelResponse",
     id: "8163a7ff6f92e3eb",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get targetId(): number {
     return $.utils.getInt32(0, this);
@@ -144,7 +144,7 @@ export class AdventureInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventureInfo",
     id: "f03da18831a1c80b",
-    size: new $.ObjectSize(48, 3)
+    size: new $.ObjectSize(48, 3),
   };
   get questId(): number {
     return $.utils.getInt32(0, this);
@@ -268,7 +268,7 @@ export class TextureProfile extends $.Struct {
   static readonly _capnp = {
     displayName: "TextureProfile",
     id: "e430fa7b7d850130",
-    size: new $.ObjectSize(40, 0)
+    size: new $.ObjectSize(40, 0),
   };
   get head(): number {
     return $.utils.getInt32(0, this);
@@ -332,7 +332,7 @@ export class TintProfile extends $.Struct {
   static readonly _capnp = {
     displayName: "TintProfile",
     id: "f5a87fa04392d0a1",
-    size: new $.ObjectSize(40, 0)
+    size: new $.ObjectSize(40, 0),
   };
   get head(): number {
     return $.utils.getInt32(0, this);
@@ -396,7 +396,7 @@ export class Spawns extends $.Struct {
   static readonly _capnp = {
     displayName: "Spawns",
     id: "84ff32fdda835dfe",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _Spawns: $.ListCtor<Spawn>;
   _adoptSpawns(value: $.Orphan<$.List<Spawn>>): void {
@@ -425,7 +425,7 @@ export class Spawn extends $.Struct {
   static readonly _capnp = {
     displayName: "Spawn",
     id: "d8facf5bce9546c7",
-    size: new $.ObjectSize(216, 5)
+    size: new $.ObjectSize(216, 5),
   };
   get gm(): number {
     return $.utils.getInt32(0, this);
@@ -795,7 +795,7 @@ export class ClientZoneEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "ClientZoneEntry",
     id: "b0746148ee56b888",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get charName(): string {
     return $.utils.getText(0, this);
@@ -811,7 +811,7 @@ export class ServerZoneEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "ServerZoneEntry",
     id: "e64292fa5df872fd",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptPlayer(value: $.Orphan<Spawn>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -839,7 +839,7 @@ export class MemorizeSpell extends $.Struct {
   static readonly _capnp = {
     displayName: "MemorizeSpell",
     id: "a7e27069226b98ad",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get slot(): number {
     return $.utils.getInt32(0, this);
@@ -873,7 +873,7 @@ export class Charm extends $.Struct {
   static readonly _capnp = {
     displayName: "Charm",
     id: "e62b635478feb9f1",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get ownerId(): number {
     return $.utils.getInt32(0, this);
@@ -901,7 +901,7 @@ export class InterruptCast extends $.Struct {
   static readonly _capnp = {
     displayName: "InterruptCast",
     id: "8f9b301fdfe3c51c",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get spawnid(): number {
     return $.utils.getInt32(0, this);
@@ -929,7 +929,7 @@ export class DeleteSpell extends $.Struct {
   static readonly _capnp = {
     displayName: "DeleteSpell",
     id: "888a7e1d97fd6855",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get spellSlot(): number {
     return $.utils.getInt32(0, this);
@@ -951,7 +951,7 @@ export class ManaChange extends $.Struct {
   static readonly _capnp = {
     displayName: "ManaChange",
     id: "a7ab2bbcc8342323",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get newMana(): number {
     return $.utils.getInt32(0, this);
@@ -1003,7 +1003,7 @@ export class SwapSpell extends $.Struct {
   static readonly _capnp = {
     displayName: "SwapSpell",
     id: "e4e7eeb23bebb1f8",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get fromSlot(): number {
     return $.utils.getInt32(0, this);
@@ -1025,7 +1025,7 @@ export class BeginCast extends $.Struct {
   static readonly _capnp = {
     displayName: "BeginCast",
     id: "c576336317865217",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get casterId(): number {
     return $.utils.getInt32(0, this);
@@ -1053,7 +1053,7 @@ export class CastSpell extends $.Struct {
   static readonly _capnp = {
     displayName: "CastSpell",
     id: "a987ac170b5f48c3",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get slot(): number {
     return $.utils.getInt32(0, this);
@@ -1087,7 +1087,7 @@ export class SpawnAppearance extends $.Struct {
   static readonly _capnp = {
     displayName: "SpawnAppearance",
     id: "c817bfd03978a39b",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -1115,7 +1115,7 @@ export class SpellBuff extends $.Struct {
   static readonly _capnp = {
     displayName: "SpellBuff",
     id: "9c9f074ebb94ca3b",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get effectType(): number {
     return $.utils.getInt32(0, this);
@@ -1167,7 +1167,7 @@ export class SpellBuffPacket extends $.Struct {
   static readonly _capnp = {
     displayName: "SpellBuffPacket",
     id: "d0f511db04f5194f",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get entityid(): number {
     return $.utils.getInt32(0, this);
@@ -1213,7 +1213,7 @@ export class ItemNamePacket extends $.Struct {
   static readonly _capnp = {
     displayName: "ItemNamePacket",
     id: "f4c3318dcf329728",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get itemId(): number {
     return $.utils.getInt32(0, this);
@@ -1241,7 +1241,7 @@ export class ItemProperties extends $.Struct {
   static readonly _capnp = {
     displayName: "ItemProperties",
     id: "e00fb886fc82f1ab",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get charges(): number {
     return $.utils.getInt32(0, this);
@@ -1257,7 +1257,7 @@ export class GMTrainee extends $.Struct {
   static readonly _capnp = {
     displayName: "GMTrainee",
     id: "badafe4de857fe71",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -1297,7 +1297,7 @@ export class GMTrainEnd extends $.Struct {
   static readonly _capnp = {
     displayName: "GMTrainEnd",
     id: "b72ecd96799cf7e7",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -1319,7 +1319,7 @@ export class GMSkillChange extends $.Struct {
   static readonly _capnp = {
     displayName: "GMSkillChange",
     id: "b0d71e9e634d1529",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -1347,7 +1347,7 @@ export class ConsentResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "ConsentResponse",
     id: "b52cdc5b0d00dfde",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   get grantname(): string {
     return $.utils.getText(0, this);
@@ -1381,7 +1381,7 @@ export class NameGeneration extends $.Struct {
   static readonly _capnp = {
     displayName: "NameGeneration",
     id: "a984e49365524f14",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get race(): number {
     return $.utils.getInt32(0, this);
@@ -1409,7 +1409,7 @@ export class NameApprove extends $.Struct {
   static readonly _capnp = {
     displayName: "NameApprove",
     id: "b8b4b6c6e1e52417",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -1437,7 +1437,7 @@ export class CharCreate extends $.Struct {
   static readonly _capnp = {
     displayName: "CharCreate",
     id: "ca688fde6bcd4bbd",
-    size: new $.ObjectSize(80, 1)
+    size: new $.ObjectSize(80, 1),
   };
   get charClass(): number {
     return $.utils.getInt32(0, this);
@@ -1573,7 +1573,7 @@ export class AAArray extends $.Struct {
   static readonly _capnp = {
     displayName: "AAArray",
     id: "c5d32cc234a53620",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get aa(): number {
     return $.utils.getInt32(0, this);
@@ -1595,7 +1595,7 @@ export class Disciplines extends $.Struct {
   static readonly _capnp = {
     displayName: "Disciplines",
     id: "db811264e672b627",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptValues(value: $.Orphan<$.List<number>>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -1623,7 +1623,7 @@ export class Tribute extends $.Struct {
   static readonly _capnp = {
     displayName: "Tribute",
     id: "e02474ef23d4f2bc",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get tribute(): number {
     return $.utils.getInt32(0, this);
@@ -1645,7 +1645,7 @@ export class BandolierItem extends $.Struct {
   static readonly _capnp = {
     displayName: "BandolierItem",
     id: "d7e327183a76a4f8",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -1673,7 +1673,7 @@ export class Bandolier extends $.Struct {
   static readonly _capnp = {
     displayName: "Bandolier",
     id: "81fa11546e952c02",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   static _Items: $.ListCtor<BandolierItem>;
   get name(): string {
@@ -1708,7 +1708,7 @@ export class PotionBeltItem extends $.Struct {
   static readonly _capnp = {
     displayName: "PotionBeltItem",
     id: "dcfcab864c34a056",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -1736,7 +1736,7 @@ export class PotionBelt extends $.Struct {
   static readonly _capnp = {
     displayName: "PotionBelt",
     id: "ce55ffdae06f694d",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _Items: $.ListCtor<PotionBeltItem>;
   _adoptItems(value: $.Orphan<$.List<PotionBeltItem>>): void {
@@ -1765,7 +1765,7 @@ export class StringList extends $.Struct {
   static readonly _capnp = {
     displayName: "StringList",
     id: "fc766ac7f0d6e4f5",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get str(): string {
     return $.utils.getText(0, this);
@@ -1781,7 +1781,7 @@ export class GroupLeadershipAA extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupLeadershipAA",
     id: "f418cd61a8543b3c",
-    size: new $.ObjectSize(64, 0)
+    size: new $.ObjectSize(64, 0),
   };
   get groupAaMarkNpc(): number {
     return $.utils.getInt32(0, this);
@@ -1887,7 +1887,7 @@ export class RaidLeadershipAA extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidLeadershipAA",
     id: "bf5a2cc18c663351",
-    size: new $.ObjectSize(64, 0)
+    size: new $.ObjectSize(64, 0),
   };
   get raidAaMarkNpc(): number {
     return $.utils.getInt32(0, this);
@@ -1993,7 +1993,7 @@ export class LeadershipAA extends $.Struct {
   static readonly _capnp = {
     displayName: "LeadershipAA",
     id: "e5dcc4b159c002f4",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   _adoptGroup(value: $.Orphan<GroupLeadershipAA>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -2039,7 +2039,7 @@ export class Bind extends $.Struct {
   static readonly _capnp = {
     displayName: "Bind",
     id: "f1e3711cde8fa324",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get zoneId(): number {
     return $.utils.getInt32(0, this);
@@ -2079,7 +2079,7 @@ export class PVPStatsEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "PVPStatsEntry",
     id: "9ca1849ea58c8bdb",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -2131,7 +2131,7 @@ export class ClientTarget extends $.Struct {
   static readonly _capnp = {
     displayName: "ClientTarget",
     id: "a1914008041e7c44",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get newTarget(): number {
     return $.utils.getInt32(0, this);
@@ -2147,7 +2147,7 @@ export class PetCommand extends $.Struct {
   static readonly _capnp = {
     displayName: "PetCommand",
     id: "a3f9826addd42d0d",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get command(): number {
     return $.utils.getInt32(0, this);
@@ -2169,7 +2169,7 @@ export class DeleteSpawn extends $.Struct {
   static readonly _capnp = {
     displayName: "DeleteSpawn",
     id: "af015f84859d0028",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2185,7 +2185,7 @@ export class ChannelMessage extends $.Struct {
   static readonly _capnp = {
     displayName: "ChannelMessage",
     id: "a23c8c68e3798bb0",
-    size: new $.ObjectSize(16, 3)
+    size: new $.ObjectSize(16, 3),
   };
   get targetname(): string {
     return $.utils.getText(0, this);
@@ -2231,7 +2231,7 @@ export class CommandMessage extends $.Struct {
   static readonly _capnp = {
     displayName: "CommandMessage",
     id: "9044b7f5fe5563b0",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get command(): string {
     return $.utils.getText(0, this);
@@ -2265,7 +2265,7 @@ export class SpecialMesg extends $.Struct {
   static readonly _capnp = {
     displayName: "SpecialMesg",
     id: "e0b0d21d1219b48c",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   get header(): string {
     return $.utils.getText(0, this);
@@ -2305,7 +2305,7 @@ export class WearChange extends $.Struct {
   static readonly _capnp = {
     displayName: "WearChange",
     id: "9fd8d08daae7794b",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2339,7 +2339,7 @@ export class BindWound extends $.Struct {
   static readonly _capnp = {
     displayName: "BindWound",
     id: "9d8709f225285c2e",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get to(): number {
     return $.utils.getInt32(0, this);
@@ -2361,7 +2361,7 @@ export class Animation extends $.Struct {
   static readonly _capnp = {
     displayName: "Animation",
     id: "fe931b1705a8e8a8",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get spawnid(): number {
     return $.utils.getInt32(0, this);
@@ -2389,7 +2389,7 @@ export class Action extends $.Struct {
   static readonly _capnp = {
     displayName: "Action",
     id: "95ca47192b7d5b43",
-    size: new $.ObjectSize(48, 0)
+    size: new $.ObjectSize(48, 0),
   };
   get target(): number {
     return $.utils.getInt32(0, this);
@@ -2465,7 +2465,7 @@ export class CombatDamage extends $.Struct {
   static readonly _capnp = {
     displayName: "CombatDamage",
     id: "bcba10c194c8e450",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get target(): number {
     return $.utils.getInt32(0, this);
@@ -2523,7 +2523,7 @@ export class Consider extends $.Struct {
   static readonly _capnp = {
     displayName: "Consider",
     id: "ecbd91cdb76d6a28",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get playerid(): number {
     return $.utils.getInt32(0, this);
@@ -2575,7 +2575,7 @@ export class Death extends $.Struct {
   static readonly _capnp = {
     displayName: "Death",
     id: "ae8dab9506472d1d",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2627,7 +2627,7 @@ export class BecomeCorpse extends $.Struct {
   static readonly _capnp = {
     displayName: "BecomeCorpse",
     id: "d5ad818067cc16e7",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2661,7 +2661,7 @@ export class EntityPositionUpdateBase extends $.Struct {
   static readonly _capnp = {
     displayName: "EntityPositionUpdateBase",
     id: "a51c9c2dfa1a6cca",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2725,7 +2725,7 @@ export class EntityPositionUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "EntityPositionUpdate",
     id: "93bff6bb5eecbc2a",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _Updates: $.ListCtor<EntityPositionUpdateBase>;
   _adoptUpdates(value: $.Orphan<$.List<EntityPositionUpdateBase>>): void {
@@ -2754,7 +2754,7 @@ export class EntityAnimation extends $.Struct {
   static readonly _capnp = {
     displayName: "EntityAnimation",
     id: "df6175fbc7aa8195",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2776,7 +2776,7 @@ export class ClientPositionUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "ClientPositionUpdate",
     id: "971031099b134c74",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -2822,7 +2822,7 @@ export class SpawnHPUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "SpawnHPUpdate",
     id: "fa4d6a8cac27c611",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get curHp(): number {
     return $.utils.getInt32(0, this);
@@ -2850,7 +2850,7 @@ export class SpawnHPUpdate2 extends $.Struct {
   static readonly _capnp = {
     displayName: "SpawnHPUpdate2",
     id: "c512b3f8727629d7",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -2872,7 +2872,7 @@ export class Stamina extends $.Struct {
   static readonly _capnp = {
     displayName: "Stamina",
     id: "db651f04f1f0488d",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get food(): number {
     return $.utils.getInt32(0, this);
@@ -2894,7 +2894,7 @@ export class LevelUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "LevelUpdate",
     id: "e72726225a9f8ca8",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get level(): number {
     return $.utils.getInt32(0, this);
@@ -2916,7 +2916,7 @@ export class ExpUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpUpdate",
     id: "80545037b7a4173b",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get exp(): number {
     return $.utils.getInt32(0, this);
@@ -2938,7 +2938,7 @@ export class Consume extends $.Struct {
   static readonly _capnp = {
     displayName: "Consume",
     id: "c7587c9f16a1fc72",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get slot(): number {
     return $.utils.getInt32(0, this);
@@ -2966,7 +2966,7 @@ export class MoveItem extends $.Struct {
   static readonly _capnp = {
     displayName: "MoveItem",
     id: "8b2666611a37b434",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get fromSlot(): number {
     return $.utils.getInt8(0, this);
@@ -3006,7 +3006,7 @@ export class MultiMoveItemSub extends $.Struct {
   static readonly _capnp = {
     displayName: "MultiMoveItemSub",
     id: "815ffda3d9dd039d",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   _adoptFromSlot(value: $.Orphan<InventorySlot>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -3058,7 +3058,7 @@ export class MultiMoveItem extends $.Struct {
   static readonly _capnp = {
     displayName: "MultiMoveItem",
     id: "ab1ebc3e87d43ca9",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _Moves: $.ListCtor<MultiMoveItemSub>;
   _adoptMoves(value: $.Orphan<$.List<MultiMoveItemSub>>): void {
@@ -3087,7 +3087,7 @@ export class MoveCoin extends $.Struct {
   static readonly _capnp = {
     displayName: "MoveCoin",
     id: "e7eceebcdcb01522",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get fromSlot(): number {
     return $.utils.getInt32(0, this);
@@ -3127,7 +3127,7 @@ export class TradeBusy extends $.Struct {
   static readonly _capnp = {
     displayName: "TradeBusy",
     id: "f014129ca27de499",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get toMobId(): number {
     return $.utils.getInt32(0, this);
@@ -3149,7 +3149,7 @@ export class TradeCoin extends $.Struct {
   static readonly _capnp = {
     displayName: "TradeCoin",
     id: "ed7d297bd1f274b3",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get trader(): number {
     return $.utils.getInt32(0, this);
@@ -3177,7 +3177,7 @@ export class TradeMoneyUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "TradeMoneyUpdate",
     id: "da1a12e840c66e0f",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get trader(): number {
     return $.utils.getInt32(0, this);
@@ -3205,7 +3205,7 @@ export class Surname extends $.Struct {
   static readonly _capnp = {
     displayName: "Surname",
     id: "89f1549a7f447f06",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -3227,7 +3227,7 @@ export class GuildsList extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildsList",
     id: "b3a8f9a49aa3ccf8",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _Guilds: $.ListCtor<StringList>;
   _adoptGuilds(value: $.Orphan<$.List<StringList>>): void {
@@ -3256,7 +3256,7 @@ export class MoneyOnCorpse extends $.Struct {
   static readonly _capnp = {
     displayName: "MoneyOnCorpse",
     id: "d89879eb841b57cc",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get response(): number {
     return $.utils.getInt32(0, this);
@@ -3296,7 +3296,7 @@ export class LootingItem extends $.Struct {
   static readonly _capnp = {
     displayName: "LootingItem",
     id: "f0569fdbfd2961b4",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get lootee(): number {
     return $.utils.getInt32(0, this);
@@ -3330,7 +3330,7 @@ export class GuildManageStatus extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildManageStatus",
     id: "cf365ec11d0c95df",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get guildid(): number {
     return $.utils.getInt32(0, this);
@@ -3364,7 +3364,7 @@ export class GuildJoin extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildJoin",
     id: "ce388f415f14acb0",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get guildid(): number {
     return $.utils.getInt32(0, this);
@@ -3410,7 +3410,7 @@ export class GuildInviteAccept extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildInviteAccept",
     id: "f7787292d29bdcd7",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get inviter(): string {
     return $.utils.getText(0, this);
@@ -3444,7 +3444,7 @@ export class GuildManageRemove extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildManageRemove",
     id: "e0a980f598d8a745",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get guildeqid(): number {
     return $.utils.getInt32(0, this);
@@ -3466,7 +3466,7 @@ export class Guildcommand extends $.Struct {
   static readonly _capnp = {
     displayName: "Guildcommand",
     id: "87681fa437f7497d",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get othername(): string {
     return $.utils.getText(0, this);
@@ -3500,7 +3500,7 @@ export class OnLevelMessage extends $.Struct {
   static readonly _capnp = {
     displayName: "OnLevelMessage",
     id: "bed2ab9863c56d3b",
-    size: new $.ObjectSize(16, 2)
+    size: new $.ObjectSize(16, 2),
   };
   get title(): string {
     return $.utils.getText(0, this);
@@ -3540,7 +3540,7 @@ export class GMZoneRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "GMZoneRequest",
     id: "d870df23456b7900",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get charname(): string {
     return $.utils.getText(0, this);
@@ -3592,7 +3592,7 @@ export class GMSummon extends $.Struct {
   static readonly _capnp = {
     displayName: "GMSummon",
     id: "d2768707959c3ea9",
-    size: new $.ObjectSize(24, 2)
+    size: new $.ObjectSize(24, 2),
   };
   get charname(): string {
     return $.utils.getText(0, this);
@@ -3644,7 +3644,7 @@ export class GMGoto extends $.Struct {
   static readonly _capnp = {
     displayName: "GMGoto",
     id: "d963a858373108fc",
-    size: new $.ObjectSize(24, 2)
+    size: new $.ObjectSize(24, 2),
   };
   get charname(): string {
     return $.utils.getText(0, this);
@@ -3696,7 +3696,7 @@ export class GMLastName extends $.Struct {
   static readonly _capnp = {
     displayName: "GMLastName",
     id: "c186a9c36f974c33",
-    size: new $.ObjectSize(0, 3)
+    size: new $.ObjectSize(0, 3),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -3724,7 +3724,7 @@ export class CombatAbility extends $.Struct {
   static readonly _capnp = {
     displayName: "CombatAbility",
     id: "aeb6652f725f241b",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get mTarget(): number {
     return $.utils.getInt32(0, this);
@@ -3752,7 +3752,7 @@ export class InstillDoubt extends $.Struct {
   static readonly _capnp = {
     displayName: "InstillDoubt",
     id: "f47ddd36364c797f",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get iId(): number {
     return $.utils.getInt32(0, this);
@@ -3780,7 +3780,7 @@ export class GiveItem extends $.Struct {
   static readonly _capnp = {
     displayName: "GiveItem",
     id: "eef4dfefeb1def9f",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get toEntity(): number {
     return $.utils.getInt32(0, this);
@@ -3814,7 +3814,7 @@ export class RandomReq extends $.Struct {
   static readonly _capnp = {
     displayName: "RandomReq",
     id: "c76af8996e024e54",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get low(): number {
     return $.utils.getInt32(0, this);
@@ -3836,7 +3836,7 @@ export class RandomReply extends $.Struct {
   static readonly _capnp = {
     displayName: "RandomReply",
     id: "fc446c448d940ff7",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get low(): number {
     return $.utils.getInt32(0, this);
@@ -3870,7 +3870,7 @@ export class LFG extends $.Struct {
   static readonly _capnp = {
     displayName: "LFG",
     id: "852c02610e8a2a24",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get value(): number {
     return $.utils.getInt32(0, this);
@@ -3892,7 +3892,7 @@ export class LFGAppearance extends $.Struct {
   static readonly _capnp = {
     displayName: "LFGAppearance",
     id: "88c6bb9459dd440d",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -3914,7 +3914,7 @@ export class TimeOfDay extends $.Struct {
   static readonly _capnp = {
     displayName: "TimeOfDay",
     id: "873927d4562f9ba5",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get hour(): number {
     return $.utils.getInt32(0, this);
@@ -3954,7 +3954,7 @@ export class MerchantClick extends $.Struct {
   static readonly _capnp = {
     displayName: "MerchantClick",
     id: "f19df04c8f59f3a6",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -3988,7 +3988,7 @@ export class MerchantSell extends $.Struct {
   static readonly _capnp = {
     displayName: "MerchantSell",
     id: "d3bb2f7cf3a77db4",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -4028,7 +4028,7 @@ export class MerchantPurchase extends $.Struct {
   static readonly _capnp = {
     displayName: "MerchantPurchase",
     id: "c8d069bf9cf2487f",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -4062,7 +4062,7 @@ export class MerchantDelItem extends $.Struct {
   static readonly _capnp = {
     displayName: "MerchantDelItem",
     id: "91cbe70d9e0d9cee",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -4090,7 +4090,7 @@ export class AdventurePurchase extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventurePurchase",
     id: "edae9d3a84825876",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get someFlag(): number {
     return $.utils.getInt32(0, this);
@@ -4124,7 +4124,7 @@ export class AdventureSell extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventureSell",
     id: "cfe31aeeb9723e6b",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -4158,7 +4158,7 @@ export class AdventurePointsUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventurePointsUpdate",
     id: "9f9c5384091d79ce",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get ldonAvailablePoints(): number {
     return $.utils.getInt32(0, this);
@@ -4222,7 +4222,7 @@ export class AdventureFinish extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventureFinish",
     id: "91ab76ec9c2c1b6f",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get winLose(): number {
     return $.utils.getInt32(0, this);
@@ -4244,7 +4244,7 @@ export class AdventureRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventureRequest",
     id: "d61435667434c9c3",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get risk(): number {
     return $.utils.getInt32(0, this);
@@ -4266,7 +4266,7 @@ export class AdventureRequestResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventureRequestResponse",
     id: "d801819fddc5173b",
-    size: new $.ObjectSize(32, 1)
+    size: new $.ObjectSize(32, 1),
   };
   get text(): string {
     return $.utils.getText(0, this);
@@ -4324,7 +4324,7 @@ export class Illusion extends $.Struct {
   static readonly _capnp = {
     displayName: "Illusion",
     id: "fffc6cb5879fa108",
-    size: new $.ObjectSize(48, 1)
+    size: new $.ObjectSize(48, 1),
   };
   get spawnid(): number {
     return $.utils.getInt32(0, this);
@@ -4406,7 +4406,7 @@ export class SkillUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "SkillUpdate",
     id: "daac54598edab4df",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get skillId(): number {
     return $.utils.getInt32(0, this);
@@ -4428,7 +4428,7 @@ export class ZoneUnavail extends $.Struct {
   static readonly _capnp = {
     displayName: "ZoneUnavail",
     id: "cafb4dbd23ee299c",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get zonename(): string {
     return $.utils.getText(0, this);
@@ -4444,7 +4444,7 @@ export class GroupGeneric extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupGeneric",
     id: "ba8fb8d4d5b15836",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name1(): string {
     return $.utils.getText(0, this);
@@ -4466,7 +4466,7 @@ export class GroupCancel extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupCancel",
     id: "9b4767b704c3f415",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get name1(): string {
     return $.utils.getText(0, this);
@@ -4494,7 +4494,7 @@ export class GroupUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupUpdate",
     id: "c6cfb8d85c850055",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   static _Membername: $.ListCtor<StringList>;
   get action(): number {
@@ -4541,7 +4541,7 @@ export class GroupUpdate2 extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupUpdate2",
     id: "d1052d0564f25e0d",
-    size: new $.ObjectSize(8, 4)
+    size: new $.ObjectSize(8, 4),
   };
   static _Membername: $.ListCtor<StringList>;
   get action(): number {
@@ -4606,7 +4606,7 @@ export class GroupJoin extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupJoin",
     id: "880f6cbde51358e0",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -4634,7 +4634,7 @@ export class FaceChange extends $.Struct {
   static readonly _capnp = {
     displayName: "FaceChange",
     id: "d8b98b1d67fe28a2",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get haircolor(): number {
     return $.utils.getInt32(0, this);
@@ -4686,7 +4686,7 @@ export class TradeRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "TradeRequest",
     id: "dbc10a1e045d6bed",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get toMobId(): number {
     return $.utils.getInt32(0, this);
@@ -4708,7 +4708,7 @@ export class TradeAccept extends $.Struct {
   static readonly _capnp = {
     displayName: "TradeAccept",
     id: "fa5626b7b9dcd44b",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get fromMobId(): number {
     return $.utils.getInt32(0, this);
@@ -4724,7 +4724,7 @@ export class CancelTrade extends $.Struct {
   static readonly _capnp = {
     displayName: "CancelTrade",
     id: "b7f9da429e0872e9",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get fromid(): number {
     return $.utils.getInt32(0, this);
@@ -4746,7 +4746,7 @@ export class PetitionUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "PetitionUpdate",
     id: "fab5a20f1d337f75",
-    size: new $.ObjectSize(24, 3)
+    size: new $.ObjectSize(24, 3),
   };
   get petnumber(): number {
     return $.utils.getInt32(0, this);
@@ -4804,7 +4804,7 @@ export class Petition extends $.Struct {
   static readonly _capnp = {
     displayName: "Petition",
     id: "87d72af46493bddd",
-    size: new $.ObjectSize(40, 5)
+    size: new $.ObjectSize(40, 5),
   };
   get petnumber(): number {
     return $.utils.getInt32(0, this);
@@ -4898,7 +4898,7 @@ export class WhoAll extends $.Struct {
   static readonly _capnp = {
     displayName: "WhoAll",
     id: "b513764d5512a334",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get whom(): string {
     return $.utils.getText(0, this);
@@ -4944,7 +4944,7 @@ export class Stun extends $.Struct {
   static readonly _capnp = {
     displayName: "Stun",
     id: "88007635e342bb94",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get duration(): number {
     return $.utils.getInt32(0, this);
@@ -4960,7 +4960,7 @@ export class AugmentItem extends $.Struct {
   static readonly _capnp = {
     displayName: "AugmentItem",
     id: "e5205955ce643ade",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get containerSlot(): number {
     return $.utils.getInt32(0, this);
@@ -4982,7 +4982,7 @@ export class Emote extends $.Struct {
   static readonly _capnp = {
     displayName: "Emote",
     id: "cff0b4cd24d99860",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get message(): string {
     return $.utils.getText(0, this);
@@ -4998,7 +4998,7 @@ export class Inspect extends $.Struct {
   static readonly _capnp = {
     displayName: "Inspect",
     id: "8169b9320fb13d79",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get targetId(): number {
     return $.utils.getInt32(0, this);
@@ -5020,7 +5020,7 @@ export class InspectResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "InspectResponse",
     id: "9f325734076f5253",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   static _Itemnames: $.ListCtor<StringList>;
   get targetId(): number {
@@ -5085,7 +5085,7 @@ export class SetDataRate extends $.Struct {
   static readonly _capnp = {
     displayName: "SetDataRate",
     id: "e8dc5ddc1cdb5438",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get newdatarate(): number {
     return $.utils.getFloat32(0, this);
@@ -5101,7 +5101,7 @@ export class SetServerFilter extends $.Struct {
   static readonly _capnp = {
     displayName: "SetServerFilter",
     id: "8acccc8118bd1f80",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptFilters(value: $.Orphan<$.List<number>>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -5129,7 +5129,7 @@ export class SetServerFilterAck extends $.Struct {
   static readonly _capnp = {
     displayName: "SetServerFilterAck",
     id: "b2ea7b1704b448ca",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptBlank(value: $.Orphan<$.List<number>>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -5157,7 +5157,7 @@ export class IncreaseStat extends $.Struct {
   static readonly _capnp = {
     displayName: "IncreaseStat",
     id: "f1cccb02e7af0dd8",
-    size: new $.ObjectSize(96, 0)
+    size: new $.ObjectSize(96, 0),
   };
   get str(): number {
     return $.utils.getInt32(0, this);
@@ -5311,7 +5311,7 @@ export class GMName extends $.Struct {
   static readonly _capnp = {
     displayName: "GMName",
     id: "84ae33ececbdf2f2",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   get oldname(): string {
     return $.utils.getText(0, this);
@@ -5345,7 +5345,7 @@ export class GMDelCorpse extends $.Struct {
   static readonly _capnp = {
     displayName: "GMDelCorpse",
     id: "eafef4c5dcc4b5b5",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get corpsename(): string {
     return $.utils.getText(0, this);
@@ -5367,7 +5367,7 @@ export class GMKick extends $.Struct {
   static readonly _capnp = {
     displayName: "GMKick",
     id: "b7c78f3b8eaa6d37",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -5389,7 +5389,7 @@ export class GMKill extends $.Struct {
   static readonly _capnp = {
     displayName: "GMKill",
     id: "f047782143ce741d",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -5411,7 +5411,7 @@ export class GMEmoteZone extends $.Struct {
   static readonly _capnp = {
     displayName: "GMEmoteZone",
     id: "82e8c67d0acc92ee",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get text(): string {
     return $.utils.getText(0, this);
@@ -5427,7 +5427,7 @@ export class BookText extends $.Struct {
   static readonly _capnp = {
     displayName: "BookText",
     id: "b854b850a845d36e",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get window(): number {
     return $.utils.getInt32(0, this);
@@ -5455,7 +5455,7 @@ export class BookRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "BookRequest",
     id: "82c483a4cf75cbe3",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get window(): number {
     return $.utils.getInt32(0, this);
@@ -5483,7 +5483,7 @@ export class Object extends $.Struct {
   static readonly _capnp = {
     displayName: "Object",
     id: "9c833cee78c1a396",
-    size: new $.ObjectSize(40, 2)
+    size: new $.ObjectSize(40, 2),
   };
   _adoptLinkedListAddr(value: $.Orphan<$.List<number>>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -5571,7 +5571,7 @@ export class ClickObject extends $.Struct {
   static readonly _capnp = {
     displayName: "ClickObject",
     id: "f7af0983a9ca61c5",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get dropId(): number {
     return $.utils.getInt32(0, this);
@@ -5593,7 +5593,7 @@ export class ClickObjectAction extends $.Struct {
   static readonly _capnp = {
     displayName: "ClickObjectAction",
     id: "998ca559e52e226b",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get playerId(): number {
     return $.utils.getInt32(0, this);
@@ -5639,7 +5639,7 @@ export class Shielding extends $.Struct {
   static readonly _capnp = {
     displayName: "Shielding",
     id: "a916afef9cb49a54",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get targetId(): number {
     return $.utils.getInt32(0, this);
@@ -5655,7 +5655,7 @@ export class ClickObjectAck extends $.Struct {
   static readonly _capnp = {
     displayName: "ClickObjectAck",
     id: "93de0fbdc8643390",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get playerId(): number {
     return $.utils.getInt32(0, this);
@@ -5701,7 +5701,7 @@ export class CloseContainer extends $.Struct {
   static readonly _capnp = {
     displayName: "CloseContainer",
     id: "fd58a2914a0296e2",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get playerId(): number {
     return $.utils.getInt32(0, this);
@@ -5729,7 +5729,7 @@ export class Door extends $.Struct {
   static readonly _capnp = {
     displayName: "Door",
     id: "f9454e8612b10b69",
-    size: new $.ObjectSize(48, 1)
+    size: new $.ObjectSize(48, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -5811,7 +5811,7 @@ export class DoorSpawns extends $.Struct {
   static readonly _capnp = {
     displayName: "DoorSpawns",
     id: "f304800fc3af267f",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Doors: $.ListCtor<Door>;
   get count(): number {
@@ -5846,7 +5846,7 @@ export class ClickDoor extends $.Struct {
   static readonly _capnp = {
     displayName: "ClickDoor",
     id: "a012f4912c4151f9",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get doorid(): number {
     return $.utils.getInt32(0, this);
@@ -5880,7 +5880,7 @@ export class MoveDoor extends $.Struct {
   static readonly _capnp = {
     displayName: "MoveDoor",
     id: "844fdb5787f2eb73",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get doorid(): number {
     return $.utils.getInt32(0, this);
@@ -5902,7 +5902,7 @@ export class BecomeNPC extends $.Struct {
   static readonly _capnp = {
     displayName: "BecomeNPC",
     id: "b4452aee08031161",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -5924,7 +5924,7 @@ export class Underworld extends $.Struct {
   static readonly _capnp = {
     displayName: "Underworld",
     id: "f90c9c3f6c27a1c2",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get speed(): number {
     return $.utils.getFloat32(0, this);
@@ -5958,7 +5958,7 @@ export class Resurrect extends $.Struct {
   static readonly _capnp = {
     displayName: "Resurrect",
     id: "d68209c5c40dc249",
-    size: new $.ObjectSize(32, 3)
+    size: new $.ObjectSize(32, 3),
   };
   get zoneId(): number {
     return $.utils.getInt32(0, this);
@@ -6028,7 +6028,7 @@ export class SetRunMode extends $.Struct {
   static readonly _capnp = {
     displayName: "SetRunMode",
     id: "c1409e4be6401554",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get mode(): number {
     return $.utils.getInt32(0, this);
@@ -6044,7 +6044,7 @@ export class EnvDamage2 extends $.Struct {
   static readonly _capnp = {
     displayName: "EnvDamage2",
     id: "ec5c7b07d1717d84",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -6078,7 +6078,7 @@ export class BazaarWindowStart extends $.Struct {
   static readonly _capnp = {
     displayName: "BazaarWindowStart",
     id: "86f0f1c44a113f21",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -6094,7 +6094,7 @@ export class BazaarWelcome extends $.Struct {
   static readonly _capnp = {
     displayName: "BazaarWelcome",
     id: "9c85c1e6d68aa499",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   _adoptBeginning(value: $.Orphan<BazaarWindowStart>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -6134,7 +6134,7 @@ export class BazaarSearch extends $.Struct {
   static readonly _capnp = {
     displayName: "BazaarSearch",
     id: "9292e90285848d8e",
-    size: new $.ObjectSize(40, 2)
+    size: new $.ObjectSize(40, 2),
   };
   _adoptBeginning(value: $.Orphan<BazaarWindowStart>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -6228,7 +6228,7 @@ export class BazaarInspect extends $.Struct {
   static readonly _capnp = {
     displayName: "BazaarInspect",
     id: "940ac0b117677519",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get itemId(): number {
     return $.utils.getInt32(0, this);
@@ -6250,7 +6250,7 @@ export class BazaarReturnDone extends $.Struct {
   static readonly _capnp = {
     displayName: "BazaarReturnDone",
     id: "bde69a9238be5e37",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get type(): number {
     return $.utils.getInt32(0, this);
@@ -6272,7 +6272,7 @@ export class BazaarSearchResults extends $.Struct {
   static readonly _capnp = {
     displayName: "BazaarSearchResults",
     id: "cd102105578e2465",
-    size: new $.ObjectSize(24, 2)
+    size: new $.ObjectSize(24, 2),
   };
   _adoptBeginning(value: $.Orphan<BazaarWindowStart>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -6336,7 +6336,7 @@ export class ServerSideFilters extends $.Struct {
   static readonly _capnp = {
     displayName: "ServerSideFilters",
     id: "c54135596f07c87b",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get clientattackfilters(): number {
     return $.utils.getInt32(0, this);
@@ -6370,7 +6370,7 @@ export class ItemViewRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "ItemViewRequest",
     id: "c2c16fce3e3aa7eb",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get itemId(): number {
     return $.utils.getInt32(0, this);
@@ -6410,7 +6410,7 @@ export class PickPocket extends $.Struct {
   static readonly _capnp = {
     displayName: "PickPocket",
     id: "c4aef0c4dc45bc83",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get to(): number {
     return $.utils.getInt32(0, this);
@@ -6468,7 +6468,7 @@ export class ActionPickPocket extends $.Struct {
   static readonly _capnp = {
     displayName: "ActionPickPocket",
     id: "be54ea0b18470782",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get to(): number {
     return $.utils.getInt32(0, this);
@@ -6514,7 +6514,7 @@ export class LogServer extends $.Struct {
   static readonly _capnp = {
     displayName: "LogServer",
     id: "b74f1e7519f6fd40",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get worldshortname(): string {
     return $.utils.getText(0, this);
@@ -6530,7 +6530,7 @@ export class ClientError extends $.Struct {
   static readonly _capnp = {
     displayName: "ClientError",
     id: "cf7084fe71119d92",
-    size: new $.ObjectSize(0, 3)
+    size: new $.ObjectSize(0, 3),
   };
   get type(): string {
     return $.utils.getText(0, this);
@@ -6558,7 +6558,7 @@ export class MobHealth extends $.Struct {
   static readonly _capnp = {
     displayName: "MobHealth",
     id: "b915e75dd5f36b13",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get hp(): number {
     return $.utils.getInt32(0, this);
@@ -6580,7 +6580,7 @@ export class Track extends $.Struct {
   static readonly _capnp = {
     displayName: "Track",
     id: "8f371262d861f7d1",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get entityid(): number {
     return $.utils.getInt32(0, this);
@@ -6602,7 +6602,7 @@ export class TrackTarget extends $.Struct {
   static readonly _capnp = {
     displayName: "TrackTarget",
     id: "881a3fa8b6a21e65",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get entityid(): number {
     return $.utils.getInt32(0, this);
@@ -6618,7 +6618,7 @@ export class Tracking extends $.Struct {
   static readonly _capnp = {
     displayName: "Tracking",
     id: "8929937be8c9e001",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Entries: $.ListCtor<Track>;
   get count(): number {
@@ -6653,7 +6653,7 @@ export class ZoneServerInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "ZoneServerInfo",
     id: "94d039e60a812076",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get ip(): string {
     return $.utils.getText(0, this);
@@ -6675,7 +6675,7 @@ export class WhoAllPlayer extends $.Struct {
   static readonly _capnp = {
     displayName: "WhoAllPlayer",
     id: "c20152b889987299",
-    size: new $.ObjectSize(32, 3)
+    size: new $.ObjectSize(32, 3),
   };
   get formatstring(): number {
     return $.utils.getInt32(0, this);
@@ -6751,7 +6751,7 @@ export class WhoAllReturn extends $.Struct {
   static readonly _capnp = {
     displayName: "WhoAllReturn",
     id: "a58428b610ebb10c",
-    size: new $.ObjectSize(16, 2)
+    size: new $.ObjectSize(16, 2),
   };
   static _Player: $.ListCtor<WhoAllPlayer>;
   get id(): number {
@@ -6810,7 +6810,7 @@ export class Trader extends $.Struct {
   static readonly _capnp = {
     displayName: "Trader",
     id: "d351f43ee97d7196",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get code(): number {
     return $.utils.getInt32(0, this);
@@ -6862,7 +6862,7 @@ export class ClickTrader extends $.Struct {
   static readonly _capnp = {
     displayName: "ClickTrader",
     id: "f640e180eb6f7e34",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get code(): number {
     return $.utils.getInt32(0, this);
@@ -6896,7 +6896,7 @@ export class GetItems extends $.Struct {
   static readonly _capnp = {
     displayName: "GetItems",
     id: "a796a4d827fc48b4",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptItems(value: $.Orphan<$.List<number>>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -6924,7 +6924,7 @@ export class BecomeTrader extends $.Struct {
   static readonly _capnp = {
     displayName: "BecomeTrader",
     id: "9e7c63f7db1235ba",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -6946,7 +6946,7 @@ export class TraderShowItems extends $.Struct {
   static readonly _capnp = {
     displayName: "TraderShowItems",
     id: "c008c1d71bacfa15",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get code(): number {
     return $.utils.getInt32(0, this);
@@ -6968,7 +6968,7 @@ export class TraderBuy extends $.Struct {
   static readonly _capnp = {
     displayName: "TraderBuy",
     id: "838b6e674280f93f",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -7020,7 +7020,7 @@ export class TraderItemUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "TraderItemUpdate",
     id: "c998874f2bcc5999",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get traderid(): number {
     return $.utils.getInt32(0, this);
@@ -7054,7 +7054,7 @@ export class MoneyUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "MoneyUpdate",
     id: "b26bddc14e66729a",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get platinum(): number {
     return $.utils.getInt32(0, this);
@@ -7088,7 +7088,7 @@ export class TraderDelItem extends $.Struct {
   static readonly _capnp = {
     displayName: "TraderDelItem",
     id: "c73e9eb76d70ee0a",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get slotid(): number {
     return $.utils.getInt32(0, this);
@@ -7110,7 +7110,7 @@ export class TraderClick extends $.Struct {
   static readonly _capnp = {
     displayName: "TraderClick",
     id: "cac443c397628440",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get traderid(): number {
     return $.utils.getInt32(0, this);
@@ -7132,7 +7132,7 @@ export class FormattedMessage extends $.Struct {
   static readonly _capnp = {
     displayName: "FormattedMessage",
     id: "fb596df65e062edf",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get stringId(): number {
     return $.utils.getInt32(0, this);
@@ -7160,7 +7160,7 @@ export class SimpleMessage extends $.Struct {
   static readonly _capnp = {
     displayName: "SimpleMessage",
     id: "8552adf123d9b564",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get stringId(): number {
     return $.utils.getInt32(0, this);
@@ -7182,7 +7182,7 @@ export class GuildMemberEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildMemberEntry",
     id: "820db271715b4199",
-    size: new $.ObjectSize(40, 2)
+    size: new $.ObjectSize(40, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7264,7 +7264,7 @@ export class GuildMembers extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildMembers",
     id: "ca9a2c906b36a12e",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   static _Member: $.ListCtor<GuildMemberEntry>;
   get playerName(): string {
@@ -7305,7 +7305,7 @@ export class GuildMOTD extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildMOTD",
     id: "9400994ae28f2ed6",
-    size: new $.ObjectSize(0, 3)
+    size: new $.ObjectSize(0, 3),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7333,7 +7333,7 @@ export class GuildUpdatePublicNote extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildUpdatePublicNote",
     id: "a2fef4c64b89cc83",
-    size: new $.ObjectSize(0, 3)
+    size: new $.ObjectSize(0, 3),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7361,7 +7361,7 @@ export class GuildDemote extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildDemote",
     id: "a0ec151dfc4791ad",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7383,7 +7383,7 @@ export class GuildRemove extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildRemove",
     id: "d769b0a839cd2c2e",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get target(): string {
     return $.utils.getText(0, this);
@@ -7411,7 +7411,7 @@ export class GuildMakeLeader extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildMakeLeader",
     id: "db92e7fa759f1894",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7433,7 +7433,7 @@ export class MakePet extends $.Struct {
   static readonly _capnp = {
     displayName: "MakePet",
     id: "919eb8a95b9f8a07",
-    size: new $.ObjectSize(40, 0)
+    size: new $.ObjectSize(40, 0),
   };
   get level(): number {
     return $.utils.getInt32(0, this);
@@ -7497,7 +7497,7 @@ export class GroundSpawn extends $.Struct {
   static readonly _capnp = {
     displayName: "GroundSpawn",
     id: "88b187d6e94820bd",
-    size: new $.ObjectSize(40, 1)
+    size: new $.ObjectSize(40, 1),
   };
   get maxX(): number {
     return $.utils.getFloat32(0, this);
@@ -7567,7 +7567,7 @@ export class GroundSpawns extends $.Struct {
   static readonly _capnp = {
     displayName: "GroundSpawns",
     id: "df6b29c6f745a197",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _Spawn: $.ListCtor<GroundSpawn>;
   _adoptSpawn(value: $.Orphan<$.List<GroundSpawn>>): void {
@@ -7596,7 +7596,7 @@ export class ApproveZone extends $.Struct {
   static readonly _capnp = {
     displayName: "ApproveZone",
     id: "b6c8b8141b0acfa3",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7624,7 +7624,7 @@ export class ZoneInSendName extends $.Struct {
   static readonly _capnp = {
     displayName: "ZoneInSendName",
     id: "d75aa49a213b1c70",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7646,7 +7646,7 @@ export class ZoneInSendName2 extends $.Struct {
   static readonly _capnp = {
     displayName: "ZoneInSendName2",
     id: "fb0629d3fd4188b0",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -7662,7 +7662,7 @@ export class StartTribute extends $.Struct {
   static readonly _capnp = {
     displayName: "StartTribute",
     id: "eabe3c2d8178a916",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -7690,7 +7690,7 @@ export class TributeLevel extends $.Struct {
   static readonly _capnp = {
     displayName: "TributeLevel",
     id: "cab56e851899421c",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get level(): number {
     return $.utils.getInt32(0, this);
@@ -7718,7 +7718,7 @@ export class TributeAbility extends $.Struct {
   static readonly _capnp = {
     displayName: "TributeAbility",
     id: "9f29336af3ac4f9f",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   static _Tiers: $.ListCtor<TributeLevel>;
   get tributeId(): number {
@@ -7765,7 +7765,7 @@ export class GuildTributeAbility extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildTributeAbility",
     id: "f6ebf8b8d23d794f",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get guildId(): number {
     return $.utils.getInt32(0, this);
@@ -7799,7 +7799,7 @@ export class SelectTributeReq extends $.Struct {
   static readonly _capnp = {
     displayName: "SelectTributeReq",
     id: "b3f8feecbb635492",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -7821,7 +7821,7 @@ export class SelectTributeReply extends $.Struct {
   static readonly _capnp = {
     displayName: "SelectTributeReply",
     id: "b176d4b98cf5afa6",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -7849,7 +7849,7 @@ export class TributeInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "TributeInfo",
     id: "d5db12ce6b4738ee",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get active(): number {
     return $.utils.getInt32(0, this);
@@ -7907,7 +7907,7 @@ export class TributeItem extends $.Struct {
   static readonly _capnp = {
     displayName: "TributeItem",
     id: "b6db3a4bd35d7d66",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get slot(): number {
     return $.utils.getInt32(0, this);
@@ -7941,7 +7941,7 @@ export class TributePoint extends $.Struct {
   static readonly _capnp = {
     displayName: "TributePoint",
     id: "f1f7baa2935a0cd7",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get tributePoints(): number {
     return $.utils.getInt32(0, this);
@@ -7963,7 +7963,7 @@ export class TributeMoney extends $.Struct {
   static readonly _capnp = {
     displayName: "TributeMoney",
     id: "b66a9193d2300649",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get platinum(): number {
     return $.utils.getInt32(0, this);
@@ -7991,7 +7991,7 @@ export class Split extends $.Struct {
   static readonly _capnp = {
     displayName: "Split",
     id: "c2f958e3df4726c9",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get platinum(): number {
     return $.utils.getInt32(0, this);
@@ -8025,7 +8025,7 @@ export class NewCombine extends $.Struct {
   static readonly _capnp = {
     displayName: "NewCombine",
     id: "f8dcc5cd22965ff5",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get containerSlot(): number {
     return $.utils.getInt32(0, this);
@@ -8047,7 +8047,7 @@ export class TradeskillFavorites extends $.Struct {
   static readonly _capnp = {
     displayName: "TradeskillFavorites",
     id: "f42a44d24baf1780",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get objectType(): number {
     return $.utils.getInt32(0, this);
@@ -8087,7 +8087,7 @@ export class RecipesSearch extends $.Struct {
   static readonly _capnp = {
     displayName: "RecipesSearch",
     id: "e10a56be889c8d63",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get objectType(): number {
     return $.utils.getInt32(0, this);
@@ -8127,7 +8127,7 @@ export class RecipeReply extends $.Struct {
   static readonly _capnp = {
     displayName: "RecipeReply",
     id: "dd1f5357c25cc3b7",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get objectType(): number {
     return $.utils.getInt32(0, this);
@@ -8173,7 +8173,7 @@ export class RecipeAutoCombine extends $.Struct {
   static readonly _capnp = {
     displayName: "RecipeAutoCombine",
     id: "c49c789ac9b97fbe",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get objectType(): number {
     return $.utils.getInt32(0, this);
@@ -8207,7 +8207,7 @@ export class LevelAppearance extends $.Struct {
   static readonly _capnp = {
     displayName: "LevelAppearance",
     id: "d74a1be2552282a4",
-    size: new $.ObjectSize(64, 0)
+    size: new $.ObjectSize(64, 0),
   };
   get spawnId(): number {
     return $.utils.getInt32(0, this);
@@ -8313,7 +8313,7 @@ export class MerchantList extends $.Struct {
   static readonly _capnp = {
     displayName: "MerchantList",
     id: "d9cddf13c207ce2d",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -8341,7 +8341,7 @@ export class TempMerchantList extends $.Struct {
   static readonly _capnp = {
     displayName: "TempMerchantList",
     id: "d6aded5b005488d5",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get npcid(): number {
     return $.utils.getInt32(0, this);
@@ -8381,7 +8381,7 @@ export class FindPersonPoint extends $.Struct {
   static readonly _capnp = {
     displayName: "FindPersonPoint",
     id: "cddf6dbc366deb3e",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get y(): number {
     return $.utils.getFloat32(0, this);
@@ -8409,7 +8409,7 @@ export class FindPersonRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "FindPersonRequest",
     id: "b976985727e64f4f",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get npcId(): number {
     return $.utils.getInt32(0, this);
@@ -8431,7 +8431,7 @@ export class FindPersonResult extends $.Struct {
   static readonly _capnp = {
     displayName: "FindPersonResult",
     id: "e89b2535f3e88eb7",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get dest(): number {
     return $.utils.getInt32(0, this);
@@ -8465,7 +8465,7 @@ export class MobRename extends $.Struct {
   static readonly _capnp = {
     displayName: "MobRename",
     id: "b5a6abce79a6f063",
-    size: new $.ObjectSize(0, 3)
+    size: new $.ObjectSize(0, 3),
   };
   get oldName(): string {
     return $.utils.getText(0, this);
@@ -8493,7 +8493,7 @@ export class PlayMP3 extends $.Struct {
   static readonly _capnp = {
     displayName: "PlayMP3",
     id: "de51be80c580aa82",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get filename(): string {
     return $.utils.getText(0, this);
@@ -8509,7 +8509,7 @@ export class TitleEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "TitleEntry",
     id: "9e2a00f7ceea75bb",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get skillId(): number {
     return $.utils.getInt32(0, this);
@@ -8537,7 +8537,7 @@ export class Titles extends $.Struct {
   static readonly _capnp = {
     displayName: "Titles",
     id: "a88d7dcd40961f55",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Titles: $.ListCtor<TitleEntry>;
   get count(): number {
@@ -8572,7 +8572,7 @@ export class TitleListEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "TitleListEntry",
     id: "9ce5c88efd68b310",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get prefix(): string {
     return $.utils.getText(0, this);
@@ -8594,7 +8594,7 @@ export class TitleList extends $.Struct {
   static readonly _capnp = {
     displayName: "TitleList",
     id: "80b7b9a2597c4eed",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Titles: $.ListCtor<TitleListEntry>;
   get count(): number {
@@ -8629,7 +8629,7 @@ export class SetTitle extends $.Struct {
   static readonly _capnp = {
     displayName: "SetTitle",
     id: "9217151fa71ac827",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get isSuffix(): number {
     return $.utils.getInt32(0, this);
@@ -8651,7 +8651,7 @@ export class SetTitleReply extends $.Struct {
   static readonly _capnp = {
     displayName: "SetTitleReply",
     id: "bae3c3ae8a00e8a6",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get isSuffix(): number {
     return $.utils.getInt32(0, this);
@@ -8679,7 +8679,7 @@ export class TaskDescription extends $.Struct {
   static readonly _capnp = {
     displayName: "TaskDescription",
     id: "a77cd936c64d6ed7",
-    size: new $.ObjectSize(24, 3)
+    size: new $.ObjectSize(24, 3),
   };
   get activityCount(): number {
     return $.utils.getInt32(0, this);
@@ -8737,7 +8737,7 @@ export class TaskMemberList extends $.Struct {
   static readonly _capnp = {
     displayName: "TaskMemberList",
     id: "9910215bbf6992b3",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get gopherId(): number {
     return $.utils.getInt32(0, this);
@@ -8765,7 +8765,7 @@ export class TaskActivity extends $.Struct {
   static readonly _capnp = {
     displayName: "TaskActivity",
     id: "bdf104dd14c6c05e",
-    size: new $.ObjectSize(32, 3)
+    size: new $.ObjectSize(32, 3),
   };
   get activityCount(): number {
     return $.utils.getInt32(0, this);
@@ -8835,7 +8835,7 @@ export class TaskHistoryEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "TaskHistoryEntry",
     id: "f7b756860a5b5804",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get taskId(): number {
     return $.utils.getInt32(0, this);
@@ -8863,7 +8863,7 @@ export class TaskHistory extends $.Struct {
   static readonly _capnp = {
     displayName: "TaskHistory",
     id: "d35ac5679adaf993",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Entries: $.ListCtor<TaskHistoryEntry>;
   get count(): number {
@@ -8898,7 +8898,7 @@ export class AcceptNewTask extends $.Struct {
   static readonly _capnp = {
     displayName: "AcceptNewTask",
     id: "be5555051342f44e",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get taskId(): number {
     return $.utils.getInt32(0, this);
@@ -8920,7 +8920,7 @@ export class AvaliableTask extends $.Struct {
   static readonly _capnp = {
     displayName: "AvaliableTask",
     id: "a86e0a28ffc1ad93",
-    size: new $.ObjectSize(32, 2)
+    size: new $.ObjectSize(32, 2),
   };
   get taskIndex(): number {
     return $.utils.getInt32(0, this);
@@ -8990,7 +8990,7 @@ export class BankerChange extends $.Struct {
   static readonly _capnp = {
     displayName: "BankerChange",
     id: "a4fef5cca0eb8eaa",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get platinum(): number {
     return $.utils.getInt32(0, this);
@@ -9048,7 +9048,7 @@ export class LeadershipExpUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "LeadershipExpUpdate",
     id: "8534668f6850d8ba",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get groupLeadershipExp(): number {
     return $.utils.getFloat64(0, this);
@@ -9082,7 +9082,7 @@ export class UpdateLeadershipAA extends $.Struct {
   static readonly _capnp = {
     displayName: "UpdateLeadershipAA",
     id: "9726e35ff31ca532",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get abilityId(): number {
     return $.utils.getInt32(0, this);
@@ -9110,7 +9110,7 @@ export class LeadExpUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "LeadExpUpdate",
     id: "dea4ce0866a280a7",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get groupLeadershipExp(): number {
     return $.utils.getInt32(0, this);
@@ -9144,7 +9144,7 @@ export class RaidGeneral extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidGeneral",
     id: "aba4e5389c6116b1",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9178,7 +9178,7 @@ export class RaidAddMember extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidAddMember",
     id: "dc9cd82121d86b8e",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   _adoptRaidGen(value: $.Orphan<RaidGeneral>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -9224,7 +9224,7 @@ export class RaidNote extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidNote",
     id: "cc521ab8cc5e91c0",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   _adoptGeneral(value: $.Orphan<RaidGeneral>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -9258,7 +9258,7 @@ export class RaidMOTD extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidMOTD",
     id: "bad2f81cd78e053a",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   _adoptGeneral(value: $.Orphan<RaidGeneral>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -9292,7 +9292,7 @@ export class RaidLeadershipUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidLeadershipUpdate",
     id: "9078ec69fd7d9560",
-    size: new $.ObjectSize(8, 4)
+    size: new $.ObjectSize(8, 4),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9356,7 +9356,7 @@ export class RaidCreate extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidCreate",
     id: "fa80583ce360de61",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9384,7 +9384,7 @@ export class RaidMemberInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidMemberInfo",
     id: "f32339f8d6ffe524",
-    size: new $.ObjectSize(24, 1)
+    size: new $.ObjectSize(24, 1),
   };
   get groupNumber(): number {
     return $.utils.getInt32(0, this);
@@ -9436,7 +9436,7 @@ export class RaidDetails extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidDetails",
     id: "f87e75def99cdba4",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9482,7 +9482,7 @@ export class RaidMembers extends $.Struct {
   static readonly _capnp = {
     displayName: "RaidMembers",
     id: "a5a8b25550e0240d",
-    size: new $.ObjectSize(8, 3)
+    size: new $.ObjectSize(8, 3),
   };
   static _Members: $.ListCtor<RaidMemberInfo>;
   _adoptDetails(value: $.Orphan<RaidDetails>): void {
@@ -9553,7 +9553,7 @@ export class DynamicWall extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicWall",
     id: "af898798e12e23da",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -9593,7 +9593,7 @@ export class BandolierCreate extends $.Struct {
   static readonly _capnp = {
     displayName: "BandolierCreate",
     id: "edada67c810ba36d",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9621,7 +9621,7 @@ export class BandolierDelete extends $.Struct {
   static readonly _capnp = {
     displayName: "BandolierDelete",
     id: "a304ad602f730110",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9643,7 +9643,7 @@ export class BandolierSet extends $.Struct {
   static readonly _capnp = {
     displayName: "BandolierSet",
     id: "ae87b106322248a8",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -9665,7 +9665,7 @@ export class Arrow extends $.Struct {
   static readonly _capnp = {
     displayName: "Arrow",
     id: "8f80c9fc8ead22c9",
-    size: new $.ObjectSize(48, 1)
+    size: new $.ObjectSize(48, 1),
   };
   get type(): number {
     return $.utils.getInt32(0, this);
@@ -9747,7 +9747,7 @@ export class Consent extends $.Struct {
   static readonly _capnp = {
     displayName: "Consent",
     id: "a66384177fb99486",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -9763,7 +9763,7 @@ export class AdventureMerchant extends $.Struct {
   static readonly _capnp = {
     displayName: "AdventureMerchant",
     id: "f89cd60c9713ce58",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get entityId(): number {
     return $.utils.getInt32(0, this);
@@ -9779,7 +9779,7 @@ export class GMtoggle extends $.Struct {
   static readonly _capnp = {
     displayName: "GMtoggle",
     id: "82a7789fb5b3a028",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get toggle(): number {
     return $.utils.getInt32(0, this);
@@ -9795,7 +9795,7 @@ export class GroupInvite extends $.Struct {
   static readonly _capnp = {
     displayName: "GroupInvite",
     id: "9b932a4905396044",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get inviteeName(): string {
     return $.utils.getText(0, this);
@@ -9817,7 +9817,7 @@ export class ColoredText extends $.Struct {
   static readonly _capnp = {
     displayName: "ColoredText",
     id: "f55818d39f2c0c72",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get color(): number {
     return $.utils.getInt32(0, this);
@@ -9839,7 +9839,7 @@ export class UseAA extends $.Struct {
   static readonly _capnp = {
     displayName: "UseAA",
     id: "a377d9a07bd4d6d6",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get begin(): number {
     return $.utils.getInt32(0, this);
@@ -9867,7 +9867,7 @@ export class AAAbility extends $.Struct {
   static readonly _capnp = {
     displayName: "AAAbility",
     id: "9598dccef1d83c38",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get skillId(): number {
     return $.utils.getInt32(0, this);
@@ -9901,7 +9901,7 @@ export class SendAA extends $.Struct {
   static readonly _capnp = {
     displayName: "SendAA",
     id: "dacdaa0d69c497ba",
-    size: new $.ObjectSize(88, 1)
+    size: new $.ObjectSize(88, 1),
   };
   static _Abilities: $.ListCtor<AAAbility>;
   get id(): number {
@@ -10056,7 +10056,7 @@ export class AAList extends $.Struct {
   static readonly _capnp = {
     displayName: "AAList",
     id: "ec5aa6bcd4fca2e4",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Aa: $.ListCtor<SendAA>;
   get count(): number {
@@ -10091,7 +10091,7 @@ export class AAAction extends $.Struct {
   static readonly _capnp = {
     displayName: "AAAction",
     id: "bb2eb4d03dfe2a7d",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get action(): number {
     return $.utils.getInt32(0, this);
@@ -10125,7 +10125,7 @@ export class AAExpUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "AAExpUpdate",
     id: "b861bce5eec387bd",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get aapointsUnspent(): number {
     return $.utils.getInt32(0, this);
@@ -10147,7 +10147,7 @@ export class AltAdvStats extends $.Struct {
   static readonly _capnp = {
     displayName: "AltAdvStats",
     id: "b8ef2f123b9801df",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get experience(): number {
     return $.utils.getInt32(0, this);
@@ -10175,7 +10175,7 @@ export class PlayerAA extends $.Struct {
   static readonly _capnp = {
     displayName: "PlayerAA",
     id: "8cf4d94985ccea99",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _AaList: $.ListCtor<AAArray>;
   _adoptAaList(value: $.Orphan<$.List<AAArray>>): void {
@@ -10204,7 +10204,7 @@ export class AATable extends $.Struct {
   static readonly _capnp = {
     displayName: "AATable",
     id: "d09020015ade2993",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   static _AaList: $.ListCtor<AAArray>;
   _adoptAaList(value: $.Orphan<$.List<AAArray>>): void {
@@ -10233,7 +10233,7 @@ export class Weather extends $.Struct {
   static readonly _capnp = {
     displayName: "Weather",
     id: "e930a7e80f737844",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get val(): number {
     return $.utils.getInt32(0, this);
@@ -10261,7 +10261,7 @@ export class LoadSpellSet extends $.Struct {
   static readonly _capnp = {
     displayName: "LoadSpellSet",
     id: "c854a2272dea6789",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptSpell(value: $.Orphan<$.List<number>>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -10289,7 +10289,7 @@ export class ApplyPoison extends $.Struct {
   static readonly _capnp = {
     displayName: "ApplyPoison",
     id: "dbae5e634d8e9ecd",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get inventorySlot(): number {
     return $.utils.getInt32(0, this);
@@ -10311,7 +10311,7 @@ export class GuildMemberUpdate extends $.Struct {
   static readonly _capnp = {
     displayName: "GuildMemberUpdate",
     id: "917f02f6029babd0",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get guildId(): number {
     return $.utils.getInt32(0, this);
@@ -10345,7 +10345,7 @@ export class VeteranRewardItem extends $.Struct {
   static readonly _capnp = {
     displayName: "VeteranRewardItem",
     id: "c5c8431019d453a8",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get itemId(): number {
     return $.utils.getInt32(0, this);
@@ -10367,7 +10367,7 @@ export class VeteranReward extends $.Struct {
   static readonly _capnp = {
     displayName: "VeteranReward",
     id: "a0a594ed993e78ca",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get claimId(): number {
     return $.utils.getInt32(0, this);
@@ -10401,7 +10401,7 @@ export class ExpeditionInvite extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionInvite",
     id: "e79b0d006ef1331d",
-    size: new $.ObjectSize(16, 4)
+    size: new $.ObjectSize(16, 4),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -10471,7 +10471,7 @@ export class ExpeditionInviteResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionInviteResponse",
     id: "f7df715b4e24efb3",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get dzZoneId(): number {
     return $.utils.getInt32(0, this);
@@ -10511,7 +10511,7 @@ export class DynamicZoneInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneInfo",
     id: "e7469eaa174fdd9f",
-    size: new $.ObjectSize(16, 2)
+    size: new $.ObjectSize(16, 2),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -10551,7 +10551,7 @@ export class DynamicZoneMemberEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneMemberEntry",
     id: "d65b5d6ec837db5d",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -10573,7 +10573,7 @@ export class DynamicZoneMemberList extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneMemberList",
     id: "9ed2b947650ba549",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Members: $.ListCtor<DynamicZoneMemberEntry>;
   get clientId(): number {
@@ -10614,7 +10614,7 @@ export class DynamicZoneMemberListName extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneMemberListName",
     id: "c5955ef3c3c9e4b0",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -10642,7 +10642,7 @@ export class ExpeditionLockoutTimerEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionLockoutTimerEntry",
     id: "82bbe68570bc51c9",
-    size: new $.ObjectSize(8, 2)
+    size: new $.ObjectSize(8, 2),
   };
   get expeditionName(): string {
     return $.utils.getText(0, this);
@@ -10676,7 +10676,7 @@ export class ExpeditionLockoutTimers extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionLockoutTimers",
     id: "944a2443abee2e54",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Timers: $.ListCtor<ExpeditionLockoutTimerEntry>;
   get clientId(): number {
@@ -10717,7 +10717,7 @@ export class DynamicZoneLeaderName extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneLeaderName",
     id: "c33264acc8d4e592",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -10739,7 +10739,7 @@ export class ExpeditionCommand extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionCommand",
     id: "f0eb3ae18581b267",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get name(): string {
     return $.utils.getText(0, this);
@@ -10755,7 +10755,7 @@ export class ExpeditionCommandSwap extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionCommandSwap",
     id: "c2320321f84d3e6b",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get addPlayerName(): string {
     return $.utils.getText(0, this);
@@ -10777,7 +10777,7 @@ export class ExpeditionExpireWarning extends $.Struct {
   static readonly _capnp = {
     displayName: "ExpeditionExpireWarning",
     id: "9c02cc7a71f37f31",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get clientId(): number {
     return $.utils.getInt32(0, this);
@@ -10799,7 +10799,7 @@ export class DynamicZoneCompassEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneCompassEntry",
     id: "837843dd5048c6d0",
-    size: new $.ObjectSize(32, 0)
+    size: new $.ObjectSize(32, 0),
   };
   get dzZoneId(): number {
     return $.utils.getInt32(0, this);
@@ -10851,7 +10851,7 @@ export class DynamicZoneCompass extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneCompass",
     id: "b7b4735fc72e17de",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Entries: $.ListCtor<DynamicZoneCompassEntry>;
   get clientId(): number {
@@ -10892,7 +10892,7 @@ export class DynamicZoneChooseZoneEntry extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneChooseZoneEntry",
     id: "e8b71523b2ef78ed",
-    size: new $.ObjectSize(16, 2)
+    size: new $.ObjectSize(16, 2),
   };
   get dzZoneId(): number {
     return $.utils.getInt32(0, this);
@@ -10932,7 +10932,7 @@ export class DynamicZoneChooseZone extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneChooseZone",
     id: "be9f101bff0dabed",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Choices: $.ListCtor<DynamicZoneChooseZoneEntry>;
   get clientId(): number {
@@ -10973,7 +10973,7 @@ export class DynamicZoneChooseZoneReply extends $.Struct {
   static readonly _capnp = {
     displayName: "DynamicZoneChooseZoneReply",
     id: "806a62bc2851fc01",
-    size: new $.ObjectSize(16, 0)
+    size: new $.ObjectSize(16, 0),
   };
   get dzZoneId(): number {
     return $.utils.getInt32(0, this);
@@ -11001,7 +11001,7 @@ export class LFGuildSearchPlayer extends $.Struct {
   static readonly _capnp = {
     displayName: "LFGuildSearchPlayer",
     id: "8a1df08ac17221fd",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get command(): number {
     return $.utils.getInt32(0, this);
@@ -11047,7 +11047,7 @@ export class LFGuildSearchGuild extends $.Struct {
   static readonly _capnp = {
     displayName: "LFGuildSearchGuild",
     id: "86b68baf94f42b99",
-    size: new $.ObjectSize(24, 0)
+    size: new $.ObjectSize(24, 0),
   };
   get command(): number {
     return $.utils.getInt32(0, this);
@@ -11087,7 +11087,7 @@ export class LFGuildPlayertoggle extends $.Struct {
   static readonly _capnp = {
     displayName: "LFGuildPlayertoggle",
     id: "ba7cb4dbd62489d5",
-    size: new $.ObjectSize(16, 1)
+    size: new $.ObjectSize(16, 1),
   };
   get command(): number {
     return $.utils.getInt32(0, this);
@@ -11127,7 +11127,7 @@ export class LFGuildGuildtoggle extends $.Struct {
   static readonly _capnp = {
     displayName: "LFGuildGuildtoggle",
     id: "db56b83f3063105d",
-    size: new $.ObjectSize(32, 2)
+    size: new $.ObjectSize(32, 2),
   };
   get command(): number {
     return $.utils.getInt32(0, this);
@@ -11197,7 +11197,7 @@ export class SayLinkBodyFrame extends $.Struct {
   static readonly _capnp = {
     displayName: "SayLinkBodyFrame",
     id: "853ff72f8a1e3384",
-    size: new $.ObjectSize(0, 11)
+    size: new $.ObjectSize(0, 11),
   };
   get actionId(): string {
     return $.utils.getText(0, this);
@@ -11273,7 +11273,7 @@ export class WebLogin extends $.Struct {
   static readonly _capnp = {
     displayName: "WebLogin",
     id: "b80f94bef16dea20",
-    size: new $.ObjectSize(0, 2)
+    size: new $.ObjectSize(0, 2),
   };
   get username(): string {
     return $.utils.getText(0, this);
@@ -11295,7 +11295,7 @@ export class WebLoginServerRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "WebLoginServerRequest",
     id: "f08bcfb76fcf5061",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get sequence(): number {
     return $.utils.getInt32(0, this);
@@ -11311,7 +11311,7 @@ export class WebLoginReply extends $.Struct {
   static readonly _capnp = {
     displayName: "WebLoginReply",
     id: "ef71c6ada87eac4c",
-    size: new $.ObjectSize(16, 3)
+    size: new $.ObjectSize(16, 3),
   };
   get key(): string {
     return $.utils.getText(0, this);
@@ -11381,7 +11381,7 @@ export class WebLoginWorldServer extends $.Struct {
   static readonly _capnp = {
     displayName: "WebLoginWorldServer",
     id: "c5eb62ff00b0072f",
-    size: new $.ObjectSize(16, 5)
+    size: new $.ObjectSize(16, 5),
   };
   get buffer(): string {
     return $.utils.getText(0, this);
@@ -11445,7 +11445,7 @@ export class WebLoginServerResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "WebLoginServerResponse",
     id: "efe5002d4e5acb87",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   static _Servers: $.ListCtor<WebLoginWorldServer>;
   get serverCount(): number {
@@ -11480,7 +11480,7 @@ export class WebPlayEverquestRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "WebPlayEverquestRequest",
     id: "9f58a78be70b999b",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get serverId(): number {
     return $.utils.getInt32(0, this);
@@ -11496,7 +11496,7 @@ export class WebPlayEverquestResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "WebPlayEverquestResponse",
     id: "fa35d04887272ed9",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get serverId(): number {
     return $.utils.getInt32(0, this);
@@ -11536,7 +11536,7 @@ export class WebSession extends $.Struct {
   static readonly _capnp = {
     displayName: "WebSession",
     id: "f613029b64a06aeb",
-    size: new $.ObjectSize(8, 1)
+    size: new $.ObjectSize(8, 1),
   };
   get remoteAddr(): string {
     return $.utils.getText(0, this);
@@ -11564,7 +11564,7 @@ export class Int extends $.Struct {
   static readonly _capnp = {
     displayName: "Int",
     id: "bd94d13b8b1bcadf",
-    size: new $.ObjectSize(8, 0)
+    size: new $.ObjectSize(8, 0),
   };
   get value(): number {
     return $.utils.getInt32(0, this);
@@ -11580,7 +11580,7 @@ export class Bool extends $.Struct {
   static readonly _capnp = {
     displayName: "Bool",
     id: "cc4575715bad9f24",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   _adoptValue(value: $.Orphan<Bool>): void {
     $.utils.adopt(value, $.utils.getPointer(0, this));
@@ -11608,7 +11608,7 @@ export class String extends $.Struct {
   static readonly _capnp = {
     displayName: "String",
     id: "f23307bee1ce0b8d",
-    size: new $.ObjectSize(0, 1)
+    size: new $.ObjectSize(0, 1),
   };
   get value(): string {
     return $.utils.getText(0, this);
@@ -11648,3 +11648,533 @@ ExpeditionLockoutTimers._Timers = $.CompositeList(ExpeditionLockoutTimerEntry);
 DynamicZoneCompass._Entries = $.CompositeList(DynamicZoneCompassEntry);
 DynamicZoneChooseZone._Choices = $.CompositeList(DynamicZoneChooseZoneEntry);
 WebLoginServerResponse._Servers = $.CompositeList(WebLoginWorldServer);
+
+// IdleQuest data query types
+export class GetItemRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetItemRequest",
+    id: "a1b2c3d4e5f60001",
+    size: new $.ObjectSize(8, 0),
+  };
+  get itemId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set itemId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+}
+
+export class GetItemResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetItemResponse",
+    id: "a1b2c3d4e5f60002",
+    size: new $.ObjectSize(72, 2),
+  };
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get itemId(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set itemId(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(1, this);
+  }
+  set name(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get icon(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set icon(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get itemclass(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set itemclass(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get weight(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set weight(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get slots(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set slots(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+  get price(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set price(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+  get ac(): number {
+    return $.utils.getInt32(28, this);
+  }
+  set ac(value: number) {
+    $.utils.setInt32(28, value, this);
+  }
+  get damage(): number {
+    return $.utils.getInt32(32, this);
+  }
+  set damage(value: number) {
+    $.utils.setInt32(32, value, this);
+  }
+  get delay(): number {
+    return $.utils.getInt32(36, this);
+  }
+  set delay(value: number) {
+    $.utils.setInt32(36, value, this);
+  }
+  get hp(): number {
+    return $.utils.getInt32(40, this);
+  }
+  set hp(value: number) {
+    $.utils.setInt32(40, value, this);
+  }
+  get mana(): number {
+    return $.utils.getInt32(44, this);
+  }
+  set mana(value: number) {
+    $.utils.setInt32(44, value, this);
+  }
+  get classes(): number {
+    return $.utils.getInt32(48, this);
+  }
+  set classes(value: number) {
+    $.utils.setInt32(48, value, this);
+  }
+  get races(): number {
+    return $.utils.getInt32(52, this);
+  }
+  set races(value: number) {
+    $.utils.setInt32(52, value, this);
+  }
+  get bagslots(): number {
+    return $.utils.getInt32(56, this);
+  }
+  set bagslots(value: number) {
+    $.utils.setInt32(56, value, this);
+  }
+  get bagsize(): number {
+    return $.utils.getInt32(60, this);
+  }
+  set bagsize(value: number) {
+    $.utils.setInt32(60, value, this);
+  }
+}
+
+export class GetZoneRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetZoneRequest",
+    id: "a1b2c3d4e5f60003",
+    size: new $.ObjectSize(8, 0),
+  };
+  get zoneId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set zoneId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get zoneidnumber(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set zoneidnumber(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+}
+
+export class GetZoneResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetZoneResponse",
+    id: "a1b2c3d4e5f60004",
+    size: new $.ObjectSize(48, 3),
+  };
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get id(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get shortName(): string {
+    return $.utils.getText(1, this);
+  }
+  set shortName(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get longName(): string {
+    return $.utils.getText(2, this);
+  }
+  set longName(value: string) {
+    $.utils.setText(2, value, this);
+  }
+  get zoneidnumber(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set zoneidnumber(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get safeX(): number {
+    return $.utils.getFloat32(12, this);
+  }
+  set safeX(value: number) {
+    $.utils.setFloat32(12, value, this);
+  }
+  get safeY(): number {
+    return $.utils.getFloat32(16, this);
+  }
+  set safeY(value: number) {
+    $.utils.setFloat32(16, value, this);
+  }
+  get safeZ(): number {
+    return $.utils.getFloat32(20, this);
+  }
+  set safeZ(value: number) {
+    $.utils.setFloat32(20, value, this);
+  }
+  get minLevel(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set minLevel(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+  get maxLevel(): number {
+    return $.utils.getInt32(28, this);
+  }
+  set maxLevel(value: number) {
+    $.utils.setInt32(28, value, this);
+  }
+}
+
+export class GetZoneNPCsRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetZoneNPCsRequest",
+    id: "a1b2c3d4e5f60005",
+    size: new $.ObjectSize(0, 1),
+  };
+  get zoneName(): string {
+    return $.utils.getText(0, this);
+  }
+  set zoneName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+}
+
+export class NPCData extends $.Struct {
+  static readonly _capnp = {
+    displayName: "NPCData",
+    id: "a1b2c3d4e5f60006",
+    size: new $.ObjectSize(24, 1),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get level(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set level(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get race(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set race(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get npcClass(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set npcClass(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get hp(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set hp(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get gender(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set gender(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+}
+
+export class GetZoneNPCsResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetZoneNPCsResponse",
+    id: "a1b2c3d4e5f60007",
+    size: new $.ObjectSize(8, 2),
+  };
+  static _Npcs: $.ListCtor<NPCData>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get npcs(): $.List<NPCData> {
+    return $.utils.getList(1, GetZoneNPCsResponse._Npcs, this);
+  }
+  set npcs(value: $.List<NPCData>) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+}
+GetZoneNPCsResponse._Npcs = $.CompositeList(NPCData);
+
+export class GetAdjacentZonesRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetAdjacentZonesRequest",
+    id: "a1b2c3d4e5f60008",
+    size: new $.ObjectSize(8, 0),
+  };
+  get zoneId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set zoneId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+}
+
+export class AdjacentZone extends $.Struct {
+  static readonly _capnp = {
+    displayName: "AdjacentZone",
+    id: "a1b2c3d4e5f60009",
+    size: new $.ObjectSize(8, 2),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get shortName(): string {
+    return $.utils.getText(0, this);
+  }
+  set shortName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get longName(): string {
+    return $.utils.getText(1, this);
+  }
+  set longName(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get zoneidnumber(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set zoneidnumber(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+}
+
+export class GetAdjacentZonesResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetAdjacentZonesResponse",
+    id: "a1b2c3d4e5f6000a",
+    size: new $.ObjectSize(8, 2),
+  };
+  static _Zones: $.ListCtor<AdjacentZone>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get zones(): $.List<AdjacentZone> {
+    return $.utils.getList(1, GetAdjacentZonesResponse._Zones, this);
+  }
+  set zones(value: $.List<AdjacentZone>) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+}
+GetAdjacentZonesResponse._Zones = $.CompositeList(AdjacentZone);
+
+export class SendChatMessageRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "SendChatMessageRequest",
+    id: "a1b2c3d4e5f6000b",
+    size: new $.ObjectSize(0, 2),
+  };
+  get text(): string {
+    return $.utils.getText(0, this);
+  }
+  set text(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get messageType(): string {
+    return $.utils.getText(1, this);
+  }
+  set messageType(value: string) {
+    $.utils.setText(1, value, this);
+  }
+}
+
+export class ChatMessageBroadcast extends $.Struct {
+  static readonly _capnp = {
+    displayName: "ChatMessageBroadcast",
+    id: "a1b2c3d4e5f6000c",
+    size: new $.ObjectSize(8, 3),
+  };
+  get text(): string {
+    return $.utils.getText(0, this);
+  }
+  set text(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get messageType(): string {
+    return $.utils.getText(1, this);
+  }
+  set messageType(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get senderName(): string {
+    return $.utils.getText(2, this);
+  }
+  set senderName(value: string) {
+    $.utils.setText(2, value, this);
+  }
+  get timestamp(): bigint {
+    return $.utils.getInt64(0, this);
+  }
+  set timestamp(value: bigint) {
+    $.utils.setInt64(0, value, this);
+  }
+}
+
+export class DialogueHistoryEntry extends $.Struct {
+  static readonly _capnp = {
+    displayName: "DialogueHistoryEntry",
+    id: "a1b2c3d4e5f6000d",
+    size: new $.ObjectSize(8, 2),
+  };
+  get npcDialogue(): string {
+    return $.utils.getText(0, this);
+  }
+  set npcDialogue(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get playerQuestion(): string {
+    return $.utils.getText(1, this);
+  }
+  set playerQuestion(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get isPlayer(): boolean {
+    return $.utils.getBit(0, this);
+  }
+  set isPlayer(value: boolean) {
+    $.utils.setBit(0, value, this);
+  }
+}
+
+export class GetNPCDialogueRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetNPCDialogueRequest",
+    id: "a1b2c3d4e5f6000e",
+    size: new $.ObjectSize(0, 2),
+  };
+  static _DialogueHistory: $.ListCtor<DialogueHistoryEntry>;
+  get npcName(): string {
+    return $.utils.getText(0, this);
+  }
+  set npcName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get dialogueHistory(): $.List<DialogueHistoryEntry> {
+    return $.utils.getList(1, GetNPCDialogueRequest._DialogueHistory, this);
+  }
+  set dialogueHistory(value: $.List<DialogueHistoryEntry>) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+}
+GetNPCDialogueRequest._DialogueHistory = $.CompositeList(DialogueHistoryEntry);
+
+export class GetNPCDialogueResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetNPCDialogueResponse",
+    id: "a1b2c3d4e5f6000f",
+    size: new $.ObjectSize(8, 4),
+  };
+  static _Responses: $.ListCtor<string>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get dialogue(): string {
+    return $.utils.getText(1, this);
+  }
+  set dialogue(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get responses(): $.List<string> {
+    return $.utils.getList(2, $.TextList, this);
+  }
+  set responses(value: $.List<string>) {
+    $.utils.copyFrom(value, $.utils.getPointer(2, this));
+  }
+  get npcName(): string {
+    return $.utils.getText(3, this);
+  }
+  set npcName(value: string) {
+    $.utils.setText(3, value, this);
+  }
+}

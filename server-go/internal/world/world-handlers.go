@@ -8,12 +8,39 @@ import (
 	eq "github.com/knervous/eqgo/internal/api/capnp"
 	"github.com/knervous/eqgo/internal/api/opcodes"
 	"github.com/knervous/eqgo/internal/config"
+	"github.com/knervous/eqgo/internal/constants"
 	db_character "github.com/knervous/eqgo/internal/db/character"
 	"github.com/knervous/eqgo/internal/db/items"
 	"github.com/knervous/eqgo/internal/discord"
 	"github.com/knervous/eqgo/internal/session"
 	"github.com/knervous/eqgo/internal/zone/client"
 )
+
+// bagSlotToFlatSlot converts server bag+slot format to flat slot ID
+// Both client and server now use the same slot ID scheme:
+// Equipment: 0-21, General: 22-29, Cursor: 30, Bag contents: 251+
+func bagSlotToFlatSlot(bag int8, slot int8) int32 {
+	if bag == -1 {
+		// Equipment slots: bag=-1, slot=0-21 -> flat slot 0-21
+		return int32(slot)
+	} else if bag == 0 {
+		if slot == 30 {
+			// Cursor slot
+			return 30
+		}
+		// General inventory: bag=0, slot=0-7 -> flat slot 22-29
+		return int32(slot) + 22
+	} else if bag >= 1 && bag <= 8 {
+		// Bag contents: bag=1-8, slot=0-9 -> flat slot 251-330
+		// bag 1 -> 251-260, bag 2 -> 261-270, etc.
+		return int32(251 + (int(bag)-1)*10 + int(slot))
+	} else if bag == 9 {
+		// Cursor bag contents -> 331-340
+		return int32(331 + int(slot))
+	}
+	// Default fallback
+	return int32(slot)
+}
 
 func sendCharInfo(ses *session.Session, accountId int64) {
 	ctx := context.Background()
@@ -152,6 +179,7 @@ func sendPlayerProfile(ses *session.Session, characterName string) {
 	}
 
 	playerProfile.SetName(charData.Name)
+	playerProfile.SetEntityid(int32(charData.ID)) // Character database ID for inventory sync
 	playerProfile.SetLevel(int32(charData.Level))
 	playerProfile.SetRace(int32(charData.Race))
 	playerProfile.SetCharClass(int32(charData.Class))
@@ -193,12 +221,15 @@ func sendPlayerProfile(ses *session.Session, characterName string) {
 					continue
 				}
 
+				// Convert bag+slot to flat client slot ID
+				clientSlotID := bagSlotToFlatSlot(slot.Bag, slot.Slot)
+
 				item := capCharItems.At(itemIdx)
 				itemIdx++
 				item.SetCharges(uint32(charItem.Instance.Charges))
 				item.SetQuantity(uint32(charItem.Instance.Quantity))
 				item.SetMods(string(mods))
-				item.SetSlot(int32(slot.Slot))
+				item.SetSlot(int32(clientSlotID))
 				item.SetBagSlot(int32(slot.Bag))
 				items.ConvertItemTemplateToCapnp(ses, &charItem.Item, &item)
 			}
@@ -352,4 +383,139 @@ func HandleRequestClientZoneChange(ses *session.Session, payload []byte, wh *Wor
 		ses.InstanceID = int(req.InstanceId())
 	}
 	return true
+}
+
+// HandleMoveItemWorld handles MoveItem at the world level
+// Returns true to forward to zone if zone is assigned
+func HandleMoveItemWorld(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	// If zone is assigned, forward to zone handler
+	if ses.ZoneID != -1 {
+		return true
+	}
+
+	// Handle at world level (no zone assigned yet)
+	if ses.Client == nil {
+		log.Printf("No client attached to session for MoveItem")
+		return false
+	}
+
+	req, err := session.Deserialize(ses, payload, eq.ReadRootMoveItem)
+	if err != nil {
+		log.Printf("failed to read MoveItem struct: %v", err)
+		return false
+	}
+
+	fromSlot := int8(req.FromSlot())
+	toSlot := int8(req.ToSlot())
+	fromBag := int8(req.FromBagSlot())
+	toBag := int8(req.ToBagSlot())
+
+	log.Printf("MoveItem (world) for session %d: bag %d slot %d -> bag %d slot %d",
+		ses.SessionID, fromBag, fromSlot, toBag, toSlot)
+
+	fromKey := constants.InventoryKey{Bag: fromBag, Slot: fromSlot}
+	toKey := constants.InventoryKey{Bag: toBag, Slot: toSlot}
+
+	fromItem := ses.Client.Items()[fromKey]
+	toItem := ses.Client.Items()[toKey]
+
+	// Debug: log what items we found
+	if fromItem == nil {
+		log.Printf("MoveItem: No item found at fromKey (bag=%d, slot=%d)", fromBag, fromSlot)
+		// Log all items in inventory for debugging
+		log.Printf("MoveItem: Client has %d items in inventory:", len(ses.Client.Items()))
+		for k, v := range ses.Client.Items() {
+			log.Printf("  - bag=%d, slot=%d: itemID=%d", k.Bag, k.Slot, v.Instance.ItemID)
+		}
+	}
+
+	// Do the DB swap
+	updates, err := items.SwapItemSlots(
+		int32(ses.Client.CharData().ID),
+		fromSlot, toSlot,
+		toBag, fromBag,
+		fromItem, toItem,
+	)
+	if err != nil {
+		log.Printf("failed to swap item slots: %v", err)
+		return false
+	}
+
+	// Update in-memory map
+	charItems := ses.Client.Items()
+	for _, u := range updates {
+		oldKey := constants.InventoryKey{Bag: u.FromBag, Slot: u.FromSlot}
+		newKey := constants.InventoryKey{Bag: u.ToBag, Slot: u.ToSlot}
+
+		existingItem := charItems[oldKey]
+		newItem := charItems[newKey]
+		if existingItem != nil {
+			charItems[newKey] = existingItem
+			if newItem == nil {
+				delete(charItems, oldKey)
+			}
+		}
+		if newItem != nil {
+			charItems[oldKey] = newItem
+			if existingItem == nil {
+				delete(charItems, newKey)
+			}
+		}
+	}
+
+	// Send response for each move
+	for _, u := range updates {
+		pkt, err := session.NewMessage(ses, eq.NewRootMoveItem)
+		if err != nil {
+			log.Printf("failed to create MoveItem message: %v", err)
+			continue
+		}
+		pkt.SetFromSlot(u.FromSlot)
+		pkt.SetToSlot(u.ToSlot)
+		pkt.SetFromBagSlot(u.FromBag)
+		pkt.SetToBagSlot(u.ToBag)
+		pkt.SetNumberInStack(1)
+		ses.SendStream(pkt.Message(), opcodes.MoveItem)
+	}
+
+	return false
+}
+
+// HandleDeleteItemWorld handles DeleteItem at the world level
+// Returns true to forward to zone if zone is assigned
+func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	// If zone is assigned, forward to zone handler
+	if ses.ZoneID != -1 {
+		return true
+	}
+
+	// Handle at world level (no zone assigned yet)
+	if ses.Client == nil {
+		log.Printf("No client attached to session for DeleteItem")
+		return false
+	}
+
+	req, err := session.Deserialize(ses, payload, eq.ReadRootDeleteItem)
+	if err != nil {
+		log.Printf("failed to read DeleteItem struct: %v", err)
+		return false
+	}
+
+	slot := req.Slot()
+	if slot != int8(constants.SlotCursor) {
+		log.Printf("invalid slot for DeleteItem: %d", slot)
+		return false
+	}
+
+	log.Printf("DeleteItem (world) for session %d: slot %d", ses.SessionID, slot)
+
+	db_character.PurgeCharacterItem(context.Background(), int32(ses.Client.CharData().ID), slot)
+
+	delete(ses.Client.Items(), constants.InventoryKey{
+		Bag:  0,
+		Slot: slot,
+	})
+
+	ses.SendStream(req.Message(), opcodes.DeleteItem)
+	return false
 }

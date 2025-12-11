@@ -5,6 +5,7 @@ import {
   isItemAllowedInSlot,
   getEquippableSlots,
   isSlotAvailableForItem,
+  getBagStartingSlot,
 } from "@utils/itemUtils";
 import { Item } from "@entities/Item";
 import { InventorySlot } from "@entities/InventorySlot";
@@ -51,11 +52,13 @@ export const useInventoryActions = () => {
     let inventory = store.characterProfile?.inventory || [];
 
     const generalItems = inventory.filter(
-      (item) => item.slotid && item.slotid > 22
+      (item) =>
+        item.slotid !== undefined && item.slotid >= 22 && item.slotid <= 29
     );
 
     const getBagContents = (bagSlot: number, bagSize: number) => {
-      const startSlot = 262 + (bagSlot - 23) * 10;
+      const startSlot = getBagStartingSlot(bagSlot);
+      if (startSlot < 0) return [];
       return inventory
         .filter(
           (item) =>

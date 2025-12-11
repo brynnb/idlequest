@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Outlet, useLocation } from "react-router-dom";
-import WebTransportDebugPanel from "../components/WebTransportDebugPanel";
 
 interface MainContainerProps {
   $isCharacterCreation: boolean;
@@ -47,7 +46,6 @@ const Layout = () => {
       >
         <Outlet />
       </MainContainer>
-      <WebTransportDebugPanel />
     </>
   );
 };

@@ -374,37 +374,37 @@ func AddItemToPlayerInventoryFreeSlot(itemInstance constants.ItemInstance, playe
 	// 3) lock all *currently* occupied slots (gap‐lock them)
 	var occupied []model.CharacterInventory
 	if err = table.CharacterInventory.
-		SELECT(table.CharacterInventory.Slot).
+		SELECT(table.CharacterInventory.Bag, table.CharacterInventory.Slot).
 		WHERE(table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID))).
-		FOR(mysql.UPDATE()). // ← here’s the magic
+		FOR(mysql.UPDATE()). // ← here's the magic
 		Query(tx, &occupied); err != nil {
 		return 0, 0, 0, fmt.Errorf("lock occupied slots: %v", err)
 	}
 
-	used := map[int8]bool{}
+	// Build a map of occupied slots keyed by (bag, slot)
+	type bagSlotKey struct {
+		bag  int8
+		slot int8
+	}
+	used := map[bagSlotKey]bool{}
 	for _, ci := range occupied {
-		used[int8(ci.Slot)] = true
+		used[bagSlotKey{int8(ci.Bag), int8(ci.Slot)}] = true
 	}
 
-	generalSlots := []int8{
-		constants.SlotGeneral1,
-		constants.SlotGeneral2,
-		constants.SlotGeneral3,
-		constants.SlotGeneral4,
-		constants.SlotGeneral5,
-		constants.SlotGeneral6,
-		constants.SlotGeneral7,
-		constants.SlotGeneral8,
-	}
+	// General inventory: bag=0, slot=0-7
+	// Find first free slot in general inventory
 	freeSlot := int8(-1)
-	for _, s := range generalSlots {
-		if !used[s] {
-			freeSlot = s
+	freeBag := int8(0) // General inventory bag
+	for slot := int8(0); slot < 8; slot++ {
+		if !used[bagSlotKey{0, slot}] {
+			freeSlot = slot
 			break
 		}
 	}
+
+	// If no free general slot, use cursor (bag=0, slot=30)
 	if freeSlot < 0 {
-		freeSlot = constants.SlotCursor
+		freeSlot = 30 // Cursor slot within bag 0
 	}
 
 	if _, err = table.CharacterInventory.
@@ -418,7 +418,7 @@ func AddItemToPlayerInventoryFreeSlot(itemInstance constants.ItemInstance, playe
 			playerID,
 			freeSlot,
 			itemInstanceID,
-			0,
+			freeBag,
 		).
 		Exec(tx); err != nil {
 		return 0, 0, 0, fmt.Errorf("insert inventory row: %v", err)
@@ -428,8 +428,8 @@ func AddItemToPlayerInventoryFreeSlot(itemInstance constants.ItemInstance, playe
 		return 0, 0, 0, fmt.Errorf("commit tx: %v", err)
 	}
 
-	// PH for bagslot
-	return freeSlot, 0, itemInstanceID, nil
+	// Return bag and slot (bag=0 for general, slot=0-7 or 30 for cursor)
+	return freeBag, freeSlot, itemInstanceID, nil
 }
 
 func MoveItemInPlayerInventory(itemInstanceId int32, playerId int32, slot int32) error {

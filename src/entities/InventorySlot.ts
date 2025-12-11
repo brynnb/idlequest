@@ -1,4 +1,6 @@
+// Slot IDs match server-go/internal/constants/items.go exactly
 export enum InventorySlot {
+  // Equipment slots (0-21)
   Charm = 0,
   Ear1 = 1,
   Head = 2,
@@ -20,21 +22,33 @@ export enum InventorySlot {
   Legs = 18,
   Feet = 19,
   Waist = 20,
-  PowerSource = 21,
-  Ammo = 22,
-  Cursor = 31,
-  General1BagStartingSlot = 262,
-  General2BagStartingSlot = 272,
-  General3BagStartingSlot = 282,
-  General4BagStartingSlot = 292,
-  General5BagStartingSlot = 302,
-  General6BagStartingSlot = 312,
-  General7BagStartingSlot = 322,
-  General8BagStartingSlot = 332,
-  CursorBagStartingSlot = 342,
+  Ammo = 21,
+  // General inventory slots (22-29)
+  General1 = 22,
+  General2 = 23,
+  General3 = 24,
+  General4 = 25,
+  General5 = 26,
+  General6 = 27,
+  General7 = 28,
+  General8 = 29,
+  // Cursor slot (30)
+  Cursor = 30,
+  // Bag content starting slots (bags in general slots 22-29)
+  General1BagStartingSlot = 251,
+  General2BagStartingSlot = 261,
+  General3BagStartingSlot = 271,
+  General4BagStartingSlot = 281,
+  General5BagStartingSlot = 291,
+  General6BagStartingSlot = 301,
+  General7BagStartingSlot = 311,
+  General8BagStartingSlot = 321,
+  CursorBagStartingSlot = 331,
 }
 
-export const SlotBitmasks: { [key in InventorySlot]: number } = {
+// Bitmasks for equipment slots only (used for item slot restrictions)
+// These match the server's slot bitmask values
+export const SlotBitmasks: Partial<Record<InventorySlot, number>> = {
   [InventorySlot.Charm]: 1,
   [InventorySlot.Ear1]: 2,
   [InventorySlot.Head]: 4,
@@ -56,8 +70,7 @@ export const SlotBitmasks: { [key in InventorySlot]: number } = {
   [InventorySlot.Legs]: 262144,
   [InventorySlot.Feet]: 524288,
   [InventorySlot.Waist]: 1048576,
-  [InventorySlot.PowerSource]: 2097152,
-  [InventorySlot.Ammo]: 4194304,
+  [InventorySlot.Ammo]: 2097152,
 };
 
 export function getInventorySlotNames(slotBitmask: number): string[] {

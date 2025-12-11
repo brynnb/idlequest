@@ -52,6 +52,13 @@ function concatUint8(a: Uint8Array, b: Uint8Array): Uint8Array {
   return c;
 }
 
+// Pending request tracking for request/response pattern
+interface PendingRequest<T> {
+  resolve: (value: T) => void;
+  reject: (error: Error) => void;
+  timeout: ReturnType<typeof setTimeout>;
+}
+
 export class EqSocket {
   private webtransport: WebTransport | null = null;
   private datagramWriter: WritableStreamDefaultWriter<Uint8Array> | null = null;
@@ -60,6 +67,9 @@ export class EqSocket {
   private opCodeHandlers: {
     [opcode: number]: (payload: Uint8Array) => void;
   } = {};
+
+  // Request/response tracking
+  private pendingRequests: Map<OpCodes, PendingRequest<Uint8Array>> = new Map();
 
   public isConnected = false;
   private onClose: (() => void) | null = null;
@@ -219,6 +229,70 @@ export class EqSocket {
     };
   }
 
+  /** Send a request and wait for a response with the specified opcode */
+  public async sendRequest<TReq extends $.Struct, TRes extends $.Struct>(
+    requestOpCode: OpCodes,
+    responseOpCode: OpCodes,
+    RequestType: Parameters<$.Message["initRoot"]>[0] & { prototype: TReq },
+    ResponseType: Parameters<$.Message["initRoot"]>[0] & { prototype: TRes },
+    data: Partial<Record<keyof TReq, unknown>>,
+    timeoutMs: number = 10000
+  ): Promise<TRes> {
+    if (!this.isConnected || !this.controlWriter) {
+      throw new Error("Not connected");
+    }
+
+    // Build and send the request
+    const msg = new $.Message();
+    const root = msg.initRoot(RequestType);
+    setStructFields(root, data);
+    const payload = new Uint8Array($.Message.toArrayBuffer(msg));
+
+    const header = new ArrayBuffer(4);
+    new DataView(header).setUint32(0, 2 + payload.byteLength, true);
+    const op = new Uint16Array([requestOpCode]).buffer;
+
+    const frame = concatUint8(
+      new Uint8Array(header),
+      concatUint8(new Uint8Array(op), payload)
+    );
+
+    // Create promise for response
+    const responsePromise = new Promise<TRes>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.pendingRequests.delete(responseOpCode);
+        reject(new Error(`Request timeout for opcode ${responseOpCode}`));
+      }, timeoutMs);
+
+      this.pendingRequests.set(responseOpCode, {
+        resolve: (buf: Uint8Array) => {
+          try {
+            const reader = new $.Message(buf, false);
+            const responseRoot = reader.getRoot(ResponseType);
+            resolve(responseRoot as TRes);
+          } catch (e) {
+            reject(new Error(`Failed to decode response: ${e}`));
+          }
+        },
+        reject,
+        timeout,
+      });
+    });
+
+    // Send the request
+    await this.controlWriter.write(frame);
+
+    return responsePromise;
+  }
+
+  /** Register a raw opcode handler (for responses that don't use Cap'n Proto) */
+  public registerRawHandler(
+    opCode: OpCodes,
+    handler: (payload: Uint8Array) => void
+  ) {
+    this.opCodeHandlers[opCode] = handler;
+  }
+
   public close(scheduleReconnect: boolean = true) {
     this.isConnected = false;
     this.datagramWriter?.releaseLock();
@@ -291,9 +365,21 @@ export class EqSocket {
               break;
             }
             const msg = buffer.slice(4, 4 + len);
-            const opcode = new Uint16Array(msg.buffer.slice(0, 2))[0];
+            const opcode = new Uint16Array(
+              msg.buffer.slice(0, 2)
+            )[0] as OpCodes;
             const payload = msg.slice(2);
-            this.opCodeHandlers[opcode]?.(payload);
+
+            // Check if this is a response to a pending request
+            const pendingRequest = this.pendingRequests.get(opcode);
+            if (pendingRequest) {
+              clearTimeout(pendingRequest.timeout);
+              this.pendingRequests.delete(opcode);
+              pendingRequest.resolve(payload);
+            } else {
+              // Otherwise, use the registered handler
+              this.opCodeHandlers[opcode]?.(payload);
+            }
             buffer = buffer.slice(4 + len);
           }
         }

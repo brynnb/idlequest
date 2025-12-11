@@ -25,6 +25,8 @@ import {
   OpCodes,
   CharacterSelect,
   capnpToPlainObject,
+  MoveItem,
+  DeleteItem,
 } from "@/net";
 import races from "@data/json/races.json";
 import classes from "@data/json/classes.json";
@@ -246,6 +248,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           }));
         },
         moveItemToSlot: (fromSlot: number, toSlot: number) => {
+          const characterId = get().characterProfile?.id;
+
           set((state) => {
             if (!state.characterProfile) return state;
             const existingItem = state.characterProfile.inventory?.find(
@@ -294,8 +298,21 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             return newState;
           });
           get().updateAllStats();
+
+          // Sync with server via Cap'n Proto
+          if (characterId) {
+            WorldSocket.sendMessage(OpCodes.MoveItem, MoveItem, {
+              fromSlot: fromSlot,
+              toSlot: toSlot,
+              numberInStack: 0,
+              fromBagSlot: 0,
+              toBagSlot: 0,
+            });
+          }
         },
-        swapItems: (fromSlot: number, toSlot: number) =>
+        swapItems: (fromSlot: number, toSlot: number) => {
+          const characterId = get().characterProfile?.id;
+
           set((state) => {
             if (!state.characterProfile) return state;
 
@@ -397,8 +414,22 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             };
 
             return newState;
-          }),
-        deleteItemOnCursor: () =>
+          });
+
+          // Sync with server via Cap'n Proto - swap is just a move when dest has item
+          if (characterId) {
+            WorldSocket.sendMessage(OpCodes.MoveItem, MoveItem, {
+              fromSlot: fromSlot,
+              toSlot: toSlot,
+              numberInStack: 0,
+              fromBagSlot: 0,
+              toBagSlot: 0,
+            });
+          }
+        },
+        deleteItemOnCursor: () => {
+          const characterId = get().characterProfile?.id;
+
           set((state) => {
             const newState = {
               characterProfile: {
@@ -408,9 +439,19 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 ),
               },
             };
-            get().updateAllStats();
             return newState;
-          }),
+          });
+          get().updateAllStats();
+
+          // Sync with server via Cap'n Proto
+          if (characterId) {
+            // Cursor is bag=0, slot=30
+            WorldSocket.sendMessage(OpCodes.DeleteItem, DeleteItem, {
+              bag: 0,
+              slot: 30,
+            });
+          }
+        },
         updateArmorClass: () => {
           const { characterProfile } = get();
           const newAC = calculateSimpleArmorClass(characterProfile);

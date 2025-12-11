@@ -59,7 +59,8 @@ func generateGoCapnp() error {
 // generateTSCapnp scans for .capnp schema files and invokes capnp compile to generate TypeScript bindings.
 func generateTSCapnp() error {
 	schemaDir := "./internal/api/capnp"
-	tsOutDir := "../client/src/Game/Net"
+	// Output TS capnp bindings into the actual client capnp directory
+	tsOutDir := "../src/net/capnp"
 
 	// Verify npx is available
 	if _, err := exec.LookPath("npx"); err != nil {
@@ -108,8 +109,9 @@ func main() {
 	if err := generateGoCapnp(); err != nil {
 		log.Fatalf("Failed to generate Go Cap'n Proto bindings: %v", err)
 	}
-	if err := generateTSCapnp(); err != nil {
-		log.Fatalf("Failed to generate TS Cap'n Proto bindings: %v", err)
-	}
-	log.Println("Cap'n Proto bindings generated successfully.")
+	// Skip TS generation - TS capnp types are maintained manually in src/net/capnp/
+	// if err := generateTSCapnp(); err != nil {
+	// 	log.Fatalf("Failed to generate TS Cap'n Proto bindings: %v", err)
+	// }
+	log.Println("Cap'n Proto Go bindings generated successfully.")
 }

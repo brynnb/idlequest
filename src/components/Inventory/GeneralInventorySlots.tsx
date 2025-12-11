@@ -47,7 +47,17 @@ const GeneralInventorySlots: React.FC = () => {
   const { handleItemClick } = useInventoryActions();
   const [openBagSlots, setOpenBagSlots] = useState<Set<number>>(new Set());
 
-  const generalSlots = [23, 24, 25, 26, 27, 28, 29, 30];
+  // General inventory slots 22-29 (matches server slot IDs)
+  const generalSlots = [
+    InventorySlot.General1, // 22
+    InventorySlot.General2, // 23
+    InventorySlot.General3, // 24
+    InventorySlot.General4, // 25
+    InventorySlot.General5, // 26
+    InventorySlot.General6, // 27
+    InventorySlot.General7, // 28
+    InventorySlot.General8, // 29
+  ];
 
   const getInventoryItemForSlot = (slotId: number) => {
     return characterProfile?.inventory?.find((item) => item.slotid === slotId);

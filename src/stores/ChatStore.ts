@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
-  webTransportClient,
-  ChatMessage as WTChatMessage,
-} from "@utils/webTransportClient";
+  WorldSocket,
+  OpCodes,
+  SendChatMessageRequest,
+  ChatMessageBroadcast,
+} from "@/net";
 
 export enum MessageType {
   SYSTEM = "SYSTEM",
@@ -113,7 +115,15 @@ const useChatStore = create<ChatStore>()(
 
         sendMessage: async (text: string, messageType: string = "say") => {
           try {
-            await webTransportClient.sendChatMessage(text, messageType);
+            // Send chat message via Cap'n Proto
+            await WorldSocket.sendMessage(
+              OpCodes.SendChatMessage,
+              SendChatMessageRequest,
+              {
+                text,
+                messageType,
+              }
+            );
 
             // Add our own message to the chat (echo)
             get().addMessage(text, mapMessageType(messageType));
@@ -127,9 +137,11 @@ const useChatStore = create<ChatStore>()(
           try {
             set({ connectionError: null });
 
-            // Set up the chat message listener
-            const unsubscribe = webTransportClient.onChatMessage(
-              (message: WTChatMessage) => {
+            // Register handler for incoming chat messages via Cap'n Proto
+            WorldSocket.registerOpCodeHandler(
+              OpCodes.ChatMessageBroadcast,
+              ChatMessageBroadcast,
+              (message) => {
                 get().addMessage(
                   message.text,
                   mapMessageType(message.messageType)
@@ -137,17 +149,21 @@ const useChatStore = create<ChatStore>()(
               }
             );
 
-            // Connect to WebTransport
-            await webTransportClient.connect();
-            set({ isConnected: true, connectionError: null });
-
-            // Store unsubscribe function for cleanup (you might want to handle this elsewhere)
-            (get() as any)._unsubscribeChatMessages = unsubscribe;
+            // WorldSocket connection is managed elsewhere (during login flow)
+            // Just check if already connected
+            if (WorldSocket.isConnected) {
+              set({ isConnected: true, connectionError: null });
+            } else {
+              set({
+                isConnected: false,
+                connectionError: "WorldSocket not connected",
+              });
+            }
           } catch (error) {
-            console.error("Failed to initialize WebTransport:", error);
+            console.error("Failed to initialize chat:", error);
             set({
               isConnected: false,
-              connectionError: `Connection failed: ${error}`,
+              connectionError: `Chat initialization failed: ${error}`,
             });
           }
         },

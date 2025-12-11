@@ -20,7 +20,26 @@ export {
   Spawn,
   Spawns,
   String as CapnpString,
+  MoveItem,
+  // Data query types
+  GetItemRequest,
+  GetItemResponse,
+  GetZoneRequest,
+  GetZoneResponse,
+  GetZoneNPCsRequest,
+  GetZoneNPCsResponse,
+  NPCData,
+  GetAdjacentZonesRequest,
+  GetAdjacentZonesResponse,
+  AdjacentZone,
+  SendChatMessageRequest,
+  ChatMessageBroadcast,
+  DialogueHistoryEntry,
+  GetNPCDialogueRequest,
+  GetNPCDialogueResponse,
 } from "./capnp/common";
+
+export { DeleteItem } from "./capnp/item";
 
 export {
   CharacterSelect,

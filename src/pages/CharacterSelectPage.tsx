@@ -18,6 +18,7 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import races from "@data/json/races.json";
 import classes from "@data/json/classes.json";
 import deities from "@data/json/deities.json";
+import GameEngine from "@/scripts/GameEngine";
 
 const Wrapper = styled.div`
   display: flex;
@@ -236,7 +237,7 @@ const CharacterSelectPage = () => {
         );
 
         setCharacterProfile({
-          id: plainProfile.spawnId || 0,
+          id: plainProfile.entityid || plainProfile.spawnId || 0,
           name: plainProfile.name,
           lastName: plainProfile.lastName || "",
           race: raceData,
@@ -321,6 +322,9 @@ const CharacterSelectPage = () => {
         }
 
         updateAllStats();
+
+        // Load zone data now that we're connected and have entered the world
+        GameEngine.getInstance().loadZoneData();
 
         // Navigate to main game
         navigate("/game");

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import AttributeAllocator from "./AttributeAllocator";
 import RaceSelector from "./RaceSelector";
@@ -47,6 +48,7 @@ const StoryText = styled.div`
 `;
 
 const CharacterCreator = () => {
+  const navigate = useNavigate();
   const {
     currentStep,
     setCurrentStep,
@@ -55,6 +57,7 @@ const CharacterCreator = () => {
     selectedClass,
     selectedDeity,
     selectedZone,
+    resetStore,
   } = useCharacterCreatorStore();
 
   const handleClassSelection = (selectedClassId: number) => {
@@ -74,6 +77,11 @@ const CharacterCreator = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleBackToCharacterSelect = () => {
+    resetStore();
+    navigate("/character-select");
   };
 
   const renderStep = () => {
@@ -125,7 +133,14 @@ const CharacterCreator = () => {
     <Wrapper>
       {renderStep()}
       <NavigationContainer>
-        {currentStep > 1 && (
+        {currentStep === 1 ? (
+          <SelectionButton
+            onClick={handleBackToCharacterSelect}
+            $isSelected={false}
+          >
+            Back to Character Select
+          </SelectionButton>
+        ) : (
           <SelectionButton onClick={handleBack} $isSelected={false}>
             Back
           </SelectionButton>

@@ -87,6 +87,71 @@ func GetCharacterByName(name string) (*model.CharacterData, error) {
 	return &character, nil
 }
 
+func GetCharacterByID(id int32) (*model.CharacterData, error) {
+	cacheKey := fmt.Sprintf("character:id:%d", id)
+	if val, found, err := cache.GetCache().Get(cacheKey); err == nil && found {
+		if character, ok := val.(*model.CharacterData); ok {
+			return character, nil
+		}
+	}
+
+	var character model.CharacterData
+	ctx := context.Background()
+	err := table.CharacterData.
+		SELECT(
+			table.CharacterData.ID,
+			table.CharacterData.AccountID,
+			table.CharacterData.Name,
+			table.CharacterData.LastName,
+			table.CharacterData.Title,
+			table.CharacterData.Suffix,
+			table.CharacterData.ZoneID,
+			table.CharacterData.ZoneInstance,
+			table.CharacterData.Y,
+			table.CharacterData.X,
+			table.CharacterData.Z,
+			table.CharacterData.Heading,
+			table.CharacterData.Gender,
+			table.CharacterData.Race,
+			table.CharacterData.Class,
+			table.CharacterData.Level,
+			table.CharacterData.Deity,
+			table.CharacterData.Birthday,
+			table.CharacterData.LastLogin,
+			table.CharacterData.TimePlayed,
+			table.CharacterData.Anon,
+			table.CharacterData.Gm,
+			table.CharacterData.Face,
+			table.CharacterData.Exp,
+			table.CharacterData.ExpEnabled,
+			table.CharacterData.CurHp,
+			table.CharacterData.Mana,
+			table.CharacterData.Endurance,
+			table.CharacterData.Intoxication,
+			table.CharacterData.Str,
+			table.CharacterData.Sta,
+			table.CharacterData.Cha,
+			table.CharacterData.Dex,
+			table.CharacterData.Int,
+			table.CharacterData.Agi,
+			table.CharacterData.Wis,
+			table.CharacterData.HungerLevel,
+			table.CharacterData.ThirstLevel,
+		).
+		FROM(table.CharacterData).
+		WHERE(
+			table.CharacterData.ID.EQ(mysql.Int32(id)).
+				AND(table.CharacterData.DeletedAt.IS_NULL()),
+		).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &character)
+	if err != nil {
+		return nil, fmt.Errorf("query character_data by id: %w", err)
+	}
+
+	cache.GetCache().Set(cacheKey, &character)
+	return &character, nil
+}
+
 func GetCharacterSkills(ctx context.Context, characterID int64) ([]model.CharacterSkills, error) {
 	var skills []model.CharacterSkills
 	if err := table.CharacterSkills.
@@ -433,7 +498,7 @@ func GearUp(c entity.Client) error {
 
 // UpdateCharacterItems writes every non-nil slot in c.Items() into
 //  1. item_instances  (inserting if ID<=0, updating otherwise) and
-//  2. character_inventory (upsert on (character_id,slot))
+//  2. character_inventory (delete all then re-insert to match in-memory state)
 //
 // All in one TX so the FK is never broken.
 func UpdateCharacterItems(ctx context.Context, c entity.Client) (err error) {
@@ -454,6 +519,12 @@ func UpdateCharacterItems(ctx context.Context, c entity.Client) (err error) {
 	}()
 
 	charID := int32(c.ID())
+
+	// 2) Delete all existing inventory rows for this character
+	// This ensures the DB matches the in-memory state exactly
+	if _, err = tx.Exec("DELETE FROM character_inventory WHERE character_id = ?", charID); err != nil {
+		return fmt.Errorf("clearing inventory: %w", err)
+	}
 
 	for itemSlot, wi := range c.Items() {
 		if wi == nil {
@@ -498,27 +569,47 @@ func UpdateCharacterItems(ctx context.Context, c entity.Client) (err error) {
 			}
 		}
 
-		// 3) upsert inventory row so (character_id, slot) → item_instance_id + bag
+		// 3) Insert inventory row using the key's bag and slot values
+		// Since we deleted all rows first, we just INSERT (no need for ON_DUPLICATE_KEY_UPDATE)
 		if _, err2 := table.CharacterInventory.
 			INSERT(
 				table.CharacterInventory.CharacterID,
+				table.CharacterInventory.Bag,
 				table.CharacterInventory.Slot,
 				table.CharacterInventory.ItemInstanceID,
-				table.CharacterInventory.Bag,
 			).
 			VALUES(
 				mysql.Int32(charID),
-				mysql.Int32(int32(itemSlot.Slot)),
+				mysql.Int8(itemSlot.Bag),
+				mysql.Int8(itemSlot.Slot),
 				mysql.Int32(inst.ID),
-				mysql.Int8(wi.BagSlot),
-			).
-			ON_DUPLICATE_KEY_UPDATE(
-				table.CharacterInventory.ItemInstanceID.SET(mysql.Int32(inst.ID)),
-				table.CharacterInventory.Bag.SET(mysql.Int8(wi.BagSlot)),
 			).
 			Exec(tx); err2 != nil {
-			return fmt.Errorf("upserting inventory for slot %d: %w", itemSlot, err2)
+			return fmt.Errorf("inserting inventory for bag=%d slot=%d: %w", itemSlot.Bag, itemSlot.Slot, err2)
 		}
+	}
+
+	return nil
+}
+
+// DeleteItemInstance deletes an item instance from the database
+func DeleteItemInstance(ctx context.Context, itemInstanceID int32) error {
+	// First delete from character_inventory
+	_, err := table.CharacterInventory.
+		DELETE().
+		WHERE(table.CharacterInventory.ItemInstanceID.EQ(mysql.Int32(itemInstanceID))).
+		ExecContext(ctx, db.GlobalWorldDB.DB)
+	if err != nil {
+		return fmt.Errorf("delete from character_inventory: %w", err)
+	}
+
+	// Then delete the item instance itself
+	_, err = table.ItemInstances.
+		DELETE().
+		WHERE(table.ItemInstances.ID.EQ(mysql.Int32(itemInstanceID))).
+		ExecContext(ctx, db.GlobalWorldDB.DB)
+	if err != nil {
+		return fmt.Errorf("delete from item_instances: %w", err)
 	}
 
 	return nil

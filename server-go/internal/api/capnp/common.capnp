@@ -2195,3 +2195,116 @@ struct Bool {
 struct String {
   value @0 :Text;
 }
+
+# Data query messages for IdleQuest
+struct GetItemRequest {
+  itemId @0 :Int32;
+}
+
+struct GetItemResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  itemId @2 :Int32;
+  name @3 :Text;
+  icon @4 :Int32;
+  itemclass @5 :Int32;
+  weight @6 :Int32;
+  slots @7 :Int32;
+  price @8 :Int32;
+  ac @9 :Int32;
+  damage @10 :Int32;
+  delay @11 :Int32;
+  hp @12 :Int32;
+  mana @13 :Int32;
+  classes @14 :Int32;
+  races @15 :Int32;
+  bagslots @16 :Int32;
+  bagsize @17 :Int32;
+}
+
+struct GetZoneRequest {
+  zoneId @0 :Int32;
+  zoneidnumber @1 :Int32;
+}
+
+struct GetZoneResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  id @2 :Int32;
+  shortName @3 :Text;
+  longName @4 :Text;
+  zoneidnumber @5 :Int32;
+  safeX @6 :Float32;
+  safeY @7 :Float32;
+  safeZ @8 :Float32;
+  minLevel @9 :Int32;
+  maxLevel @10 :Int32;
+}
+
+struct GetZoneNPCsRequest {
+  zoneName @0 :Text;
+}
+
+struct NPCData {
+  id @0 :Int32;
+  name @1 :Text;
+  level @2 :Int32;
+  race @3 :Int32;
+  class @4 :Int32;
+  hp @5 :Int32;
+  gender @6 :Int32;
+}
+
+struct GetZoneNPCsResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  npcs @2 :List(NPCData);
+}
+
+struct GetAdjacentZonesRequest {
+  zoneId @0 :Int32;
+}
+
+struct AdjacentZone {
+  id @0 :Int32;
+  shortName @1 :Text;
+  longName @2 :Text;
+  zoneidnumber @3 :Int32;
+}
+
+struct GetAdjacentZonesResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  zones @2 :List(AdjacentZone);
+}
+
+struct ChatMessageCapnp {
+  text @0 :Text;
+  messageType @1 :Text;
+  senderName @2 :Text;
+  timestamp @3 :Int64;
+}
+
+struct SendChatMessageRequest {
+  text @0 :Text;
+  messageType @1 :Text;
+}
+
+struct DialogueHistoryEntry {
+  npcDialogue @0 :Text;
+  playerQuestion @1 :Text;
+  isPlayer @2 :Bool;
+}
+
+struct GetNPCDialogueRequest {
+  npcName @0 :Text;
+  dialogueHistory @1 :List(DialogueHistoryEntry);
+}
+
+struct GetNPCDialogueResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  dialogue @2 :Text;
+  responses @3 :List(Text);
+  npcName @4 :Text;
+}

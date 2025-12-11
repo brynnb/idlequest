@@ -333,26 +333,28 @@ export const findFirstAvailableSlotForItem = (
   return undefined;
 };
 
+// Maps general inventory slot to bag content starting slot
+// Uses InventorySlot enum values which match server slot IDs
 export const getBagStartingSlot = (baseSlot: number): number => {
   switch (baseSlot) {
-    case InventorySlot.Cursor:
-      return InventorySlot.CursorBagStartingSlot; // Should be 342
-    case 23:
-      return InventorySlot.General1BagStartingSlot;
-    case 24:
-      return InventorySlot.General2BagStartingSlot;
-    case 25:
-      return InventorySlot.General3BagStartingSlot;
-    case 26:
-      return InventorySlot.General4BagStartingSlot;
-    case 27:
-      return InventorySlot.General5BagStartingSlot;
-    case 28:
-      return InventorySlot.General6BagStartingSlot;
-    case 29:
-      return InventorySlot.General7BagStartingSlot;
-    case 30:
-      return InventorySlot.General8BagStartingSlot;
+    case InventorySlot.Cursor: // 30
+      return InventorySlot.CursorBagStartingSlot; // 331
+    case InventorySlot.General1: // 22
+      return InventorySlot.General1BagStartingSlot; // 251
+    case InventorySlot.General2: // 23
+      return InventorySlot.General2BagStartingSlot; // 261
+    case InventorySlot.General3: // 24
+      return InventorySlot.General3BagStartingSlot; // 271
+    case InventorySlot.General4: // 25
+      return InventorySlot.General4BagStartingSlot; // 281
+    case InventorySlot.General5: // 26
+      return InventorySlot.General5BagStartingSlot; // 291
+    case InventorySlot.General6: // 27
+      return InventorySlot.General6BagStartingSlot; // 301
+    case InventorySlot.General7: // 28
+      return InventorySlot.General7BagStartingSlot; // 311
+    case InventorySlot.General8: // 29
+      return InventorySlot.General8BagStartingSlot; // 321
     default:
       return -1;
   }
