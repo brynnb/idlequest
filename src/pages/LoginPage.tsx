@@ -69,7 +69,6 @@ const LoginPage = () => {
       // Connect if not already connected
       if (!WorldSocket.isConnected) {
         const connected = await WorldSocket.connect("127.0.0.1", 443, () => {
-          console.log("WorldSocket disconnected");
           setIsConnected(false);
         });
 
@@ -85,9 +84,7 @@ const LoginPage = () => {
           OpCodes.JWTResponse,
           JWTResponse,
           (response) => {
-            console.log("JWT Response:", response.status);
             if (response.status > 0) {
-              console.log("Authenticated successfully");
               resolve(true);
             } else {
               console.error("Authentication failed");
@@ -102,7 +99,6 @@ const LoginPage = () => {
         OpCodes.SendCharInfo,
         CharacterSelect,
         (charSelect) => {
-          console.log("Received character list:", charSelect);
           const plainData = capnpToPlainObject(charSelect);
           setCharacters(plainData.characters || []);
           setIsLoading(false);
@@ -115,7 +111,6 @@ const LoginPage = () => {
       await WorldSocket.sendMessage(OpCodes.JWTLogin, JWTLogin, {
         token: "local",
       });
-      console.log("Sent JWTLogin");
 
       // Wait for JWT response
       const authenticated = await jwtPromise;

@@ -410,24 +410,11 @@ func HandleMoveItemWorld(ses *session.Session, payload []byte, wh *WorldHandler)
 	fromBag := int8(req.FromBagSlot())
 	toBag := int8(req.ToBagSlot())
 
-	log.Printf("MoveItem (world) for session %d: bag %d slot %d -> bag %d slot %d",
-		ses.SessionID, fromBag, fromSlot, toBag, toSlot)
-
 	fromKey := constants.InventoryKey{Bag: fromBag, Slot: fromSlot}
 	toKey := constants.InventoryKey{Bag: toBag, Slot: toSlot}
 
 	fromItem := ses.Client.Items()[fromKey]
 	toItem := ses.Client.Items()[toKey]
-
-	// Debug: log what items we found
-	if fromItem == nil {
-		log.Printf("MoveItem: No item found at fromKey (bag=%d, slot=%d)", fromBag, fromSlot)
-		// Log all items in inventory for debugging
-		log.Printf("MoveItem: Client has %d items in inventory:", len(ses.Client.Items()))
-		for k, v := range ses.Client.Items() {
-			log.Printf("  - bag=%d, slot=%d: itemID=%d", k.Bag, k.Slot, v.Instance.ItemID)
-		}
-	}
 
 	// Do the DB swap
 	updates, err := items.SwapItemSlots(

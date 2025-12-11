@@ -138,7 +138,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
         addInventoryItem: async (item: InventoryItem, itemDetails?: Item) => {
           if (!itemDetails) {
-            itemDetails = (await eqDataService.getItemById(item.itemid || 0)) ?? undefined;
+            itemDetails =
+              (await eqDataService.getItemById(item.itemid || 0)) ?? undefined;
           }
           if (!itemDetails) {
             console.error(
@@ -205,7 +206,9 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           const loadedItems = await Promise.all(
             itemsToLoad.map(async (item) => {
               try {
-                const itemDetails = (await eqDataService.getItemById(item.itemid ?? 0)) ?? undefined;
+                const itemDetails =
+                  (await eqDataService.getItemById(item.itemid ?? 0)) ??
+                  undefined;
                 return { ...item, itemDetails };
               } catch (error) {
                 console.error(
@@ -267,9 +270,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
             let updatedInventory = state.characterProfile.inventory || [];
             if (movingItem?.itemDetails?.itemclass === ItemClass.CONTAINER) {
-              console.log(
-                `Moving bag from ${fromSlot} to ${toSlot} with size ${movingItem.itemDetails.bagslots}`
-              );
               updatedInventory = moveBagContents(
                 updatedInventory,
                 fromSlot,
@@ -304,8 +304,20 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           // Convert flat slot IDs to server bag+slot format
           // But skip conversion for bag contents (251+) which are already in bag+slot format
           if (characterId) {
-            const from = fromSlot >= 251 ? { bag: Math.floor((fromSlot - 251) / 10) + 1, slot: (fromSlot - 251) % 10 } : flatSlotToBagSlot(fromSlot);
-            const to = toSlot >= 251 ? { bag: Math.floor((toSlot - 251) / 10) + 1, slot: (toSlot - 251) % 10 } : flatSlotToBagSlot(toSlot);
+            const from =
+              fromSlot >= 251
+                ? {
+                    bag: Math.floor((fromSlot - 251) / 10) + 1,
+                    slot: (fromSlot - 251) % 10,
+                  }
+                : flatSlotToBagSlot(fromSlot);
+            const to =
+              toSlot >= 251
+                ? {
+                    bag: Math.floor((toSlot - 251) / 10) + 1,
+                    slot: (toSlot - 251) % 10,
+                  }
+                : flatSlotToBagSlot(toSlot);
             WorldSocket.sendMessage(OpCodes.MoveItem, MoveItem, {
               fromSlot: from.slot,
               toSlot: to.slot,
@@ -425,8 +437,20 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           // Convert flat slot IDs to server bag+slot format
           // But skip conversion for bag contents (251+) which are already in bag+slot format
           if (characterId) {
-            const from = fromSlot >= 251 ? { bag: Math.floor((fromSlot - 251) / 10) + 1, slot: (fromSlot - 251) % 10 } : flatSlotToBagSlot(fromSlot);
-            const to = toSlot >= 251 ? { bag: Math.floor((toSlot - 251) / 10) + 1, slot: (toSlot - 251) % 10 } : flatSlotToBagSlot(toSlot);
+            const from =
+              fromSlot >= 251
+                ? {
+                    bag: Math.floor((fromSlot - 251) / 10) + 1,
+                    slot: (fromSlot - 251) % 10,
+                  }
+                : flatSlotToBagSlot(fromSlot);
+            const to =
+              toSlot >= 251
+                ? {
+                    bag: Math.floor((toSlot - 251) / 10) + 1,
+                    slot: (toSlot - 251) % 10,
+                  }
+                : flatSlotToBagSlot(toSlot);
             WorldSocket.sendMessage(OpCodes.MoveItem, MoveItem, {
               fromSlot: from.slot,
               toSlot: to.slot,

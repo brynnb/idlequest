@@ -130,7 +130,6 @@ func SwapItemSlots(
 		Query(tx, &inv); err != nil {
 		return nil, fmt.Errorf("lock inventory rows: %w", err)
 	}
-	log.Printf("SwapItemSlots: Found %d inventory rows for player %d (fromSlot=%d, toSlot=%d, fromBag=%d, toBag=%d)", len(inv), playerID, fromSlot, toSlot, fromBagSlot, toBagSlot)
 
 	// Map existing rows by (slot, bag)
 	type loc struct {
@@ -157,11 +156,9 @@ func SwapItemSlots(
 			// Items inside a bag at general slot N have bag = N+1
 			// So items inside bag at slot 0 have bag=1, slot 1 has bag=2, etc.
 			childFromRows[loc{ci.Slot, ci.Bag}] = ci
-			log.Printf("SwapItemSlots: Found child item %d in bag %d (fromSlot=%d container)", ci.ItemInstanceID, ci.Bag, fromSlot)
 		} else if toBagSlot == 0 && ci.Bag == toSlot+1 {
 			// Items inside a bag at general slot N have bag = N+1
 			childToRows[loc{ci.Slot, ci.Bag}] = ci
-			log.Printf("SwapItemSlots: Found child item %d in bag %d (toSlot=%d container)", ci.ItemInstanceID, ci.Bag, toSlot)
 		}
 	}
 	fromRow, hasFrom := baseRows[loc{fromSlot, fromBagSlot}]
@@ -184,7 +181,6 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("move fromSlot→toSlot: %w", err)
 		}
-		log.Printf("DB UPDATE: Moved item %d from (bag=%d slot=%d) to (bag=%d slot=%d)", fromRow.ItemInstanceID, fromBagSlot, fromSlot, toBagSlot, toSlot)
 
 	case !hasFrom && hasTo:
 		// simple move: toSlot → fromSlot
@@ -198,7 +194,6 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("move toSlot→fromSlot: %w", err)
 		}
-		log.Printf("DB UPDATE: Moved item %d from (bag=%d slot=%d) to (bag=%d slot=%d)", toRow.ItemInstanceID, toBagSlot, toSlot, fromBagSlot, fromSlot)
 
 	default: // hasFrom && hasTo → full swap via temp
 
@@ -213,7 +208,6 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("stash toSlot→tempSlot: %w", err)
 		}
-		log.Printf("DB UPDATE: Stashed item %d from (bag=%d slot=%d) to temp slot", toRow.ItemInstanceID, toBagSlot, toSlot)
 
 		// b) move fromSlot → toSlot
 		if _, err = table.CharacterInventory.
@@ -226,7 +220,6 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("move fromSlot→toSlot: %w", err)
 		}
-		log.Printf("DB UPDATE: Moved item %d from (bag=%d slot=%d) to (bag=%d slot=%d) in swap", fromRow.ItemInstanceID, fromBagSlot, fromSlot, toBagSlot, toSlot)
 		// c) restore tempSlot → fromSlot
 		if _, err = table.CharacterInventory.
 			UPDATE(table.CharacterInventory.Slot, table.CharacterInventory.Bag).
@@ -238,7 +231,6 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("restore tempSlot→fromSlot: %w", err)
 		}
-		log.Printf("DB UPDATE: Restored item %d from temp slot to (bag=%d slot=%d)", toRow.ItemInstanceID, fromRow.Bag, fromSlot)
 	}
 
 	childFromRowLength, childToRowLength := len(childFromRows), len(childToRows)
@@ -305,7 +297,6 @@ func SwapItemSlots(
 					Exec(tx); err != nil {
 					return nil, fmt.Errorf("stash to‐slot children→temp: %w", err)
 				}
-				log.Printf("DB UPDATE: Stashed %d child items from bag=%d to temp (swapping bags)", len(toChildIDs), toSlot+1)
 			}
 
 			if len(fromChildIDs) > 0 {
@@ -320,7 +311,6 @@ func SwapItemSlots(
 					Exec(tx); err != nil {
 					return nil, fmt.Errorf("move from‐slot children→to: %w", err)
 				}
-				log.Printf("DB UPDATE: Updated %d child items from bag=%d to bag=%d (swapping bags from slot %d to %d)", len(fromChildIDs), fromSlot+1, newBagNum, fromSlot, toSlot)
 			}
 
 			if len(toChildIDs) > 0 {
@@ -335,7 +325,6 @@ func SwapItemSlots(
 					Exec(tx); err != nil {
 					return nil, fmt.Errorf("restore temp→from‐slot children: %w", err)
 				}
-				log.Printf("DB UPDATE: Updated %d child items from temp to bag=%d (swapping bags to slot %d)", len(toChildIDs), newBagNum, fromSlot)
 			}
 
 		}
@@ -354,7 +343,6 @@ func SwapItemSlots(
 				Exec(tx); err != nil {
 				return nil, fmt.Errorf("move child fromSlot→toSlot: %w", err)
 			}
-			log.Printf("DB UPDATE: Updated %d child items from bag=%d to bag=%d (moved bag from slot %d to %d)", len(fromChildIDs), fromSlot+1, newBagNum, fromSlot, toSlot)
 		}
 	} else if toItem.IsContainer() {
 		if len(toChildIDs) > 0 {

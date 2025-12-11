@@ -24,7 +24,6 @@ func HandleGetItemRequest(ses *session.Session, payload []byte, wh *WorldHandler
 	}
 
 	itemId := req.ItemId()
-	log.Printf("GetItemRequest from session %d: itemId=%d", ses.SessionID, itemId)
 
 	// Get item from database
 	item, itemErr := items.GetItemTemplateByID(int32(itemId))
@@ -69,7 +68,6 @@ func HandleGetZoneRequest(ses *session.Session, payload []byte, wh *WorldHandler
 
 	zoneId := req.ZoneId()
 	zoneidnumber := req.Zoneidnumber()
-	log.Printf("GetZoneRequest from session %d: zoneId=%d, zoneidnumber=%d", ses.SessionID, zoneId, zoneidnumber)
 
 	ctx := context.Background()
 	var zoneErr error
@@ -117,7 +115,6 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 	}
 
 	zoneName, _ := req.ZoneName()
-	log.Printf("GetZoneNPCsRequest from session %d: zoneName=%s", ses.SessionID, zoneName)
 
 	// Get zone spawn pool
 	spawnPool, spawnErr := db_zone.GetZoneSpawnPool(zoneName)
@@ -172,7 +169,6 @@ func HandleGetAdjacentZonesRequest(ses *session.Session, payload []byte, wh *Wor
 	}
 
 	zoneId := int(req.ZoneId())
-	log.Printf("GetAdjacentZonesRequest from session %d: zoneId=%d", ses.SessionID, zoneId)
 
 	ctx := context.Background()
 
@@ -249,7 +245,6 @@ func HandleGetAdjacentZonesRequest(ses *session.Session, payload []byte, wh *Wor
 		return nil
 	})
 
-	log.Printf("Sent %d adjacent zones for zone %d to session %d", len(zonesByLongName), zoneId, ses.SessionID)
 	return false
 }
 
@@ -263,7 +258,8 @@ func HandleSendChatMessage(ses *session.Session, payload []byte, wh *WorldHandle
 
 	text, _ := req.Text()
 	messageType, _ := req.MessageType()
-	log.Printf("SendChatMessage from session %d: [%s] %s", ses.SessionID, messageType, text)
+	_ = text
+	_ = messageType
 
 	// TODO: Broadcast to other clients via ChatMessageBroadcast
 	return false
@@ -278,7 +274,6 @@ func HandleGetNPCDialogueRequest(ses *session.Session, payload []byte, wh *World
 	}
 
 	npcName, _ := req.NpcName()
-	log.Printf("GetNPCDialogueRequest from session %d: npcName=%s", ses.SessionID, npcName)
 
 	// Parse dialogue history from request
 	var dialogueHistory []dialogue.DialogueEntry

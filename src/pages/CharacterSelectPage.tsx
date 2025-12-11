@@ -50,7 +50,6 @@ const CharacterList = styled.div`
   flex: 1;
 `;
 
-
 const BottomButtons = styled.div`
   display: flex;
   flex-direction: row;
@@ -111,7 +110,6 @@ const LocationInfo = styled.div`
   font-weight: bold;
 `;
 
-
 const EmptyMessage = styled.div`
   font-family: "Times New Roman", Times, serif;
   font-size: 18px;
@@ -120,7 +118,6 @@ const EmptyMessage = styled.div`
   padding: 40px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 `;
-
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -217,10 +214,8 @@ const CharacterSelectPage = () => {
       OpCodes.PostEnterWorld,
       Int,
       async (data) => {
-        console.log("PostEnterWorld response:", data.value);
         if (data.value === 1) {
           // Success - now wait for PlayerProfile
-          console.log("Enter world approved, waiting for PlayerProfile...");
         } else {
           console.error("Enter world rejected");
           alert("Could not enter world. Please try again.");
@@ -343,7 +338,6 @@ const CharacterSelectPage = () => {
     );
 
     // Send EnterWorld with character name
-    console.log("Sending EnterWorld for:", selectedCharacter.name);
     await WorldSocket.sendMessage(OpCodes.EnterWorld, EnterWorld, {
       name: selectedCharacter.name,
       tutorial: 0,
@@ -372,8 +366,6 @@ const CharacterSelectPage = () => {
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
 
-    console.log("Deleting character:", deleteTarget.name);
-
     // Send delete request to server
     await WorldSocket.sendMessage(OpCodes.DeleteCharacter, CapnpString, {
       value: deleteTarget.name,
@@ -390,9 +382,7 @@ const CharacterSelectPage = () => {
 
   // Redirect to login if not connected
   useEffect(() => {
-    console.log("CharacterSelectPage: Checking connection status:", WorldSocket.isConnected);
     if (!WorldSocket.isConnected) {
-      console.log("CharacterSelectPage: Not connected, redirecting to login");
       navigate("/");
     }
   }, [navigate]);
@@ -412,7 +402,10 @@ const CharacterSelectPage = () => {
   };
 
   // Create array of 8 slots, filling empty ones with null
-  const characterSlots = Array.from({ length: 8 }, (_, i) => characters[i] || null);
+  const characterSlots = Array.from(
+    { length: 8 },
+    (_, i) => characters[i] || null
+  );
 
   return (
     <Wrapper>

@@ -130,7 +130,6 @@ export class EqSocket {
             { algorithm: "sha-256", value: base64ToArrayBuffer(hash) },
           ],
         });
-        console.log("Got hash", hash);
       } else {
         this.webtransport = new WebTransport(`https://${url}:${port}/eq`);
       }
@@ -141,7 +140,6 @@ export class EqSocket {
       // ——— datagram writer & loop ———
       this.datagramWriter = this.webtransport.datagrams.writable.getWriter();
       this.startDatagramLoop();
-      console.log("Datagram writer started", this.datagramWriter);
 
       // Accept server-opened control stream(s)
       const streamReader =
@@ -158,7 +156,6 @@ export class EqSocket {
           // grab writer & start reader
           this.controlWriter = stream.writable.getWriter();
           this.startControlReadLoop(stream.readable);
-          console.log("Control stream established");
         }
       })();
 

@@ -27,7 +27,6 @@ class GameEngine {
   }
 
   private initialize() {
-    console.log("Initializing GameEngine");
     const { characterProfile } = playerCharacterStore.getState();
     const { isRunning } = gameStatusStore.getState();
 
@@ -66,7 +65,6 @@ class GameEngine {
   }
 
   private async fetchAndSetTargetNPC() {
-    console.log("Fetching and setting target NPC");
     const { currentZoneNPCs, setTargetNPC } = gameStatusStore.getState();
     const { characterProfile } = playerCharacterStore.getState();
     const { addMessage } = chatStore.getState();
@@ -82,7 +80,6 @@ class GameEngine {
     });
 
     if (eligibleNPCs.length === 0) {
-      console.log("No NPCs within the acceptable level range");
       addMessage(
         "No suitable NPCs found in this zone. Try moving to a different area!",
         MessageType.SYSTEM
@@ -122,10 +119,7 @@ class GameEngine {
     const { characterProfile } = playerCharacterStore.getState();
     const oldLevel = characterProfile.level;
     const experienceGained = this.getExperienceForNPCKill();
-    console.log("Experience gained:", experienceGained);
     playerCharacterStore.getState().addExperience(experienceGained);
-    console.log("Experience after addition:", characterProfile.exp);
-    console.log("Level after addition:", characterProfile.level);
 
     if (
       characterProfile.level &&
