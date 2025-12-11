@@ -11,6 +11,7 @@ import (
 	"github.com/knervous/eqgo/internal/db/items"
 	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
 	db_zone "github.com/knervous/eqgo/internal/db/zone"
+	"github.com/knervous/eqgo/internal/dialogue"
 	"github.com/knervous/eqgo/internal/session"
 )
 
@@ -279,17 +280,45 @@ func HandleGetNPCDialogueRequest(ses *session.Session, payload []byte, wh *World
 	npcName, _ := req.NpcName()
 	log.Printf("GetNPCDialogueRequest from session %d: npcName=%s", ses.SessionID, npcName)
 
-	// For now, return a placeholder response
-	// Full implementation would call OpenRouter API like the JSON handler does
-	session.QueueMessage(ses, eq.NewRootGetNPCDialogueResponse, opcodes.GetNPCDialogueResponse, func(resp eq.GetNPCDialogueResponse) error {
-		resp.SetSuccess(1)
-		resp.SetNpcName(npcName)
-		resp.SetDialogue("The NPC looks at you curiously.")
-		// Empty responses list
-		responsesList, _ := capnp.NewTextList(resp.Segment(), 0)
-		resp.SetResponses(responsesList)
-		return nil
-	})
+	// Parse dialogue history from request
+	var dialogueHistory []dialogue.DialogueEntry
+	historyList, _ := req.DialogueHistory()
+	for i := 0; i < historyList.Len(); i++ {
+		entry := historyList.At(i)
+		npcDialogue, _ := entry.NpcDialogue()
+		playerQuestion, _ := entry.PlayerQuestion()
+		dialogueHistory = append(dialogueHistory, dialogue.DialogueEntry{
+			NPCDialogue:    npcDialogue,
+			PlayerQuestion: playerQuestion,
+		})
+	}
+
+	// Call dialogue service asynchronously to avoid blocking
+	go func() {
+		ctx := context.Background()
+		dialogueSvc := dialogue.NewService()
+		result, err := dialogueSvc.GetNPCDialogue(ctx, npcName, dialogueHistory)
+
+		session.QueueMessage(ses, eq.NewRootGetNPCDialogueResponse, opcodes.GetNPCDialogueResponse, func(resp eq.GetNPCDialogueResponse) error {
+			if err != nil {
+				resp.SetSuccess(0)
+				resp.SetError(err.Error())
+				return nil
+			}
+
+			resp.SetSuccess(1)
+			resp.SetNpcName(npcName)
+			resp.SetDialogue(result.Dialogue)
+
+			// Build responses list
+			responsesList, _ := capnp.NewTextList(resp.Segment(), int32(len(result.Responses)))
+			for i, r := range result.Responses {
+				responsesList.Set(i, r)
+			}
+			resp.SetResponses(responsesList)
+			return nil
+		})
+	}()
 
 	return false
 }

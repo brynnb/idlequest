@@ -44,6 +44,7 @@ type Config struct {
 	Local       bool   `json:"local"`
 	LocalQuests bool   `json:"localQuests"`
 	GracePeriod int    `json:"gracePeriod"`
+	OpenAIKey   string `json:"openai_key"`
 }
 
 var config *Config
