@@ -143,11 +143,19 @@ export class EqSocket {
       this.startDatagramLoop();
       console.log("Datagram writer started", this.datagramWriter);
 
-      // Create client-initiated control stream (server expects client to open it)
-      const controlStream = await this.webtransport.createBidirectionalStream();
-      this.controlWriter = controlStream.writable.getWriter();
-      this.startControlReadLoop(controlStream.readable);
-      console.log("Control stream established");
+      // Accept server-opened control stream(s)
+      const streamReader = this.webtransport.incomingBidirectionalStreams.getReader();
+      (async () => {
+        while (true) {
+          const { value: stream, done } = await streamReader.read();
+          if (done) {break;}
+          if (!stream) {continue;}
+          // grab writer & start reader
+          this.controlWriter = stream.writable.getWriter();
+          this.startControlReadLoop(stream.readable);
+          console.log("Control stream established");
+        }
+      })();
 
       this.isConnected = true;
       this.retryCount = 0;

@@ -9,6 +9,35 @@ import { ItemClass } from "@entities/ItemClass";
 // General inventory slots match server: 22-29
 const GENERAL_SLOTS = [22, 23, 24, 25, 26, 27, 28, 29];
 
+// Convert flat slot ID to server bag+slot format
+// Equipment: 0-21 -> bag=-1, slot=0-21
+// General: 22-29 -> bag=0, slot=0-7
+// Cursor: 30 -> bag=0, slot=30
+// Bag contents: 251-330 -> bag=1-8, slot=0-9
+// Cursor bag: 331-340 -> bag=9, slot=0-9
+export const flatSlotToBagSlot = (flatSlot: number): { bag: number; slot: number } => {
+  if (flatSlot >= 0 && flatSlot <= 21) {
+    // Equipment slots
+    return { bag: -1, slot: flatSlot };
+  } else if (flatSlot >= 22 && flatSlot <= 29) {
+    // General inventory: flat 22-29 -> bag=0, slot=0-7
+    return { bag: 0, slot: flatSlot - 22 };
+  } else if (flatSlot === 30) {
+    // Cursor
+    return { bag: 0, slot: 30 };
+  } else if (flatSlot >= 251 && flatSlot <= 330) {
+    // Bag contents: 251-260 -> bag=1, 261-270 -> bag=2, etc.
+    const bagNum = Math.floor((flatSlot - 251) / 10) + 1;
+    const slotInBag = (flatSlot - 251) % 10;
+    return { bag: bagNum, slot: slotInBag };
+  } else if (flatSlot >= 331 && flatSlot <= 340) {
+    // Cursor bag contents
+    return { bag: 9, slot: flatSlot - 331 };
+  }
+  // Default fallback
+  return { bag: 0, slot: flatSlot };
+};
+
 // Maps general inventory slot to bag content starting slot
 // Server uses: bag 1-8 for contents of items in general slots 22-29
 // Bag contents start at slot 251 (10 slots per bag)

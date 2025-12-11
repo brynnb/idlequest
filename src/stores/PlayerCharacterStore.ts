@@ -17,6 +17,7 @@ import {
   calculateTotalWeight,
   calculateTotalResistances,
   calculateTotalAttributes,
+  flatSlotToBagSlot,
 } from "@utils/inventoryUtils";
 import { getBagStartingSlot } from "@utils/inventoryUtils";
 import { ItemClass } from "@entities/ItemClass";
@@ -300,13 +301,17 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           get().updateAllStats();
 
           // Sync with server via Cap'n Proto
+          // Convert flat slot IDs to server bag+slot format
+          // But skip conversion for bag contents (251+) which are already in bag+slot format
           if (characterId) {
+            const from = fromSlot >= 251 ? { bag: Math.floor((fromSlot - 251) / 10) + 1, slot: (fromSlot - 251) % 10 } : flatSlotToBagSlot(fromSlot);
+            const to = toSlot >= 251 ? { bag: Math.floor((toSlot - 251) / 10) + 1, slot: (toSlot - 251) % 10 } : flatSlotToBagSlot(toSlot);
             WorldSocket.sendMessage(OpCodes.MoveItem, MoveItem, {
-              fromSlot: fromSlot,
-              toSlot: toSlot,
+              fromSlot: from.slot,
+              toSlot: to.slot,
               numberInStack: 0,
-              fromBagSlot: 0,
-              toBagSlot: 0,
+              fromBagSlot: from.bag,
+              toBagSlot: to.bag,
             });
           }
         },
@@ -417,13 +422,17 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           });
 
           // Sync with server via Cap'n Proto - swap is just a move when dest has item
+          // Convert flat slot IDs to server bag+slot format
+          // But skip conversion for bag contents (251+) which are already in bag+slot format
           if (characterId) {
+            const from = fromSlot >= 251 ? { bag: Math.floor((fromSlot - 251) / 10) + 1, slot: (fromSlot - 251) % 10 } : flatSlotToBagSlot(fromSlot);
+            const to = toSlot >= 251 ? { bag: Math.floor((toSlot - 251) / 10) + 1, slot: (toSlot - 251) % 10 } : flatSlotToBagSlot(toSlot);
             WorldSocket.sendMessage(OpCodes.MoveItem, MoveItem, {
-              fromSlot: fromSlot,
-              toSlot: toSlot,
+              fromSlot: from.slot,
+              toSlot: to.slot,
               numberInStack: 0,
-              fromBagSlot: 0,
-              toBagSlot: 0,
+              fromBagSlot: from.bag,
+              toBagSlot: to.bag,
             });
           }
         },

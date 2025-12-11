@@ -103,7 +103,8 @@ func SwapItemSlots(
 		}
 	}()
 
-	// 1) Lock the two target slots for update
+	// 1) Lock the two target slots for update (including bag contents where Bag = slot+1)
+	// Items inside a bag at general slot N have bag = N+1
 	var inv []model.CharacterInventory
 	if err = table.CharacterInventory.
 		SELECT(
@@ -113,15 +114,23 @@ func SwapItemSlots(
 		).
 		WHERE(
 			table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
-				AND(table.CharacterInventory.Slot.IN(
-					mysql.Int8(fromSlot),
-					mysql.Int8(toSlot),
-				)),
+				AND(
+					table.CharacterInventory.Slot.IN(
+						mysql.Int8(fromSlot),
+						mysql.Int8(toSlot),
+					).OR(
+						table.CharacterInventory.Bag.IN(
+							mysql.Int8(fromSlot+1),
+							mysql.Int8(toSlot+1),
+						),
+					),
+				),
 		).
 		FOR(mysql.UPDATE()).
 		Query(tx, &inv); err != nil {
 		return nil, fmt.Errorf("lock inventory rows: %w", err)
 	}
+	log.Printf("SwapItemSlots: Found %d inventory rows for player %d (fromSlot=%d, toSlot=%d, fromBag=%d, toBag=%d)", len(inv), playerID, fromSlot, toSlot, fromBagSlot, toBagSlot)
 
 	// Map existing rows by (slot, bag)
 	type loc struct {
@@ -139,16 +148,20 @@ func SwapItemSlots(
 		toItemId = toItem.ItemInstanceID
 	}
 	for _, ci := range inv {
-		if ci.Bag == fromBagSlot || ci.Bag == toBagSlot {
-			if !(ci.ItemInstanceID == fromItemId || ci.ItemInstanceID == toItemId) {
-				continue // skip rows that are not part of the swap
-			}
-			baseRows[loc{(ci.Slot), ci.Bag}] = ci
-
-		} else if ci.Slot == fromSlot && fromBagSlot <= 0 {
-			childFromRows[loc{(ci.Slot), ci.Bag}] = ci
-		} else if ci.Slot == toSlot && toBagSlot <= 0 {
-			childToRows[loc{(ci.Slot), ci.Bag}] = ci
+		// Check if this is one of the items being moved (base items)
+		if ci.ItemInstanceID == fromItemId && ci.Slot == fromSlot && ci.Bag == fromBagSlot {
+			baseRows[loc{ci.Slot, ci.Bag}] = ci
+		} else if ci.ItemInstanceID == toItemId && ci.Slot == toSlot && ci.Bag == toBagSlot {
+			baseRows[loc{ci.Slot, ci.Bag}] = ci
+		} else if fromBagSlot == 0 && ci.Bag == fromSlot+1 {
+			// Items inside a bag at general slot N have bag = N+1
+			// So items inside bag at slot 0 have bag=1, slot 1 has bag=2, etc.
+			childFromRows[loc{ci.Slot, ci.Bag}] = ci
+			log.Printf("SwapItemSlots: Found child item %d in bag %d (fromSlot=%d container)", ci.ItemInstanceID, ci.Bag, fromSlot)
+		} else if toBagSlot == 0 && ci.Bag == toSlot+1 {
+			// Items inside a bag at general slot N have bag = N+1
+			childToRows[loc{ci.Slot, ci.Bag}] = ci
+			log.Printf("SwapItemSlots: Found child item %d in bag %d (toSlot=%d container)", ci.ItemInstanceID, ci.Bag, toSlot)
 		}
 	}
 	fromRow, hasFrom := baseRows[loc{fromSlot, fromBagSlot}]
@@ -171,6 +184,7 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("move fromSlot→toSlot: %w", err)
 		}
+		log.Printf("DB UPDATE: Moved item %d from (bag=%d slot=%d) to (bag=%d slot=%d)", fromRow.ItemInstanceID, fromBagSlot, fromSlot, toBagSlot, toSlot)
 
 	case !hasFrom && hasTo:
 		// simple move: toSlot → fromSlot
@@ -184,6 +198,7 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("move toSlot→fromSlot: %w", err)
 		}
+		log.Printf("DB UPDATE: Moved item %d from (bag=%d slot=%d) to (bag=%d slot=%d)", toRow.ItemInstanceID, toBagSlot, toSlot, fromBagSlot, fromSlot)
 
 	default: // hasFrom && hasTo → full swap via temp
 
@@ -198,6 +213,7 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("stash toSlot→tempSlot: %w", err)
 		}
+		log.Printf("DB UPDATE: Stashed item %d from (bag=%d slot=%d) to temp slot", toRow.ItemInstanceID, toBagSlot, toSlot)
 
 		// b) move fromSlot → toSlot
 		if _, err = table.CharacterInventory.
@@ -210,6 +226,7 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("move fromSlot→toSlot: %w", err)
 		}
+		log.Printf("DB UPDATE: Moved item %d from (bag=%d slot=%d) to (bag=%d slot=%d) in swap", fromRow.ItemInstanceID, fromBagSlot, fromSlot, toBagSlot, toSlot)
 		// c) restore tempSlot → fromSlot
 		if _, err = table.CharacterInventory.
 			UPDATE(table.CharacterInventory.Slot, table.CharacterInventory.Bag).
@@ -221,6 +238,7 @@ func SwapItemSlots(
 			Exec(tx); err != nil {
 			return nil, fmt.Errorf("restore tempSlot→fromSlot: %w", err)
 		}
+		log.Printf("DB UPDATE: Restored item %d from temp slot to (bag=%d slot=%d)", toRow.ItemInstanceID, fromRow.Bag, fromSlot)
 	}
 
 	childFromRowLength, childToRowLength := len(childFromRows), len(childToRows)
@@ -274,9 +292,11 @@ func SwapItemSlots(
 
 	if fromItem.IsContainer() && toItem.IsContainer() {
 		if len(fromChildIDs) > 0 || len(toChildIDs) > 0 {
+			// Items inside a bag at general slot N have bag = N+1
+			// When swapping bags, update child items' bag numbers accordingly
 			if len(toChildIDs) > 0 {
 				if _, err = table.CharacterInventory.
-					UPDATE(table.CharacterInventory.Slot).
+					UPDATE(table.CharacterInventory.Bag).
 					SET(mysql.Int32(tempSlot)).
 					WHERE(
 						table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
@@ -285,12 +305,14 @@ func SwapItemSlots(
 					Exec(tx); err != nil {
 					return nil, fmt.Errorf("stash to‐slot children→temp: %w", err)
 				}
+				log.Printf("DB UPDATE: Stashed %d child items from bag=%d to temp (swapping bags)", len(toChildIDs), toSlot+1)
 			}
 
 			if len(fromChildIDs) > 0 {
+				newBagNum := toSlot + 1
 				if _, err = table.CharacterInventory.
-					UPDATE(table.CharacterInventory.Slot).
-					SET(mysql.Int8(toSlot)).
+					UPDATE(table.CharacterInventory.Bag).
+					SET(mysql.Int8(newBagNum)).
 					WHERE(
 						table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
 							AND(table.CharacterInventory.ItemInstanceID.IN(fromChildIDs...)),
@@ -298,12 +320,14 @@ func SwapItemSlots(
 					Exec(tx); err != nil {
 					return nil, fmt.Errorf("move from‐slot children→to: %w", err)
 				}
+				log.Printf("DB UPDATE: Updated %d child items from bag=%d to bag=%d (swapping bags from slot %d to %d)", len(fromChildIDs), fromSlot+1, newBagNum, fromSlot, toSlot)
 			}
 
 			if len(toChildIDs) > 0 {
+				newBagNum := fromSlot + 1
 				if _, err = table.CharacterInventory.
-					UPDATE(table.CharacterInventory.Slot).
-					SET(mysql.Int8(fromSlot)).
+					UPDATE(table.CharacterInventory.Bag).
+					SET(mysql.Int8(newBagNum)).
 					WHERE(
 						table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
 							AND(table.CharacterInventory.ItemInstanceID.IN(toChildIDs...)),
@@ -311,14 +335,18 @@ func SwapItemSlots(
 					Exec(tx); err != nil {
 					return nil, fmt.Errorf("restore temp→from‐slot children: %w", err)
 				}
+				log.Printf("DB UPDATE: Updated %d child items from temp to bag=%d (swapping bags to slot %d)", len(toChildIDs), newBagNum, fromSlot)
 			}
 
 		}
 	} else if fromItem.IsContainer() {
 		if len(fromChildIDs) > 0 {
+			// Items inside a bag at general slot N have bag = N+1
+			// When moving bag from slot X to slot Y, update child items' bag from X+1 to Y+1
+			newBagNum := toSlot + 1
 			if _, err = table.CharacterInventory.
-				UPDATE(table.CharacterInventory.Slot).
-				SET(mysql.Int8(toSlot)).
+				UPDATE(table.CharacterInventory.Bag).
+				SET(mysql.Int8(newBagNum)).
 				WHERE(
 					table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
 						AND(table.CharacterInventory.ItemInstanceID.IN(fromChildIDs...)),
@@ -326,6 +354,7 @@ func SwapItemSlots(
 				Exec(tx); err != nil {
 				return nil, fmt.Errorf("move child fromSlot→toSlot: %w", err)
 			}
+			log.Printf("DB UPDATE: Updated %d child items from bag=%d to bag=%d (moved bag from slot %d to %d)", len(fromChildIDs), fromSlot+1, newBagNum, fromSlot, toSlot)
 		}
 	} else if toItem.IsContainer() {
 		if len(toChildIDs) > 0 {
