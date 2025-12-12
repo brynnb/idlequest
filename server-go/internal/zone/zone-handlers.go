@@ -17,6 +17,8 @@ import (
 	"idlequest/internal/db/items"
 	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/session"
+
+	capnp "capnproto.org/go/capnp/v3"
 )
 
 func HandleChannelMessage(z *ZoneInstance, ses *session.Session, payload []byte) {
@@ -174,11 +176,18 @@ func HandleRequestClientZoneChange(z *ZoneInstance, ses *session.Session, payloa
 		return
 	}
 
-	newZone, err := session.NewMessage(ses, eq.NewRootNewZone)
+	// Use fresh messages to avoid buffer reuse conflicts
+	newZoneMsg, newZoneSeg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	if err != nil {
 		log.Printf("failed to create NewZone message: %v", err)
 		return
 	}
+	newZone, err := eq.NewRootNewZone(newZoneSeg)
+	if err != nil {
+		log.Printf("failed to create NewZone root: %v", err)
+		return
+	}
+	_ = newZoneMsg // used for sending
 	newZone.SetShortName(*dbZone.ShortName)
 	newZone.SetLongName(dbZone.LongName)
 	newZone.SetZoneIdNumber(int32(dbZone.Zoneidnumber))
@@ -207,14 +216,20 @@ func HandleRequestClientZoneChange(z *ZoneInstance, ses *session.Session, payloa
 		zonePointProto.SetNumber(int32(zonePoint.Number))
 	}
 
-	ses.SendStream(newZone.Message(), opcodes.NewZone)
+	ses.SendStream(newZoneMsg, opcodes.NewZone)
 
-	// PlayerProfile
-	playerProfile, err := session.NewMessage(ses, eq.NewRootPlayerProfile)
+	// PlayerProfile - use fresh message to avoid buffer conflicts
+	playerProfileMsg, playerProfileSeg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	if err != nil {
 		log.Printf("failed to create PlayerProfile message: %v", err)
 		return
 	}
+	playerProfile, err := eq.NewRootPlayerProfile(playerProfileSeg)
+	if err != nil {
+		log.Printf("failed to create PlayerProfile root: %v", err)
+		return
+	}
+	_ = playerProfileMsg // used for sending
 	playerProfile.SetName(charData.Name)
 	playerProfile.SetLevel(int32(charData.Level))
 	playerProfile.SetRace(int32(charData.Race))
@@ -293,15 +308,21 @@ func HandleRequestClientZoneChange(z *ZoneInstance, ses *session.Session, payloa
 
 	// TODO stats fill the rest of this out
 
-	ses.SendStream(playerProfile.Message(), opcodes.PlayerProfile)
+	ses.SendStream(playerProfileMsg, opcodes.PlayerProfile)
 
-	// Send all zone spawns
-	spawns, err := session.NewMessage(ses, eq.NewRootSpawns)
+	// Send all zone spawns - use a fresh message with adequate capacity for many NPCs
+	npcCount := len(z.Npcs)
+	spawnMsg, spawnSeg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	if err != nil {
 		log.Printf("failed to create Spawns message: %v", err)
 		return
 	}
-	spawnArray, err := spawns.NewSpawns(int32(len(z.Npcs))) // +1 for the player character spawn
+	spawns, err := eq.NewRootSpawns(spawnSeg)
+	if err != nil {
+		log.Printf("failed to create Spawns root: %v", err)
+		return
+	}
+	spawnArray, err := spawns.NewSpawns(int32(npcCount))
 	if err != nil {
 		log.Printf("failed to create Spawns array: %v", err)
 		return
@@ -338,7 +359,7 @@ func HandleRequestClientZoneChange(z *ZoneInstance, ses *session.Session, payloa
 		spawn.SetCellZ(int32(c[2]))
 
 	}
-	err = ses.SendStream(spawns.Message(), opcodes.BatchZoneSpawns)
+	err = ses.SendStream(spawnMsg, opcodes.BatchZoneSpawns)
 	if err != nil {
 		log.Printf("failed to send Spawn message: %v", err)
 		return

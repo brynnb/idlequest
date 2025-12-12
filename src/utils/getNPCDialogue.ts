@@ -2,9 +2,11 @@ import useDialogueStore from "@stores/DialogueStore";
 import {
   WorldSocket,
   OpCodes,
+  DialogueHistoryEntry,
   GetNPCDialogueRequest,
   GetNPCDialogueResponse,
 } from "@/net";
+import * as $ from "capnp-es";
 
 export interface DialogueResponse {
   dialogue: string;
@@ -35,14 +37,36 @@ export async function getNPCDialogue(
       return null;
     }
 
-    // Note: Cap'n Proto lists need special handling - for now we send without history
-    // A full implementation would need to build the list properly
+    // Build dialogue history for the request
+    const historyForRequest = dialogueHistory.map((entry) => ({
+      npcDialogue: entry.npcDialogue || "",
+      playerQuestion: entry.playerQuestion || "",
+    }));
+
     const response = await WorldSocket.sendRequest(
       OpCodes.GetNPCDialogueRequest,
       OpCodes.GetNPCDialogueResponse,
       GetNPCDialogueRequest,
       GetNPCDialogueResponse,
-      { npcName }
+      { npcName },
+      10000,
+      (root: GetNPCDialogueRequest) => {
+        // dialogueHistory is a composite list; it must be allocated and populated as a Cap'n Proto list.
+        const list = $.utils.initList(
+          1,
+          GetNPCDialogueRequest._DialogueHistory,
+          historyForRequest.length,
+          root
+        ) as $.List<DialogueHistoryEntry>;
+
+        for (let i = 0; i < historyForRequest.length; i++) {
+          const item = list.get(i) as DialogueHistoryEntry;
+          item.npcDialogue = historyForRequest[i].npcDialogue;
+          item.playerQuestion = historyForRequest[i].playerQuestion;
+        }
+
+        root.dialogueHistory = list;
+      }
     );
 
     if (!response.success) {

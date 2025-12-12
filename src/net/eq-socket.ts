@@ -246,7 +246,8 @@ export class EqSocket {
     RequestType: Parameters<$.Message["initRoot"]>[0] & { prototype: TReq },
     ResponseType: Parameters<$.Message["initRoot"]>[0] & { prototype: TRes },
     data: Partial<Record<keyof TReq, unknown>>,
-    timeoutMs: number = 10000
+    timeoutMs: number = 10000,
+    build?: (root: TReq, msg: $.Message) => void
   ): Promise<TRes> {
     if (!this.isConnected || !this.controlWriter) {
       throw new Error("Not connected");
@@ -256,6 +257,9 @@ export class EqSocket {
     const msg = new $.Message();
     const root = msg.initRoot(RequestType);
     setStructFields(root, data);
+    if (build) {
+      build(root as TReq, msg);
+    }
     const payload = new Uint8Array($.Message.toArrayBuffer(msg));
 
     const header = new ArrayBuffer(4);

@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -86,14 +87,49 @@ func (p *OpenRouterProvider) Complete(ctx context.Context, messages []ChatMessag
 
 	// OpenRouter may not always return JSON, so try to parse it
 	content := apiResponse.Choices[0].Message.Content
+
+	// Strip markdown code blocks if present (```json ... ``` or ``` ... ```)
+	content = strings.TrimSpace(content)
+	if strings.HasPrefix(content, "```json") {
+		content = strings.TrimPrefix(content, "```json")
+		content = strings.TrimSuffix(content, "```")
+		content = strings.TrimSpace(content)
+	} else if strings.HasPrefix(content, "```") {
+		content = strings.TrimPrefix(content, "```")
+		content = strings.TrimSuffix(content, "```")
+		content = strings.TrimSpace(content)
+	}
+
+	// Try to parse as our expected format first
 	var dialogueResp DialogueResponse
-	if err := json.Unmarshal([]byte(content), &dialogueResp); err != nil {
-		// If not valid JSON, treat the whole response as dialogue
+	if err := json.Unmarshal([]byte(content), &dialogueResp); err == nil && dialogueResp.Dialogue != "" {
+		return &dialogueResp, nil
+	}
+
+	// LLM might return responses as objects with "text" and "next" fields
+	// Try parsing that format
+	var complexResp struct {
+		Dialogue  string `json:"dialogue"`
+		Responses []struct {
+			Text string `json:"text"`
+			Next string `json:"next"`
+		} `json:"responses"`
+	}
+	if err := json.Unmarshal([]byte(content), &complexResp); err == nil && complexResp.Dialogue != "" {
+		// Convert complex responses to simple strings
+		responses := make([]string, len(complexResp.Responses))
+		for i, r := range complexResp.Responses {
+			responses[i] = r.Text
+		}
 		return &DialogueResponse{
-			Dialogue:  content,
-			Responses: []string{},
+			Dialogue:  complexResp.Dialogue,
+			Responses: responses,
 		}, nil
 	}
 
-	return &dialogueResp, nil
+	// If not valid JSON, treat the whole response as dialogue
+	return &DialogueResponse{
+		Dialogue:  content,
+		Responses: []string{},
+	}, nil
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"capnproto.org/go/capnp/v3"
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/api/opcodes"
 	"idlequest/internal/db/items"
@@ -13,6 +12,8 @@ import (
 	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/dialogue"
 	"idlequest/internal/session"
+
+	"capnproto.org/go/capnp/v3"
 )
 
 // HandleGetItemRequest handles GetItemRequest Cap'n Proto messages
@@ -115,12 +116,16 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 	}
 
 	zoneName, _ := req.ZoneName()
+	log.Printf("GetZoneNPCsRequest for zone: %s", zoneName)
 
 	// Get zone spawn pool
 	spawnPool, spawnErr := db_zone.GetZoneSpawnPool(zoneName)
+	if spawnErr != nil {
+		log.Printf("GetZoneSpawnPool error for %s: %v", zoneName, spawnErr)
+	}
 
 	// Build and send response
-	session.QueueMessage(ses, eq.NewRootGetZoneNPCsResponse, opcodes.GetZoneNPCsResponse, func(resp eq.GetZoneNPCsResponse) error {
+	err = session.QueueMessage(ses, eq.NewRootGetZoneNPCsResponse, opcodes.GetZoneNPCsResponse, func(resp eq.GetZoneNPCsResponse) error {
 		if spawnErr != nil {
 			resp.SetSuccess(0)
 			resp.SetError("Failed to fetch zone NPCs")
@@ -156,6 +161,9 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 		resp.SetNpcs(npcList)
 		return nil
 	})
+	if err != nil {
+		log.Printf("GetZoneNPCsRequest QueueMessage error: %v", err)
+	}
 
 	return false
 }
@@ -200,37 +208,43 @@ func HandleGetAdjacentZonesRequest(ses *session.Session, payload []byte, wh *Wor
 		targetZoneIds[zp.TargetZoneID] = true
 	}
 
-	// Fetch zone details, filtering duplicates by long_name
+	// Fetch zone details, filtering duplicates by short_name (more reliable than long_name)
+	// Also skip zones with zoneidnumber > 400 as these are typically duplicates/instances
 	type zoneInfo struct {
 		zone   *model.Zone
 		zoneId uint32
 	}
-	zonesByLongName := make(map[string]zoneInfo)
+	zonesByShortName := make(map[string]zoneInfo)
 
 	for targetZoneId := range targetZoneIds {
 		if int(targetZoneId) == zoneId {
 			continue
 		}
 		zone, err := db_zone.GetZoneById(ctx, int(targetZoneId))
-		if err != nil || zone == nil {
+		if err != nil || zone == nil || zone.ShortName == nil {
 			continue
 		}
-		longName := zone.LongName
-		if existing, exists := zonesByLongName[longName]; exists {
+		// Skip high-numbered zones (typically duplicates, instances, or special zones)
+		if zone.Zoneidnumber > 400 {
+			continue
+		}
+		shortName := *zone.ShortName
+		if existing, exists := zonesByShortName[shortName]; exists {
+			// Keep the lower zone ID (original zone)
 			if targetZoneId < existing.zoneId {
-				zonesByLongName[longName] = zoneInfo{zone: zone, zoneId: targetZoneId}
+				zonesByShortName[shortName] = zoneInfo{zone: zone, zoneId: targetZoneId}
 			}
 		} else {
-			zonesByLongName[longName] = zoneInfo{zone: zone, zoneId: targetZoneId}
+			zonesByShortName[shortName] = zoneInfo{zone: zone, zoneId: targetZoneId}
 		}
 	}
 
 	// Build and send response
 	session.QueueMessage(ses, eq.NewRootGetAdjacentZonesResponse, opcodes.GetAdjacentZonesResponse, func(resp eq.GetAdjacentZonesResponse) error {
 		resp.SetSuccess(1)
-		zoneList, _ := eq.NewAdjacentZone_List(resp.Segment(), int32(len(zonesByLongName)))
+		zoneList, _ := eq.NewAdjacentZone_List(resp.Segment(), int32(len(zonesByShortName)))
 		i := 0
-		for _, info := range zonesByLongName {
+		for _, info := range zonesByShortName {
 			zone := info.zone
 			zoneData := zoneList.At(i)
 			zoneData.SetId(int32(zone.ID))

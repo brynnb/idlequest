@@ -114,14 +114,13 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         },
         setInventory: async (inventory) => {
           set((state) => {
-            // Deduplicate inventory items
+            // Deduplicate inventory items (server may send inventory on both EnterWorld and zone change)
             const deduplicatedInventory = inventory.reduce((acc, item) => {
               const existingItem = acc.find((i) => i.slotid === item.slotid);
               if (!existingItem) {
                 acc.push(item);
-              } else {
-                console.warn("Prevented duplicate item in slot:", item.slotid);
               }
+              // Silently skip duplicates - this is expected when zoning
               return acc;
             }, [] as InventoryItem[]);
 

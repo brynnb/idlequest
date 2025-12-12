@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 
+	capnp "capnproto.org/go/capnp/v3"
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/api/opcodes"
 	"idlequest/internal/config"
@@ -338,13 +339,20 @@ func HandleCharacterDelete(ses *session.Session, payload []byte, wh *WorldHandle
 }
 
 func HandleRequestClientZoneChange(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	// In this case we know we're forwarding the event so we can copy the payload
-	// and deserialize it directly.
-	payloadCopy := make([]byte, len(payload))
-	copy(payloadCopy, payload)
-	req, err := session.Deserialize(ses, payloadCopy, eq.ReadRootRequestClientZoneChange)
+	// Use fresh message to avoid buffer reuse issues with the session's shared buffer
+	msg, err := capnp.Unmarshal(payload)
 	if err != nil {
-		log.Printf("failed to read JWTLogin struct: %v", err)
+		log.Printf("failed to unmarshal RequestClientZoneChange: %v", err)
+		return false
+	}
+	req, err := eq.ReadRootRequestClientZoneChange(msg)
+	if err != nil {
+		log.Printf("failed to read RequestClientZoneChange struct: %v", err)
+		return false
+	}
+
+	if ses.Client == nil {
+		log.Printf("client session %d has no client attached", ses.SessionID)
 		return false
 	}
 
@@ -353,35 +361,47 @@ func HandleRequestClientZoneChange(ses *session.Session, payload []byte, wh *Wor
 		log.Printf("client session %d has no character data", ses.SessionID)
 		return false
 	}
-	fromCharacterSelect := req.Type() == 0
-	if fromCharacterSelect {
-		req.SetX(float32(charData.X))
-		req.SetY(float32(charData.Y))
-		req.SetZ(float32(charData.Z))
-		req.SetHeading(float32(charData.Heading))
-		req.SetInstanceId(int32(charData.ZoneInstance))
-		req.SetZoneId(int32(charData.ZoneID))
-	} else {
-		// We are zoning from another zone
-		// Get validation logic later for this zone request, for now save off and bust cache
 
+	// Get zone info from request - read all values upfront before any other operations
+	zoneId := req.ZoneId()
+	instanceId := req.InstanceId()
+	reqType := req.Type()
+	reqX := req.X()
+	reqY := req.Y()
+	reqZ := req.Z()
+	reqHeading := req.Heading()
+
+	log.Printf("RequestClientZoneChange: session %d, type=%d, zoneId=%d, instanceId=%d",
+		ses.SessionID, reqType, zoneId, instanceId)
+
+	fromCharacterSelect := reqType == 0
+	if fromCharacterSelect {
+		// Coming from character select - use character's saved position
+		ses.ZoneID = int(charData.ZoneID)
+		ses.InstanceID = int(charData.ZoneInstance)
+	} else {
+		// Zoning from another zone
 		// First remove client from previous zone
-		if ses.ZoneID != -1 {
+		if ses.ZoneID != -1 && wh.zoneManager != nil {
 			zoneInstance, ok := wh.zoneManager.Get(ses.ZoneID, ses.InstanceID)
 			if ok {
 				zoneInstance.RemoveClient(ses.SessionID)
 			}
 		}
-		charData.X = float64(req.X())
-		charData.Y = float64(req.Y())
-		charData.Z = float64(req.Z())
-		charData.Heading = float64(req.Heading())
-		charData.ZoneID = uint32(req.ZoneId())
-		charData.ZoneInstance = uint32(req.InstanceId())
+
+		// Update character data with new zone
+		charData.ZoneID = uint32(zoneId)
+		charData.ZoneInstance = uint32(instanceId)
+		charData.X = float64(reqX)
+		charData.Y = float64(reqY)
+		charData.Z = float64(reqZ)
+		charData.Heading = float64(reqHeading)
 		db_character.UpdateCharacter(charData, ses.AccountID)
-		ses.ZoneID = int(req.ZoneId())
-		ses.InstanceID = int(req.InstanceId())
+
+		ses.ZoneID = int(zoneId)
+		ses.InstanceID = int(instanceId)
 	}
+
 	return true
 }
 
