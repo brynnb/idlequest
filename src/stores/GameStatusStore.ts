@@ -129,52 +129,21 @@ const useGameStatusStore = create<GameStatusStore>()(
 
             updateCurrentZoneNPCs: async () => {
               const { currentZone, getZoneNameById } = get();
-              if (currentZone !== null) {
-                const zoneName = getZoneNameById(currentZone);
-                if (zoneName) {
-                  try {
-                    // Use eqDataService for consistent data access
-                    const npcs = await eqDataService.getZoneNPCs(zoneName);
-                    if (npcs.length > 0) {
-                      set({ currentZoneNPCs: npcs });
-                    } else {
-                      // Fallback to old getZoneNPCs function if eqDataService returns empty
-                      const { getZoneNPCs } = await import(
-                        "@utils/getZoneNPCs"
-                      );
-                      const fallbackNpcs = await getZoneNPCs(zoneName);
-                      set({ currentZoneNPCs: fallbackNpcs });
-                      console.warn(
-                        "Used fallback getZoneNPCs function - WebTransport not yet implemented"
-                      );
-                    }
-                  } catch (error) {
-                    console.error("Failed to update current zone NPCs:", error);
-                    // Try fallback
-                    try {
-                      const { getZoneNPCs } = await import(
-                        "@utils/getZoneNPCs"
-                      );
-                      const fallbackNpcs = await getZoneNPCs(zoneName);
-                      set({ currentZoneNPCs: fallbackNpcs });
-                      console.warn(
-                        "Used fallback getZoneNPCs due to error in eqDataService"
-                      );
-                    } catch (fallbackError) {
-                      console.error(
-                        "Fallback getZoneNPCs also failed:",
-                        fallbackError
-                      );
-                    }
-                  }
-                } else {
-                  console.error(
-                    "Zone name not found for current zone:",
-                    currentZone
-                  );
-                }
-              } else {
-                console.error("Current zone is null");
+              if (currentZone === null) {
+                return;
+              }
+              const zoneName = getZoneNameById(currentZone);
+              if (!zoneName) {
+                console.error("Zone name not found for current zone:", currentZone);
+                return;
+              }
+              try {
+                // Server is the only source of NPC data
+                const npcs = await eqDataService.getZoneNPCs(zoneName);
+                set({ currentZoneNPCs: npcs });
+              } catch (error) {
+                console.error("Failed to fetch zone NPCs:", error);
+                set({ currentZoneNPCs: [] });
               }
             },
 

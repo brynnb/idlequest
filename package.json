@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "server:go": "cd server-go && go run ./cmd/server",
+    "server:go": "cd server-go && (air || go run ./cmd/daemon)",
     "server": "set -a && source .env && set +a && npm run server:go",
     "dev:all": "npm run server:go & sleep 3 && npm run dev"
   },
