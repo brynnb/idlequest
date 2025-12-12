@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/knervous/eqgo/internal/constants"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/constants"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
 )
 
 // ClientEntry mirrors zone.ClientEntry for quest access.

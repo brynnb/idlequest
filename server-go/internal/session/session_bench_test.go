@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
 )
 
 // noopMessenger satisfies ClientMessenger but does nothing.

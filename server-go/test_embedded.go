@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/knervous/eqgo/internal/cert"
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/cert"
+	"idlequest/internal/config"
 )
 
 func main() {

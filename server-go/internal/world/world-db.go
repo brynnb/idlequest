@@ -7,17 +7,17 @@ import (
 	"log"
 	"strings"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/constants"
-	"github.com/knervous/eqgo/internal/session"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/constants"
+	"idlequest/internal/session"
 
-	"github.com/knervous/eqgo/internal/cache"
-	"github.com/knervous/eqgo/internal/db"
+	"idlequest/internal/cache"
+	"idlequest/internal/db"
 
-	db_character "github.com/knervous/eqgo/internal/db/character"
-	"github.com/knervous/eqgo/internal/db/items"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/table"
+	db_character "idlequest/internal/db/character"
+	"idlequest/internal/db/items"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/jetgen/eqgo/table"
 
 	"github.com/go-jet/jet/v2/mysql"
 	_ "github.com/go-sql-driver/mysql"

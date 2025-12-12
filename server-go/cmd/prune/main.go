@@ -8,7 +8,7 @@ import (
 	"math"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 )
 
 const (

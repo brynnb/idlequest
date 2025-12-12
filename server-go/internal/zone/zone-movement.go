@@ -3,10 +3,10 @@ package zone
 import (
 	"math"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
 )
 
 const (

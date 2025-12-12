@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	capnp "capnproto.org/go/capnp/v3"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/api/opcodes"
+	entity "idlequest/internal/zone/interface"
 	"github.com/quic-go/webtransport-go"
 )
 

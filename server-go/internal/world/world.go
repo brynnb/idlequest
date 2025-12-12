@@ -5,8 +5,8 @@ import (
 	"log"
 	"sync"
 
-	"github.com/knervous/eqgo/internal/session"
-	"github.com/knervous/eqgo/internal/zone"
+	"idlequest/internal/session"
+	"idlequest/internal/zone"
 )
 
 // WorldHandler manages global message routing and session-to-zone mapping.

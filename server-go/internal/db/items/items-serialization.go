@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/jetgen/eqgo/model"
 )
 
 // ItemsBinary is a fixed-size version of Items for binary serialization

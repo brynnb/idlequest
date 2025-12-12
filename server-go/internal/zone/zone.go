@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	db_zone "github.com/knervous/eqgo/internal/db/zone"
-	"github.com/knervous/eqgo/internal/quest"
-	questregistry "github.com/knervous/eqgo/internal/quest/registry"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	db_zone "idlequest/internal/db/zone"
+	"idlequest/internal/quest"
+	questregistry "idlequest/internal/quest/registry"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
 )
 
 // ClientEntry represents a client session in the zone.

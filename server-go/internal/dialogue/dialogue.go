@@ -1,20 +1,16 @@
 package dialogue
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"os"
-	"time"
+	"strings"
 
 	"github.com/go-jet/jet/v2/mysql"
-	"github.com/knervous/eqgo/internal/db"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/table"
+	"idlequest/internal/db"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/jetgen/eqgo/table"
 )
 
 // DialogueEntry represents a single exchange in dialogue history
@@ -31,29 +27,48 @@ type DialogueResponse struct {
 
 // Service handles NPC dialogue generation using LLM
 type Service struct {
-	apiKey     string
-	apiBaseURL string
-	model      string
+	provider Provider
 }
 
-// NewService creates a new dialogue service
+// NewService creates a new dialogue service with the configured provider
 func NewService() *Service {
-	apiKey := os.Getenv("OPENAI_API_KEY")
-	if apiKey == "" {
-		log.Println("Warning: OPENAI_API_KEY not set, dialogue generation will return placeholders")
+	provider := selectProvider()
+	if provider == nil || !provider.IsConfigured() {
+		log.Println("Warning: No LLM provider configured, dialogue generation will return placeholders")
+	} else {
+		log.Printf("Using LLM provider: %s", provider.Name())
 	}
 
 	return &Service{
-		apiKey:     apiKey,
-		apiBaseURL: "https://api.openai.com/v1/chat/completions",
-		model:      "gpt-4o-mini",
+		provider: provider,
+	}
+}
+
+// selectProvider chooses the appropriate provider based on environment config
+func selectProvider() Provider {
+	// Check LLM_PROVIDER env var first (explicit selection)
+	providerName := strings.ToLower(os.Getenv("LLM_PROVIDER"))
+
+	switch providerName {
+	case "openai":
+		return NewOpenAIProvider()
+	case "openrouter":
+		return NewOpenRouterProvider()
+	default:
+		// Auto-detect based on which API key is set
+		if os.Getenv("OPENROUTER_API_KEY") != "" {
+			return NewOpenRouterProvider()
+		}
+		if os.Getenv("OPENAI_API_KEY") != "" {
+			return NewOpenAIProvider()
+		}
+		// Default to OpenRouter (but unconfigured)
+		return NewOpenRouterProvider()
 	}
 }
 
 // GetNPCDialogue generates dialogue for an NPC using LLM
 func (s *Service) GetNPCDialogue(ctx context.Context, npcName string, dialogueHistory []DialogueEntry) (*DialogueResponse, error) {
-	log.Printf("Getting dialogue for NPC: %s", npcName)
-
 	// Get LUA script from database
 	luaScript, err := s.getLuaScript(ctx, npcName)
 	if err != nil {
@@ -61,8 +76,8 @@ func (s *Service) GetNPCDialogue(ctx context.Context, npcName string, dialogueHi
 		// Continue without script - we'll generate generic dialogue
 	}
 
-	// If no API key, return placeholder
-	if s.apiKey == "" {
+	// If no provider configured, return placeholder
+	if s.provider == nil || !s.provider.IsConfigured() {
 		return &DialogueResponse{
 			Dialogue:  "The NPC looks at you curiously.",
 			Responses: []string{},
@@ -72,8 +87,8 @@ func (s *Service) GetNPCDialogue(ctx context.Context, npcName string, dialogueHi
 	// Build messages for LLM
 	messages := s.buildMessages(npcName, luaScript, dialogueHistory)
 
-	// Call LLM API
-	response, err := s.callLLM(ctx, messages)
+	// Call LLM via provider
+	response, err := s.provider.Complete(ctx, messages)
 	if err != nil {
 		log.Printf("Error calling LLM for %s: %v", npcName, err)
 		return &DialogueResponse{
@@ -82,7 +97,6 @@ func (s *Service) GetNPCDialogue(ctx context.Context, npcName string, dialogueHi
 		}, nil
 	}
 
-	log.Printf("Dialogue response received for %s", npcName)
 	return response, nil
 }
 
@@ -112,7 +126,7 @@ func (s *Service) getLuaScript(ctx context.Context, npcName string) (string, err
 }
 
 // buildMessages constructs the chat messages for the LLM
-func (s *Service) buildMessages(npcName, luaScript string, dialogueHistory []DialogueEntry) []map[string]string {
+func (s *Service) buildMessages(npcName, luaScript string, dialogueHistory []DialogueEntry) []ChatMessage {
 	nonDialogueInstruction := "You are an AI assistant creating dialogue for NPCs in a fantasy MMORPG setting, EverQuest. " +
 		"Generate a brief, context-appropriate response for an NPC when approached by a player. " +
 		"The player is interacting with this NPC despite the NPC not having any dialogue for the player, often because it's a non-speaking creature like an animal. Simply describe what the NPC is doing in response to being talked at, but do not give it any speaking lines. For example, the NPC might look at the player and walk away. Or ignore them entirely." +
@@ -120,13 +134,13 @@ func (s *Service) buildMessages(npcName, luaScript string, dialogueHistory []Dia
 
 	sharedInstruction := "Do not make up details about an NPC's species if you do not know. Do not make up details about an NPC's species if you do not know (e.g. don't make the NPC a unicorn unless it's obvious from the name). Do not make inanimate objects act like they're alive (they don't look at things). Things like boats may have dialogue associated in the LUA script but still do not treat them like they can speak. SirensBane and Stormbreaker are ships, do not make them talk or look at things. Do not refer to 'the player' and instead say 'you' "
 
-	var messages []map[string]string
+	var messages []ChatMessage
 
 	if luaScript != "" {
-		messages = []map[string]string{
+		messages = []ChatMessage{
 			{
-				"role": "system",
-				"content": "You are an AI assistant that analyzes Lua scripts for NPCs from the 1999 MMORPG EverQuest. " +
+				Role: "system",
+				Content: "You are an AI assistant that analyzes Lua scripts for NPCs from the 1999 MMORPG EverQuest. " +
 					"Extract the dialogue from the NPC script and provide one to three responses for the user to choose from " +
 					"to further progress the dialogue. Only provide multiple responses if there are multiple areas for the " +
 					"conversation to progress to. Only present the opening dialogue from the script. Format your response as " +
@@ -134,19 +148,19 @@ func (s *Service) buildMessages(npcName, luaScript string, dialogueHistory []Dia
 					nonDialogueInstruction + sharedInstruction,
 			},
 			{
-				"role":    "user",
-				"content": fmt.Sprintf("NPC named %s and LUA script:\n\n%s", npcName, luaScript),
+				Role:    "user",
+				Content: fmt.Sprintf("NPC named %s and LUA script:\n\n%s", npcName, luaScript),
 			},
 		}
 	} else {
-		messages = []map[string]string{
+		messages = []ChatMessage{
 			{
-				"role":    "system",
-				"content": nonDialogueInstruction + sharedInstruction,
+				Role:    "system",
+				Content: nonDialogueInstruction + sharedInstruction,
 			},
 			{
-				"role": "user",
-				"content": fmt.Sprintf("Create a description of the actions of an NPC named %s when approached by a player. "+
+				Role: "user",
+				Content: fmt.Sprintf("Create a description of the actions of an NPC named %s when approached by a player. "+
 					"No specific script is available, so use your knowledge of EverQuest to create an appropriate response. ", npcName),
 			},
 		}
@@ -162,68 +176,11 @@ func (s *Service) buildMessages(npcName, luaScript string, dialogueHistory []Dia
 			}
 			historyContent += "\n"
 		}
-		messages = append(messages, map[string]string{
-			"role":    "user",
-			"content": fmt.Sprintf("Previous dialogue:\n%s\n\nContinue the conversation based on this context.", historyContent),
+		messages = append(messages, ChatMessage{
+			Role:    "user",
+			Content: fmt.Sprintf("Previous dialogue:\n%s\n\nContinue the conversation based on this context.", historyContent),
 		})
 	}
 
 	return messages
-}
-
-// callLLM makes the API call to OpenAI
-func (s *Service) callLLM(ctx context.Context, messages []map[string]string) (*DialogueResponse, error) {
-	requestBody := map[string]interface{}{
-		"model":           s.model,
-		"messages":        messages,
-		"response_format": map[string]string{"type": "json_object"},
-	}
-
-	jsonBody, err := json.Marshal(requestBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, "POST", s.apiBaseURL, bytes.NewBuffer(jsonBody))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+s.apiKey)
-
-	client := &http.Client{Timeout: 30 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call API: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("API returned status %d: %s", resp.StatusCode, string(body))
-	}
-
-	var apiResponse struct {
-		Choices []struct {
-			Message struct {
-				Content string `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	if len(apiResponse.Choices) == 0 {
-		return nil, fmt.Errorf("no choices in API response")
-	}
-
-	var dialogueResp DialogueResponse
-	if err := json.Unmarshal([]byte(apiResponse.Choices[0].Message.Content), &dialogueResp); err != nil {
-		return nil, fmt.Errorf("failed to parse dialogue response: %w", err)
-	}
-
-	return &dialogueResp, nil
 }

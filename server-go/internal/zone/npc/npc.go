@@ -3,9 +3,9 @@ package npc
 import (
 	"time"
 
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	db_zone "github.com/knervous/eqgo/internal/db/zone"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	db_zone "idlequest/internal/db/zone"
+	entity "idlequest/internal/zone/interface"
 )
 
 type NPC struct {

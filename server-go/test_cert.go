@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 )
 
 func main() {

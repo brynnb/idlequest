@@ -5,9 +5,9 @@ import (
 	"log"
 	"unicode"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/constants"
-	"github.com/knervous/eqgo/internal/session"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/constants"
+	"idlequest/internal/session"
 
 	_ "github.com/go-sql-driver/mysql"
 )

@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"github.com/knervous/eqgo/internal/constants"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/constants"
+	"idlequest/internal/db/jetgen/eqgo/model"
 )
 
 // Client defines the minimal methods Session needs.

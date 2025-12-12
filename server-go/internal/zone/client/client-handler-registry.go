@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
 )
 
 type DatagramHandler func(z entity.ZoneAccess, clientSession *session.Session, payload []byte)

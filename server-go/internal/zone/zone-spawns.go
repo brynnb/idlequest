@@ -6,13 +6,13 @@ import (
 	"math/rand"
 	"time"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	db_zone "github.com/knervous/eqgo/internal/db/zone"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
-	"github.com/knervous/eqgo/internal/zone/npc"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	db_zone "idlequest/internal/db/zone"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
+	"idlequest/internal/zone/npc"
 )
 
 // spawnTick handles NPC movement along its pathgrid, updates its velocity,

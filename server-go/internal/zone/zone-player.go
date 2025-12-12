@@ -1,8 +1,8 @@
 package zone
 
 import (
-	db_chardata "github.com/knervous/eqgo/internal/db/character"
-	"github.com/knervous/eqgo/internal/session"
+	db_chardata "idlequest/internal/db/character"
+	"idlequest/internal/session"
 )
 
 func savePlayerData(ses *session.Session) error {

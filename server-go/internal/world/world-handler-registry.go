@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"log"
 
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/session"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/session"
 )
 
 // DatagramHandler defines the signature for handling datagrams.

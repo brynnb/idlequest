@@ -6,11 +6,11 @@ import (
 	"errors"
 	"time"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/constants"
-	"github.com/knervous/eqgo/internal/session"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/constants"
+	"idlequest/internal/session"
 
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/jetgen/eqgo/model"
 )
 
 func ConvertItemTemplateToCapnp(ses *session.Session, item *model.Items, i *eq.ItemInstance) {

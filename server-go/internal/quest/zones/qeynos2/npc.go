@@ -3,8 +3,8 @@ package qeynos2
 import (
 	"fmt"
 
-	"github.com/knervous/eqgo/internal/quest"
-	"github.com/knervous/eqgo/internal/zone/npc"
+	"idlequest/internal/quest"
+	"idlequest/internal/zone/npc"
 )
 
 func registerNpcQuests(zq *quest.ZoneQuestInterface) {

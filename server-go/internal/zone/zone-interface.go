@@ -3,13 +3,13 @@ package zone
 import (
 	capnp "capnproto.org/go/capnp/v3"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/constants"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	"github.com/knervous/eqgo/internal/quest"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/constants"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/quest"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
 )
 
 // ensure ZoneInstance implements ZoneAccess

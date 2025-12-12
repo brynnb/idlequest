@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/knervous/eqgo/internal/constants"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/constants"
+	entity "idlequest/internal/zone/interface"
 )
 
 func (c *Client) CalcBonuses() {

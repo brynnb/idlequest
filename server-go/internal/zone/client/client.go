@@ -6,11 +6,11 @@ import (
 	"log"
 	"sync"
 
-	"github.com/knervous/eqgo/internal/constants"
-	db_character "github.com/knervous/eqgo/internal/db/character"
-	"github.com/knervous/eqgo/internal/db/items"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/constants"
+	db_character "idlequest/internal/db/character"
+	"idlequest/internal/db/items"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	entity "idlequest/internal/zone/interface"
 )
 
 var _ entity.Client = (*Client)(nil)

@@ -10,7 +10,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 )
 
 func getConnection() (host, port, user, pass, dbName string, err error) {

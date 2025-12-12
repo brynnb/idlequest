@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"log"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/constants"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/constants"
+	entity "idlequest/internal/zone/interface"
 
-	"github.com/knervous/eqgo/internal/quest"
+	"idlequest/internal/quest"
 
-	db_character "github.com/knervous/eqgo/internal/db/character"
-	"github.com/knervous/eqgo/internal/db/items"
-	db_zone "github.com/knervous/eqgo/internal/db/zone"
-	"github.com/knervous/eqgo/internal/session"
+	db_character "idlequest/internal/db/character"
+	"idlequest/internal/db/items"
+	db_zone "idlequest/internal/db/zone"
+	"idlequest/internal/session"
 )
 
 func HandleChannelMessage(z *ZoneInstance, ses *session.Session, payload []byte) {

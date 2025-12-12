@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/knervous/eqgo/internal/db"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/table"
+	"idlequest/internal/db"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/jetgen/eqgo/table"
 
 	_ "github.com/go-sql-driver/mysql"
 

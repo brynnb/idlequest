@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"log"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/config"
-	"github.com/knervous/eqgo/internal/constants"
-	db_character "github.com/knervous/eqgo/internal/db/character"
-	"github.com/knervous/eqgo/internal/db/items"
-	"github.com/knervous/eqgo/internal/discord"
-	"github.com/knervous/eqgo/internal/session"
-	"github.com/knervous/eqgo/internal/zone/client"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/config"
+	"idlequest/internal/constants"
+	db_character "idlequest/internal/db/character"
+	"idlequest/internal/db/items"
+	"idlequest/internal/discord"
+	"idlequest/internal/session"
+	"idlequest/internal/zone/client"
 )
 
 // bagSlotToFlatSlot converts server bag+slot format to flat slot ID

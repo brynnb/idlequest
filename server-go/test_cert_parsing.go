@@ -4,7 +4,7 @@ import (
 	"encoding/pem"
 	"fmt"
 
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 )
 
 func main() {

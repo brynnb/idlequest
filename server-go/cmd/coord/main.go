@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-jet/jet/v2/generator/mysql"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 )
 
 func getConnection() (mysql.DBConnection, error) {

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 
 	"github.com/golang-jwt/jwt/v5"
 )

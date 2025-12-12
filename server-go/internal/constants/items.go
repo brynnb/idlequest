@@ -1,7 +1,7 @@
 package constants
 
 import (
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/jetgen/eqgo/model"
 )
 
 // OwnerType represents the type of owner for an item instance

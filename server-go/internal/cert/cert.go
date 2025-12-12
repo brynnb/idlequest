@@ -18,7 +18,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 
 	"github.com/quic-go/quic-go/http3"
 )

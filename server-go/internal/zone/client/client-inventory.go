@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 
-	"github.com/knervous/eqgo/internal/constants"
+	"idlequest/internal/constants"
 )
 
 // MoveItem moves an item from one slot to another in the client's inventory.

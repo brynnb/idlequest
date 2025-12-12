@@ -3,8 +3,8 @@ package entity
 import (
 	"time"
 
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	db_zone "github.com/knervous/eqgo/internal/db/zone"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	db_zone "idlequest/internal/db/zone"
 )
 
 type NPC interface {

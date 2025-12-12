@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/knervous/eqgo/internal/config"
+	"idlequest/internal/config"
 
 	"github.com/go-jet/jet/v2/generator/mysql"
 )

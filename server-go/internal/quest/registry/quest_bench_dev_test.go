@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/knervous/eqgo/internal/quest"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	"idlequest/internal/quest"
+	entity "idlequest/internal/zone/interface"
 )
 
 var questInterface *quest.ZoneQuestInterface

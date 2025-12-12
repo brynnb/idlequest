@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	capnp "capnproto.org/go/capnp/v3"
-	capnpext "github.com/knervous/eqgo/internal/api"
-	"github.com/knervous/eqgo/internal/api/opcodes"
+	capnpext "idlequest/internal/api"
+	"idlequest/internal/api/opcodes"
 )
 
 func (s *Session) SendData(

@@ -6,8 +6,8 @@ package questregistry
 import (
 	"testing"
 
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	"github.com/knervous/eqgo/internal/quest"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/quest"
 )
 
 var questInterface *quest.ZoneQuestInterface

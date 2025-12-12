@@ -11,8 +11,8 @@ import (
 	"sync"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/knervous/eqgo/internal/quest"
-	"github.com/knervous/eqgo/internal/quest/yaegi_wrappers"
+	"idlequest/internal/quest"
+	"idlequest/internal/quest/yaegi_wrappers"
 	"github.com/traefik/yaegi/interp"
 	"github.com/traefik/yaegi/stdlib"
 )

@@ -4,13 +4,13 @@ import (
 	"context"
 	"log"
 
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/constants"
-	db_character "github.com/knervous/eqgo/internal/db/character"
-	"github.com/knervous/eqgo/internal/db/items"
-	"github.com/knervous/eqgo/internal/session"
-	entity "github.com/knervous/eqgo/internal/zone/interface"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/constants"
+	db_character "idlequest/internal/db/character"
+	"idlequest/internal/db/items"
+	"idlequest/internal/session"
+	entity "idlequest/internal/zone/interface"
 )
 
 func (c *Client) HandleMoveItem(z entity.ZoneAccess, ses *session.Session, payload []byte) {

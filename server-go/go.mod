@@ -1,4 +1,4 @@
-module github.com/knervous/eqgo
+module idlequest
 
 go 1.24.2
 

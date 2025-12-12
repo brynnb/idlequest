@@ -6,13 +6,13 @@ import (
 	"log"
 
 	"capnproto.org/go/capnp/v3"
-	eq "github.com/knervous/eqgo/internal/api/capnp"
-	"github.com/knervous/eqgo/internal/api/opcodes"
-	"github.com/knervous/eqgo/internal/db/items"
-	"github.com/knervous/eqgo/internal/db/jetgen/eqgo/model"
-	db_zone "github.com/knervous/eqgo/internal/db/zone"
-	"github.com/knervous/eqgo/internal/dialogue"
-	"github.com/knervous/eqgo/internal/session"
+	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/api/opcodes"
+	"idlequest/internal/db/items"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	db_zone "idlequest/internal/db/zone"
+	"idlequest/internal/dialogue"
+	"idlequest/internal/session"
 )
 
 // HandleGetItemRequest handles GetItemRequest Cap'n Proto messages
