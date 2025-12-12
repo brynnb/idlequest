@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 
-	capnp "capnproto.org/go/capnp/v3"
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/api/opcodes"
 	"idlequest/internal/config"
@@ -15,22 +14,20 @@ import (
 	"idlequest/internal/discord"
 	"idlequest/internal/session"
 	"idlequest/internal/zone/client"
+
+	capnp "capnproto.org/go/capnp/v3"
 )
 
 // bagSlotToFlatSlot converts server bag+slot format to flat slot ID
-// Both client and server now use the same slot ID scheme:
+// Server stores: bag <= 0 for equipment/general/cursor (slot = actual slot ID 0-30)
+//
+//	bag = 1-8 for bag contents (slot = position within bag 0-9)
+//
 // Equipment: 0-21, General: 22-29, Cursor: 30, Bag contents: 251+
 func bagSlotToFlatSlot(bag int8, slot int8) int32 {
-	if bag == -1 {
-		// Equipment slots: bag=-1, slot=0-21 -> flat slot 0-21
+	if bag <= 0 {
+		// Equipment, general, and cursor slots - slot is already the flat slot ID
 		return int32(slot)
-	} else if bag == 0 {
-		if slot == 30 {
-			// Cursor slot
-			return 30
-		}
-		// General inventory: bag=0, slot=0-7 -> flat slot 22-29
-		return int32(slot) + 22
 	} else if bag >= 1 && bag <= 8 {
 		// Bag contents: bag=1-8, slot=0-9 -> flat slot 251-330
 		// bag 1 -> 251-260, bag 2 -> 261-270, etc.

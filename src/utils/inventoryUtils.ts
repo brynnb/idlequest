@@ -9,22 +9,41 @@ import { ItemClass } from "@entities/ItemClass";
 // General inventory slots match server: 22-29
 const GENERAL_SLOTS = [22, 23, 24, 25, 26, 27, 28, 29];
 
+// Convert server bag+slot format to flat slot ID
+// bag=-1/0, slot=0-21 -> Equipment slots 0-21
+// bag=-1/0, slot=22-29 -> General slots 22-29
+// bag=-1/0, slot=30 -> Cursor slot 30
+// bag=1-8, slot=0-9 -> Bag contents 251-330
+// bag=9, slot=0-9 -> Cursor bag contents 331-340
+export const bagSlotToFlatSlot = (bag: number, slot: number): number => {
+  if (bag <= 0) {
+    // Equipment, general, or cursor slots - slot is already the flat slot ID
+    return slot;
+  } else if (bag >= 1 && bag <= 8) {
+    // Bag contents: bag 1 -> 251-260, bag 2 -> 261-270, etc.
+    return 251 + (bag - 1) * 10 + slot;
+  } else if (bag === 9) {
+    // Cursor bag contents
+    return 331 + slot;
+  }
+  // Default fallback
+  return slot;
+};
+
 // Convert flat slot ID to server bag+slot format
-// Equipment: 0-21 -> bag=-1, slot=0-21
-// General: 22-29 -> bag=0, slot=0-7
+// Server uses: bag <= 0 for equipment/general/cursor (slot = actual slot ID 0-30)
+//              bag = 1-8 for bag contents (slot = position within bag 0-9)
+// Equipment: 0-21 -> bag=0, slot=0-21
+// General: 22-29 -> bag=0, slot=22-29
 // Cursor: 30 -> bag=0, slot=30
 // Bag contents: 251-330 -> bag=1-8, slot=0-9
 // Cursor bag: 331-340 -> bag=9, slot=0-9
-export const flatSlotToBagSlot = (flatSlot: number): { bag: number; slot: number } => {
-  if (flatSlot >= 0 && flatSlot <= 21) {
-    // Equipment slots
-    return { bag: -1, slot: flatSlot };
-  } else if (flatSlot >= 22 && flatSlot <= 29) {
-    // General inventory: flat 22-29 -> bag=0, slot=0-7
-    return { bag: 0, slot: flatSlot - 22 };
-  } else if (flatSlot === 30) {
-    // Cursor
-    return { bag: 0, slot: 30 };
+export const flatSlotToBagSlot = (
+  flatSlot: number
+): { bag: number; slot: number } => {
+  if (flatSlot >= 0 && flatSlot <= 30) {
+    // Equipment, general, and cursor slots - slot is the actual slot ID
+    return { bag: 0, slot: flatSlot };
   } else if (flatSlot >= 251 && flatSlot <= 330) {
     // Bag contents: 251-260 -> bag=1, 261-270 -> bag=2, etc.
     const bagNum = Math.floor((flatSlot - 251) / 10) + 1;

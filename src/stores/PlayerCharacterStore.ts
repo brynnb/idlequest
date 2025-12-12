@@ -18,8 +18,9 @@ import {
   calculateTotalResistances,
   calculateTotalAttributes,
   flatSlotToBagSlot,
+  bagSlotToFlatSlot,
+  getBagStartingSlot,
 } from "@utils/inventoryUtils";
-import { getBagStartingSlot } from "@utils/inventoryUtils";
 import { ItemClass } from "@entities/ItemClass";
 import {
   WorldSocket,
@@ -652,6 +653,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           const deityData = deities[0];
 
           // Build inventory items from the character's items
+          // Server sends bag+slot format: bag=0 for equipment/general, bag=1-8 for bag contents
           const inventoryItems: InventoryItem[] = await Promise.all(
             (serverChar.items || [])
               .filter((item: any) => {
@@ -663,8 +665,14 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 async (item: any) => {
                   const itemId = item.itemId || item.id;
                   const itemDetails = await eqDataService.getItemById(itemId);
+                  const bag = item.bagSlot ?? 0;
+                  const slot = item.slot ?? 0;
+                  // Compute legacy slotid for backward compatibility during migration
+                  const slotid = bag <= 0 ? slot : bagSlotToFlatSlot(bag, slot);
                   return {
-                    slotid: item.slotId || item.slot || 0,
+                    bag,
+                    slot,
+                    slotid, // Keep for backward compatibility during migration
                     itemid: itemId,
                     charges: item.charges || 0,
                     itemDetails: itemDetails || undefined,

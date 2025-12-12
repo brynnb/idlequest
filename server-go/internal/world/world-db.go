@@ -282,6 +282,7 @@ func GetCharSelectInfo(ses *session.Session, ctx context.Context, accountID int6
 			item.SetQuantity(uint32(charItem.Quantity))
 			item.SetMods(string(mods))
 			item.SetSlot(int32(charItem.Slot))
+			item.SetBagSlot(int32(charItem.Bag))
 			items.ConvertItemTemplateToCapnp(ses, &itemTemplate, &item)
 		}
 	}
