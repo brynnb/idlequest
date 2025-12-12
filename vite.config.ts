@@ -4,6 +4,8 @@ import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
 import type { Plugin } from "vite";
 
+const verboseDebugLog = process.env.VERBOSE_DEBUG_LOG === "true";
+
 // Middleware to proxy /api/hash to the Go server (like eqrequiem)
 // This avoids CORS/TLS issues by fetching from same origin
 function hashProxyPlugin(): Plugin {
@@ -24,7 +26,9 @@ function hashProxyPlugin(): Plugin {
               res.end("Failed to fetch hash from Go server");
             }
           } catch (err) {
-            console.error("Hash proxy error:", err);
+            if (verboseDebugLog) {
+              console.warn("Hash proxy error:", err);
+            }
             res.statusCode = 502;
             res.end("Failed to connect to Go server hash endpoint");
           }

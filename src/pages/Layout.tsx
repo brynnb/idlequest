@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Outlet, useLocation } from "react-router-dom";
 
 interface MainContainerProps {
-  $isCharacterCreation: boolean;
+  $backgroundType: "login" | "characterCreation" | "none";
 }
 
 const MainContainer = styled.div<MainContainerProps>`
@@ -17,7 +17,15 @@ const MainContainer = styled.div<MainContainerProps>`
   position: relative;
   overflow: hidden;
   ${(props) =>
-    props.$isCharacterCreation &&
+    props.$backgroundType === "login" &&
+    `
+    background-image: url("/images/ui/login/loginbackground.png");
+    background-size: 1440px 1080px;
+    background-position: center;
+    background-repeat: no-repeat;
+  `}
+  ${(props) =>
+    props.$backgroundType === "characterCreation" &&
     `
     background-image: url("/images/ui/charactercreation/charactercreatorbackground.png");
     background-size: 1440px 1080px;
@@ -28,10 +36,17 @@ const MainContainer = styled.div<MainContainerProps>`
 
 const Layout = () => {
   const location = useLocation();
+  const isLogin = location.pathname === "/";
   const isCharacterCreation =
     location.pathname === "/create" ||
     location.pathname === "/login" ||
     location.pathname === "/characterselect";
+
+  const backgroundType = isLogin
+    ? "login"
+    : isCharacterCreation
+    ? "characterCreation"
+    : "none";
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,7 +57,7 @@ const Layout = () => {
       <MainContainer
         id="main"
         onContextMenu={handleContextMenu}
-        $isCharacterCreation={isCharacterCreation}
+        $backgroundType={backgroundType}
       >
         <Outlet />
       </MainContainer>
