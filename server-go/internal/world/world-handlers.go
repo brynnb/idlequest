@@ -495,7 +495,7 @@ func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandle
 	return false
 }
 
-// HandleCamp saves player data and logs them out
+// HandleCamp saves player data and sends updated character info
 func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	if ses.Client == nil || ses.Client.CharData() == nil {
 		return false
@@ -503,7 +503,8 @@ func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	if err := db_character.UpdateCharacter(ses.Client.CharData(), ses.AccountID); err != nil {
 		log.Printf("failed to save player data on camp: %v", err)
 	}
-	wh.sessionManager.RemoveSession(ses.SessionID)
+	// Send updated character info so character select shows current zone
+	sendCharInfo(ses, ses.AccountID)
 	return false
 }
 

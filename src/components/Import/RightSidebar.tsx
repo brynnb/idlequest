@@ -5,6 +5,9 @@ import TargetBar from "./TargetBar";
 import ActionButton from "@components/Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
 import { useEffect, useState } from "react";
+import { WorldSocket, OpCodes } from "@/net";
+import useCharacterSelectStore from "@stores/CharacterSelectStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 
 const StyledRightSidebar = styled.div.attrs({ className: "right-sidebar" })`
   right: 0px;
@@ -48,6 +51,8 @@ const RightSidebar = () => {
     isMuted,
     toggleMute,
   } = useGameStatusStore();
+  const { setPendingSelectName } = useCharacterSelectStore();
+  const { characterProfile } = usePlayerCharacterStore();
 
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -115,7 +120,13 @@ const RightSidebar = () => {
         />
         <ActionButton
           text="Camp"
-          onClick={() => {
+          onClick={async () => {
+            // Set pending select name so character select auto-selects this character
+            if (characterProfile?.name) {
+              setPendingSelectName(characterProfile.name);
+            }
+            // Send Camp opcode to save character data before navigating
+            await WorldSocket.sendMessage(OpCodes.Camp, null, null);
             navigate("/characterselect");
           }}
           marginBottom={marginBottomForBottomButtons}
