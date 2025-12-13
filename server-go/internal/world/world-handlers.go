@@ -374,14 +374,7 @@ func HandleRequestClientZoneChange(ses *session.Session, payload []byte, wh *Wor
 }
 
 // HandleMoveItemWorld handles MoveItem at the world level
-// Returns true to forward to zone if zone is assigned
 func HandleMoveItemWorld(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	// If zone is assigned, forward to zone handler
-	if ses.ZoneID != -1 {
-		return true
-	}
-
-	// Handle at world level (no zone assigned yet)
 	if ses.Client == nil {
 		log.Printf("No client attached to session for MoveItem")
 		return false
