@@ -7,10 +7,14 @@ import (
 
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/api/opcodes"
+	"idlequest/internal/combat"
 	"idlequest/internal/config"
 	"idlequest/internal/constants"
 	db_character "idlequest/internal/db/character"
+	db_combat "idlequest/internal/db/combat"
 	"idlequest/internal/db/items"
+	"idlequest/internal/db/jetgen/eqgo/model"
+	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/discord"
 	"idlequest/internal/session"
 	"idlequest/internal/zone/client"
@@ -227,6 +231,16 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 		log.Printf("failed to get character %q for accountID %d: %v", ses.CharacterName, ses.AccountID, err)
 		return false
 	}
+
+	// Clamp current HP to max HP if over (e.g., new characters with 10k HP)
+	maxHP := calculateMaxHPForChar(charData)
+	if charData.CurHp > uint32(maxHP) {
+		charData.CurHp = uint32(maxHP)
+	}
+
+	// Ensure combat is stopped on login
+	combat.GetManager().StopCombat(int64(charData.ID))
+
 	ses.Client, err = client.NewClient(charData)
 	if err != nil {
 		log.Printf("failed to create client for character %q: %v", ses.CharacterName, err)
@@ -243,6 +257,14 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 	enterWorld.SetValue(1)
 	ses.SendData(enterWorld.Message(), opcodes.ZoneSessionValid)
 	return false
+}
+
+// calculateMaxHPForChar calculates max HP based on level and STA
+func calculateMaxHPForChar(charData *model.CharacterData) int {
+	baseHP := 20
+	levelBonus := int(charData.Level) * 10
+	staBonus := int(charData.Sta) * 2
+	return baseHP + levelBonus + staBonus
 }
 
 func HandleCharacterCreate(ses *session.Session, payload []byte, wh *WorldHandler) bool {
@@ -335,6 +357,9 @@ func HandleRequestClientZoneChange(ses *session.Session, payload []byte, wh *Wor
 		log.Printf("client session %d has no character data", ses.SessionID)
 		return false
 	}
+
+	// Stop combat when zoning
+	combat.GetManager().StopCombat(int64(charData.ID))
 
 	// Get zone info from request - read all values upfront before any other operations
 	zoneId := req.ZoneId()
@@ -493,6 +518,11 @@ func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	if ses.Client == nil || ses.Client.CharData() == nil {
 		return false
 	}
+
+	// Stop combat when camping
+	charID := int64(ses.Client.CharData().ID)
+	combat.GetManager().StopCombat(charID)
+
 	if err := db_character.UpdateCharacter(ses.Client.CharData(), ses.AccountID); err != nil {
 		log.Printf("failed to save player data on camp: %v", err)
 	}
@@ -523,4 +553,203 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 	// For now, just log and ignore
 	log.Printf("GM command received from session %d", ses.SessionID)
 	return false
+}
+
+// HandleStartCombat starts server-side combat for the player
+func HandleStartCombat(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		log.Printf("No client or character data for StartCombat")
+		return false
+	}
+
+	charData := ses.Client.CharData()
+	zone, err := db_zone.GetZoneById(context.Background(), int(charData.ZoneID))
+	if err != nil || zone == nil || zone.ShortName == nil {
+		log.Printf("Could not get zone name for zone ID %d: %v", charData.ZoneID, err)
+		sendCombatStartedError(ses, "Unknown zone")
+		return false
+	}
+	zoneShortName := *zone.ShortName
+
+	// Define callbacks for combat events
+	onRound := func(result *combat.RoundResult) {
+		sendCombatRound(ses, result)
+	}
+
+	onEnd := func(result *combat.EndResult) {
+		sendCombatEnded(ses, result)
+	}
+
+	onLoot := func(loot []db_combat.LootDropItem, money combat.MoneyDrop) {
+		sendLootGenerated(ses, loot, money)
+	}
+
+	// Start combat
+	npc, err := combat.GetManager().StartCombat(
+		ses,
+		zoneShortName,
+		int(charData.Level),
+		onRound,
+		onEnd,
+		onLoot,
+	)
+
+	if err != nil {
+		log.Printf("Failed to start combat: %v", err)
+		sendCombatStartedError(ses, err.Error())
+		return false
+	}
+
+	// Send combat started response
+	sendCombatStarted(ses, npc)
+	return false
+}
+
+// HandleStopCombat stops server-side combat for the player
+func HandleStopCombat(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		return false
+	}
+
+	charID := int64(ses.Client.CharData().ID)
+	combat.GetManager().StopCombat(charID)
+	return false
+}
+
+func sendCombatStarted(ses *session.Session, npc *db_combat.NPCForCombat) {
+	msg, err := session.NewMessage(ses, eq.NewRootCombatStartedResponse)
+	if err != nil {
+		log.Printf("Failed to create CombatStartedResponse: %v", err)
+		return
+	}
+
+	msg.SetSuccess(1)
+	msg.SetError("")
+
+	npcMsg, err := msg.NewNpc()
+	if err != nil {
+		log.Printf("Failed to create CombatNPC: %v", err)
+		return
+	}
+
+	npcMsg.SetId(npc.ID)
+	npcMsg.SetName(npc.Name)
+	npcMsg.SetLevel(int32(npc.Level))
+	npcMsg.SetHp(int32(npc.HP))
+	npcMsg.SetMaxHp(int32(npc.HP))
+	npcMsg.SetAc(int32(npc.AC))
+	npcMsg.SetMinDmg(int32(npc.MinDmg))
+	npcMsg.SetMaxDmg(int32(npc.MaxDmg))
+	npcMsg.SetAttackDelay(int32(npc.AttackDelay))
+
+	ses.SendStream(msg.Message(), opcodes.CombatStarted)
+}
+
+func sendCombatStartedError(ses *session.Session, errMsg string) {
+	msg, err := session.NewMessage(ses, eq.NewRootCombatStartedResponse)
+	if err != nil {
+		log.Printf("Failed to create CombatStartedResponse: %v", err)
+		return
+	}
+
+	msg.SetSuccess(0)
+	msg.SetError(errMsg)
+
+	ses.SendStream(msg.Message(), opcodes.CombatStarted)
+}
+
+func sendCombatRound(ses *session.Session, result *combat.RoundResult) {
+	if ses == nil || ses.Client == nil {
+		return
+	}
+	msg, err := session.NewMessage(ses, eq.NewRootCombatRoundUpdate)
+	if err != nil {
+		log.Printf("Failed to create CombatRoundUpdate: %v", err)
+		return
+	}
+
+	msg.SetPlayerHit(boolToInt32(result.PlayerHit))
+	msg.SetPlayerDamage(int32(result.PlayerDamage))
+	msg.SetPlayerCritical(boolToInt32(result.PlayerCritical))
+	msg.SetNpcHit(boolToInt32(result.NPCHit))
+	msg.SetNpcDamage(int32(result.NPCDamage))
+	msg.SetPlayerHp(int32(result.PlayerHP))
+	msg.SetPlayerMaxHp(int32(result.PlayerMaxHP))
+	msg.SetNpcHp(int32(result.NPCHP))
+	msg.SetNpcMaxHp(int32(result.NPCMaxHP))
+	msg.SetRoundNumber(int32(result.RoundNumber))
+
+	ses.SendStream(msg.Message(), opcodes.CombatRound)
+}
+
+func sendCombatEnded(ses *session.Session, result *combat.EndResult) {
+	if ses == nil || ses.Client == nil {
+		return
+	}
+	msg, err := session.NewMessage(ses, eq.NewRootCombatEndedResponse)
+	if err != nil {
+		log.Printf("Failed to create CombatEndedResponse: %v", err)
+		return
+	}
+
+	msg.SetVictory(boolToInt32(result.Victory))
+	msg.SetNpcName(result.NPCName)
+	msg.SetExpGained(int32(result.ExpGained))
+	msg.SetPlayerHp(int32(result.PlayerHP))
+	msg.SetPlayerMaxHp(int32(result.PlayerMaxHP))
+
+	// Include bind zone info for death respawn
+	if !result.Victory {
+		msg.SetBindZoneId(int32(result.BindZoneID))
+		msg.SetBindX(float32(result.BindX))
+		msg.SetBindY(float32(result.BindY))
+		msg.SetBindZ(float32(result.BindZ))
+		msg.SetBindHeading(float32(result.BindHeading))
+	}
+
+	ses.SendStream(msg.Message(), opcodes.CombatEnded)
+}
+
+func boolToInt32(b bool) int32 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func sendLootGenerated(ses *session.Session, loot []db_combat.LootDropItem, money combat.MoneyDrop) {
+	if ses == nil || ses.Client == nil {
+		return
+	}
+	msg, err := session.NewMessage(ses, eq.NewRootLootGeneratedResponse)
+	if err != nil {
+		log.Printf("Failed to create LootGeneratedResponse: %v", err)
+		return
+	}
+
+	// Set money
+	msg.SetPlatinum(int32(money.Platinum))
+	msg.SetGold(int32(money.Gold))
+	msg.SetSilver(int32(money.Silver))
+	msg.SetCopper(int32(money.Copper))
+
+	// TODO: Add items to player inventory and set in message
+	// For now, just send the money
+	items, err := msg.NewItems(int32(len(loot)))
+	if err != nil {
+		log.Printf("Failed to create loot items list: %v", err)
+	} else {
+		for i, item := range loot {
+			lootItem := items.At(i)
+			lootItem.SetItemId(item.ItemID)
+			lootItem.SetName(item.Name)
+			lootItem.SetCharges(item.ItemCharges)
+			lootItem.SetIcon(item.Icon)
+			// TODO: Set actual slot after adding to inventory
+			lootItem.SetSlot(int32(23 + i)) // General inventory starts at 23
+			lootItem.SetBagSlot(0)
+		}
+	}
+
+	ses.SendStream(msg.Message(), opcodes.LootGenerated)
 }

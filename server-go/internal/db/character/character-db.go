@@ -184,6 +184,17 @@ func UpdateCharacter(charData *model.CharacterData, accountID int64) error {
 			table.CharacterData.Z,
 			table.CharacterData.Heading,
 			table.CharacterData.Level,
+			table.CharacterData.Exp,
+			table.CharacterData.CurHp,
+			table.CharacterData.Mana,
+			table.CharacterData.Endurance,
+			table.CharacterData.HungerLevel,
+			table.CharacterData.ThirstLevel,
+			table.CharacterData.AaPoints,
+			table.CharacterData.AaPointsSpent,
+			table.CharacterData.AaExp,
+			table.CharacterData.TimePlayed,
+			table.CharacterData.LastLogin,
 		).
 		SET(
 			charData.ZoneID,
@@ -193,6 +204,17 @@ func UpdateCharacter(charData *model.CharacterData, accountID int64) error {
 			charData.Z,
 			charData.Heading,
 			charData.Level,
+			charData.Exp,
+			charData.CurHp,
+			charData.Mana,
+			charData.Endurance,
+			charData.HungerLevel,
+			charData.ThirstLevel,
+			charData.AaPoints,
+			charData.AaPointsSpent,
+			charData.AaExp,
+			charData.TimePlayed,
+			charData.LastLogin,
 		).
 		WHERE(table.CharacterData.ID.EQ(mysql.Int32(int32(charData.ID))))
 
@@ -591,6 +613,23 @@ func UpdateCharacterItems(ctx context.Context, c entity.Client) (err error) {
 	}
 
 	return nil
+}
+
+// GetCharacterBind retrieves the character's bind point (slot 0 is primary bind)
+func GetCharacterBind(ctx context.Context, charID uint32) (*model.CharacterBind, error) {
+	var bind model.CharacterBind
+	err := table.CharacterBind.
+		SELECT(table.CharacterBind.AllColumns).
+		FROM(table.CharacterBind).
+		WHERE(
+			table.CharacterBind.ID.EQ(mysql.Uint32(charID)).
+				AND(table.CharacterBind.Slot.EQ(mysql.Int32(0))),
+		).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &bind)
+	if err != nil {
+		return nil, fmt.Errorf("query character bind: %w", err)
+	}
+	return &bind, nil
 }
 
 // DeleteItemInstance deletes an item instance from the database

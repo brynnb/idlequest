@@ -619,4 +619,12 @@ export enum OpCodes {
   ChatMessageBroadcast,
   GetNPCDialogueRequest,
   GetNPCDialogueResponse,
+
+  // IdleQuest combat opcodes
+  StartCombat,
+  StopCombat,
+  CombatStarted,
+  CombatRound,
+  CombatEnded,
+  LootGenerated,
 }

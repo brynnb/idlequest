@@ -1,10 +1,14 @@
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useChatStore, { MessageType } from "@stores/ChatStore";
-import { getNPCLoot } from "@utils/getNPCLoot";
-import { sellGeneralInventory } from "@utils/inventoryUtils";
-import { processLootItems } from "@utils/lootUtils";
 import { WorldSocket } from "../net";
+import {
+  combatService,
+  CombatNPCData,
+  CombatRoundData,
+  CombatEndData,
+  LootData,
+} from "@/services/combatService";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
@@ -12,11 +16,12 @@ const chatStore = useChatStore;
 
 class GameEngine {
   private static instance: GameEngine;
-  private tickInterval: number | null = null;
+  private combatActive = false;
 
   private constructor() {
     this.initialize();
     this.setupRunningListener();
+    this.setupCombatHandlers();
   }
 
   public static getInstance(): GameEngine {
@@ -40,15 +45,174 @@ class GameEngine {
     }
 
     if (isRunning) {
-      this.startEngine();
+      this.startCombat();
     }
+  }
+
+  private setupCombatHandlers() {
+    combatService.registerHandlers(
+      this.onCombatStarted.bind(this),
+      this.onCombatRound.bind(this),
+      this.onCombatEnded.bind(this),
+      this.onLootGenerated.bind(this)
+    );
+  }
+
+  private onCombatStarted(npc: CombatNPCData | null, error?: string) {
+    const { addMessage } = chatStore.getState();
+
+    if (!npc) {
+      addMessage(
+        error || "Failed to start combat - no suitable NPCs found.",
+        MessageType.SYSTEM
+      );
+      this.combatActive = false;
+      return;
+    }
+
+    this.combatActive = true;
+
+    // Set target NPC in game status store
+    gameStatusStore.setState({
+      targetNPC: {
+        id: npc.id,
+        name: npc.name,
+        level: npc.level,
+        hp: npc.maxHp,
+        ac: npc.ac,
+        mindmg: npc.minDmg,
+        maxdmg: npc.maxDmg,
+        attack_delay: npc.attackDelay,
+      },
+      currentNPCHealth: npc.hp,
+    });
+
+    addMessage(
+      `You engage ${npc.name} in combat!`,
+      MessageType.COMBAT_OUTGOING
+    );
+  }
+
+  private onCombatRound(round: CombatRoundData) {
+    const { targetNPC } = gameStatusStore.getState();
+    const { addMessage } = chatStore.getState();
+
+    // Update NPC health
+    gameStatusStore.setState({ currentNPCHealth: round.npcHp });
+
+    // Update player health
+    playerCharacterStore
+      .getState()
+      .updateHealthAndMana(round.playerHp, round.playerHp);
+
+    // Combat messages
+    if (round.playerHit) {
+      const critMsg = round.playerCritical ? " **CRITICAL**" : "";
+      addMessage(
+        `You hit ${targetNPC?.name || "the enemy"} for ${
+          round.playerDamage
+        } damage!${critMsg}`,
+        MessageType.COMBAT_OUTGOING
+      );
+    } else {
+      addMessage(
+        `You miss ${targetNPC?.name || "the enemy"}!`,
+        MessageType.COMBAT_OUTGOING
+      );
+    }
+
+    if (round.npcHit) {
+      addMessage(
+        `${targetNPC?.name || "The enemy"} hits you for ${
+          round.npcDamage
+        } damage!`,
+        MessageType.COMBAT_INCOMING
+      );
+    } else {
+      addMessage(
+        `${targetNPC?.name || "The enemy"} misses you!`,
+        MessageType.COMBAT_INCOMING
+      );
+    }
+  }
+
+  private onCombatEnded(result: CombatEndData) {
+    const { addMessage } = chatStore.getState();
+    const { isRunning } = gameStatusStore.getState();
+
+    this.combatActive = false;
+
+    // Update player health
+    playerCharacterStore
+      .getState()
+      .updateHealthAndMana(result.playerHp, result.playerMaxHp);
+
+    if (result.victory) {
+      addMessage(
+        `You have defeated ${result.npcName} and gained ${result.expGained} experience!`,
+        MessageType.EXPERIENCE_GAIN
+      );
+
+      // Add experience to character (level-up message is handled by addExperience)
+      playerCharacterStore.getState().addExperience(result.expGained);
+
+      // Clear target NPC
+      gameStatusStore.setState({ targetNPC: null, currentNPCHealth: null });
+
+      // Start next combat if still running
+      if (isRunning) {
+        setTimeout(() => this.startCombat(), 1000);
+      }
+    } else {
+      // Player died
+      addMessage(
+        `You have been defeated by ${result.npcName}!`,
+        MessageType.COMBAT_INCOMING
+      );
+
+      // Stop combat and clear target
+      gameStatusStore.getState().setIsRunning(false);
+      gameStatusStore.setState({ targetNPC: null, currentNPCHealth: null });
+
+      // Respawn to bind zone if different from current zone
+      const { characterProfile } = playerCharacterStore.getState();
+      if (result.bindZoneId && result.bindZoneId !== characterProfile.zoneId) {
+        addMessage(
+          `You have been returned to your bind point.`,
+          MessageType.SYSTEM
+        );
+        // Trigger zone change to bind point
+        playerCharacterStore.getState().setCharacterZone(result.bindZoneId);
+      }
+    }
+  }
+
+  private onLootGenerated(loot: LootData) {
+    const { addMessage } = chatStore.getState();
+
+    // Report money
+    const moneyParts: string[] = [];
+    if (loot.platinum > 0) moneyParts.push(`${loot.platinum} platinum`);
+    if (loot.gold > 0) moneyParts.push(`${loot.gold} gold`);
+    if (loot.silver > 0) moneyParts.push(`${loot.silver} silver`);
+    if (loot.copper > 0) moneyParts.push(`${loot.copper} copper`);
+
+    if (moneyParts.length > 0) {
+      addMessage(`You loot ${moneyParts.join(", ")}!`, MessageType.LOOT);
+    }
+
+    // Report items
+    for (const item of loot.items) {
+      addMessage(`You loot ${item.name}!`, MessageType.LOOT);
+    }
+
+    // TODO: Add items to inventory via server push or client request
   }
 
   // Public method to load zone data - can be called after connection is established
   public loadZoneData() {
     const { updateCurrentZoneNPCs } = gameStatusStore.getState();
     updateCurrentZoneNPCs();
-    this.fetchAndSetTargetNPC();
   }
 
   private setupRunningListener() {
@@ -56,178 +220,24 @@ class GameEngine {
       (state) => state.isRunning,
       (isRunning) => {
         if (isRunning) {
-          this.startEngine();
+          this.startCombat();
         } else {
-          this.stopEngine();
+          this.stopCombat();
         }
       }
     );
   }
 
-  private async fetchAndSetTargetNPC() {
-    const { currentZoneNPCs, setTargetNPC } = gameStatusStore.getState();
-    const { characterProfile } = playerCharacterStore.getState();
-    const { addMessage } = chatStore.getState();
-
-    if (!characterProfile.zoneId || currentZoneNPCs.length === 0) return;
-
-    const playerLevel = characterProfile.level || 1;
-    const levelRange = 99; //adjust as needed
-
-    const eligibleNPCs = currentZoneNPCs.filter((npc) => {
-      const npcLevel = npc.level || 1;
-      return Math.abs(npcLevel - playerLevel) <= levelRange;
-    });
-
-    if (eligibleNPCs.length === 0) {
-      addMessage(
-        "No suitable NPCs found in this zone. Try moving to a different area!",
-        MessageType.SYSTEM
-      );
-      return;
-    }
-
-    const randomIndex = Math.floor(Math.random() * eligibleNPCs.length);
-    const newTargetNPC = eligibleNPCs[randomIndex];
-
-    setTargetNPC(newTargetNPC);
-  }
-
-  private getExperienceForNPCKill(): number {
-    const { targetNPC } = gameStatusStore.getState();
-
-    if (!targetNPC?.level) return 0;
-
-    const level = targetNPC.level;
-    const EXP_FORMULA = (level: number) =>
-      Math.floor((level * level * 75 * 35) / 10); //from https://github.com/EQEmu/Server/blob/ae198ae04332e4f7176114de9cfab893b720af24/common/features.h#L223
-
-    return EXP_FORMULA(level);
-  }
-
-  private handleNPCDefeat(npcName: string) {
-    const { targetNPC } = gameStatusStore.getState();
-    const { addMessage } = chatStore.getState();
-
-    if (!targetNPC || !targetNPC.id) {
-      console.error("No target NPC or NPC ID when attempting to get loot");
-      return;
-    }
-
-    const npcId = Number(targetNPC.id);
-
-    const { characterProfile } = playerCharacterStore.getState();
-    const oldLevel = characterProfile.level;
-    const experienceGained = this.getExperienceForNPCKill();
-    playerCharacterStore.getState().addExperience(experienceGained);
-
-    if (
-      characterProfile.level &&
-      oldLevel &&
-      characterProfile.level > oldLevel
-    ) {
-      addMessage(
-        `Congratulations! You have reached level ${characterProfile.level}!`,
-        MessageType.EXPERIENCE_GAIN
-      );
-    }
-
-    addMessage(
-      `You have defeated ${npcName} and gained ${experienceGained} experience!`,
-      MessageType.COMBAT_OUTGOING
-    );
-
-    getNPCLoot(npcId)
-      .then((loot) => {
-        const { addInventoryItem, characterProfile, setInventory } =
-          playerCharacterStore.getState();
-        const { autoSellEnabled } = gameStatusStore.getState();
-        const addChatMessage = chatStore.getState().addMessage;
-
-        processLootItems(loot, characterProfile, {
-          addInventoryItem,
-          setInventory,
-          addChatMessage,
-          autoSellEnabled,
-          sellItem: () => {
-            return sellGeneralInventory(true);
-          },
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching NPC loot:", error);
-      })
-      .finally(() => {
-        this.fetchAndSetTargetNPC();
-      });
-  }
-
-  private tick() {
-    const { targetNPC, currentNPCHealth, quickMode, isRunning } =
-      gameStatusStore.getState();
-    const { characterProfile } = playerCharacterStore.getState();
-
-    if (!isRunning) {
-      this.stopEngine();
-      return;
-    }
-
-    let isRegenerating = false;
-
-    // Regenerate health and mana
-    if (
-      characterProfile.curHp !== undefined &&
-      characterProfile.maxHp !== undefined &&
-      characterProfile.curMana !== undefined &&
-      characterProfile.maxMana !== undefined &&
-      (characterProfile.curHp < characterProfile.maxHp ||
-        characterProfile.curMana < characterProfile.maxMana)
-    ) {
-      isRegenerating = true;
-
-      const regenRate = 0.1;
-      const healthRegen = Math.floor(characterProfile.maxHp * regenRate);
-      const manaRegen = Math.floor(characterProfile.maxMana * regenRate);
-
-      const newHealth = Math.min(
-        characterProfile.curHp + healthRegen,
-        characterProfile.maxHp
-      );
-      const newMana = Math.min(
-        characterProfile.curMana + manaRegen,
-        characterProfile.maxMana
-      );
-
-      playerCharacterStore.getState().updateHealthAndMana(newHealth, newMana);
-    }
-
-    if (!targetNPC || currentNPCHealth === null || currentNPCHealth <= 0) {
-      this.fetchAndSetTargetNPC();
-      return;
-    }
-
-    // Only attack and damage NPC if not regenerating
-    if (!isRegenerating) {
-      const damagePerTick = quickMode ? targetNPC.hp / 5 : targetNPC.hp / 15;
-      const newHealth = Math.max(currentNPCHealth - damagePerTick, 0);
-      gameStatusStore.setState({ currentNPCHealth: newHealth });
-
-      if (newHealth === 0) {
-        this.handleNPCDefeat(targetNPC.name);
-      }
+  private startCombat() {
+    if (!this.combatActive) {
+      combatService.startCombat();
     }
   }
 
-  private startEngine() {
-    if (!this.tickInterval) {
-      this.tickInterval = window.setInterval(() => this.tick(), 1000);
-    }
-  }
-
-  private stopEngine() {
-    if (this.tickInterval) {
-      window.clearInterval(this.tickInterval);
-      this.tickInterval = null;
+  private stopCombat() {
+    if (this.combatActive) {
+      combatService.stopCombat();
+      this.combatActive = false;
     }
   }
 
@@ -236,18 +246,17 @@ class GameEngine {
     const newIsRunning = !isRunning;
     setIsRunning(newIsRunning);
     if (newIsRunning) {
-      this.startEngine();
+      this.startCombat();
     } else {
-      this.stopEngine();
+      this.stopCombat();
     }
   }
 
   public instantKillNPC() {
-    const { targetNPC } = gameStatusStore.getState();
-    if (targetNPC) {
-      gameStatusStore.setState({ currentNPCHealth: 0 });
-      this.handleNPCDefeat(targetNPC.name);
-    }
+    // This is now a no-op since combat is server-side
+    // The server handles all combat logic
+    const { addMessage } = chatStore.getState();
+    addMessage("Combat is now server-controlled.", MessageType.SYSTEM);
   }
 }
 

@@ -2308,3 +2308,78 @@ struct GetNPCDialogueResponse {
   responses @3 :List(Text);
   npcName @4 :Text;
 }
+
+# Combat system messages for idle game
+struct StartCombatRequest {
+  # Empty - server picks NPC based on player's zone and level
+}
+
+struct StopCombatRequest {
+  # Empty - just stops combat
+}
+
+struct CombatNPC {
+  id @0 :Int32;
+  name @1 :Text;
+  level @2 :Int32;
+  hp @3 :Int32;
+  maxHp @4 :Int32;
+  ac @5 :Int32;
+  minDmg @6 :Int32;
+  maxDmg @7 :Int32;
+  attackDelay @8 :Int32;
+}
+
+struct CombatStartedResponse {
+  success @0 :Int32;  # 1 = success, 0 = failure
+  error @1 :Text;
+  npc @2 :CombatNPC;
+}
+
+struct CombatRoundUpdate {
+  # Player attack info
+  playerHit @0 :Int32;  # 1 = hit, 0 = miss
+  playerDamage @1 :Int32;
+  playerCritical @2 :Int32;  # 1 = critical, 0 = normal
+  # NPC attack info
+  npcHit @3 :Int32;  # 1 = hit, 0 = miss
+  npcDamage @4 :Int32;
+  # Current HP values
+  playerHp @5 :Int32;
+  playerMaxHp @6 :Int32;
+  npcHp @7 :Int32;
+  npcMaxHp @8 :Int32;
+  # Timing info
+  roundNumber @9 :Int32;
+}
+
+struct CombatEndedResponse {
+  victory @0 :Int32;  # 1 = victory, 0 = defeat
+  npcName @1 :Text;
+  expGained @2 :Int32;
+  playerHp @3 :Int32;
+  playerMaxHp @4 :Int32;
+  # Bind zone info for death respawn
+  bindZoneId @5 :Int32;
+  bindX @6 :Float32;
+  bindY @7 :Float32;
+  bindZ @8 :Float32;
+  bindHeading @9 :Float32;
+}
+
+struct LootItem {
+  itemId @0 :Int32;
+  name @1 :Text;
+  slot @2 :Int32;
+  bagSlot @3 :Int32;
+  charges @4 :Int32;
+  icon @5 :Int32;
+}
+
+struct LootGeneratedResponse {
+  items @0 :List(LootItem);
+  platinum @1 :Int32;
+  gold @2 :Int32;
+  silver @3 :Int32;
+  copper @4 :Int32;
+}

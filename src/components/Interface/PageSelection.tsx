@@ -55,14 +55,14 @@ const PageName = styled.p.attrs({ className: "page-name" })<{
   ${({ $useAttributeBackground }) =>
     $useAttributeBackground &&
     `
-    width: 75px;
-    height: 75px;
+    width: 120px;
+    height: 30px;
     background: url(/images/ui/charactercreation/attributenumberbackgroundlightsmall.png);
-    background-size: contain;
-    background-repeat: no-repeat;
+    background-size: 100% 100%;
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    margin:0px;
   `}
 `;
 

@@ -627,4 +627,12 @@ const (
 	ChatMessageBroadcast
 	GetNPCDialogueRequest
 	GetNPCDialogueResponse
+
+	// IdleQuest combat opcodes
+	StartCombat
+	StopCombat
+	CombatStarted
+	CombatRound
+	CombatEnded
+	LootGenerated
 )

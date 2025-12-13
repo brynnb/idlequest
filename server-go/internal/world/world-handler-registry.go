@@ -42,6 +42,9 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.ClientUpdate:   HandleClientUpdate,
 		opcodes.Animation:      HandleClientAnimation,
 		opcodes.GMCommand:      HandleGMCommand,
+		// Combat handlers
+		opcodes.StartCombat: HandleStartCombat,
+		opcodes.StopCombat:  HandleStopCombat,
 	}
 
 	globalOpcodes := make(map[opcodes.OpCode]bool)

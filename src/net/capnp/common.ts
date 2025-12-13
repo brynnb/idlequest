@@ -12178,3 +12178,328 @@ export class GetNPCDialogueResponse extends $.Struct {
     $.utils.setText(3, value, this);
   }
 }
+
+// Combat system messages
+export class StartCombatRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "StartCombatRequest",
+    id: "a1b2c3d4e5f60010",
+    size: new $.ObjectSize(0, 0),
+  };
+}
+
+export class StopCombatRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "StopCombatRequest",
+    id: "a1b2c3d4e5f60011",
+    size: new $.ObjectSize(0, 0),
+  };
+}
+
+export class CombatNPC extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CombatNPC",
+    id: "a1b2c3d4e5f60012",
+    size: new $.ObjectSize(32, 1),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get level(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set level(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get hp(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set hp(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get maxHp(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set maxHp(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get ac(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set ac(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get minDmg(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set minDmg(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+  get maxDmg(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set maxDmg(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+  get attackDelay(): number {
+    return $.utils.getInt32(28, this);
+  }
+  set attackDelay(value: number) {
+    $.utils.setInt32(28, value, this);
+  }
+}
+
+export class CombatStartedResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CombatStartedResponse",
+    id: "a1b2c3d4e5f60013",
+    size: new $.ObjectSize(8, 2),
+  };
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get npc(): CombatNPC {
+    return $.utils.getStruct(1, CombatNPC, this);
+  }
+  set npc(value: CombatNPC) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+}
+
+export class CombatRoundUpdate extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CombatRoundUpdate",
+    id: "a1b2c3d4e5f60014",
+    size: new $.ObjectSize(40, 0),
+  };
+  get playerHit(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set playerHit(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get playerDamage(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set playerDamage(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get playerCritical(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set playerCritical(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get npcHit(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set npcHit(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get npcDamage(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set npcDamage(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get playerHp(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set playerHp(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+  get playerMaxHp(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set playerMaxHp(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+  get npcHp(): number {
+    return $.utils.getInt32(28, this);
+  }
+  set npcHp(value: number) {
+    $.utils.setInt32(28, value, this);
+  }
+  get npcMaxHp(): number {
+    return $.utils.getInt32(32, this);
+  }
+  set npcMaxHp(value: number) {
+    $.utils.setInt32(32, value, this);
+  }
+  get roundNumber(): number {
+    return $.utils.getInt32(36, this);
+  }
+  set roundNumber(value: number) {
+    $.utils.setInt32(36, value, this);
+  }
+}
+
+export class CombatEndedResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CombatEndedResponse",
+    id: "a1b2c3d4e5f60015",
+    size: new $.ObjectSize(32, 1),
+  };
+  get victory(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set victory(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get npcName(): string {
+    return $.utils.getText(0, this);
+  }
+  set npcName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get expGained(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set expGained(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get playerHp(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set playerHp(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get playerMaxHp(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set playerMaxHp(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get bindZoneId(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set bindZoneId(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get bindX(): number {
+    return $.utils.getFloat32(20, this);
+  }
+  set bindX(value: number) {
+    $.utils.setFloat32(20, value, this);
+  }
+  get bindY(): number {
+    return $.utils.getFloat32(24, this);
+  }
+  set bindY(value: number) {
+    $.utils.setFloat32(24, value, this);
+  }
+  get bindZ(): number {
+    return $.utils.getFloat32(28, this);
+  }
+  set bindZ(value: number) {
+    $.utils.setFloat32(28, value, this);
+  }
+  get bindHeading(): number {
+    return $.utils.getFloat32(32, this);
+  }
+  set bindHeading(value: number) {
+    $.utils.setFloat32(32, value, this);
+  }
+}
+
+export class LootItem extends $.Struct {
+  static readonly _capnp = {
+    displayName: "LootItem",
+    id: "a1b2c3d4e5f60016",
+    size: new $.ObjectSize(24, 1),
+  };
+  get itemId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set itemId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get slot(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set slot(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get bagSlot(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set bagSlot(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get charges(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set charges(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get icon(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set icon(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+}
+
+export class LootGeneratedResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "LootGeneratedResponse",
+    id: "a1b2c3d4e5f60017",
+    size: new $.ObjectSize(16, 1),
+  };
+  static _Items: $.ListCtor<LootItem>;
+  get items(): $.List<LootItem> {
+    return $.utils.getList(0, LootGeneratedResponse._Items, this);
+  }
+  set items(value: $.List<LootItem>) {
+    $.utils.copyFrom(value, $.utils.getPointer(0, this));
+  }
+  get platinum(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set platinum(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get gold(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set gold(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get silver(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set silver(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get copper(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set copper(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+}
+LootGeneratedResponse._Items = $.CompositeList(LootItem);

@@ -50,7 +50,7 @@ const Level = styled.div.attrs({ className: "level" })`
 
 const ClassAndDeity = styled.div.attrs({ className: "class-and-deity" })`
   position: absolute;
-  left: 0px;
+  left: -8px;
   top: 35px;
   width: 240px;
 `;
@@ -68,8 +68,8 @@ const ExperienceBarContainer = styled.div.attrs({
   className: "experience-bar-container",
 })`
   position: absolute;
-  top: 200px;
-  left: 0px;
+  top: 288px;
+  left: -45px;
   width: 200px;
 `;
 
@@ -96,7 +96,7 @@ const BottomLevelWeight = styled.div.attrs({
 })`
   position: absolute;
   top: 850px;
-  left: 40px;
+  left: 55px;
   line-height: 6px;
   width: 200px;
 `;
