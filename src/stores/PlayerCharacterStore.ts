@@ -273,6 +273,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               `Traveling to ${zoneName}`,
               MessageType.ZONE_ANNOUNCEMENT
             );
+          // Stop combat and clear target when zoning
+          useGameStatusStore.getState().setIsRunning(false);
+          useGameStatusStore.setState({
+            targetNPC: null,
+            currentNPCHealth: null,
+          });
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
@@ -608,18 +614,28 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         // Apply server-pushed character state from Cap'n Proto CharacterSelect
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         applyServerCharacterState: async (charSelectData: any) => {
-          console.log("Processing CharacterSelect:", charSelectData);
+          console.log("[CharData] Processing CharacterSelect:", charSelectData);
 
           if (
             !charSelectData.characters ||
             charSelectData.characters.length === 0
           ) {
-            console.warn("CharacterSelect has no characters, ignoring");
+            console.warn(
+              "[CharData] CharacterSelect has no characters, ignoring"
+            );
             return;
           }
 
           // Get the first (or most recently created) character
           const serverChar = charSelectData.characters[0];
+          console.log("[CharData] Server sent character:", {
+            id: serverChar.id,
+            name: serverChar.name,
+            level: serverChar.level,
+            curHp: serverChar.curHp,
+            exp: serverChar.exp,
+            zone: serverChar.zone,
+          });
 
           // Look up race/class/deity from JSON data
           const raceData = races.find(
@@ -655,6 +671,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               )
           );
 
+          // Use server-computed values directly
           const newProfile: CharacterProfile = {
             id: serverChar.id || 0,
             name: serverChar.name,
@@ -664,38 +681,86 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             deity: deityData,
             zoneId: serverChar.zone,
             level: serverChar.level,
-            exp: 0,
-            // For new characters, set curHp to maxHp (calculated below)
-            curHp: 0,
-            mana: 0,
+            exp: serverChar.exp || 0,
+            // Use server-computed HP values
+            curHp: serverChar.curHp || 0,
+            maxHp: serverChar.maxHp || 0,
+            // Use server-computed mana values
+            mana: serverChar.curMana || 0,
+            maxMana: serverChar.maxMana || 0,
             endurance: 0,
+            // Use server-provided attributes
             attributes: {
-              // CharacterSelectEntry doesn't have attributes, use defaults
-              str: 75,
-              sta: 75,
-              cha: 75,
-              dex: 75,
-              int: 75,
-              agi: 75,
-              wis: 75,
+              str: serverChar.str || 75,
+              sta: serverChar.sta || 75,
+              cha: serverChar.cha || 75,
+              dex: serverChar.dex || 75,
+              int: serverChar.intel || 75,
+              agi: serverChar.agi || 75,
+              wis: serverChar.wis || 75,
             },
             inventory: inventoryItems,
+            // Use server-computed stats
             stats: {
-              ac: 0,
-              atk: 100,
+              ac: serverChar.ac || 0,
+              atk: serverChar.atk || 100,
             },
           };
 
-          // Calculate derived stats from attributes
-          newProfile.maxHp = calculatePlayerHP(newProfile);
-          newProfile.maxMana = calculatePlayerMana(newProfile);
-          // For new characters, start at full HP
-          newProfile.curHp = newProfile.maxHp;
+          console.log("[CharData] Using server-computed values:");
+          console.log(
+            "[CharData]   HP: %d/%d",
+            newProfile.curHp,
+            newProfile.maxHp
+          );
+          console.log(
+            "[CharData]   Mana: %d/%d",
+            newProfile.mana,
+            newProfile.maxMana
+          );
+          console.log(
+            "[CharData]   AC: %d, ATK: %d",
+            newProfile.stats?.ac,
+            newProfile.stats?.atk
+          );
+
+          // Fallback: if server didn't send maxHp, calculate it
+          if (!newProfile.maxHp || newProfile.maxHp <= 0) {
+            newProfile.maxHp = calculatePlayerHP(newProfile);
+            console.log(
+              "[CharData] Server maxHp missing, calculated:",
+              newProfile.maxHp
+            );
+          }
+          // Fallback: if curHp is invalid, set to maxHp
+          if (!newProfile.curHp || newProfile.curHp <= 0) {
+            console.log(
+              "[CharData] Server curHp invalid, setting to maxHp:",
+              newProfile.maxHp
+            );
+            newProfile.curHp = newProfile.maxHp;
+          }
+          // Clamp curHp to maxHp just in case
+          if (newProfile.curHp > newProfile.maxHp) {
+            console.log(
+              "[CharData] Clamping curHp from",
+              newProfile.curHp,
+              "to",
+              newProfile.maxHp
+            );
+            newProfile.curHp = newProfile.maxHp;
+          }
 
           set({ characterProfile: newProfile });
           get().updateAllStats();
 
-          console.log("Applied server character state:", serverChar.name);
+          console.log("[CharData] Final applied state:", {
+            name: newProfile.name,
+            level: newProfile.level,
+            curHp: newProfile.curHp,
+            maxHp: newProfile.maxHp,
+            exp: newProfile.exp,
+          });
         },
       }),
       { name: "player-character-storage" }

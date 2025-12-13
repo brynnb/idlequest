@@ -632,6 +632,63 @@ func GetCharacterBind(ctx context.Context, charID uint32) (*model.CharacterBind,
 	return &bind, nil
 }
 
+// UpdateCharacterBind updates the character's primary bind point (slot 0)
+func UpdateCharacterBind(ctx context.Context, charID uint32, zoneID uint16, x, y, z, heading float64) error {
+	// Try to update existing bind
+	result, err := table.CharacterBind.
+		UPDATE(
+			table.CharacterBind.ZoneID,
+			table.CharacterBind.X,
+			table.CharacterBind.Y,
+			table.CharacterBind.Z,
+			table.CharacterBind.Heading,
+		).
+		SET(
+			zoneID,
+			x,
+			y,
+			z,
+			heading,
+		).
+		WHERE(
+			table.CharacterBind.ID.EQ(mysql.Uint32(charID)).
+				AND(table.CharacterBind.Slot.EQ(mysql.Int32(0))),
+		).
+		ExecContext(ctx, db.GlobalWorldDB.DB)
+	if err != nil {
+		return fmt.Errorf("update character bind: %w", err)
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		// No existing bind, insert new one
+		_, err = table.CharacterBind.
+			INSERT(
+				table.CharacterBind.ID,
+				table.CharacterBind.Slot,
+				table.CharacterBind.ZoneID,
+				table.CharacterBind.X,
+				table.CharacterBind.Y,
+				table.CharacterBind.Z,
+				table.CharacterBind.Heading,
+			).
+			VALUES(
+				charID,
+				0, // slot 0 is primary bind
+				zoneID,
+				x,
+				y,
+				z,
+				heading,
+			).
+			ExecContext(ctx, db.GlobalWorldDB.DB)
+		if err != nil {
+			return fmt.Errorf("insert character bind: %w", err)
+		}
+	}
+	return nil
+}
+
 // DeleteItemInstance deletes an item instance from the database
 func DeleteItemInstance(ctx context.Context, itemInstanceID int32) error {
 	// First delete from character_inventory

@@ -28,6 +28,23 @@ struct CharacterSelectEntry {
   goHome @12 :Int32;
   enabled @13 :Int32;
   lastLogin @14 :Int32;
+  curHp @15 :Int32;
+  exp @16 :Int32;
+  id @17 :Int32;
+  # Computed stats from server
+  maxHp @18 :Int32;
+  maxMana @19 :Int32;
+  curMana @20 :Int32;
+  ac @21 :Int32;
+  atk @22 :Int32;
+  # Base attributes from DB
+  str @23 :Int32;
+  sta @24 :Int32;
+  cha @25 :Int32;
+  dex @26 :Int32;
+  intel @27 :Int32;
+  agi @28 :Int32;
+  wis @29 :Int32;
 }
 
 struct CharSelectEquip {

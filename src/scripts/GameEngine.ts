@@ -9,6 +9,7 @@ import {
   CombatEndData,
   LootData,
 } from "@/services/combatService";
+import { NPCType } from "@entities/NPCType";
 
 const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
@@ -17,11 +18,16 @@ const chatStore = useChatStore;
 class GameEngine {
   private static instance: GameEngine;
   private combatActive = false;
+  private regenInterval: ReturnType<typeof setInterval> | null = null;
+  private waitingForRegenMessageShown = false;
+  private static readonly REGEN_TICK_MS = 600; // Regen every 0.6 seconds (10x faster)
+  private static readonly REGEN_PERCENT = 0.05; // 5% of max HP per tick
 
   private constructor() {
     this.initialize();
     this.setupRunningListener();
     this.setupCombatHandlers();
+    this.startRegeneration();
   }
 
   public static getInstance(): GameEngine {
@@ -33,7 +39,11 @@ class GameEngine {
 
   private initialize() {
     const { characterProfile } = playerCharacterStore.getState();
-    const { isRunning } = gameStatusStore.getState();
+
+    // Reset combat state on login - combat should always start stopped
+    gameStatusStore.getState().setIsRunning(false);
+    gameStatusStore.setState({ targetNPC: null, currentNPCHealth: null });
+    this.combatActive = false;
 
     // Set zone ID directly without triggering NPC fetch
     if (characterProfile.zoneId) {
@@ -42,10 +52,6 @@ class GameEngine {
       if (WorldSocket.isConnected) {
         this.loadZoneData();
       }
-    }
-
-    if (isRunning) {
-      this.startCombat();
     }
   }
 
@@ -79,11 +85,11 @@ class GameEngine {
         name: npc.name,
         level: npc.level,
         hp: npc.maxHp,
-        ac: npc.ac,
+        AC: npc.ac,
         mindmg: npc.minDmg,
         maxdmg: npc.maxDmg,
         attack_delay: npc.attackDelay,
-      },
+      } as NPCType,
       currentNPCHealth: npc.hp,
     });
 
@@ -174,11 +180,16 @@ class GameEngine {
       gameStatusStore.getState().setIsRunning(false);
       gameStatusStore.setState({ targetNPC: null, currentNPCHealth: null });
 
+      // Restore to full health after death (server also does this)
+      playerCharacterStore
+        .getState()
+        .updateHealthAndMana(result.playerMaxHp, result.playerMaxHp);
+
       // Respawn to bind zone if different from current zone
       const { characterProfile } = playerCharacterStore.getState();
       if (result.bindZoneId && result.bindZoneId !== characterProfile.zoneId) {
         addMessage(
-          `You have been returned to your bind point.`,
+          `You are being returned to your bind point.`,
           MessageType.SYSTEM
         );
         // Trigger zone change to bind point
@@ -229,9 +240,34 @@ class GameEngine {
   }
 
   private startCombat() {
-    if (!this.combatActive) {
-      combatService.startCombat();
+    if (this.combatActive) {
+      return;
     }
+
+    // Wait for full health before starting combat
+    if (!this.isAtFullHealth()) {
+      // Only show the message once
+      if (!this.waitingForRegenMessageShown) {
+        const { addMessage } = chatStore.getState();
+        addMessage(
+          "Waiting to regenerate to full health before engaging...",
+          MessageType.SYSTEM
+        );
+        this.waitingForRegenMessageShown = true;
+      }
+      // Check again in 1 second
+      setTimeout(() => {
+        const { isRunning } = gameStatusStore.getState();
+        if (isRunning && !this.combatActive) {
+          this.startCombat();
+        }
+      }, 1000);
+      return;
+    }
+
+    // Reset the flag when we actually start combat
+    this.waitingForRegenMessageShown = false;
+    combatService.startCombat();
   }
 
   private stopCombat() {
@@ -257,6 +293,57 @@ class GameEngine {
     // The server handles all combat logic
     const { addMessage } = chatStore.getState();
     addMessage("Combat is now server-controlled.", MessageType.SYSTEM);
+  }
+
+  private startRegeneration() {
+    // Clear any existing interval
+    if (this.regenInterval) {
+      clearInterval(this.regenInterval);
+    }
+
+    this.regenInterval = setInterval(() => {
+      // Only regenerate when not in combat
+      if (this.combatActive) {
+        return;
+      }
+
+      const { characterProfile, updateHealthAndMana } =
+        playerCharacterStore.getState();
+      if (!characterProfile) return;
+
+      const currentHp = characterProfile.curHp || 0;
+      const maxHp = characterProfile.maxHp || 1;
+      const currentMana = characterProfile.mana || 0;
+      const maxMana = characterProfile.maxMana || 0;
+
+      // Check if already at full health and mana
+      const atFullHp = currentHp >= maxHp;
+      const atFullMana = maxMana <= 0 || currentMana >= maxMana;
+
+      if (atFullHp && atFullMana) {
+        return;
+      }
+
+      // Regenerate 5% of max HP/Mana per tick
+      const hpRegenAmount = Math.ceil(maxHp * GameEngine.REGEN_PERCENT);
+      const newHp = atFullHp ? currentHp : Math.min(currentHp + hpRegenAmount, maxHp);
+
+      let newMana = currentMana;
+      if (maxMana > 0 && !atFullMana) {
+        const manaRegenAmount = Math.ceil(maxMana * GameEngine.REGEN_PERCENT);
+        newMana = Math.min(currentMana + manaRegenAmount, maxMana);
+      }
+
+      updateHealthAndMana(newHp, newMana);
+    }, GameEngine.REGEN_TICK_MS);
+  }
+
+  private isAtFullHealth(): boolean {
+    const { characterProfile } = playerCharacterStore.getState();
+    if (!characterProfile) return true;
+    const currentHp = characterProfile.curHp || 0;
+    const maxHp = characterProfile.maxHp || 1;
+    return currentHp >= maxHp;
   }
 }
 

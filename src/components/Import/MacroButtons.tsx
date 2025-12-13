@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import useChatStore, { MessageType } from "@stores/ChatStore";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import { useInventorySelling } from "@hooks/useInventorySelling";
 import PageSelection from "../Interface/PageSelection";
+import { WorldSocket } from "@/net";
+import { OpCodes } from "@/net/opcodes";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
   display: flex;
@@ -53,12 +54,8 @@ const MacroButtons = () => {
     [key: number]: boolean;
   }>({});
 
-  const navigate = useNavigate();
   const { sellGeneralInventory } = useInventorySelling();
-  const { setCharacterProfile, clearInventory } = usePlayerCharacterStore();
-  const resetCharacterCreator = useCharacterCreatorStore(
-    (state) => state.resetStore
-  );
+  const { clearInventory } = usePlayerCharacterStore();
   const { addItemToInventoryByItemId, handleEquipAllItems } =
     useInventoryActions();
 
@@ -82,11 +79,17 @@ const MacroButtons = () => {
     setPressedButtons((prev) => ({ ...prev, [num]: false }));
   };
 
-  const handleResetGame = () => {
-    setCharacterProfile({});
-    resetCharacterCreator();
-    console.log("Game has been reset!");
-    navigate("/create");
+  const handleBind = () => {
+    const { addMessage } = useChatStore.getState();
+    if (!WorldSocket.isConnected) {
+      addMessage("Not connected to server", MessageType.SYSTEM);
+      return;
+    }
+    WorldSocket.sendMessage(OpCodes.UpdateBind, null, null);
+    addMessage(
+      "You have bound your soul to this location.",
+      MessageType.SYSTEM
+    );
   };
 
   const handleDeleteAllInventory = () => {
@@ -104,7 +107,7 @@ const MacroButtons = () => {
   const renderMacroButton = (num: number) => {
     switch (num) {
       case 1:
-        return "Start New Game";
+        return "Bind";
       case 2:
         return "Equip All Items";
       case 3:
@@ -123,7 +126,7 @@ const MacroButtons = () => {
   const handleMacroButtonClick = (num: number) => {
     switch (num) {
       case 1:
-        handleResetGame();
+        handleBind();
         break;
       case 2:
         handleEquipAllItems();

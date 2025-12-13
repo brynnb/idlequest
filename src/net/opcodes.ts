@@ -627,4 +627,8 @@ export enum OpCodes {
   CombatRound,
   CombatEnded,
   LootGenerated,
+
+  // IdleQuest bind opcodes
+  UpdateBind,
+  BindUpdated,
 }

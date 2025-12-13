@@ -226,15 +226,22 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 		return false
 	}
 
+	log.Printf("[CharData] Loading character %q for accountID %d", ses.CharacterName, ses.AccountID)
+
 	charData, err := db_character.GetCharacterByName(ses.CharacterName)
 	if err != nil {
 		log.Printf("failed to get character %q for accountID %d: %v", ses.CharacterName, ses.AccountID, err)
 		return false
 	}
 
+	log.Printf("[CharData] Loaded from DB: ID=%d, Name=%s, Level=%d, CurHp=%d, Exp=%d, Zone=%d",
+		charData.ID, charData.Name, charData.Level, charData.CurHp, charData.Exp, charData.ZoneID)
+
 	// Clamp current HP to max HP if over (e.g., new characters with 10k HP)
 	maxHP := calculateMaxHPForChar(charData)
+	log.Printf("[CharData] Calculated maxHP=%d (Level=%d, STA=%d)", maxHP, charData.Level, charData.Sta)
 	if charData.CurHp > uint32(maxHP) {
+		log.Printf("[CharData] Clamping CurHp from %d to %d", charData.CurHp, maxHP)
 		charData.CurHp = uint32(maxHP)
 	}
 
@@ -259,12 +266,81 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 	return false
 }
 
-// calculateMaxHPForChar calculates max HP based on level and STA
+// calculateMaxHPForChar calculates max HP using EQ formula
+// Formula: level * levelMultiplier + ((level * levelMultiplier) / 300) * stamina + 5
 func calculateMaxHPForChar(charData *model.CharacterData) int {
-	baseHP := 20
-	levelBonus := int(charData.Level) * 10
-	staBonus := int(charData.Sta) * 2
-	return baseHP + levelBonus + staBonus
+	level := int(charData.Level)
+	stamina := int(charData.Sta)
+	classId := int(charData.Class)
+
+	levelMultiplier := getHpLevelMultiplier(classId, level)
+
+	term1 := level * levelMultiplier
+	term2 := ((level * levelMultiplier) * stamina / 300) + 5
+
+	return term1 + term2
+}
+
+// getHpLevelMultiplier returns the HP multiplier based on class and level
+func getHpLevelMultiplier(classId, level int) int {
+	switch classId {
+	case 1: // Warrior
+		if level <= 19 {
+			return 22
+		}
+		if level <= 29 {
+			return 23
+		}
+		if level <= 39 {
+			return 25
+		}
+		if level <= 52 {
+			return 27
+		}
+		if level <= 56 {
+			return 28
+		}
+		if level <= 59 {
+			return 29
+		}
+		return 30
+	case 2, 6, 10: // Cleric, Druid, Shaman
+		return 15
+	case 3, 5, 16: // Paladin, Shadowknight, Berserker
+		if level <= 34 {
+			return 21
+		}
+		if level <= 44 {
+			return 22
+		}
+		if level <= 50 {
+			return 23
+		}
+		if level <= 55 {
+			return 24
+		}
+		if level <= 59 {
+			return 25
+		}
+		return 26
+	case 4: // Ranger
+		if level <= 57 {
+			return 20
+		}
+		return 21
+	case 7, 8, 9, 15: // Monk, Bard, Rogue, Beastlord
+		if level <= 50 {
+			return 18
+		}
+		if level <= 57 {
+			return 19
+		}
+		return 20
+	case 11, 12, 13, 14: // Magician, Necromancer, Enchanter, Wizard
+		return 12
+	default:
+		return 15 // Default multiplier
+	}
 }
 
 func HandleCharacterCreate(ses *session.Session, payload []byte, wh *WorldHandler) bool {
@@ -519,11 +595,18 @@ func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 		return false
 	}
 
-	// Stop combat when camping
-	charID := int64(ses.Client.CharData().ID)
-	combat.GetManager().StopCombat(charID)
+	charData := ses.Client.CharData()
 
-	if err := db_character.UpdateCharacter(ses.Client.CharData(), ses.AccountID); err != nil {
+	// Stop combat when camping
+	combat.GetManager().StopCombat(int64(charData.ID))
+
+	// Clamp HP to max before saving
+	maxHP := calculateMaxHPForChar(charData)
+	if charData.CurHp > uint32(maxHP) {
+		charData.CurHp = uint32(maxHP)
+	}
+
+	if err := db_character.UpdateCharacter(charData, ses.AccountID); err != nil {
 		log.Printf("failed to save player data on camp: %v", err)
 	}
 	// Send updated character info so character select shows current zone
@@ -752,4 +835,49 @@ func sendLootGenerated(ses *session.Session, loot []db_combat.LootDropItem, mone
 	}
 
 	ses.SendStream(msg.Message(), opcodes.LootGenerated)
+}
+
+// HandleUpdateBind updates the character's bind point to their current zone
+func HandleUpdateBind(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		return false
+	}
+
+	charData := ses.Client.CharData()
+	ctx := context.Background()
+
+	// Update bind to current zone and position
+	err := db_character.UpdateCharacterBind(
+		ctx,
+		charData.ID,
+		uint16(charData.ZoneID),
+		charData.X,
+		charData.Y,
+		charData.Z,
+		charData.Heading,
+	)
+	if err != nil {
+		log.Printf("Failed to update bind for character %d: %v", charData.ID, err)
+		return false
+	}
+
+	// Get zone name for message
+	zone, err := db_zone.GetZoneById(ctx, int(charData.ZoneID))
+	zoneName := "this location"
+	if err == nil && zone != nil {
+		zoneName = zone.LongName
+	}
+
+	log.Printf("Character %s bound to zone %d (%s)", charData.Name, charData.ZoneID, zoneName)
+
+	// Send confirmation - just use a simple Int message with zone ID
+	msg, err := session.NewMessage(ses, eq.NewRootInt)
+	if err != nil {
+		log.Printf("Failed to create bind confirmation: %v", err)
+		return false
+	}
+	msg.SetValue(int32(charData.ZoneID))
+	ses.SendStream(msg.Message(), opcodes.BindUpdated)
+
+	return false
 }

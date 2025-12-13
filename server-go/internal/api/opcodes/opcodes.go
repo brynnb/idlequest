@@ -635,4 +635,8 @@ const (
 	CombatRound
 	CombatEnded
 	LootGenerated
+
+	// IdleQuest bind opcodes
+	UpdateBind
+	BindUpdated
 )

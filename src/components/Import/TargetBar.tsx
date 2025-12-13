@@ -13,12 +13,17 @@ const TargetHealthBar = styled.div`
   left: 9px;
 `;
 
-const TargetFullHealthContainer = styled.div<{ $percentDone: number }>`
+const TargetFullHealthContainer = styled.div.attrs<{ $percentDone: number }>(
+  ({ $percentDone }) => ({
+    style: {
+      width: `calc(${$percentDone} * 228px)`,
+    },
+  })
+)`
   overflow: hidden;
   position: absolute;
   top: 15px;
   left: 15px;
-  width: ${(props) => `calc(${props.$percentDone} * 228px)`};
 `;
 
 const TargetFullHealthImage = styled.img`
@@ -55,7 +60,7 @@ const TargetBar: React.FC = () => {
             alt="Target health bar"
           />
         </TargetFullHealthContainer>
-        <TargetName>{targetNPC.name.replace(/_/g, ' ')}</TargetName>
+        <TargetName>{targetNPC.name.replace(/_/g, " ")}</TargetName>
       </TargetHealthBar>
     </TargetContainer>
   );

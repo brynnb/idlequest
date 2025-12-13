@@ -110,12 +110,12 @@ type CharacterSelectEntry capnp.Struct
 const CharacterSelectEntry_TypeID = 0xca9e1a4afe3dca58
 
 func NewCharacterSelectEntry(s *capnp.Segment) (CharacterSelectEntry, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 56, PointerCount: 2})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 112, PointerCount: 2})
 	return CharacterSelectEntry(st), err
 }
 
 func NewRootCharacterSelectEntry(s *capnp.Segment) (CharacterSelectEntry, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 56, PointerCount: 2})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 112, PointerCount: 2})
 	return CharacterSelectEntry(st), err
 }
 
@@ -296,12 +296,132 @@ func (s CharacterSelectEntry) SetLastLogin(v int32) {
 	capnp.Struct(s).SetUint32(48, uint32(v))
 }
 
+func (s CharacterSelectEntry) CurHp() int32 {
+	return int32(capnp.Struct(s).Uint32(52))
+}
+
+func (s CharacterSelectEntry) SetCurHp(v int32) {
+	capnp.Struct(s).SetUint32(52, uint32(v))
+}
+
+func (s CharacterSelectEntry) Exp() int32 {
+	return int32(capnp.Struct(s).Uint32(56))
+}
+
+func (s CharacterSelectEntry) SetExp(v int32) {
+	capnp.Struct(s).SetUint32(56, uint32(v))
+}
+
+func (s CharacterSelectEntry) Id() int32 {
+	return int32(capnp.Struct(s).Uint32(60))
+}
+
+func (s CharacterSelectEntry) SetId(v int32) {
+	capnp.Struct(s).SetUint32(60, uint32(v))
+}
+
+func (s CharacterSelectEntry) MaxHp() int32 {
+	return int32(capnp.Struct(s).Uint32(64))
+}
+
+func (s CharacterSelectEntry) SetMaxHp(v int32) {
+	capnp.Struct(s).SetUint32(64, uint32(v))
+}
+
+func (s CharacterSelectEntry) MaxMana() int32 {
+	return int32(capnp.Struct(s).Uint32(68))
+}
+
+func (s CharacterSelectEntry) SetMaxMana(v int32) {
+	capnp.Struct(s).SetUint32(68, uint32(v))
+}
+
+func (s CharacterSelectEntry) CurMana() int32 {
+	return int32(capnp.Struct(s).Uint32(72))
+}
+
+func (s CharacterSelectEntry) SetCurMana(v int32) {
+	capnp.Struct(s).SetUint32(72, uint32(v))
+}
+
+func (s CharacterSelectEntry) Ac() int32 {
+	return int32(capnp.Struct(s).Uint32(76))
+}
+
+func (s CharacterSelectEntry) SetAc(v int32) {
+	capnp.Struct(s).SetUint32(76, uint32(v))
+}
+
+func (s CharacterSelectEntry) Atk() int32 {
+	return int32(capnp.Struct(s).Uint32(80))
+}
+
+func (s CharacterSelectEntry) SetAtk(v int32) {
+	capnp.Struct(s).SetUint32(80, uint32(v))
+}
+
+func (s CharacterSelectEntry) Str() int32 {
+	return int32(capnp.Struct(s).Uint32(84))
+}
+
+func (s CharacterSelectEntry) SetStr(v int32) {
+	capnp.Struct(s).SetUint32(84, uint32(v))
+}
+
+func (s CharacterSelectEntry) Sta() int32 {
+	return int32(capnp.Struct(s).Uint32(88))
+}
+
+func (s CharacterSelectEntry) SetSta(v int32) {
+	capnp.Struct(s).SetUint32(88, uint32(v))
+}
+
+func (s CharacterSelectEntry) Cha() int32 {
+	return int32(capnp.Struct(s).Uint32(92))
+}
+
+func (s CharacterSelectEntry) SetCha(v int32) {
+	capnp.Struct(s).SetUint32(92, uint32(v))
+}
+
+func (s CharacterSelectEntry) Dex() int32 {
+	return int32(capnp.Struct(s).Uint32(96))
+}
+
+func (s CharacterSelectEntry) SetDex(v int32) {
+	capnp.Struct(s).SetUint32(96, uint32(v))
+}
+
+func (s CharacterSelectEntry) Intel() int32 {
+	return int32(capnp.Struct(s).Uint32(100))
+}
+
+func (s CharacterSelectEntry) SetIntel(v int32) {
+	capnp.Struct(s).SetUint32(100, uint32(v))
+}
+
+func (s CharacterSelectEntry) Agi() int32 {
+	return int32(capnp.Struct(s).Uint32(104))
+}
+
+func (s CharacterSelectEntry) SetAgi(v int32) {
+	capnp.Struct(s).SetUint32(104, uint32(v))
+}
+
+func (s CharacterSelectEntry) Wis() int32 {
+	return int32(capnp.Struct(s).Uint32(108))
+}
+
+func (s CharacterSelectEntry) SetWis(v int32) {
+	capnp.Struct(s).SetUint32(108, uint32(v))
+}
+
 // CharacterSelectEntry_List is a list of CharacterSelectEntry.
 type CharacterSelectEntry_List = capnp.StructList[CharacterSelectEntry]
 
 // NewCharacterSelectEntry creates a new list of CharacterSelectEntry.
 func NewCharacterSelectEntry_List(s *capnp.Segment, sz int32) (CharacterSelectEntry_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 56, PointerCount: 2}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 112, PointerCount: 2}, sz)
 	return capnp.StructList[CharacterSelectEntry](l), err
 }
 

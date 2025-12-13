@@ -248,13 +248,7 @@ func (cs *CombatSession) processCombatRound() {
 		}
 	}
 
-	// Check if player is dead
-	if charData.CurHp == 0 {
-		cs.handlePlayerDeath()
-		return
-	}
-
-	// Send round update
+	// Send round update (including the killing blow if player dies)
 	if cs.onRound != nil {
 		cs.onRound(&RoundResult{
 			PlayerHit:      playerHit,
@@ -268,6 +262,12 @@ func (cs *CombatSession) processCombatRound() {
 			NPCMaxHP:       int(cs.State.NPC.HP),
 			RoundNumber:    cs.State.RoundNumber,
 		})
+	}
+
+	// Check if player is dead (after sending round update so killing blow is shown)
+	if charData.CurHp == 0 {
+		cs.handlePlayerDeath()
+		return
 	}
 }
 
@@ -290,6 +290,42 @@ func calculatePlayerAC(charData *model.CharacterData) int {
 func calculatePlayerATK(charData *model.CharacterData) int {
 	// Simple formula: STR + level
 	return int(charData.Str) + int(charData.Level)
+}
+
+// Experience thresholds for each level (level -> total exp needed)
+var experienceTable = []int{
+	0,       // level 0 (unused)
+	0,       // level 1
+	1000,    // level 2
+	8000,    // level 3
+	27000,   // level 4
+	64000,   // level 5
+	125000,  // level 6
+	216000,  // level 7
+	343000,  // level 8
+	512000,  // level 9
+	729000,  // level 10
+	1000000, // level 11
+	1331000, // level 12
+	1728000, // level 13
+	2197000, // level 14
+	2744000, // level 15
+	3375000, // level 16
+	4096000, // level 17
+	4913000, // level 18
+	5832000, // level 19
+	6859000, // level 20
+	8000000, // level 21
+}
+
+// calculateLevelFromExp returns the level for a given experience total
+func calculateLevelFromExp(exp int) int {
+	for level := len(experienceTable) - 1; level >= 1; level-- {
+		if exp >= experienceTable[level] {
+			return level
+		}
+	}
+	return 1
 }
 
 func (cs *CombatSession) calculatePlayerAttack() (hit bool, damage int, critical bool) {
@@ -397,6 +433,9 @@ func (cs *CombatSession) handleNPCDeath() {
 	// Add experience to character
 	charData.Exp += uint32(expGained)
 
+	// Recalculate level based on new experience
+	charData.Level = uint32(calculateLevelFromExp(int(charData.Exp)))
+
 	// Mark combat as ended
 	cs.State.Active = false
 
@@ -457,8 +496,8 @@ func (cs *CombatSession) handlePlayerDeath() {
 		})
 	}
 
-	// Restore player to 1 HP after sending death message
-	charData.CurHp = 1
+	// Restore player to full HP after sending death message
+	charData.CurHp = uint32(maxHP)
 
 	// Remove from manager
 	GetManager().StopCombat(int64(charData.ID))
