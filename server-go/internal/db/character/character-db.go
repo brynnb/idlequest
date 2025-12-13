@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"slices"
 	"strconv"
 	"strings"
@@ -222,20 +221,9 @@ func GetCharacterItems(ctx context.Context, id int) ([]constants.ItemWithSlot, e
 			table.ItemInstances.OwnerID.EQ(mysql.Int(int64(id))),
 		)
 
-	// Debug: print the SQL query
-	sql, args := stmt.Sql()
-	log.Printf("GetCharacterItems SQL: %s, args: %v", sql, args)
-
 	if err := stmt.QueryContext(ctx, db.GlobalWorldDB.DB, &charItems); err != nil {
 		return nil, fmt.Errorf("query character items: %w", err)
 	}
-
-	// Debug logging for inventory load
-	log.Printf("=== DB INVENTORY LOAD for character %d ===", id)
-	for _, item := range charItems {
-		log.Printf("  bag=%d, slot=%d, itemID=%d, instanceID=%d", item.Bag, item.Slot, item.ItemID, item.ItemInstanceID)
-	}
-	log.Printf("=== END DB INVENTORY LOAD (%d items) ===", len(charItems))
 
 	return charItems, nil
 }

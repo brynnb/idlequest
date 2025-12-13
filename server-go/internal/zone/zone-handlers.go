@@ -21,21 +21,6 @@ import (
 	capnp "capnproto.org/go/capnp/v3"
 )
 
-// logInventory logs all inventory items for debugging
-func logInventory(ctx string, charName string, items map[constants.InventoryKey]*constants.ItemWithInstance) {
-	log.Printf("=== INVENTORY [%s] for %s ===", ctx, charName)
-	if len(items) == 0 {
-		log.Printf("  (empty)")
-		return
-	}
-	for slot, entry := range items {
-		if entry != nil {
-			log.Printf("  bag=%d, slot=%d: %s (itemID=%d)", slot.Bag, slot.Slot, entry.Item.Name, entry.Instance.ItemID)
-		}
-	}
-	log.Printf("=== END INVENTORY [%s] (%d items) ===", ctx, len(items))
-}
-
 func HandleChannelMessage(z *ZoneInstance, ses *session.Session, payload []byte) {
 	req, err := session.Deserialize(ses, payload, eq.ReadRootChannelMessage)
 	if err != nil {
@@ -178,11 +163,6 @@ func HandleRequestClientZoneChange(z *ZoneInstance, ses *session.Session, payloa
 	}
 
 	clientEntry := z.ClientEntries[ses.SessionID]
-
-	// Log inventory on zone change
-	if ses.Client != nil {
-		logInventory("ZONE_CHANGE", charData.Name, ses.Client.Items())
-	}
 
 	dbZone, err := db_zone.GetZoneById(context.Background(), int(charData.ZoneID))
 	if err != nil {
@@ -438,14 +418,6 @@ func HandleRequestClientZoneChange(z *ZoneInstance, ses *session.Session, payloa
 }
 
 func HandleCamp(z *ZoneInstance, ses *session.Session, payload []byte) {
-	// Log inventory on camp
-	if ses.Client != nil {
-		charData := ses.Client.CharData()
-		if charData != nil {
-			logInventory("CAMP", charData.Name, ses.Client.Items())
-		}
-	}
-
 	savePlayerData(ses)
 	z.RemoveClient(ses.SessionID)
 }

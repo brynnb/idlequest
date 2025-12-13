@@ -123,26 +123,6 @@ const useGameStatusStore = create<GameStatusStore>()(
             },
 
             setCurrentZone: async (zoneId) => {
-              // Log inventory on zone change
-              const playerStore = await import("./PlayerCharacterStore");
-              const inventory =
-                playerStore.default.getState().characterProfile?.inventory ||
-                [];
-              const charName =
-                playerStore.default.getState().characterProfile?.name ||
-                "Unknown";
-              console.log(`=== INVENTORY [ZONE_CHANGE] for ${charName} ===`);
-              inventory.forEach((item) => {
-                console.log(
-                  `  bag=${item.bag}, slot=${item.slot}: ${
-                    item.itemDetails?.name || "Unknown"
-                  }`
-                );
-              });
-              console.log(
-                `=== END INVENTORY [ZONE_CHANGE] (${inventory.length} items) ===`
-              );
-
               set({ currentZone: zoneId });
               await get().updateCurrentZoneNPCs();
             },

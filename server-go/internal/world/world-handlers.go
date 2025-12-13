@@ -18,21 +18,6 @@ import (
 	capnp "capnproto.org/go/capnp/v3"
 )
 
-// logInventory logs all inventory items for debugging
-func logInventory(ctx string, charName string, items map[constants.InventoryKey]*constants.ItemWithInstance) {
-	log.Printf("=== INVENTORY [%s] for %s ===", ctx, charName)
-	if len(items) == 0 {
-		log.Printf("  (empty)")
-		return
-	}
-	for slot, entry := range items {
-		if entry != nil {
-			log.Printf("  bag=%d, slot=%d: %s (itemID=%d)", slot.Bag, slot.Slot, entry.Item.Name, entry.Instance.ItemID)
-		}
-	}
-	log.Printf("=== END INVENTORY [%s] (%d items) ===", ctx, len(items))
-}
-
 func sendCharInfo(ses *session.Session, accountId int64) {
 	ctx := context.Background()
 	charInfo, err := GetCharSelectInfo(ses, ctx, accountId)
@@ -197,8 +182,6 @@ func sendPlayerProfile(ses *session.Session, characterName string) {
 	charItems := ses.Client.Items()
 	charItemsLength := int32(len(charItems))
 
-	// Log inventory on zone in
-	logInventory("ZONE_IN", charData.Name, charItems)
 	if charItemsLength > 0 {
 		capCharItems, err := playerProfile.NewInventoryItems(charItemsLength)
 		if err != nil {

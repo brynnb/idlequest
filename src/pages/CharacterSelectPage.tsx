@@ -324,25 +324,6 @@ const CharacterSelectPage = () => {
             })
           );
 
-        // Log inventory on zone in
-        console.log("=== INVENTORY [ZONE_IN] for", plainProfile.name, "===");
-        inventoryItems.forEach(
-          (item: {
-            bag: number;
-            slot: number;
-            itemDetails?: { name?: string };
-          }) => {
-            console.log(
-              `  bag=${item.bag}, slot=${item.slot}: ${
-                item.itemDetails?.name || "Unknown"
-              }`
-            );
-          }
-        );
-        console.log(
-          `=== END INVENTORY [ZONE_IN] (${inventoryItems.length} items) ===`
-        );
-
         if (inventoryItems.length > 0) {
           await setInventory(inventoryItems);
         }
