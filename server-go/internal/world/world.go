@@ -3,110 +3,58 @@ package world
 import (
 	"encoding/binary"
 	"log"
-	"sync"
 
 	"idlequest/internal/session"
-	"idlequest/internal/zone"
 )
 
-// WorldHandler manages global message routing and session-to-zone mapping.
+// WorldHandler manages global message routing.
+// Simplified for idle game - no ZoneManager or ZoneInstance needed.
 type WorldHandler struct {
-	zoneManager    *ZoneManager
-	sessionManager *session.SessionManager // SessionManager for session context
+	sessionManager *session.SessionManager
 	globalRegistry *HandlerRegistry
 }
 
 // NewWorldHandler creates a new WorldHandler.
-func NewWorldHandler(zoneManager *ZoneManager, sessionManager *session.SessionManager) *WorldHandler {
-	registry := NewWorldOpCodeRegistry() // Global registry
+func NewWorldHandler(sessionManager *session.SessionManager) *WorldHandler {
+	registry := NewWorldOpCodeRegistry()
 	wh := &WorldHandler{
-		zoneManager:    zoneManager,
 		sessionManager: sessionManager,
 		globalRegistry: registry,
 	}
-	registry.WH = wh // Set the WorldHandler in the registry
+	registry.WH = wh
 	return wh
 }
 
-// HandlePacket processes incoming datagrams and routes them.
-func (wh *WorldHandler) HandlePacket(session *session.Session, data []byte) {
-	// Check if the message should be handled globally (e.g., login)
+// HandlePacket processes incoming datagrams.
+// All handlers are now at the world level - no zone routing needed.
+func (wh *WorldHandler) HandlePacket(ses *session.Session, data []byte) {
+	if len(data) < 2 {
+		return
+	}
+
+	// All opcodes are handled globally now
 	if wh.globalRegistry.ShouldHandleGlobally(data) {
-		if !wh.globalRegistry.HandleWorldPacket(session, data) {
-			return
-		}
+		wh.globalRegistry.HandleWorldPacket(ses, data)
+		return
 	}
 
-	if !session.Authenticated {
+	// Unknown opcode
+	if !ses.Authenticated {
 		op := binary.LittleEndian.Uint16(data[:2])
-		log.Printf("unauthenticated opcode %d from session %d – dropping", op, session.SessionID)
-		return
-	}
-	if session.ZoneID == -1 {
-		log.Printf("session %d has no zone assigned, cannot handle packet", session.SessionID)
+		log.Printf("unauthenticated opcode %d from session %d – dropping", op, ses.SessionID)
 		return
 	}
 
-	// Route to the zone from the session and create if it doesn't exist
-	zone, _ := wh.zoneManager.GetOrCreate(session.ZoneID, session.InstanceID)
-	zone.HandleClientPacket(session, data)
+	op := binary.LittleEndian.Uint16(data[:2])
+	log.Printf("unhandled opcode %d from session %d", op, ses.SessionID)
 }
 
 // RemoveSession cleans up session data.
 func (wh *WorldHandler) RemoveSession(sessionID int) {
-	ses, ok := wh.sessionManager.GetSession(sessionID)
-	if ok && ses != nil && ses.ZoneID != -1 {
-		zoneInstance, ok := wh.zoneManager.Get(ses.ZoneID, ses.InstanceID)
-		if ok {
-			zoneInstance.RemoveClient(sessionID)
-		}
-	}
 	wh.sessionManager.RemoveSession(sessionID)
-
 }
 
-type zoneKey struct {
-	ZoneID     int
-	InstanceID int
-}
-
-// ZoneManager tracks all instances.
-type ZoneManager struct {
-	mu    sync.Mutex
-	zones map[zoneKey]*zone.ZoneInstance
-}
-
-func NewZoneManager() *ZoneManager {
-	return &ZoneManager{
-		zones: make(map[zoneKey]*zone.ZoneInstance),
-	}
-}
-
-func (m *ZoneManager) Get(zoneID, instanceID int) (*zone.ZoneInstance, bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	key := zoneKey{ZoneID: zoneID, InstanceID: instanceID}
-	inst, ok := m.zones[key]
-	return inst, ok
-}
-
-// GetOrCreate retrieves or creates a zone instance.
-func (m *ZoneManager) GetOrCreate(zoneID, instanceID int) (*zone.ZoneInstance, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	key := zoneKey{ZoneID: zoneID, InstanceID: instanceID}
-	if inst, ok := m.zones[key]; ok {
-		return inst, nil
-	}
-	inst := zone.NewZoneInstance(zoneID, instanceID)
-	m.zones[key] = inst
-	return inst, nil
-}
-
-func (m *ZoneManager) Shutdown() {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	for _, inst := range m.zones {
-		inst.Stop()
-	}
+// Shutdown is a no-op now - no zone instances to stop.
+func (wh *WorldHandler) Shutdown() {
+	// No-op: No zone instances to shut down
 }

@@ -6,8 +6,7 @@ import (
 )
 
 // ZoneAccess provides read-only, thread-safe access to zone state.
-
-// ZoneAccess provides read-only, thread-safe access to zone state.
+// Simplified for idle game - no live NPC tracking.
 type ZoneAccess interface {
 	// Basic zone info
 	GetZone() *model.Zone
@@ -19,12 +18,12 @@ type ZoneAccess interface {
 	ClientBySession(sessionID int) (Client, bool)
 	ClientByEntity(entityID int) (Client, bool)
 
-	// NPCs
+	// NPCs - stub methods, NPCs not tracked live in idle game
 	NPCs() []NPC
 	NPCByID(npcID int) (NPC, bool)
 	NPCByName(name string) (NPC, bool)
 
-	// Entities (players + NPCs)
+	// Entities (players only in idle game)
 	ZoneEntities() []Entity
 	EntityByID(id int) (Entity, bool)
 

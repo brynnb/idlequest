@@ -7,7 +7,6 @@ require (
 	github.com/arl/go-detour v0.1.3
 	github.com/dgraph-io/ristretto/v2 v2.2.0
 	github.com/edsrzf/mmap-go v1.2.0
-	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-jet/jet/v2 v2.13.0
 	github.com/go-sql-driver/mysql v1.9.2
 	github.com/golang-jwt/jwt/v5 v5.2.2
@@ -15,7 +14,6 @@ require (
 	github.com/quic-go/quic-go v0.43.0
 	github.com/quic-go/webtransport-go v0.8.0
 	github.com/sevlyar/go-daemon v0.1.6
-	github.com/traefik/yaegi v0.16.1
 )
 
 // replace capnproto.org/go/capnp/v3 => ../../go-capnp

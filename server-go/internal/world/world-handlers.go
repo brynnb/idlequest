@@ -354,14 +354,8 @@ func HandleRequestClientZoneChange(ses *session.Session, payload []byte, wh *Wor
 		ses.ZoneID = int(charData.ZoneID)
 		ses.InstanceID = int(charData.ZoneInstance)
 	} else {
-		// Zoning from another zone
-		// First remove client from previous zone
-		if ses.ZoneID != -1 && wh.zoneManager != nil {
-			zoneInstance, ok := wh.zoneManager.Get(ses.ZoneID, ses.InstanceID)
-			if ok {
-				zoneInstance.RemoveClient(ses.SessionID)
-			}
-		}
+		// Zoning from another zone - just update session and DB
+		// No ZoneInstance cleanup needed for idle game
 
 		// Update character data with new zone
 		charData.ZoneID = uint32(zoneId)
@@ -498,5 +492,41 @@ func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandle
 	})
 
 	ses.SendStream(req.Message(), opcodes.DeleteItem)
+	return false
+}
+
+// HandleCamp saves player data and logs them out
+func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		return false
+	}
+	if err := db_character.UpdateCharacter(ses.Client.CharData(), ses.AccountID); err != nil {
+		log.Printf("failed to save player data on camp: %v", err)
+	}
+	wh.sessionManager.RemoveSession(ses.SessionID)
+	return false
+}
+
+// HandleChannelMessage is a no-op for single-player idle game
+func HandleChannelMessage(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	// No-op: Single-player idle game doesn't need chat broadcasting
+	return false
+}
+
+// HandleClientUpdate is a no-op for idle game - no real-time position tracking
+func HandleClientUpdate(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	return false
+}
+
+// HandleClientAnimation is a no-op for idle game - no animation broadcasting
+func HandleClientAnimation(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	return false
+}
+
+// HandleGMCommand handles GM commands
+func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	// GM commands can be implemented here if needed
+	// For now, just log and ignore
+	log.Printf("GM command received from session %d", ses.SessionID)
 	return false
 }

@@ -26,7 +26,7 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.EnterWorld:              HandleEnterWorld,
 		opcodes.ZoneSession:             HandleZoneSession,
 		opcodes.RequestClientZoneChange: HandleRequestClientZoneChange,
-		// Inventory handlers - forward to zone if zone assigned, handle at world level otherwise
+		// Inventory handlers
 		opcodes.MoveItem:   HandleMoveItemWorld,
 		opcodes.DeleteItem: HandleDeleteItemWorld,
 		// Data query handlers
@@ -36,6 +36,12 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.GetAdjacentZonesRequest: HandleGetAdjacentZonesRequest,
 		opcodes.SendChatMessage:         HandleSendChatMessage,
 		opcodes.GetNPCDialogueRequest:   HandleGetNPCDialogueRequest,
+		// Zone handlers moved to world (no ZoneInstance needed for idle game)
+		opcodes.Camp:           HandleCamp,
+		opcodes.ChannelMessage: HandleChannelMessage,
+		opcodes.ClientUpdate:   HandleClientUpdate,
+		opcodes.Animation:      HandleClientAnimation,
+		opcodes.GMCommand:      HandleGMCommand,
 	}
 
 	globalOpcodes := make(map[opcodes.OpCode]bool)
