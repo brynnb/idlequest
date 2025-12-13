@@ -285,7 +285,8 @@ const CharacterSelectPage = () => {
           .map(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (item: any) => ({
-              slotid: item.slot ?? 0,
+              bag: item.bagSlot ?? 0,
+              slot: item.slot ?? 0,
               itemid: 0, // Not needed - we have full item details
               charges: item.charges || 0,
               // Include embedded item details directly from server
@@ -322,6 +323,25 @@ const CharacterSelectPage = () => {
               },
             })
           );
+
+        // Log inventory on zone in
+        console.log("=== INVENTORY [ZONE_IN] for", plainProfile.name, "===");
+        inventoryItems.forEach(
+          (item: {
+            bag: number;
+            slot: number;
+            itemDetails?: { name?: string };
+          }) => {
+            console.log(
+              `  bag=${item.bag}, slot=${item.slot}: ${
+                item.itemDetails?.name || "Unknown"
+              }`
+            );
+          }
+        );
+        console.log(
+          `=== END INVENTORY [ZONE_IN] (${inventoryItems.length} items) ===`
+        );
 
         if (inventoryItems.length > 0) {
           await setInventory(inventoryItems);

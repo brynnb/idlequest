@@ -4,14 +4,29 @@ import CharacterCreationAttributes from "@entities/CharacterCreationAttributes";
 import charCreateCombinations from "@data/json/char_create_combinations.json";
 import charCreatePointAllocations from "@data/json/char_create_point_allocations.json";
 
-const baseAttributeKeys = ["str", "sta", "dex", "agi", "int", "wis", "cha"];
+type BaseAttributeKey = "str" | "sta" | "dex" | "agi" | "int" | "wis" | "cha";
+type BaseAllocationKey = `base_${BaseAttributeKey}`;
+
+type BaseAllocation = {
+  id: number;
+} & Record<BaseAllocationKey, number>;
+
+const baseAttributeKeys: BaseAttributeKey[] = [
+  "str",
+  "sta",
+  "dex",
+  "agi",
+  "int",
+  "wis",
+  "cha",
+];
 
 const getBaseAttributes = (
   race: Race | null,
   charClass: CharacterClass | null
 ): CharacterCreationAttributes => {
   const baseAttributes = baseAttributeKeys.reduce((acc, attr) => {
-    acc[`base_${attr}`] = 0;
+    acc[`base_${attr}` as keyof CharacterCreationAttributes] = 0;
     acc[attr] = 0;
     return acc;
   }, {} as CharacterCreationAttributes);
@@ -28,8 +43,10 @@ const getBaseAttributes = (
       );
 
       if (attributeSet) {
+        const typedSet = attributeSet as unknown as BaseAllocation;
         baseAttributeKeys.forEach((attr) => {
-          baseAttributes[`base_${attr}`] = attributeSet[`base_${attr}`] || 0;
+          const baseKey = `base_${attr}` as keyof CharacterCreationAttributes;
+          baseAttributes[baseKey] = typedSet[baseKey as BaseAllocationKey] || 0;
         });
       }
     }
@@ -37,20 +54,22 @@ const getBaseAttributes = (
 
   // Apply race and class modifiers
   if (race) {
+    const raceMods = race as unknown as Partial<
+      Record<BaseAttributeKey, number>
+    >;
     baseAttributeKeys.forEach((attr) => {
-      if (attr in race) {
-        baseAttributes[`base_${attr}`] += race[attr as keyof Race] as number;
-      }
+      const baseKey = `base_${attr}` as keyof CharacterCreationAttributes;
+      baseAttributes[baseKey] += raceMods[attr] ?? 0;
     });
   }
 
   if (charClass) {
+    const classMods = charClass as unknown as Partial<
+      Record<BaseAttributeKey, number>
+    >;
     baseAttributeKeys.forEach((attr) => {
-      if (attr in charClass) {
-        baseAttributes[`base_${attr}`] += charClass[
-          attr as keyof CharacterClass
-        ] as number;
-      }
+      const baseKey = `base_${attr}` as keyof CharacterCreationAttributes;
+      baseAttributes[baseKey] += classMods[attr] ?? 0;
     });
   }
 

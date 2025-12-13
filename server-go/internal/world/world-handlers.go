@@ -18,26 +18,19 @@ import (
 	capnp "capnproto.org/go/capnp/v3"
 )
 
-// bagSlotToFlatSlot converts server bag+slot format to flat slot ID
-// Server stores: bag <= 0 for equipment/general/cursor (slot = actual slot ID 0-30)
-//
-//	bag = 1-8 for bag contents (slot = position within bag 0-9)
-//
-// Equipment: 0-21, General: 22-29, Cursor: 30, Bag contents: 251+
-func bagSlotToFlatSlot(bag int8, slot int8) int32 {
-	if bag <= 0 {
-		// Equipment, general, and cursor slots - slot is already the flat slot ID
-		return int32(slot)
-	} else if bag >= 1 && bag <= 8 {
-		// Bag contents: bag=1-8, slot=0-9 -> flat slot 251-330
-		// bag 1 -> 251-260, bag 2 -> 261-270, etc.
-		return int32(251 + (int(bag)-1)*10 + int(slot))
-	} else if bag == 9 {
-		// Cursor bag contents -> 331-340
-		return int32(331 + int(slot))
+// logInventory logs all inventory items for debugging
+func logInventory(ctx string, charName string, items map[constants.InventoryKey]*constants.ItemWithInstance) {
+	log.Printf("=== INVENTORY [%s] for %s ===", ctx, charName)
+	if len(items) == 0 {
+		log.Printf("  (empty)")
+		return
 	}
-	// Default fallback
-	return int32(slot)
+	for slot, entry := range items {
+		if entry != nil {
+			log.Printf("  bag=%d, slot=%d: %s (itemID=%d)", slot.Bag, slot.Slot, entry.Item.Name, entry.Instance.ItemID)
+		}
+	}
+	log.Printf("=== END INVENTORY [%s] (%d items) ===", ctx, len(items))
 }
 
 func sendCharInfo(ses *session.Session, accountId int64) {
@@ -203,6 +196,9 @@ func sendPlayerProfile(ses *session.Session, characterName string) {
 	// Add inventory items to PlayerProfile
 	charItems := ses.Client.Items()
 	charItemsLength := int32(len(charItems))
+
+	// Log inventory on zone in
+	logInventory("ZONE_IN", charData.Name, charItems)
 	if charItemsLength > 0 {
 		capCharItems, err := playerProfile.NewInventoryItems(charItemsLength)
 		if err != nil {
@@ -219,15 +215,13 @@ func sendPlayerProfile(ses *session.Session, characterName string) {
 					continue
 				}
 
-				// Convert bag+slot to flat client slot ID
-				clientSlotID := bagSlotToFlatSlot(slot.Bag, slot.Slot)
-
 				item := capCharItems.At(itemIdx)
 				itemIdx++
 				item.SetCharges(uint32(charItem.Instance.Charges))
 				item.SetQuantity(uint32(charItem.Instance.Quantity))
 				item.SetMods(string(mods))
-				item.SetSlot(int32(clientSlotID))
+				// Send server-native addressing (bagSlot + slot) with no flat-slot conversion.
+				item.SetSlot(int32(slot.Slot))
 				item.SetBagSlot(int32(slot.Bag))
 				items.ConvertItemTemplateToCapnp(ses, &charItem.Item, &item)
 			}

@@ -167,7 +167,7 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
           const state = get();
           switch (state.currentStep) {
             case 1:
-              return (
+              return !!(
                 state.characterName &&
                 state.selectedRace &&
                 state.selectedClass &&

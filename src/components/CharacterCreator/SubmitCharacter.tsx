@@ -15,7 +15,7 @@ import SelectionButton from "../Interface/SelectionButton";
 const SubmitCharacter: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { setCharacters } = useCharacterSelectStore();
+  const { setCharacters, setPendingSelectName } = useCharacterSelectStore();
   const {
     characterName,
     selectedRace,
@@ -55,6 +55,8 @@ const SubmitCharacter: React.FC = () => {
         if (data.value === 1) {
           // Success - navigate to character select to pick the new character
           console.log("Character created successfully");
+          // Set the pending name so the store auto-selects this character
+          setPendingSelectName(characterName);
           resetStore();
           navigate("/characterselect");
         } else {

@@ -5,8 +5,9 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-# Command to build the project
-cmd = "go build -o ./tmp/main ./cmd/daemon"
+# Command to build the project - use cmd/server directly (not daemon wrapper)
+# Include build timestamp via ldflags so we can verify we're running the latest code
+cmd = "go build -ldflags \"-X 'main.BuildTime=$(date +%Y-%m-%d_%H:%M:%S)'\" -o ./tmp/main ./cmd/server"
 # Binary to run
 bin = "./tmp/main"
 # Watch these file extensions

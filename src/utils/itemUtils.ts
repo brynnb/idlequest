@@ -15,12 +15,6 @@ import Race from "@entities/Race";
 import { InventoryItem } from "@entities/InventoryItem";
 import CharacterClass from "@entities/CharacterClass";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import getItemScore from "./getItemScore";
-import useChatStore, { MessageType } from "@stores/ChatStore";
-import { getItemById } from "./databaseOperations";
-import CharacterProfile from "@entities/CharacterProfile";
-import { ItemSize } from "@entities/ItemSize";
-import { ItemClass } from "@entities/ItemClass";
 
 export const getCharacterClass = (classId: number): CharacterClass | null => {
   const classData = classesData.find((c) => c.id === classId);
@@ -45,33 +39,6 @@ export const isSlotAvailableForItem = (
   if (slot === InventorySlot.Cursor) return true;
   if (slot >= 22 && slot <= 29) return true;
 
-  // Prevent placing bags inside bags
-  if (
-    slot >= 262 &&
-    slot <= 351 &&
-    item.itemDetails?.itemclass === ItemClass.CONTAINER
-  ) {
-    return false;
-  }
-
-  // Check size restrictions for bag slots
-  if (slot >= 262 && slot <= 351) {
-    const bagSlot = Math.floor((slot - 262) / 10) + 23;
-    const bagItem = inventory.find((item) => item.slotid === bagSlot);
-
-    if (
-      bagItem?.itemDetails?.bagsize !== undefined &&
-      item.itemDetails?.size !== undefined
-    ) {
-      const itemSize = item.itemDetails.size as ItemSize;
-      const bagMaxSize = bagItem.itemDetails.bagsize as ItemSize;
-      if (itemSize > bagMaxSize) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   if (!item.itemDetails || item.itemDetails.slots === undefined) {
     return false;
   }
@@ -79,7 +46,7 @@ export const isSlotAvailableForItem = (
   // Check if trying to equip in secondary slot while having a 2H weapon equipped
   if (slot === InventorySlot.Secondary) {
     const primaryItem = inventory.find(
-      (item) => item.slotid === InventorySlot.Primary
+      (inv) => inv.bag === 0 && inv.slot === InventorySlot.Primary
     );
     if (
       primaryItem?.itemDetails?.itemtype !== undefined &&
@@ -96,7 +63,7 @@ export const isSlotAvailableForItem = (
     [1, 4, 35].includes(item.itemDetails.itemtype)
   ) {
     const secondaryItem = inventory.find(
-      (item) => item.slotid === InventorySlot.Secondary
+      (inv) => inv.bag === 0 && inv.slot === InventorySlot.Secondary
     );
     if (secondaryItem) {
       return false;
@@ -104,7 +71,9 @@ export const isSlotAvailableForItem = (
   }
 
   const itemSlots = parseInt(item.itemDetails.slots.toString());
-  const slotCheck = (itemSlots & SlotBitmasks[slot]) !== 0;
+  const bitmask = SlotBitmasks[slot];
+  if (bitmask === undefined) return false;
+  const slotCheck = (itemSlots & bitmask) !== 0;
   const classCheck = isEquippableWithClass(item.itemDetails, characterClass);
   const raceCheck = isEquippableWithRace(item.itemDetails, characterRace);
 
@@ -253,28 +222,10 @@ export const getEquippableSlots = (item: Item): number[] => {
 export const findFirstAvailableGeneralSlot = (
   inventory: InventoryItem[]
 ): number | undefined => {
-  // Check base slots (23 to 30)
+  // Check base slots (23 to 30) in bag=0 only
   for (let slot = 23; slot <= 30; slot++) {
-    if (!inventory.some((item) => item.slotid === slot)) {
+    if (!inventory.some((item) => item.bag === 0 && item.slot === slot)) {
       return slot;
-    }
-  }
-
-  // Check bag slots
-  for (let baseSlot = 23; baseSlot <= 30; baseSlot++) {
-    const bagItem = inventory.find(
-      (item) => item.slotid === baseSlot && item.itemDetails?.bagslots
-    );
-    if (bagItem?.itemDetails?.bagslots) {
-      const bagSize = bagItem.itemDetails.bagslots;
-      const bagStartSlot = getBagStartingSlot(baseSlot);
-      for (let i = 0; i < bagSize; i++) {
-        const bagSlot = bagStartSlot + i;
-        const itemInSlot = inventory.find((item) => item.slotid === bagSlot);
-        if (!itemInSlot) {
-          return bagSlot;
-        }
-      }
     }
   }
 
@@ -282,8 +233,7 @@ export const findFirstAvailableGeneralSlot = (
 };
 
 export const findFirstAvailableSlotForItem = (
-  inventory: InventoryItem[],
-  item: InventoryItem
+  inventory: InventoryItem[]
 ): number | undefined => {
   const { characterProfile } = usePlayerCharacterStore.getState();
 
@@ -294,135 +244,14 @@ export const findFirstAvailableSlotForItem = (
     return undefined;
   }
 
-  // Check base slots (23 to 30)
+  // Check base slots (23 to 30) in bag=0 only
   for (let slot = 23; slot <= 30; slot++) {
-    if (!inventory.some((invItem) => invItem.slotid === slot)) {
+    if (
+      !inventory.some((invItem) => invItem.bag === 0 && invItem.slot === slot)
+    ) {
       return slot;
     }
   }
 
-  // Check bag slots
-  for (let baseSlot = 23; baseSlot <= 30; baseSlot++) {
-    const bagItem = inventory.find(
-      (invItem) => invItem.slotid === baseSlot && invItem.itemDetails?.bagslots
-    );
-    if (bagItem?.itemDetails?.bagslots) {
-      const bagSize = bagItem.itemDetails.bagslots;
-      const bagStartSlot = getBagStartingSlot(baseSlot);
-      for (let i = 0; i < bagSize; i++) {
-        const bagSlot = bagStartSlot + i;
-        const itemInSlot = inventory.find(
-          (invItem) => invItem.slotid === bagSlot
-        );
-        if (
-          !itemInSlot &&
-          isItemAllowedInSlot(
-            item,
-            bagSlot as InventorySlot,
-            characterProfile.class,
-            characterProfile.race,
-            inventory
-          )
-        ) {
-          return bagSlot;
-        }
-      }
-    }
-  }
-
   return undefined;
-};
-
-// Maps general inventory slot to bag content starting slot
-// Uses InventorySlot enum values which match server slot IDs
-export const getBagStartingSlot = (baseSlot: number): number => {
-  switch (baseSlot) {
-    case InventorySlot.Cursor: // 30
-      return InventorySlot.CursorBagStartingSlot; // 331
-    case InventorySlot.General1: // 22
-      return InventorySlot.General1BagStartingSlot; // 251
-    case InventorySlot.General2: // 23
-      return InventorySlot.General2BagStartingSlot; // 261
-    case InventorySlot.General3: // 24
-      return InventorySlot.General3BagStartingSlot; // 271
-    case InventorySlot.General4: // 25
-      return InventorySlot.General4BagStartingSlot; // 281
-    case InventorySlot.General5: // 26
-      return InventorySlot.General5BagStartingSlot; // 291
-    case InventorySlot.General6: // 27
-      return InventorySlot.General6BagStartingSlot; // 301
-    case InventorySlot.General7: // 28
-      return InventorySlot.General7BagStartingSlot; // 311
-    case InventorySlot.General8: // 29
-      return InventorySlot.General8BagStartingSlot; // 321
-    default:
-      return -1;
-  }
-};
-
-export const handleEquipAllItems = () => {
-  const { characterProfile, setInventory } = usePlayerCharacterStore.getState();
-  const newInventory = [...characterProfile.inventory];
-
-  const generalItems = newInventory.filter(
-    (item) => item.slotid && item.slotid > 22
-  );
-
-  for (const inventoryItem of generalItems) {
-    const itemDetails = inventoryItem.itemDetails;
-
-    if (itemDetails && itemDetails.slots !== undefined) {
-      const possibleSlots = getInventorySlotNames(itemDetails.slots);
-
-      for (const slotName of possibleSlots) {
-        const slotEntry = Object.entries(InventorySlot).find(
-          ([key, value]) => key.replace(/\d+/g, "").toUpperCase() === slotName
-        );
-
-        if (slotEntry) {
-          const slotId = parseInt(slotEntry[1].toString());
-          if (slotId >= 0 && slotId <= 22) {
-            const isSlotEmpty = !newInventory.some(
-              (invItem) => invItem.slotid === slotId
-            );
-
-            if (isSlotEmpty) {
-              inventoryItem.slotid = slotId;
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  setInventory(newInventory);
-};
-
-export const addItemToInventoryByItemId = async (itemId: number) => {
-  const { characterProfile, addInventoryItem } =
-    usePlayerCharacterStore.getState();
-  const itemDetails = await getItemById(itemId);
-
-  if (!itemDetails) {
-    console.error(`Failed to fetch item details for item ID: ${itemId}`);
-    return;
-  }
-
-  const generalSlot = findFirstAvailableGeneralSlot(
-    characterProfile.inventory || []
-  );
-  if (generalSlot === undefined) {
-    console.warn("No available slots for new item");
-    return;
-  }
-
-  const newItem = {
-    itemid: itemId,
-    slotid: generalSlot,
-    charges: itemDetails.maxcharges || 0,
-    itemDetails,
-  };
-
-  await addInventoryItem(newItem);
 };

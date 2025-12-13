@@ -6,14 +6,14 @@ import {
 } from "./eqDataService";
 
 // Legacy function for compatibility - no longer needs initialization
-export const initDatabase = async (isTest = false) => {
+export const initDatabase = async (_isTest = false) => {
   // Database is now handled on the server side
   return Promise.resolve();
 };
 
 export const getDatabase = () => null;
 
-export const setDatabase = (database: any) => {
+export const setDatabase = (_database: any) => {
   // No longer needed - database is on server
 };
 
@@ -41,7 +41,6 @@ export const getByZoneId = async <T extends "items" | "zone">(
 };
 
 export const getItemById = async (id: number): Promise<Item | undefined> => {
-  console.log("getItemById", id);
   return (await eqDataService.getItemById(id)) || undefined;
 };
 

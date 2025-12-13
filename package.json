@@ -5,10 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "test:inventory": "npx playwright test e2e/inventory-persistence.spec.ts --headed",
     "server:go": "cd server-go && (air || go run ./cmd/daemon)",
     "server": "set -a && source .env && set +a && npm run server:go",
     "dev:all": "npm run server:go & sleep 3 && npm run dev"

@@ -123,6 +123,26 @@ const useGameStatusStore = create<GameStatusStore>()(
             },
 
             setCurrentZone: async (zoneId) => {
+              // Log inventory on zone change
+              const playerStore = await import("./PlayerCharacterStore");
+              const inventory =
+                playerStore.default.getState().characterProfile?.inventory ||
+                [];
+              const charName =
+                playerStore.default.getState().characterProfile?.name ||
+                "Unknown";
+              console.log(`=== INVENTORY [ZONE_CHANGE] for ${charName} ===`);
+              inventory.forEach((item) => {
+                console.log(
+                  `  bag=${item.bag}, slot=${item.slot}: ${
+                    item.itemDetails?.name || "Unknown"
+                  }`
+                );
+              });
+              console.log(
+                `=== END INVENTORY [ZONE_CHANGE] (${inventory.length} items) ===`
+              );
+
               set({ currentZone: zoneId });
               await get().updateCurrentZoneNPCs();
             },
@@ -134,13 +154,16 @@ const useGameStatusStore = create<GameStatusStore>()(
               }
               const zoneName = getZoneNameById(currentZone);
               if (!zoneName) {
-                console.error("Zone name not found for current zone:", currentZone);
+                console.error(
+                  "Zone name not found for current zone:",
+                  currentZone
+                );
                 return;
               }
               try {
                 // Server is the only source of NPC data
                 const npcs = await eqDataService.getZoneNPCs(zoneName);
-                set({ currentZoneNPCs: npcs });
+                set({ currentZoneNPCs: npcs as unknown as NPCType[] });
               } catch (error) {
                 console.error("Failed to fetch zone NPCs:", error);
                 set({ currentZoneNPCs: [] });
@@ -239,7 +262,7 @@ const useGameStatusStore = create<GameStatusStore>()(
         },
         {
           name: "game-status-storage",
-          onRehydrateStorage: () => (state) => {},
+          onRehydrateStorage: () => () => {},
         }
       ),
       { name: "Game Status Store" }

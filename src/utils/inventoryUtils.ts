@@ -9,91 +9,28 @@ import { ItemClass } from "@entities/ItemClass";
 // General inventory slots match server: 22-29
 const GENERAL_SLOTS = [22, 23, 24, 25, 26, 27, 28, 29];
 
-// Convert server bag+slot format to flat slot ID
-// bag=-1/0, slot=0-21 -> Equipment slots 0-21
-// bag=-1/0, slot=22-29 -> General slots 22-29
-// bag=-1/0, slot=30 -> Cursor slot 30
-// bag=1-8, slot=0-9 -> Bag contents 251-330
-// bag=9, slot=0-9 -> Cursor bag contents 331-340
-export const bagSlotToFlatSlot = (bag: number, slot: number): number => {
-  if (bag <= 0) {
-    // Equipment, general, or cursor slots - slot is already the flat slot ID
-    return slot;
-  } else if (bag >= 1 && bag <= 8) {
-    // Bag contents: bag 1 -> 251-260, bag 2 -> 261-270, etc.
-    return 251 + (bag - 1) * 10 + slot;
-  } else if (bag === 9) {
-    // Cursor bag contents
-    return 331 + slot;
-  }
-  // Default fallback
-  return slot;
-};
-
-// Convert flat slot ID to server bag+slot format
-// Server uses: bag <= 0 for equipment/general/cursor (slot = actual slot ID 0-30)
-//              bag = 1-8 for bag contents (slot = position within bag 0-9)
-// Equipment: 0-21 -> bag=0, slot=0-21
-// General: 22-29 -> bag=0, slot=22-29
-// Cursor: 30 -> bag=0, slot=30
-// Bag contents: 251-330 -> bag=1-8, slot=0-9
-// Cursor bag: 331-340 -> bag=9, slot=0-9
-export const flatSlotToBagSlot = (
-  flatSlot: number
-): { bag: number; slot: number } => {
-  if (flatSlot >= 0 && flatSlot <= 30) {
-    // Equipment, general, and cursor slots - slot is the actual slot ID
-    return { bag: 0, slot: flatSlot };
-  } else if (flatSlot >= 251 && flatSlot <= 330) {
-    // Bag contents: 251-260 -> bag=1, 261-270 -> bag=2, etc.
-    const bagNum = Math.floor((flatSlot - 251) / 10) + 1;
-    const slotInBag = (flatSlot - 251) % 10;
-    return { bag: bagNum, slot: slotInBag };
-  } else if (flatSlot >= 331 && flatSlot <= 340) {
-    // Cursor bag contents
-    return { bag: 9, slot: flatSlot - 331 };
-  }
-  // Default fallback
-  return { bag: 0, slot: flatSlot };
-};
-
-// Maps general inventory slot to bag content starting slot
-// Server uses: bag 1-8 for contents of items in general slots 22-29
-// Bag contents start at slot 251 (10 slots per bag)
-export const getBagStartingSlot = (baseSlot: number): number => {
-  const slotMap: Record<number, number> = {
-    22: 251, // General1 bag contents
-    23: 261, // General2 bag contents
-    24: 271, // General3 bag contents
-    25: 281, // General4 bag contents
-    26: 291, // General5 bag contents
-    27: 301, // General6 bag contents
-    28: 311, // General7 bag contents
-    29: 321, // General8 bag contents
-    30: 331, // Cursor bag contents
-  };
-  return slotMap[baseSlot] ?? -1;
-};
-
 export const getNextAvailableSlot = (
   inventory: InventoryItem[]
 ): number | null => {
-  // Remove any duplicate slots first
+  // Remove any duplicate locations first
   const deduplicatedInventory = inventory.reduce((acc, item) => {
-    const existingItem = acc.find((i) => i.slotid === item.slotid);
-    if (!existingItem) {
-      acc.push(item);
-    }
+    const existingItem = acc.find(
+      (i) => i.bag === item.bag && i.slot === item.slot
+    );
+    if (!existingItem) acc.push(item);
     return acc;
   }, [] as InventoryItem[]);
 
-  const occupiedSlots = new Set(
-    deduplicatedInventory.map((item) => item.slotid)
+  // For picking a destination slot we only care about base inventory slots (bag=0)
+  const occupiedBaseSlots = new Set(
+    deduplicatedInventory
+      .filter((item) => item.bag === 0)
+      .map((item) => item.slot)
   );
 
   // First check general slots
   for (const slot of GENERAL_SLOTS) {
-    if (!occupiedSlots.has(slot)) {
+    if (!occupiedBaseSlots.has(slot)) {
       return slot;
     }
   }
@@ -102,20 +39,26 @@ export const getNextAvailableSlot = (
   for (const baseSlot of GENERAL_SLOTS) {
     const bagItem = deduplicatedInventory.find(
       (item) =>
-        item.slotid === baseSlot &&
+        item.bag === 0 &&
+        item.slot === baseSlot &&
         item.itemDetails?.itemclass === ItemClass.CONTAINER
     );
 
     if (bagItem?.itemDetails?.bagslots) {
       const bagSize = bagItem.itemDetails.bagslots;
-      const startingSlot = getBagStartingSlot(baseSlot);
-
-      if (startingSlot > 0) {
-        for (let i = 0; i < bagSize; i++) {
-          const bagSlot = startingSlot + i;
-          if (!occupiedSlots.has(bagSlot)) {
-            return bagSlot;
-          }
+      // Server convention: items inside a container at slot N have bag = N + 1
+      const bagNum = baseSlot + 1;
+      const occupiedBagSlots = new Set(
+        deduplicatedInventory
+          .filter((it) => it.bag === bagNum)
+          .map((it) => it.slot)
+      );
+      for (let i = 0; i < bagSize; i++) {
+        if (!occupiedBagSlots.has(i)) {
+          // This function historically returned a flat slot number.
+          // For now, return the cursor/general slot number if there is no free base slot;
+          // bag insertion should be handled by higher-level code that understands (bag,slot).
+          return baseSlot;
         }
       }
     }
@@ -131,9 +74,9 @@ export const calculateTotalEquippedAC = (
 
   return character.inventory.reduce((totalAC, item) => {
     if (
-      item.slotid !== undefined &&
-      item.slotid >= InventorySlot.Charm &&
-      item.slotid <= InventorySlot.Ammo
+      item.bag === 0 &&
+      item.slot >= InventorySlot.Charm &&
+      item.slot <= InventorySlot.Ammo
     ) {
       const itemAC = Number(item.itemDetails?.ac) || 0;
       return totalAC + itemAC;
@@ -170,19 +113,20 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
 
   characterProfile?.inventory?.forEach((item) => {
     if (
-      item.slotid !== undefined &&
-      item.slotid >= 23 && // Only sell items in general inventory and bags
+      // Only consider items in general inventory and bag contents
+      (item.bag === 0 ? item.slot >= InventorySlot.General1 : item.bag > 0) &&
       item.itemDetails
     ) {
       if (item.itemDetails.itemclass === ItemClass.CONTAINER) {
-        // For bags, check their contents but don't sell the bag itself
-        const bagStartSlot = getBagStartingSlot(item.slotid);
+        // For bags in general inventory, check their contents but don't sell the bag itself
+        if (item.bag !== 0) return;
+        // Server convention: items inside a container at slot N have bag = N + 1
+        const bagNum = item.slot + 1;
         const bagSize = item.itemDetails.bagslots || 0;
 
         for (let i = 0; i < bagSize; i++) {
-          const bagSlot = bagStartSlot + i;
           const bagItem = characterProfile.inventory?.find(
-            (i) => i.slotid === bagSlot
+            (inv) => inv.bag === bagNum && inv.slot === i
           );
 
           if (bagItem?.itemDetails) {
@@ -193,11 +137,11 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
                   bagItem.itemDetails.price || 0
                 } copper`
               );
-              removeInventoryItem(bagSlot);
+              removeInventoryItem(bagItem.bag, bagItem.slot);
               itemsSold++;
             } else if (deleteNoDrop && bagItem.itemDetails.nodrop === 0) {
               console.log(`Deleting NO DROP item: ${bagItem.itemDetails.name}`);
-              removeInventoryItem(bagSlot);
+              removeInventoryItem(bagItem.bag, bagItem.slot);
             }
           }
         }
@@ -208,11 +152,11 @@ export const sellGeneralInventory = (deleteNoDrop: boolean = false) => {
             item.itemDetails.price || 0
           } copper`
         );
-        removeInventoryItem(item.slotid);
+        removeInventoryItem(item.bag, item.slot);
         itemsSold++;
       } else if (deleteNoDrop && item.itemDetails.nodrop === 0) {
         console.log(`Deleting NO DROP item: ${item.itemDetails.name}`);
-        removeInventoryItem(item.slotid);
+        removeInventoryItem(item.bag, item.slot);
       }
     }
   });
@@ -270,11 +214,10 @@ export const calculateTotalResistances = (character: CharacterProfile) => {
   const equippedItems =
     character.inventory?.filter(
       (item) =>
-        item.slotid !== undefined &&
+        item.bag === 0 &&
         item.itemDetails &&
-        (item.slotid === InventorySlot.Head ||
-          (item.slotid >= InventorySlot.Charm &&
-            item.slotid <= InventorySlot.Ammo))
+        (item.slot === InventorySlot.Head ||
+          (item.slot >= InventorySlot.Charm && item.slot <= InventorySlot.Ammo))
     ) || [];
 
   const resistances = equippedItems.reduce(
@@ -299,14 +242,22 @@ export const calculateTotalAttributes = (character: CharacterProfile) => {
   const equippedItems =
     character.inventory?.filter(
       (item) =>
-        item.slotid !== undefined &&
-        item.slotid >= InventorySlot.Charm &&
-        item.slotid <= InventorySlot.Ammo &&
-        item.slotid !== InventorySlot.Cursor &&
+        item.bag === 0 &&
+        item.slot >= InventorySlot.Charm &&
+        item.slot <= InventorySlot.Ammo &&
+        item.slot !== InventorySlot.Cursor &&
         item.itemDetails
     ) || [];
 
-  const baseAttributes = character.attributes || {};
+  const baseAttributes = character.attributes || {
+    str: 0,
+    sta: 0,
+    agi: 0,
+    dex: 0,
+    wis: 0,
+    int: 0,
+    cha: 0,
+  };
 
   // Calculate total bonuses from items
   const itemBonuses = equippedItems.reduce(
@@ -352,10 +303,10 @@ export const calculateTotalHPBonus = (character: CharacterProfile): number => {
   const equippedItems =
     character.inventory?.filter(
       (item) =>
-        item.slotid !== undefined &&
-        item.slotid >= InventorySlot.Charm &&
-        item.slotid <= InventorySlot.Ammo &&
-        item.slotid !== InventorySlot.Cursor &&
+        item.bag === 0 &&
+        item.slot >= InventorySlot.Charm &&
+        item.slot <= InventorySlot.Ammo &&
+        item.slot !== InventorySlot.Cursor &&
         item.itemDetails
     ) || [];
 

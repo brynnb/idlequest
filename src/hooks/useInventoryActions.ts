@@ -5,13 +5,16 @@ import {
   isItemAllowedInSlot,
   getEquippableSlots,
   isSlotAvailableForItem,
-  getBagStartingSlot,
 } from "@utils/itemUtils";
 import { Item } from "@entities/Item";
+import { InventoryItem } from "@entities/InventoryItem";
 import { InventorySlot } from "@entities/InventorySlot";
 import { processLootItems } from "@utils/lootUtils";
 import { useInventorySelling } from "./useInventorySelling";
 import { ItemClass } from "@entities/ItemClass";
+import { InventoryKey } from "@entities/InventoryItem";
+import CharacterClass from "@entities/CharacterClass";
+import Race from "@entities/Race";
 
 export const useInventoryActions = () => {
   const { sellGeneralInventory } = useInventorySelling();
@@ -22,7 +25,13 @@ export const useInventoryActions = () => {
     const { autoSellEnabled } = useGameStatusStore.getState();
     const addChatMessage = useChatStore.getState().addMessage;
 
-    processLootItems(loot, characterProfile, {
+    const profileForLoot = characterProfile as unknown as {
+      inventory?: InventoryItem[];
+      class?: CharacterClass;
+      race?: Race;
+    };
+
+    processLootItems(loot, profileForLoot, {
       addInventoryItem,
       setInventory,
       addChatMessage,
@@ -38,7 +47,14 @@ export const useInventoryActions = () => {
     const addChatMessage = useChatStore.getState().addMessage;
 
     const item = { id: itemId };
-    await processLootItems([item], characterProfile, {
+
+    const profileForLoot = characterProfile as unknown as {
+      inventory?: InventoryItem[];
+      class?: CharacterClass;
+      race?: Race;
+    };
+
+    await processLootItems([item], profileForLoot, {
       addInventoryItem,
       setInventory,
       addChatMessage,
@@ -52,48 +68,24 @@ export const useInventoryActions = () => {
     let inventory = store.characterProfile?.inventory || [];
 
     const generalItems = inventory.filter(
-      (item) =>
-        item.slotid !== undefined && item.slotid >= 22 && item.slotid <= 29
+      (item) => item.bag === 0 && item.slot >= 22 && item.slot <= 29
     );
-
-    const getBagContents = (bagSlot: number, bagSize: number) => {
-      const startSlot = getBagStartingSlot(bagSlot);
-      if (startSlot < 0) return [];
-      return inventory
-        .filter(
-          (item) =>
-            item.slotid !== undefined &&
-            item.slotid >= startSlot &&
-            item.slotid < startSlot + bagSize
-        )
-        .map((item) => ({
-          name: item.itemDetails?.name,
-          slot: item.slotid,
-        }));
-    };
 
     console.log(
       "Items found in general inventory:",
       generalItems.map((item) => {
-        const bagContents =
-          item.itemDetails?.itemclass === ItemClass.CONTAINER &&
-          item.slotid !== undefined
-            ? getBagContents(item.slotid, item.itemDetails.bagslots || 0)
-            : [];
-
         return {
           name: item.itemDetails?.name,
-          slot: item.slotid,
+          slot: item.slot,
           isBag: item.itemDetails?.itemclass === ItemClass.CONTAINER,
           bagSlots: item.itemDetails?.bagslots,
-          contents: bagContents,
         };
       })
     );
 
     for (const inventoryItem of generalItems) {
       const itemDetails = inventoryItem.itemDetails;
-      const originalSlot = inventoryItem.slotid;
+      const originalSlot = inventoryItem.slot;
 
       if (itemDetails?.slots !== undefined && originalSlot !== undefined) {
         const possibleSlots = getEquippableSlots(itemDetails);
@@ -104,50 +96,38 @@ export const useInventoryActions = () => {
             const currentStore = usePlayerCharacterStore.getState();
             inventory = currentStore.characterProfile?.inventory || [];
             const targetItem = inventory.find(
-              (invItem) => invItem.slotid === slotId
+              (invItem) => invItem.bag === 0 && invItem.slot === slotId
             );
 
-            if (itemDetails.itemclass === ItemClass.CONTAINER) {
-              console.log("Processing bag move:", {
-                bagName: itemDetails.name,
-                fromSlot: originalSlot,
-                toSlot: slotId,
-                bagSize: itemDetails.bagslots || 0,
-                currentContents: getBagContents(
-                  originalSlot,
-                  itemDetails.bagslots || 0
-                ),
-              });
-            }
+            const cc = currentStore.characterProfile?.class;
+            const cr = currentStore.characterProfile?.race;
+            const characterClass =
+              cc && typeof cc === "object" ? (cc as CharacterClass) : undefined;
+            const characterRace =
+              cr && typeof cr === "object" ? (cr as Race) : undefined;
 
             if (
-              currentStore.characterProfile?.class &&
-              currentStore.characterProfile?.race &&
+              characterClass &&
+              characterRace &&
               isSlotAvailableForItem(
                 inventoryItem,
                 slotId as InventorySlot,
-                currentStore.characterProfile.class,
-                currentStore.characterProfile.race,
+                characterClass,
+                characterRace,
                 inventory
               )
             ) {
               try {
                 if (targetItem) {
-                  await store.swapItems(originalSlot, slotId);
+                  await store.swapItems(
+                    { bag: 0, slot: originalSlot },
+                    { bag: 0, slot: slotId }
+                  );
                 } else {
-                  await store.moveItemToSlot(originalSlot, slotId);
-                }
-
-                // Log the state after the move if it's a bag
-                if (itemDetails.itemclass === ItemClass.CONTAINER) {
-                  console.log("Bag move complete:", {
-                    bagName: itemDetails.name,
-                    newSlot: slotId,
-                    newContents: getBagContents(
-                      slotId,
-                      itemDetails.bagslots || 0
-                    ),
-                  });
+                  await store.moveItemToSlot(
+                    { bag: 0, slot: originalSlot },
+                    { bag: 0, slot: slotId }
+                  );
                 }
 
                 // Wait a tick for the store to update
@@ -171,34 +151,50 @@ export const useInventoryActions = () => {
   };
 };
 
-export const handleItemClick = (slotId: InventorySlot) => {
+export const handleItemClick = (key: InventoryKey) => {
   const { characterProfile, swapItems, moveItemToSlot } =
     usePlayerCharacterStore.getState();
 
-  const getInventoryItemForSlot = (slot: InventorySlot) => {
-    return characterProfile?.inventory?.find((item) => item.slotid === slot);
-  };
+  const cursorKey: InventoryKey = { bag: 0, slot: InventorySlot.Cursor };
 
-  const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
-  const currentSlotItem = getInventoryItemForSlot(slotId);
+  const getItem = (k: InventoryKey) =>
+    characterProfile?.inventory?.find(
+      (it) => it.bag === k.bag && it.slot === k.slot
+    );
 
-  if (cursorItem && characterProfile.class && characterProfile.race) {
+  const cursorItem = getItem(cursorKey);
+  const destItem = getItem(key);
+
+  // If we have something on cursor, try to place it into clicked slot
+  const cc = characterProfile.class;
+  const cr = characterProfile.race;
+  const characterClass =
+    cc && typeof cc === "object" ? (cc as CharacterClass) : undefined;
+  const characterRace = cr && typeof cr === "object" ? (cr as Race) : undefined;
+
+  if (cursorItem && characterClass && characterRace) {
+    // Only enforce equip-slot rules client-side; server is authoritative for everything.
     if (
+      key.bag !== 0 ||
       isItemAllowedInSlot(
         cursorItem,
-        slotId,
-        characterProfile.class,
-        characterProfile.race,
+        key.slot as InventorySlot,
+        characterClass,
+        characterRace,
         characterProfile.inventory
       )
     ) {
-      if (currentSlotItem && cursorItem.slotid !== undefined) {
-        swapItems(InventorySlot.Cursor, slotId);
-      } else if (cursorItem.slotid !== undefined) {
-        moveItemToSlot(cursorItem.slotid, slotId);
+      if (destItem) {
+        swapItems(cursorKey, key);
+      } else {
+        moveItemToSlot(cursorKey, key);
       }
     }
-  } else if (currentSlotItem && currentSlotItem.slotid !== undefined) {
-    moveItemToSlot(currentSlotItem.slotid, InventorySlot.Cursor);
+    return;
+  }
+
+  // Otherwise, pick up the clicked item onto the cursor
+  if (destItem) {
+    moveItemToSlot(key, cursorKey);
   }
 };

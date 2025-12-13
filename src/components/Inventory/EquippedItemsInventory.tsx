@@ -96,7 +96,9 @@ const EquippedItemsInventory: React.FC = () => {
   ];
 
   const getInventoryItemForSlot = (slotId: InventorySlot) => {
-    return characterProfile?.inventory?.find((item) => item.slotid === slotId);
+    return characterProfile?.inventory?.find(
+      (item) => item.bag === 0 && item.slot === slotId
+    );
   };
 
   return (
@@ -113,7 +115,7 @@ const EquippedItemsInventory: React.FC = () => {
                   key={slot}
                   onMouseEnter={() => setHoveredItem(itemDetails || null)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  onClick={() => handleItemClick(slot)}
+                  onClick={() => handleItemClick({ bag: 0, slot })}
                 >
                   {itemDetails && (
                     <ItemIcon

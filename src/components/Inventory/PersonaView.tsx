@@ -3,29 +3,27 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { InventorySlot } from "@entities/InventorySlot";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import { getEquippableSlots } from "@utils/itemUtils";
+import { InventoryKey } from "@entities/InventoryItem";
 
 const PersonaView: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();
   const { handleItemClick } = useInventoryActions();
 
   const cursorItem = characterProfile?.inventory?.find(
-    (item) => item.slotid === InventorySlot.Cursor
+    (item) => item.bag === 0 && item.slot === InventorySlot.Cursor
   );
 
   const handleClick = async () => {
-    if (
-      cursorItem?.itemDetails &&
-      characterProfile.class &&
-      characterProfile.race
-    ) {
+    if (cursorItem?.itemDetails) {
       const slots = cursorItem.itemDetails.slots;
       if (slots) {
         const possibleSlots = getEquippableSlots(cursorItem.itemDetails);
         for (const slot of possibleSlots) {
-          await handleItemClick(slot as InventorySlot);
+          const key: InventoryKey = { bag: 0, slot: slot as InventorySlot };
+          await handleItemClick(key);
           // If the cursor is now empty, we successfully placed the item
           const newCursorItem = characterProfile?.inventory?.find(
-            (item) => item.slotid === InventorySlot.Cursor
+            (item) => item.bag === 0 && item.slot === InventorySlot.Cursor
           );
           if (!newCursorItem) break;
         }

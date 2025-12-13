@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import generalInventoryBackground from "/images/ui/generalinventoryslots.png";
@@ -6,6 +6,7 @@ import { useInventoryActions } from "@hooks/useInventoryActions";
 import { InventorySlot } from "@entities/InventorySlot";
 import ContainerInventoryModal from "./ContainerInventoryModal";
 import { ItemClass } from "@entities/ItemClass";
+import { InventoryKey } from "@entities/InventoryItem";
 
 const GeneralInventoryContainer = styled.div``;
 
@@ -60,10 +61,28 @@ const GeneralInventorySlots: React.FC = () => {
   ];
 
   const getInventoryItemForSlot = (slotId: number) => {
-    return characterProfile?.inventory?.find((item) => item.slotid === slotId);
+    return characterProfile?.inventory?.find(
+      (item) => item.bag === 0 && item.slot === slotId
+    );
   };
 
-  const cursorItem = getInventoryItemForSlot(InventorySlot.Cursor);
+  useEffect(() => {
+    const inv = characterProfile?.inventory || [];
+
+    setOpenBagSlots((prev) => {
+      if (prev.size === 0) return prev;
+
+      const next = new Set<number>();
+      for (const slot of prev) {
+        const slotItem = inv.find((item) => item.bag === 0 && item.slot === slot);
+        if (slotItem?.itemDetails?.itemclass === ItemClass.CONTAINER) {
+          next.add(slot);
+        }
+      }
+
+      return next;
+    });
+  }, [characterProfile?.inventory]);
 
   const handleBagClick = (slot: number) => {
     setOpenBagSlots((prev) => {
@@ -94,7 +113,7 @@ const GeneralInventorySlots: React.FC = () => {
               $col={col}
               onMouseEnter={() => setHoveredItem(itemDetails || null)}
               onMouseLeave={() => setHoveredItem(null)}
-              onClick={() => handleItemClick(slot as InventorySlot)}
+              onClick={() => handleItemClick({ bag: 0, slot })}
               onContextMenu={(e) => {
                 e.preventDefault();
                 if (itemDetails?.itemclass === ItemClass.CONTAINER) {
@@ -116,7 +135,7 @@ const GeneralInventorySlots: React.FC = () => {
       {Array.from(openBagSlots).map((slot) => (
         <ContainerInventoryModal
           key={`container-modal-${slot}`}
-          bagSlot={slot}
+          containerKey={{ bag: 0, slot } as InventoryKey}
           onClose={() => handleBagClick(slot)}
         />
       ))}

@@ -1,4 +1,4 @@
-import classes from '@data/classes.json';
+import classes from "@data/json/classes.json";
 
 interface Class {
   id: number;
@@ -8,5 +8,5 @@ interface Class {
 
 export const getClassName = (classId: number): string => {
   const classData = classes.find((c: Class) => c.id === classId);
-  return classData?.name || '';
-}; 
+  return classData?.name || "";
+};

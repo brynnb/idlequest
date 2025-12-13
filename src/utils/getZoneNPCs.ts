@@ -24,5 +24,5 @@ export const getZoneNPCs = async (
     zoneName = zoneIDOrName;
   }
 
-  return fetchZoneNPCs(zoneName);
+  return (await fetchZoneNPCs(zoneName)) as unknown as NPCType[];
 };

@@ -2,7 +2,7 @@ import { Item } from "@entities/Item";
 import { InventoryItem } from "@entities/InventoryItem";
 import { eqDataService } from "@utils/eqDataService";
 import {
-  findFirstAvailableSlotForItem,
+  findFirstAvailableGeneralSlot,
   isEquippableItem,
   isEquippableWithClass,
   isEquippableWithRace,
@@ -99,7 +99,7 @@ const addItemToInventory = async (
       // First check for empty equipment slots
       for (const slot of equippableSlots) {
         const existingItem = updatedInventory.find(
-          (invItem) => invItem.slotid === slot
+          (invItem) => invItem.bag === 0 && invItem.slot === slot
         );
 
         if (!existingItem) {
@@ -107,7 +107,8 @@ const addItemToInventory = async (
             isSlotAvailableForItem(
               {
                 itemid: item.id,
-                slotid: slot,
+                bag: 0,
+                slot,
                 charges: 1,
                 itemDetails,
               } as InventoryItem,
@@ -119,7 +120,8 @@ const addItemToInventory = async (
           ) {
             const newItem = {
               itemid: item.id,
-              slotid: slot,
+              bag: 0,
+              slot,
               charges: 1,
               itemDetails,
             };
@@ -137,7 +139,7 @@ const addItemToInventory = async (
 
       for (const slot of equippableSlots) {
         const existingItem = updatedInventory.find(
-          (invItem) => invItem.slotid === slot
+          (invItem) => invItem.bag === 0 && invItem.slot === slot
         );
 
         if (existingItem?.itemDetails) {
@@ -164,25 +166,24 @@ const addItemToInventory = async (
         itemToReplace?.itemDetails
       ) {
         // Move existing item to general inventory first
-        const generalSlot = findFirstAvailableSlotForItem(
-          updatedInventory,
-          itemToReplace
-        );
+        const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
         if (generalSlot !== undefined) {
           // Add the old item to general inventory
           const movedItem = {
             ...itemToReplace,
-            slotid: generalSlot,
+            bag: 0,
+            slot: generalSlot,
           };
           updatedInventory = updatedInventory.filter(
-            (item) => item.slotid !== itemToReplace?.slotid
+            (inv) => !(inv.bag === 0 && inv.slot === bestSlotToReplace)
           );
           updatedInventory.push(movedItem);
 
           // Equip the new item
           const newItem = {
             itemid: item.id,
-            slotid: bestSlotToReplace,
+            bag: 0,
+            slot: bestSlotToReplace,
             charges: 1,
             itemDetails,
           };
@@ -190,13 +191,14 @@ const addItemToInventory = async (
           setInventory(updatedInventory);
           return;
         } else if (autoSellEnabled) {
-          if (itemToReplace.slotid !== undefined) {
+          if (itemToReplace && itemToReplace.bag === 0) {
             usePlayerCharacterStore
               .getState()
-              .removeInventoryItem(itemToReplace.slotid);
+              .removeInventoryItem(itemToReplace.bag, itemToReplace.slot);
           }
           updatedInventory = updatedInventory.filter(
-            (invItem) => invItem.slotid !== bestSlotToReplace
+            (invItem) =>
+              !(invItem.bag === 0 && invItem.slot === bestSlotToReplace)
           );
         } else {
           addChatMessage(
@@ -204,7 +206,8 @@ const addItemToInventory = async (
             MessageType.LOOT
           );
           updatedInventory = updatedInventory.filter(
-            (invItem) => invItem.slotid !== bestSlotToReplace
+            (invItem) =>
+              !(invItem.bag === 0 && invItem.slot === bestSlotToReplace)
           );
         }
       }
@@ -216,21 +219,17 @@ const addItemToInventory = async (
     itemid: item.id,
     charges: 1,
     itemDetails,
-    slotid: undefined,
+    bag: 0,
+    slot: -1,
   };
-  const generalSlot = findFirstAvailableSlotForItem(updatedInventory, newItem);
+  const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
   if (generalSlot !== undefined) {
-    newItem.slotid = generalSlot;
-    updatedInventory.push(newItem);
+    updatedInventory.push({ ...newItem, bag: 0, slot: generalSlot });
     setInventory(updatedInventory);
   } else if (autoSellEnabled) {
     // Sell all eligible items in inventory and delete NO DROP items if enabled
     updatedInventory = updatedInventory.filter((invItem) => {
-      if (
-        invItem.slotid !== undefined &&
-        invItem.slotid >= 23 && // Only sell items in general inventory and bags
-        invItem.itemDetails
-      ) {
+      if (invItem.bag === 0 && invItem.slot >= 23 && invItem.itemDetails) {
         if (
           invItem.itemDetails.itemclass !== ItemClass.CONTAINER && // Don't sell bags
           invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
@@ -239,14 +238,14 @@ const addItemToInventory = async (
           if (sellSingleItem(invItem.itemDetails)) {
             usePlayerCharacterStore
               .getState()
-              .removeInventoryItem(invItem.slotid);
+              .removeInventoryItem(invItem.bag, invItem.slot);
             return false; // Remove this item from updatedInventory
           }
         } else if (deleteNoDrop && invItem.itemDetails.nodrop === 0) {
           // Delete NO DROP items if deleteNoDrop is enabled
           usePlayerCharacterStore
             .getState()
-            .removeInventoryItem(invItem.slotid);
+            .removeInventoryItem(invItem.bag, invItem.slot);
           return false; // Remove this item from updatedInventory
         }
       }
@@ -254,20 +253,13 @@ const addItemToInventory = async (
     });
 
     // After selling everything, try to add the new item again
-    const generalSlot = findFirstAvailableSlotForItem(
-      updatedInventory,
-      newItem
-    );
+    const generalSlot = findFirstAvailableGeneralSlot(updatedInventory);
     if (generalSlot !== undefined) {
-      newItem.slotid = generalSlot;
-      updatedInventory.push(newItem);
+      updatedInventory.push({ ...newItem, bag: 0, slot: generalSlot });
       setInventory(updatedInventory);
     } else {
-      // If still no space after selling everything, handle this item
-      if (deleteNoDrop && itemDetails.nodrop === 0) {
-        // Delete NO DROP item
-      } else {
-        sellSingleItem(itemDetails);
+      if (autoSellEnabled && options?.sellItem) {
+        options.sellItem();
       }
     }
   } else {

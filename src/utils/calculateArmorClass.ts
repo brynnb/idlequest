@@ -7,6 +7,16 @@ import { RaceId } from "@entities/Race";
 import { ClassId } from "@entities/CharacterClass";
 import * as fs from "fs";
 
+const getClassId = (cls: CharacterProfile["class"]): number => {
+  if (typeof cls === "number") return cls;
+  return cls?.id ?? 0;
+};
+
+const getRaceId = (race: CharacterProfile["race"]): number => {
+  if (typeof race === "number") return race;
+  return race?.id ?? 0;
+};
+
 interface ACMitigationData {
   [classId: number]: {
     [level: number]: {
@@ -41,22 +51,26 @@ const readACMitigationFile = (): ACMitigationData => {
 };
 
 // Helper functions (implement these based on your data structures)
-const getDefenseSkill = (character: CharacterProfile): number => {
+const getDefenseSkill = (_character: CharacterProfile): number => {
+  void _character;
   // Implement this based on your character data structure
   return 1;
 };
 
-const getWeight = (character: CharacterProfile): number => {
+const getWeight = (_character: CharacterProfile): number => {
+  void _character;
   // Implement this based on your character data structure
   return 0;
 };
 
-const getShieldAC = (character: CharacterProfile): number => {
+const getShieldAC = (_character: CharacterProfile): number => {
+  void _character;
   // Get AC from equipped shield, if any
   return 0;
 };
 
-const getConsumablesAC = (character: CharacterProfile): number => {
+const getConsumablesAC = (_character: CharacterProfile): number => {
+  void _character;
   // Get AC from food, drink, tribute items, etc.
   return 0;
 };
@@ -69,32 +83,38 @@ const getMonkSoftCapWeight = (level: number): number => {
   return 100 + (level - 1) * 5;
 };
 
-const getHerosFortitudeValue = (character: CharacterProfile): number => {
+const getHerosFortitudeValue = (_character: CharacterProfile): number => {
+  void _character;
   // Get Hero's Fortitude AA value
   return 0;
 };
 
-const getArmorOfWisdomValue = (character: CharacterProfile): number => {
+const getArmorOfWisdomValue = (_character: CharacterProfile): number => {
+  void _character;
   // Get Armor of Wisdom AA value
   return 0;
 };
 
-const getItemAvoidance = (character: CharacterProfile): number => {
+const getItemAvoidance = (_character: CharacterProfile): number => {
+  void _character;
   // Get Item Avoidance AA value
   return 0;
 };
 
-const getCombatAgilityValue = (character: CharacterProfile): number => {
+const getCombatAgilityValue = (_character: CharacterProfile): number => {
+  void _character;
   // Get Combat Agility AA value
   return 0;
 };
 
-const getPhysicalEnhancementValue = (character: CharacterProfile): number => {
+const getPhysicalEnhancementValue = (_character: CharacterProfile): number => {
+  void _character;
   // Get Physical Enhancement AA value
   return 0;
 };
 
-const getHeroicAgility = (character: CharacterProfile): number => {
+const getHeroicAgility = (_character: CharacterProfile): number => {
+  void _character;
   // Get Heroic Agility AA value
   return 0;
 };
@@ -102,15 +122,18 @@ const getHeroicAgility = (character: CharacterProfile): number => {
 const getRaceClassBonus = (character: CharacterProfile): number => {
   let bonus = 0;
 
-  if (character.race?.id === RaceId.Iksar) {
-    const level = character.level || 0;
+  const level = character.level || 0;
+  const classId = getClassId(character.class);
+  const raceId = getRaceId(character.race);
+
+  if (raceId === RaceId.Iksar) {
     bonus = Math.max(10, Math.min(35, level));
   }
 
   // Rogue AC Bonus
-  if (character.class?.id === ClassId.Rogue && character.level > 30) {
+  if (classId === ClassId.Rogue && level > 30) {
     const agility = character.attributes?.agi || 0;
-    const levelScaler = character.level - 26;
+    const levelScaler = level - 26;
     let acBonus = 0;
 
     if (agility >= 75) {
@@ -132,9 +155,8 @@ const getRaceClassBonus = (character: CharacterProfile): number => {
   }
 
   // Monk AC Bonus and Penalty
-  if (character.class?.id === ClassId.Monk) {
+  if (classId === ClassId.Monk) {
     const weight = getWeight(character);
-    const level = character.level || 0;
     const hardCapWeight = getMonkHardCapWeight(level);
     const softCapWeight = getMonkSoftCapWeight(level);
 
@@ -152,9 +174,9 @@ const getRaceClassBonus = (character: CharacterProfile): number => {
   }
 
   // Beastlord AC Bonus
-  if (character.class?.id === ClassId.Beastlord && character.level > 10) {
+  if (classId === ClassId.Beastlord && level > 10) {
     const agility = character.attributes?.agi || 0;
-    const levelScaler = character.level - 6;
+    const levelScaler = level - 6;
     let acBonus = 0;
 
     if (agility >= 75) {
@@ -181,7 +203,8 @@ const getRaceClassBonus = (character: CharacterProfile): number => {
   return bonus;
 };
 
-const getSpellAC = (character: CharacterProfile): number => {
+const getSpellAC = (_character: CharacterProfile): number => {
+  void _character;
   // Calculate AC from buffs (SPA 1 and SPA 416)
   return 0;
 };
@@ -189,9 +212,10 @@ const getSpellAC = (character: CharacterProfile): number => {
 const getAABonus = (character: CharacterProfile): number => {
   const armorOfWisdom = getArmorOfWisdomValue(character);
   const herosFortitude = getHerosFortitudeValue(character);
-  const isSilk = isSilkCaster(character.class);
+  const classId = getClassId(character.class);
+  const isSilk = isSilkCaster(classId);
 
-  const armorOfWisdomDivisor = getArmorOfWisdomDivisor(character.class);
+  const armorOfWisdomDivisor = getArmorOfWisdomDivisor(classId);
   const herosFortitudeDivisor = isSilk ? 3 : 4;
 
   return (
@@ -200,26 +224,32 @@ const getAABonus = (character: CharacterProfile): number => {
   );
 };
 
-const getCombatStability = (character: CharacterProfile): number => {
+const getCombatStability = (_character: CharacterProfile): number => {
+  void _character;
   // Get Combat Stability AA value
   return 0;
 };
 
-const getPhysicalEnhancement = (character: CharacterProfile): number => {
+const getPhysicalEnhancement = (_character: CharacterProfile): number => {
+  void _character;
   // Get Physical Enhancement AA value
   return 0;
 };
-const isSilkCaster = (characterClass: number): boolean => {
-  return [11, 12, 13, 14].includes(characterClass); // Mag, Nec, Enc, Wiz
+const isSilkCaster = (
+  characterClass: number | CharacterClass | undefined
+): boolean => {
+  const classId =
+    typeof characterClass === "number" ? characterClass : characterClass?.id;
+  return classId !== undefined && [11, 12, 13, 14].includes(classId); // Mag, Nec, Enc, Wiz
 };
 
-const getBaseAC = (characterClass: ClassId, level: number): number => {
+const getBaseAC = (characterClass: number, level: number): number => {
   const acMitigationData = readACMitigationFile();
   return acMitigationData[characterClass]?.[level]?.baseAC || 0;
 };
 
 const getSoftCapMultiplier = (
-  characterClass: ClassId,
+  characterClass: number,
   level: number
 ): number => {
   const acMitigationData = readACMitigationFile();
@@ -230,14 +260,17 @@ const calculateACSUM = (character: CharacterProfile): number => {
   let acSum = calculateTotalEquippedAC(character) + getConsumablesAC(character);
   acSum = (acSum * 4) / 3;
 
-  if (character.level < 50) {
-    acSum = Math.min(acSum, 25 + 6 * character.level);
+  const level = character.level || 0;
+  const classId = getClassId(character.class);
+
+  if (level < 50) {
+    acSum = Math.min(acSum, 25 + 6 * level);
   }
 
   acSum += getRaceClassBonus(character);
   acSum = Math.max(0, acSum);
 
-  const isSilk = isSilkCaster(character.class);
+  const isSilk = isSilkCaster(classId);
   acSum += isSilk
     ? getDefenseSkill(character) / 2
     : getDefenseSkill(character) / 3;
@@ -254,7 +287,9 @@ const calculateACSUM = (character: CharacterProfile): number => {
 
 const calculateMitigationAC = (character: CharacterProfile): number => {
   const acSum = calculateACSUM(character);
-  const baseAC = getBaseAC(character.class, character.level);
+  const level = character.level || 0;
+  const classId = getClassId(character.class);
+  const baseAC = getBaseAC(classId, level);
   const combatStability = getCombatStability(character);
   const physicalEnhancement = getPhysicalEnhancement(character);
 
@@ -263,10 +298,7 @@ const calculateMitigationAC = (character: CharacterProfile): number => {
   softCapAC +=
     getShieldAC(character) + Math.floor((character.attributes?.str || 0) / 10);
 
-  const softCapMultiplier = getSoftCapMultiplier(
-    character.class,
-    character.level
-  );
+  const softCapMultiplier = getSoftCapMultiplier(classId, level);
 
   if (acSum > softCapAC) {
     const postCapAC = (acSum - softCapAC) * softCapMultiplier;
@@ -299,7 +331,8 @@ const calculateAAAvoidance = (character: CharacterProfile): number => {
   return (100 + combatAgility + physicalEnhancement) / 100;
 };
 
-const getArmorOfWisdomDivisor = (characterClass: ClassId): number => {
+const getArmorOfWisdomDivisor = (characterClassId: number): number => {
+  const characterClass = characterClassId as ClassId;
   switch (characterClass) {
     case ClassId.Enchanter:
     case ClassId.Magician:
@@ -349,4 +382,3 @@ export const calculateArmorClass = (
 
   return { displayedMitigationAC: mitigationAC, displayedEvasionAC: evasionAC };
 };
-

@@ -4,6 +4,7 @@ import PlayerStats from "@components/Interface/PlayerStats";
 import TargetBar from "./TargetBar";
 import ActionButton from "@components/Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { useEffect, useState } from "react";
 
 const StyledRightSidebar = styled.div.attrs({ className: "right-sidebar" })`
@@ -116,6 +117,25 @@ const RightSidebar = () => {
         <ActionButton
           text="Camp"
           onClick={() => {
+            // Log inventory on camp
+            const inventory =
+              usePlayerCharacterStore.getState().characterProfile?.inventory ||
+              [];
+            const charName =
+              usePlayerCharacterStore.getState().characterProfile?.name ||
+              "Unknown";
+            console.log(`=== INVENTORY [CAMP] for ${charName} ===`);
+            inventory.forEach((item) => {
+              console.log(
+                `  bag=${item.bag}, slot=${item.slot}: ${
+                  item.itemDetails?.name || "Unknown"
+                }`
+              );
+            });
+            console.log(
+              `=== END INVENTORY [CAMP] (${inventory.length} items) ===`
+            );
+
             console.log("Camp clicked, navigating to /characterselect");
             navigate("/characterselect");
           }}

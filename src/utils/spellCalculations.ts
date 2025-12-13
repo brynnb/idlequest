@@ -2,8 +2,8 @@
 import { Spell } from "@entities/Spell";
 
 function calcBuffDuration(
-  casterLevel: number,
-  durationFormula: number,
+  _casterLevel: number,
+  _durationFormula: number,
   baseDuration: number
 ): number {
   // Implement the buff duration calculation logic here
@@ -21,7 +21,7 @@ export function calcSpellEffectValue(
 ): number {
   let result = 0;
   let updownsign = 1;
-  let ubase = Math.abs(baseValue);
+  const ubase = Math.abs(baseValue);
 
   if (maxValue < baseValue && maxValue !== 0) {
     updownsign = -1;
@@ -186,8 +186,6 @@ export function calcSpellEffectValue(
         console.warn(`Unknown spell effect value formula [${formula}]`);
       }
   }
-
-  const oresult = result;
 
   // Apply max value cap only if maxValue is not 0
   if (maxValue !== 0) {

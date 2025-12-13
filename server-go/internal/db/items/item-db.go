@@ -408,11 +408,11 @@ func AddItemToPlayerInventoryFreeSlot(itemInstance constants.ItemInstance, playe
 		used[bagSlotKey{int8(ci.Bag), int8(ci.Slot)}] = true
 	}
 
-	// General inventory: bag=0, slot=0-7
-	// Find first free slot in general inventory
+	// General inventory: bag=0, slot=22-29 (General1 through General8)
+	// Equipment slots are 0-21, general inventory is 22-29, cursor is 30
 	freeSlot := int8(-1)
 	freeBag := int8(0) // General inventory bag
-	for slot := int8(0); slot < 8; slot++ {
+	for slot := int8(constants.SlotGeneral1); slot <= int8(constants.SlotGeneral8); slot++ {
 		if !used[bagSlotKey{0, slot}] {
 			freeSlot = slot
 			break
@@ -421,7 +421,7 @@ func AddItemToPlayerInventoryFreeSlot(itemInstance constants.ItemInstance, playe
 
 	// If no free general slot, use cursor (bag=0, slot=30)
 	if freeSlot < 0 {
-		freeSlot = 30 // Cursor slot within bag 0
+		freeSlot = int8(constants.SlotCursor)
 	}
 
 	if _, err = table.CharacterInventory.

@@ -1,10 +1,14 @@
 import { Item } from "@entities/Item";
 
+export interface InventoryKey {
+  bag: number;
+  slot: number;
+}
+
 export interface InventoryItem {
   charid?: number; // Character Identifier
-  slotid?: number; // Slot Identifier (deprecated - use bag+slot)
-  bag?: number; // Bag index: -1/0 = equipment/general, 1-8 = bag contents
-  slot?: number; // Slot within bag (0-9) or equipment slot (0-30)
+  bag: number; // Bag index: 0 = equipment/general/cursor, 1-8 = bag contents (general slots), 9 = cursor contents
+  slot: number; // Slot within bag contents (0-9) OR equipment/general/cursor slot id (0-30) when bag=0
   itemid?: number; // Item Identifier
   charges?: number; // Charges
   color?: number; // Color

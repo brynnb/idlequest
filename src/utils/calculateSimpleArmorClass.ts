@@ -22,7 +22,7 @@ const getIksarBonus = (character: CharacterProfile): number => {
 };
 
 const calculateSimpleArmorClass = (character: CharacterProfile): number => {
-  const baseAC = calcBaseAC(character.level);
+  const baseAC = calcBaseAC(character.level || 0);
   const equippedAC = calculateTotalEquippedAC(character);
   const iksarBonus = getIksarBonus(character);
 

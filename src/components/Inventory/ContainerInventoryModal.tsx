@@ -3,9 +3,9 @@ import styled from "styled-components";
 import Draggable from "react-draggable";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
-import { getBagStartingSlot } from "@utils/itemUtils";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import ActionButton from "@components/Interface/ActionButton";
+import { InventoryKey } from "@entities/InventoryItem";
 
 const ModalContainer = styled.div.attrs({
   className: "modal-container",
@@ -48,16 +48,6 @@ const ModalTitle = styled.h3.attrs({
   font-size: 20px;
   text-align: center;
   width: 100%;
-`;
-
-const CloseButton = styled.button.attrs({
-  className: "close-button",
-})`
-  background: none;
-  border: none;
-  color: #gold;
-  font-size: 18px;
-  cursor: pointer;
 `;
 
 const ContainerInventory = styled.div.attrs({
@@ -114,12 +104,12 @@ const ContainerIcon = styled.div.attrs({
 `;
 
 interface ContainerInventoryModalProps {
-  bagSlot: number;
+  containerKey: InventoryKey; // bag=0, slot=general slot (22-29) or cursor (30)
   onClose: () => void;
 }
 
 const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
-  bagSlot,
+  containerKey,
   onClose,
 }) => {
   const { characterProfile, setHoveredItem } = usePlayerCharacterStore();
@@ -128,38 +118,40 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [initialized, setInitialized] = useState(false);
 
+  const containerSlotKey = containerKey.slot;
+  // Server convention: items inside a container at slot N have bag = N + 1
+  const bagNum = containerSlotKey + 1;
+
   useEffect(() => {
     if (!initialized) {
-      if (containerPositions[bagSlot]) {
-        setPosition(containerPositions[bagSlot]);
+      if (containerPositions[containerSlotKey]) {
+        setPosition(containerPositions[containerSlotKey]);
       } else {
         const randomX = Math.floor(Math.random() * 401);
         const newPosition = { x: randomX, y: -300 };
-        setContainerPosition(bagSlot, newPosition);
+        setContainerPosition(containerSlotKey, newPosition);
         setPosition(newPosition);
       }
       setInitialized(true);
     }
-  }, [bagSlot, containerPositions, setContainerPosition, initialized]);
+  }, [containerSlotKey, containerPositions, setContainerPosition, initialized]);
 
   const nodeRef = useRef(null);
 
   const bagItem = characterProfile?.inventory?.find(
-    (item) => item.slotid === bagSlot
+    (item) => item.bag === 0 && item.slot === containerSlotKey
   );
   if (!bagItem || !bagItem.itemDetails) return null;
 
   const containerSlots = bagItem.itemDetails.bagslots || 0;
-  const containerItems = characterProfile?.inventory?.filter((item) => {
-    const bagStart = getBagStartingSlot(bagSlot);
-    const bagEnd = bagStart + (containerSlots - 1);
-    return item.slotid >= bagStart && item.slotid <= bagEnd;
-  });
+  const containerItems = characterProfile?.inventory?.filter(
+    (item) => item.bag === bagNum
+  );
 
-  const handleDrag = (e: any, data: { x: number; y: number }) => {
+  const handleDrag = (_e: unknown, data: { x: number; y: number }) => {
     const newPosition = { x: data.x, y: data.y };
     setPosition(newPosition);
-    setContainerPosition(bagSlot, newPosition);
+    setContainerPosition(containerSlotKey, newPosition);
   };
 
   const modalHeight = 120 + Math.ceil(containerSlots / 2) * 114 + 5;
@@ -185,18 +177,18 @@ const ContainerInventoryModal: React.FC<ContainerInventoryModalProps> = ({
           </ContainerIcon>
           <ContainerInventory>
             {Array.from({ length: containerSlots }).map((_, index) => {
-              const slotId = getBagStartingSlot(bagSlot) + index;
+              const slotKey: InventoryKey = { bag: bagNum, slot: index };
               const inventoryItem = containerItems?.find(
-                (item) => item.slotid === slotId
+                (item) => item.bag === bagNum && item.slot === index
               );
               const itemDetails = inventoryItem?.itemDetails;
 
               return (
                 <Slot
-                  key={`container-slot-${slotId}`}
+                  key={`container-slot-${bagNum}-${index}`}
                   onMouseEnter={() => setHoveredItem(itemDetails || null)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  onClick={() => handleItemClick(slotId)}
+                  onClick={() => handleItemClick(slotKey)}
                 >
                   {itemDetails && (
                     <ItemIcon

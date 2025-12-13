@@ -68,6 +68,7 @@ server-go/daemon
 server-go/server.pid
 server-go/server.log
 items.dat
+server-go/tmp
 
 # Python virtual environments
 venv/

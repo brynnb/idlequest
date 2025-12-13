@@ -1,10 +1,12 @@
 //sourced from here, may not be totally accurate, but spot check looks good: https://www.eqemulator.org/forums/showthread.php?t=14911
 import CharacterProfile from "@entities/CharacterProfile";
-import { ClassId } from "@entities/CharacterClass";
+import CharacterClass, { ClassId } from "@entities/CharacterClass";
+import Race from "@entities/Race";
+import Deity from "@entities/Deity";
+import Zone from "@entities/Zone";
+import CharacterCreationAttributes from "@entities/CharacterCreationAttributes";
+import { Item } from "@entities/Item";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
-import useInventoryCreator from "@hooks/useInventoryCreator";
-import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import { useInventoryActions } from "@hooks/useInventoryActions";
 import { calculateTotalHPBonus } from "@utils/inventoryUtils";
 
 const getHpLevelMultiplier = (
@@ -64,7 +66,9 @@ export const calculatePlayerHP = (character: CharacterProfile): number => {
   const level = character.level;
   const stamina =
     character.totalAttributes?.sta ?? character.attributes?.sta ?? 0;
-  const levelMultiplier = getHpLevelMultiplier(character.class.id, level);
+  const cls = character.class;
+  const classId = typeof cls === "number" ? cls : (cls as CharacterClass).id;
+  const levelMultiplier = getHpLevelMultiplier(classId, level);
 
   const term1 = level * levelMultiplier;
   const term2 = ((level * levelMultiplier) / 300) * stamina + 5;
@@ -83,7 +87,8 @@ export const calculatePlayerMana = (character: CharacterProfile): number => {
     return 0;
   }
 
-  const classId = character.class.id;
+  const cls = character.class;
+  const classId = typeof cls === "number" ? cls : (cls as CharacterClass).id;
 
   // Warriors, Monks, and Rogues have no mana
   if (
@@ -144,7 +149,6 @@ export const createNewCharacterProfile = async (
     selectedDeity,
     selectedZone,
     attributes,
-    allPointsAllocated,
   } = characterCreatorState;
 
   const newCharacterProfile: CharacterProfile = {
@@ -169,7 +173,7 @@ export const createNewCharacterProfile = async (
     maxHp: 0,
     curHp: 0,
     maxMana: 0,
-    curMana: 0,
+    mana: 0,
     stats: {
       ac: 0,
       atk: 100,
@@ -180,7 +184,10 @@ export const createNewCharacterProfile = async (
   newCharacterProfile.maxHp = calculatePlayerHP(newCharacterProfile);
   newCharacterProfile.curHp = newCharacterProfile.maxHp;
   newCharacterProfile.maxMana = calculatePlayerMana(newCharacterProfile);
-  newCharacterProfile.curMana = newCharacterProfile.maxMana;
+  newCharacterProfile.mana = newCharacterProfile.maxMana;
+  if (!newCharacterProfile.stats) {
+    newCharacterProfile.stats = { ac: 0, atk: 100 };
+  }
   newCharacterProfile.stats.ac = calculateSimpleArmorClass(newCharacterProfile);
 
   setCharacterProfile(newCharacterProfile);

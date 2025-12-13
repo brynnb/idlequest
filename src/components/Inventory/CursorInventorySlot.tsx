@@ -24,7 +24,7 @@ const CursorInventorySlot: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const cursorItem = characterProfile?.inventory?.find(
-    (item) => item.slotid === InventorySlot.Cursor
+    (item) => item.bag === 0 && item.slot === InventorySlot.Cursor
   );
 
   const itemDetails = cursorItem?.itemDetails;
