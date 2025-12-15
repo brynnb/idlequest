@@ -49,12 +49,14 @@ func NewClient(charData *model.CharacterData) (entity.Client, error) {
 	client.mob.CurrentMana = int(charData.Mana)
 
 	// Inventory
+	log.Printf("=== NewClient: Loading inventory for character ID=%d, Name=%s ===", charData.ID, charData.Name)
 	charItems, err := db_character.GetCharacterItems(context.Background(), int(charData.ID))
 	if err != nil {
 		log.Printf("failed to get character items for character %d: %v", charData.ID, err)
 		return nil, err
 
 	}
+	log.Printf("=== NewClient: Found %d items for character ID=%d ===", len(charItems), charData.ID)
 	for _, item := range charItems {
 		itemTemplate, err := items.GetItemTemplateByID(item.ItemID)
 		if err != nil {

@@ -5,9 +5,10 @@ import (
 	"io"
 	"sync"
 
-	capnp "capnproto.org/go/capnp/v3"
 	"idlequest/internal/api/opcodes"
 	entity "idlequest/internal/zone/interface"
+
+	capnp "capnproto.org/go/capnp/v3"
 	"github.com/quic-go/webtransport-go"
 )
 
@@ -140,10 +141,12 @@ func NewMessage[T any](
 }
 
 func (s *Session) ReadMessageZero(data []byte) error {
-	if err := capnp.UnmarshalZeroTo(s.readMessageBuffer, &s.readBuffer, data); err != nil {
+	msg, err := capnp.Unmarshal(data)
+	if err != nil {
 		return err
 	}
-	seg, err := s.readMessageBuffer.Segment(0)
+	s.readMessageBuffer = msg
+	seg, err := msg.Segment(0)
 	if err != nil {
 		return err
 	}
@@ -152,10 +155,12 @@ func (s *Session) ReadMessageZero(data []byte) error {
 }
 
 func (s *Session) ReadMessagePackedZero(data []byte) error {
-	if err := capnp.UnmarshalPackedZeroTo(s.writeMessageBuffer, &s.writeBuffer, &s.packBuf, data); err != nil {
+	msg, err := capnp.UnmarshalPacked(data)
+	if err != nil {
 		return err
 	}
-	seg, err := s.writeMessageBuffer.Segment(0)
+	s.writeMessageBuffer = msg
+	seg, err := msg.Segment(0)
 	if err != nil {
 		return err
 	}

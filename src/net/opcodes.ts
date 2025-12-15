@@ -631,4 +631,7 @@ export enum OpCodes {
   // IdleQuest bind opcodes
   UpdateBind,
   BindUpdated,
+
+  // IdleQuest unified character state
+  CharacterState,
 }

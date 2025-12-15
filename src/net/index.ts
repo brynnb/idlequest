@@ -44,6 +44,7 @@ export { DeleteItem } from "./capnp/item";
 export {
   CharacterSelect,
   CharacterSelectEntry,
+  CharacterState,
   PlayerProfile,
 } from "./capnp/player";
 

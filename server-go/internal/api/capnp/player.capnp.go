@@ -433,6 +433,394 @@ func (f CharacterSelectEntry_Future) Struct() (CharacterSelectEntry, error) {
 	return CharacterSelectEntry(p.Struct()), err
 }
 
+type CharacterState capnp.Struct
+
+// CharacterState_TypeID is the unique identifier for the type CharacterState.
+const CharacterState_TypeID = 0xe65defdab4639d25
+
+func NewCharacterState(s *capnp.Segment) (CharacterState, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 136, PointerCount: 3})
+	return CharacterState(st), err
+}
+
+func NewRootCharacterState(s *capnp.Segment) (CharacterState, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 136, PointerCount: 3})
+	return CharacterState(st), err
+}
+
+func ReadRootCharacterState(msg *capnp.Message) (CharacterState, error) {
+	root, err := msg.Root()
+	return CharacterState(root.Struct()), err
+}
+
+func (s CharacterState) String() string {
+	str, _ := text.Marshal(0xe65defdab4639d25, capnp.Struct(s))
+	return str
+}
+
+func (s CharacterState) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (CharacterState) DecodeFromPtr(p capnp.Ptr) CharacterState {
+	return CharacterState(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s CharacterState) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s CharacterState) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s CharacterState) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s CharacterState) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s CharacterState) Id() int32 {
+	return int32(capnp.Struct(s).Uint32(0))
+}
+
+func (s CharacterState) SetId(v int32) {
+	capnp.Struct(s).SetUint32(0, uint32(v))
+}
+
+func (s CharacterState) Name() (string, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.Text(), err
+}
+
+func (s CharacterState) HasName() bool {
+	return capnp.Struct(s).HasPtr(0)
+}
+
+func (s CharacterState) NameBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s CharacterState) SetName(v string) error {
+	return capnp.Struct(s).SetText(0, v)
+}
+
+func (s CharacterState) LastName() (string, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.Text(), err
+}
+
+func (s CharacterState) HasLastName() bool {
+	return capnp.Struct(s).HasPtr(1)
+}
+
+func (s CharacterState) LastNameBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s CharacterState) SetLastName(v string) error {
+	return capnp.Struct(s).SetText(1, v)
+}
+
+func (s CharacterState) CharClass() int32 {
+	return int32(capnp.Struct(s).Uint32(4))
+}
+
+func (s CharacterState) SetCharClass(v int32) {
+	capnp.Struct(s).SetUint32(4, uint32(v))
+}
+
+func (s CharacterState) Race() int32 {
+	return int32(capnp.Struct(s).Uint32(8))
+}
+
+func (s CharacterState) SetRace(v int32) {
+	capnp.Struct(s).SetUint32(8, uint32(v))
+}
+
+func (s CharacterState) Deity() int32 {
+	return int32(capnp.Struct(s).Uint32(12))
+}
+
+func (s CharacterState) SetDeity(v int32) {
+	capnp.Struct(s).SetUint32(12, uint32(v))
+}
+
+func (s CharacterState) Gender() int32 {
+	return int32(capnp.Struct(s).Uint32(16))
+}
+
+func (s CharacterState) SetGender(v int32) {
+	capnp.Struct(s).SetUint32(16, uint32(v))
+}
+
+func (s CharacterState) Face() int32 {
+	return int32(capnp.Struct(s).Uint32(20))
+}
+
+func (s CharacterState) SetFace(v int32) {
+	capnp.Struct(s).SetUint32(20, uint32(v))
+}
+
+func (s CharacterState) Level() int32 {
+	return int32(capnp.Struct(s).Uint32(24))
+}
+
+func (s CharacterState) SetLevel(v int32) {
+	capnp.Struct(s).SetUint32(24, uint32(v))
+}
+
+func (s CharacterState) Exp() int32 {
+	return int32(capnp.Struct(s).Uint32(28))
+}
+
+func (s CharacterState) SetExp(v int32) {
+	capnp.Struct(s).SetUint32(28, uint32(v))
+}
+
+func (s CharacterState) ZoneId() int32 {
+	return int32(capnp.Struct(s).Uint32(32))
+}
+
+func (s CharacterState) SetZoneId(v int32) {
+	capnp.Struct(s).SetUint32(32, uint32(v))
+}
+
+func (s CharacterState) ZoneInstance() int32 {
+	return int32(capnp.Struct(s).Uint32(36))
+}
+
+func (s CharacterState) SetZoneInstance(v int32) {
+	capnp.Struct(s).SetUint32(36, uint32(v))
+}
+
+func (s CharacterState) X() float32 {
+	return math.Float32frombits(capnp.Struct(s).Uint32(40))
+}
+
+func (s CharacterState) SetX(v float32) {
+	capnp.Struct(s).SetUint32(40, math.Float32bits(v))
+}
+
+func (s CharacterState) Y() float32 {
+	return math.Float32frombits(capnp.Struct(s).Uint32(44))
+}
+
+func (s CharacterState) SetY(v float32) {
+	capnp.Struct(s).SetUint32(44, math.Float32bits(v))
+}
+
+func (s CharacterState) Z() float32 {
+	return math.Float32frombits(capnp.Struct(s).Uint32(48))
+}
+
+func (s CharacterState) SetZ(v float32) {
+	capnp.Struct(s).SetUint32(48, math.Float32bits(v))
+}
+
+func (s CharacterState) Heading() float32 {
+	return math.Float32frombits(capnp.Struct(s).Uint32(52))
+}
+
+func (s CharacterState) SetHeading(v float32) {
+	capnp.Struct(s).SetUint32(52, math.Float32bits(v))
+}
+
+func (s CharacterState) CurHp() int32 {
+	return int32(capnp.Struct(s).Uint32(56))
+}
+
+func (s CharacterState) SetCurHp(v int32) {
+	capnp.Struct(s).SetUint32(56, uint32(v))
+}
+
+func (s CharacterState) MaxHp() int32 {
+	return int32(capnp.Struct(s).Uint32(60))
+}
+
+func (s CharacterState) SetMaxHp(v int32) {
+	capnp.Struct(s).SetUint32(60, uint32(v))
+}
+
+func (s CharacterState) CurMana() int32 {
+	return int32(capnp.Struct(s).Uint32(64))
+}
+
+func (s CharacterState) SetCurMana(v int32) {
+	capnp.Struct(s).SetUint32(64, uint32(v))
+}
+
+func (s CharacterState) MaxMana() int32 {
+	return int32(capnp.Struct(s).Uint32(68))
+}
+
+func (s CharacterState) SetMaxMana(v int32) {
+	capnp.Struct(s).SetUint32(68, uint32(v))
+}
+
+func (s CharacterState) Endurance() int32 {
+	return int32(capnp.Struct(s).Uint32(72))
+}
+
+func (s CharacterState) SetEndurance(v int32) {
+	capnp.Struct(s).SetUint32(72, uint32(v))
+}
+
+func (s CharacterState) MaxEndurance() int32 {
+	return int32(capnp.Struct(s).Uint32(76))
+}
+
+func (s CharacterState) SetMaxEndurance(v int32) {
+	capnp.Struct(s).SetUint32(76, uint32(v))
+}
+
+func (s CharacterState) Ac() int32 {
+	return int32(capnp.Struct(s).Uint32(80))
+}
+
+func (s CharacterState) SetAc(v int32) {
+	capnp.Struct(s).SetUint32(80, uint32(v))
+}
+
+func (s CharacterState) Atk() int32 {
+	return int32(capnp.Struct(s).Uint32(84))
+}
+
+func (s CharacterState) SetAtk(v int32) {
+	capnp.Struct(s).SetUint32(84, uint32(v))
+}
+
+func (s CharacterState) Str() int32 {
+	return int32(capnp.Struct(s).Uint32(88))
+}
+
+func (s CharacterState) SetStr(v int32) {
+	capnp.Struct(s).SetUint32(88, uint32(v))
+}
+
+func (s CharacterState) Sta() int32 {
+	return int32(capnp.Struct(s).Uint32(92))
+}
+
+func (s CharacterState) SetSta(v int32) {
+	capnp.Struct(s).SetUint32(92, uint32(v))
+}
+
+func (s CharacterState) Cha() int32 {
+	return int32(capnp.Struct(s).Uint32(96))
+}
+
+func (s CharacterState) SetCha(v int32) {
+	capnp.Struct(s).SetUint32(96, uint32(v))
+}
+
+func (s CharacterState) Dex() int32 {
+	return int32(capnp.Struct(s).Uint32(100))
+}
+
+func (s CharacterState) SetDex(v int32) {
+	capnp.Struct(s).SetUint32(100, uint32(v))
+}
+
+func (s CharacterState) Intel() int32 {
+	return int32(capnp.Struct(s).Uint32(104))
+}
+
+func (s CharacterState) SetIntel(v int32) {
+	capnp.Struct(s).SetUint32(104, uint32(v))
+}
+
+func (s CharacterState) Agi() int32 {
+	return int32(capnp.Struct(s).Uint32(108))
+}
+
+func (s CharacterState) SetAgi(v int32) {
+	capnp.Struct(s).SetUint32(108, uint32(v))
+}
+
+func (s CharacterState) Wis() int32 {
+	return int32(capnp.Struct(s).Uint32(112))
+}
+
+func (s CharacterState) SetWis(v int32) {
+	capnp.Struct(s).SetUint32(112, uint32(v))
+}
+
+func (s CharacterState) Platinum() int32 {
+	return int32(capnp.Struct(s).Uint32(116))
+}
+
+func (s CharacterState) SetPlatinum(v int32) {
+	capnp.Struct(s).SetUint32(116, uint32(v))
+}
+
+func (s CharacterState) Gold() int32 {
+	return int32(capnp.Struct(s).Uint32(120))
+}
+
+func (s CharacterState) SetGold(v int32) {
+	capnp.Struct(s).SetUint32(120, uint32(v))
+}
+
+func (s CharacterState) Silver() int32 {
+	return int32(capnp.Struct(s).Uint32(124))
+}
+
+func (s CharacterState) SetSilver(v int32) {
+	capnp.Struct(s).SetUint32(124, uint32(v))
+}
+
+func (s CharacterState) Copper() int32 {
+	return int32(capnp.Struct(s).Uint32(128))
+}
+
+func (s CharacterState) SetCopper(v int32) {
+	capnp.Struct(s).SetUint32(128, uint32(v))
+}
+
+func (s CharacterState) InventoryItems() (ItemInstance_List, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return ItemInstance_List(p.List()), err
+}
+
+func (s CharacterState) HasInventoryItems() bool {
+	return capnp.Struct(s).HasPtr(2)
+}
+
+func (s CharacterState) SetInventoryItems(v ItemInstance_List) error {
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
+}
+
+// NewInventoryItems sets the inventoryItems field to a newly
+// allocated ItemInstance_List, preferring placement in s's segment.
+func (s CharacterState) NewInventoryItems(n int32) (ItemInstance_List, error) {
+	l, err := NewItemInstance_List(capnp.Struct(s).Segment(), n)
+	if err != nil {
+		return ItemInstance_List{}, err
+	}
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
+	return l, err
+}
+
+// CharacterState_List is a list of CharacterState.
+type CharacterState_List = capnp.StructList[CharacterState]
+
+// NewCharacterState creates a new list of CharacterState.
+func NewCharacterState_List(s *capnp.Segment, sz int32) (CharacterState_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 136, PointerCount: 3}, sz)
+	return capnp.StructList[CharacterState](l), err
+}
+
+// CharacterState_Future is a wrapper for a CharacterState promised by a client call.
+type CharacterState_Future struct{ *capnp.Future }
+
+func (f CharacterState_Future) Struct() (CharacterState, error) {
+	p, err := f.Future.Ptr()
+	return CharacterState(p.Struct()), err
+}
+
 type CharSelectEquip capnp.Struct
 
 // CharSelectEquip_TypeID is the unique identifier for the type CharSelectEquip.

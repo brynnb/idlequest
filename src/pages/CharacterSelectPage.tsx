@@ -5,12 +5,12 @@ import SelectionButton from "@components/Interface/SelectionButton";
 import {
   WorldSocket,
   OpCodes,
-  PlayerProfile,
+  CharacterState,
   EnterWorld,
   Int,
   CapnpString,
+  capnpToPlainObject,
 } from "@/net";
-import { capnpToPlainObject } from "@/net/capnp-utils";
 import useCharacterSelectStore, {
   CharacterSelectEntry,
 } from "@stores/CharacterSelectStore";
@@ -18,7 +18,6 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import races from "@data/json/races.json";
 import classes from "@data/json/classes.json";
-import deities from "@data/json/deities.json";
 import GameEngine from "@/scripts/GameEngine";
 
 const Wrapper = styled.div`
@@ -188,8 +187,7 @@ const CharacterSelectPage = () => {
     removeCharacter,
     isLoading,
   } = useCharacterSelectStore();
-  const { setCharacterProfile, setInventory, updateAllStats } =
-    usePlayerCharacterStore();
+  const { updateAllStats } = usePlayerCharacterStore();
 
   // Get race/class names
   const getRaceName = (raceId: number) => {
@@ -223,110 +221,18 @@ const CharacterSelectPage = () => {
       }
     );
 
-    // Register handler for PlayerProfile (full character data)
+    // Register handler for CharacterState (unified character data from server)
+    // The PlayerCharacterStore already handles this via initializeCharacterSync,
+    // but we need to navigate after receiving it
     WorldSocket.registerOpCodeHandler(
-      OpCodes.PlayerProfile,
-      PlayerProfile,
-      async (profile) => {
-        const plainProfile = capnpToPlainObject(profile);
-
-        // Build character profile from PlayerProfile data
-        const raceData = races.find(
-          (r: { id: number }) => r.id === plainProfile.race
-        );
-        const classData = classes.find(
-          (c: { id: number }) => c.id === plainProfile.charClass
-        );
-
-        setCharacterProfile({
-          id: plainProfile.entityid || plainProfile.spawnId || 0,
-          name: plainProfile.name,
-          lastName: plainProfile.lastName || "",
-          race: raceData,
-          class: classData,
-          deity:
-            deities.find((d: { id: number }) => d.id === plainProfile.deity) ||
-            deities[0],
-          zoneId: plainProfile.zoneId,
-          level: plainProfile.level,
-          exp: plainProfile.exp || 0,
-          curHp: plainProfile.curHp || 0,
-          maxHp: Number(plainProfile.maxHp) || 0,
-          mana: plainProfile.mana || 0,
-          maxMana: Number(plainProfile.maxMana) || 0,
-          endurance: plainProfile.endurance || 0,
-          platinum: plainProfile.platinum || 0,
-          gold: plainProfile.gold || 0,
-          silver: plainProfile.silver || 0,
-          copper: plainProfile.copper || 0,
-          attributes: {
-            str: plainProfile.str || 75,
-            sta: plainProfile.sta || 75,
-            cha: plainProfile.cha || 75,
-            dex: plainProfile.dex || 75,
-            int: plainProfile.intel || 75,
-            agi: plainProfile.agi || 75,
-            wis: plainProfile.wis || 75,
-          },
-          inventory: [], // Will be set via setInventory below
-          stats: {
-            ac: plainProfile.ac || 0,
-            atk: plainProfile.attack || 100,
-          },
-        });
-
-        // Build inventory items from PlayerProfile inventoryItems
-        // The server sends full item data embedded in each ItemInstance
-        const inventoryItems = (plainProfile.inventoryItems || [])
-          .filter((item: { name?: string }) => {
-            // Valid items have a name
-            return item.name && item.name.length > 0;
-          })
-          .map(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (item: any) => ({
-              bag: item.bagSlot ?? 0,
-              slot: item.slot ?? 0,
-              itemid: 0, // Not needed - we have full item details
-              charges: item.charges || 0,
-              // Include embedded item details directly from server
-              itemDetails: {
-                name: item.name,
-                icon: item.icon,
-                ac: item.ac,
-                damage: item.damage,
-                delay: item.delay,
-                hp: item.hp,
-                mana: item.mana,
-                weight: item.weight,
-                slots: item.slots,
-                classes: item.classes,
-                races: item.races,
-                itemclass: item.itemclass,
-                itemtype: item.itemtype,
-                bagslots: item.bagslots,
-                bagsize: item.bagsize,
-                // Include stat bonuses
-                astr: item.astr,
-                asta: item.asta,
-                aagi: item.aagi,
-                adex: item.adex,
-                awis: item.awis,
-                aint: item.aint,
-                acha: item.acha,
-                // Resistances
-                mr: item.mr,
-                fr: item.fr,
-                cr: item.cr,
-                dr: item.dr,
-                pr: item.pr,
-              },
-            })
-          );
-
-        if (inventoryItems.length > 0) {
-          await setInventory(inventoryItems);
-        }
+      OpCodes.CharacterState,
+      CharacterState,
+      async (charState) => {
+        console.log("=== CHARSELECT PAGE: CHARACTERSTATE RECEIVED ===");
+        // Apply the character state via the store
+        const plainData = capnpToPlainObject(charState);
+        console.log("=== CHARSELECT PAGE: PLAIN DATA ===", plainData);
+        await usePlayerCharacterStore.getState().applyCharacterState(plainData);
 
         updateAllStats();
 

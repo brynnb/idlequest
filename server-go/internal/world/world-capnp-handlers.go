@@ -145,9 +145,20 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 		}
 
 		// Create NPC list
-		npcList, _ := eq.NewNPCData_List(resp.Segment(), int32(len(npcMap)))
+		npcCount := int32(len(npcMap))
+		if npcCount == 0 {
+			return nil
+		}
+		npcList, err := eq.NewNPCData_List(resp.Segment(), npcCount)
+		if err != nil {
+			log.Printf("Failed to create NPC list: %v", err)
+			return err
+		}
 		i := 0
 		for _, npc := range npcMap {
+			if i >= int(npcCount) {
+				break
+			}
 			npcData := npcList.At(i)
 			npcData.SetId(npc.ID)
 			npcData.SetName(npc.Name)

@@ -16,9 +16,7 @@ require (
 	github.com/sevlyar/go-daemon v0.1.6
 )
 
-// replace capnproto.org/go/capnp/v3 => ../../go-capnp
-
-replace capnproto.org/go/capnp/v3 => github.com/knervous/go-capnp/v3 v3.1.1-knervous1
+// Using stock capnproto library
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect

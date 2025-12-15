@@ -24,6 +24,7 @@ import {
   WorldSocket,
   OpCodes,
   CharacterSelect,
+  CharacterState,
   capnpToPlainObject,
   MoveItem,
   DeleteItem,
@@ -76,6 +77,8 @@ interface PlayerCharacterStore {
   initializeCharacterSync: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   applyServerCharacterState: (state: any) => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  applyCharacterState: (state: any) => Promise<void>;
 }
 
 const getBagNumForContainerSlot = (key: InventoryKey): number => {
@@ -597,16 +600,29 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           });
         },
 
-        // Subscribe to SendCharInfo messages from server (Cap'n Proto)
+        // Subscribe to character messages from server (Cap'n Proto)
         initializeCharacterSync: () => {
+          // Handler for SendCharInfo (character select list)
           WorldSocket.registerOpCodeHandler(
             OpCodes.SendCharInfo,
             CharacterSelect,
             (charSelect) => {
               console.log("Received SendCharInfo:", charSelect);
-              // Convert Cap'n Proto object to plain JS object
               const plainData = capnpToPlainObject(charSelect);
               get().applyServerCharacterState(plainData);
+            }
+          );
+
+          // Handler for CharacterState (unified character data from server)
+          WorldSocket.registerOpCodeHandler(
+            OpCodes.CharacterState,
+            CharacterState,
+            (charState) => {
+              console.log("=== CHARACTERSTATE HANDLER FIRED ===");
+              console.log("Received CharacterState:", charState);
+              const plainData = capnpToPlainObject(charState);
+              console.log("=== CHARACTERSTATE PLAIN DATA ===", plainData);
+              get().applyCharacterState(plainData);
             }
           );
         },
@@ -724,33 +740,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             newProfile.stats?.atk
           );
 
-          // Fallback: if server didn't send maxHp, calculate it
-          if (!newProfile.maxHp || newProfile.maxHp <= 0) {
-            newProfile.maxHp = calculatePlayerHP(newProfile);
-            console.log(
-              "[CharData] Server maxHp missing, calculated:",
-              newProfile.maxHp
-            );
-          }
-          // Fallback: if curHp is invalid, set to maxHp
-          if (!newProfile.curHp || newProfile.curHp <= 0) {
-            console.log(
-              "[CharData] Server curHp invalid, setting to maxHp:",
-              newProfile.maxHp
-            );
-            newProfile.curHp = newProfile.maxHp;
-          }
-          // Clamp curHp to maxHp just in case
-          if (newProfile.curHp > newProfile.maxHp) {
-            console.log(
-              "[CharData] Clamping curHp from",
-              newProfile.curHp,
-              "to",
-              newProfile.maxHp
-            );
-            newProfile.curHp = newProfile.maxHp;
-          }
-
+          // Server is authoritative - use values directly, no fallbacks
           set({ characterProfile: newProfile });
           get().updateAllStats();
 
@@ -761,6 +751,111 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             maxHp: newProfile.maxHp,
             exp: newProfile.exp,
           });
+        },
+
+        // Apply unified CharacterState from server - single source of truth
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        applyCharacterState: async (serverState: any) => {
+          console.log(
+            "[CharacterState] Processing unified state:",
+            serverState
+          );
+
+          // Look up race/class/deity from JSON data
+          const raceData = races.find(
+            (r: { id: number }) => r.id === serverState.race
+          );
+          const classData = classes.find(
+            (c: { id: number }) => c.id === serverState.charClass
+          );
+          const deityData =
+            deities.find((d: { id: number }) => d.id === serverState.deity) ||
+            deities[0];
+
+          // Build inventory items from server data
+          const inventoryItems: InventoryItem[] = await Promise.all(
+            (serverState.inventoryItems || [])
+              .filter((item: { itemId?: number; id?: number }) => {
+                const itemId = item.itemId || item.id;
+                return itemId && itemId > 0;
+              })
+              .map(
+                async (item: {
+                  itemId?: number;
+                  id?: number;
+                  bagSlot?: number;
+                  slot?: number;
+                  charges?: number;
+                }) => {
+                  const itemId = item.itemId || item.id;
+                  const itemDetails = await eqDataService.getItemById(
+                    itemId as number
+                  );
+                  return {
+                    bag: item.bagSlot ?? 0,
+                    slot: item.slot ?? 0,
+                    itemid: itemId,
+                    charges: item.charges || 0,
+                    itemDetails: itemDetails || undefined,
+                  } as InventoryItem;
+                }
+              )
+          );
+
+          // Build profile directly from server values - no client calculations
+          const newProfile: CharacterProfile = {
+            id: serverState.id || 0,
+            name: serverState.name,
+            lastName: serverState.lastName || "",
+            race: raceData,
+            class: classData,
+            deity: deityData,
+            zoneId: serverState.zoneId,
+            level: serverState.level,
+            exp: serverState.exp || 0,
+            // Server-computed HP/Mana - use directly
+            curHp: serverState.curHp,
+            maxHp: serverState.maxHp,
+            mana: serverState.curMana,
+            maxMana: serverState.maxMana,
+            endurance: serverState.endurance || 0,
+            // Server-provided attributes
+            attributes: {
+              str: serverState.str,
+              sta: serverState.sta,
+              cha: serverState.cha,
+              dex: serverState.dex,
+              int: serverState.intel,
+              agi: serverState.agi,
+              wis: serverState.wis,
+            },
+            inventory: inventoryItems,
+            // Server-computed stats
+            stats: {
+              ac: serverState.ac,
+              atk: serverState.atk,
+            },
+            // Currency
+            platinum: serverState.platinum || 0,
+            gold: serverState.gold || 0,
+            silver: serverState.silver || 0,
+            copper: serverState.copper || 0,
+          };
+
+          console.log("[CharacterState] Applied server values:", {
+            name: newProfile.name,
+            level: newProfile.level,
+            curHp: newProfile.curHp,
+            maxHp: newProfile.maxHp,
+            curMana: newProfile.mana,
+            maxMana: newProfile.maxMana,
+            ac: newProfile.stats?.ac,
+            atk: newProfile.stats?.atk,
+            items: inventoryItems.length,
+          });
+
+          set({ characterProfile: newProfile });
+          get().updateAllStats();
         },
       }),
       { name: "player-character-storage" }

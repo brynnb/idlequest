@@ -32,6 +32,132 @@ func sendCharInfo(ses *session.Session, accountId int64) {
 	ses.SendStream(charInfo.Message(), opcodes.SendCharInfo)
 }
 
+// sendCharacterState sends the unified CharacterState message with all character data
+// This is the single source of truth for character data sent to the client
+func sendCharacterState(ses *session.Session, characterName string) {
+	charData, err := db_character.GetCharacterByName(characterName)
+	if err != nil {
+		log.Printf("sendCharacterState: failed to get character %q: %v", characterName, err)
+		return
+	}
+
+	// Create client for this character (loads inventory, etc.)
+	// Always create a new client to ensure we load the correct character's data
+	log.Printf("sendCharacterState: Creating new client for character ID=%d, Name=%q", charData.ID, charData.Name)
+	ses.Client, err = client.NewClient(charData)
+	if err != nil {
+		log.Printf("sendCharacterState: failed to create client for character %q: %v", characterName, err)
+		return
+	}
+
+	// Build CharacterState message
+	charState, err := session.NewMessage(ses, eq.NewRootCharacterState)
+	if err != nil {
+		log.Printf("sendCharacterState: failed to create CharacterState message: %v", err)
+		return
+	}
+
+	// Identity
+	charState.SetId(int32(charData.ID))
+	charState.SetName(charData.Name)
+	charState.SetLastName(charData.LastName)
+
+	// Class/Race/Deity
+	charState.SetCharClass(int32(charData.Class))
+	charState.SetRace(int32(charData.Race))
+	charState.SetDeity(int32(charData.Deity))
+	charState.SetGender(int32(charData.Gender))
+	charState.SetFace(int32(charData.Face))
+	charState.SetLevel(int32(charData.Level))
+	charState.SetExp(int32(charData.Exp))
+
+	// Location
+	charState.SetZoneId(int32(charData.ZoneID))
+	charState.SetZoneInstance(int32(charData.ZoneInstance))
+	charState.SetX(float32(charData.X))
+	charState.SetY(float32(charData.Y))
+	charState.SetZ(float32(charData.Z))
+	charState.SetHeading(float32(charData.Heading))
+
+	// Compute HP using EQ formula
+	maxHp := calculateMaxHPForChar(charData)
+	curHp := int(charData.CurHp)
+	if curHp > maxHp {
+		curHp = maxHp
+	}
+	charState.SetCurHp(int32(curHp))
+	charState.SetMaxHp(int32(maxHp))
+
+	// Compute Mana using EQ formula
+	maxMana := calculateMaxManaForCharSelect(int(charData.Class), int(charData.Level), int(charData.Int), int(charData.Wis))
+	curMana := int(charData.Mana)
+	if curMana > maxMana {
+		curMana = maxMana
+	}
+	charState.SetCurMana(int32(curMana))
+	charState.SetMaxMana(int32(maxMana))
+
+	// Endurance (not implemented yet, set to 0)
+	charState.SetEndurance(0)
+	charState.SetMaxEndurance(0)
+
+	// Compute AC and ATK
+	baseAC := calculateBaseACForCharSelect(int(charData.Level))
+	charState.SetAc(int32(baseAC))
+	charState.SetAtk(int32(int(charData.Level)*2 + int(charData.Str)))
+
+	// Base attributes
+	charState.SetStr(int32(charData.Str))
+	charState.SetSta(int32(charData.Sta))
+	charState.SetCha(int32(charData.Cha))
+	charState.SetDex(int32(charData.Dex))
+	charState.SetIntel(int32(charData.Int))
+	charState.SetAgi(int32(charData.Agi))
+	charState.SetWis(int32(charData.Wis))
+
+	// Currency (from character_currency table, not loaded here - set to 0 for now)
+	charState.SetPlatinum(0)
+	charState.SetGold(0)
+	charState.SetSilver(0)
+	charState.SetCopper(0)
+
+	// Add inventory items
+	charItems := ses.Client.Items()
+	charItemsLength := int32(len(charItems))
+
+	if charItemsLength > 0 {
+		capCharItems, err := charState.NewInventoryItems(charItemsLength)
+		if err != nil {
+			log.Printf("sendCharacterState: failed to create InventoryItems array: %v", err)
+		} else {
+			itemIdx := 0
+			for slot, charItem := range charItems {
+				if charItem == nil {
+					continue
+				}
+				mods, err := json.Marshal(charItem.Instance.Mods)
+				if err != nil {
+					log.Printf("sendCharacterState: failed to marshal mods for itemID %d: %v", charItem.Instance.ItemID, err)
+					continue
+				}
+
+				item := capCharItems.At(itemIdx)
+				itemIdx++
+				item.SetCharges(uint32(charItem.Instance.Charges))
+				item.SetQuantity(uint32(charItem.Instance.Quantity))
+				item.SetMods(string(mods))
+				item.SetSlot(int32(slot.Slot))
+				item.SetBagSlot(int32(slot.Bag))
+				items.ConvertItemTemplateToCapnp(ses, &charItem.Item, &item)
+			}
+		}
+	}
+
+	log.Printf("sendCharacterState: Sending for %s (level %d, HP %d/%d, Mana %d/%d, %d items)",
+		charData.Name, charData.Level, curHp, maxHp, curMana, maxMana, charItemsLength)
+	ses.SendStream(charState.Message(), opcodes.CharacterState)
+}
+
 func HandleJWTLogin(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	ctx := context.Background()
 	jwtLogin, err := session.Deserialize(ses, payload, eq.ReadRootJWTLogin)
@@ -109,13 +235,14 @@ func HandleEnterWorld(ses *session.Session, payload []byte, wh *WorldHandler) bo
 		log.Printf("failed to read EnterWorld struct: %v", err)
 		return false
 	}
-	log.Printf("Got EnterWorld request")
+	log.Printf("=== ENTERWORLD REQUEST RECEIVED ===")
 
 	name, err := req.Name()
 	if err != nil {
 		log.Printf("failed to get name from EnterWorld struct: %v", err)
 		return false
 	}
+	log.Printf("=== ENTERWORLD: Character name requested: %q ===", name)
 	if accountMatch, err := AccountHasCharacterName(context.Background(), ses.AccountID, name); err != nil || !accountMatch {
 		log.Printf("Tried to log in unsuccessfully from account %d with character %v", ses.AccountID, err)
 		return false
@@ -131,92 +258,9 @@ func HandleEnterWorld(ses *session.Session, payload []byte, wh *WorldHandler) bo
 	enterWorld.SetValue(1)
 	ses.SendData(enterWorld.Message(), opcodes.PostEnterWorld)
 
-	// For IdleQuest, send PlayerProfile immediately (no zone server)
-	sendPlayerProfile(ses, name)
+	// For IdleQuest, send CharacterState immediately (no zone server)
+	sendCharacterState(ses, name)
 	return false
-}
-
-// sendPlayerProfile sends the full PlayerProfile for the specified character
-func sendPlayerProfile(ses *session.Session, characterName string) {
-	charData, err := db_character.GetCharacterByName(characterName)
-	if err != nil {
-		log.Printf("failed to get character %q: %v", characterName, err)
-		return
-	}
-
-	// Create client for this character (loads inventory, etc.)
-	ses.Client, err = client.NewClient(charData)
-	if err != nil {
-		log.Printf("failed to create client for character %q: %v", characterName, err)
-		return
-	}
-
-	// Build PlayerProfile message
-	playerProfile, err := session.NewMessage(ses, eq.NewRootPlayerProfile)
-	if err != nil {
-		log.Printf("failed to create PlayerProfile message: %v", err)
-		return
-	}
-
-	playerProfile.SetName(charData.Name)
-	playerProfile.SetEntityid(int32(charData.ID)) // Character database ID for inventory sync
-	playerProfile.SetLevel(int32(charData.Level))
-	playerProfile.SetRace(int32(charData.Race))
-	playerProfile.SetCharClass(int32(charData.Class))
-	playerProfile.SetGender(int32(charData.Gender))
-	playerProfile.SetDeity(int32(charData.Deity))
-	playerProfile.SetExp(int32(charData.Exp))
-	playerProfile.SetStr(int32(charData.Str))
-	playerProfile.SetSta(int32(charData.Sta))
-	playerProfile.SetDex(int32(charData.Dex))
-	playerProfile.SetAgi(int32(charData.Agi))
-	playerProfile.SetWis(int32(charData.Wis))
-	playerProfile.SetIntel(int32(charData.Int))
-	playerProfile.SetCha(int32(charData.Cha))
-	playerProfile.SetZoneId(int32(charData.ZoneID))
-	playerProfile.SetZoneInstance(int32(charData.ZoneInstance))
-	playerProfile.SetX(float32(charData.X))
-	playerProfile.SetY(float32(charData.Y))
-	playerProfile.SetZ(float32(charData.Z))
-	playerProfile.SetHeading(float32(charData.Heading))
-	playerProfile.SetCurHp(int32(charData.CurHp))
-	playerProfile.SetMana(int32(charData.Mana))
-
-	// Add inventory items to PlayerProfile
-	charItems := ses.Client.Items()
-	charItemsLength := int32(len(charItems))
-
-	if charItemsLength > 0 {
-		capCharItems, err := playerProfile.NewInventoryItems(charItemsLength)
-		if err != nil {
-			log.Printf("failed to create InventoryItems array: %v", err)
-		} else {
-			itemIdx := 0
-			for slot, charItem := range charItems {
-				if charItem == nil {
-					continue
-				}
-				mods, err := json.Marshal(charItem.Instance.Mods)
-				if err != nil {
-					log.Printf("failed to marshal mods for itemID %d: %v", charItem.Instance.ItemID, err)
-					continue
-				}
-
-				item := capCharItems.At(itemIdx)
-				itemIdx++
-				item.SetCharges(uint32(charItem.Instance.Charges))
-				item.SetQuantity(uint32(charItem.Instance.Quantity))
-				item.SetMods(string(mods))
-				// Send server-native addressing (bagSlot + slot) with no flat-slot conversion.
-				item.SetSlot(int32(slot.Slot))
-				item.SetBagSlot(int32(slot.Bag))
-				items.ConvertItemTemplateToCapnp(ses, &charItem.Item, &item)
-			}
-		}
-	}
-
-	log.Printf("Sending PlayerProfile for %s (level %d, %d items)", charData.Name, charData.Level, charItemsLength)
-	ses.SendStream(playerProfile.Message(), opcodes.PlayerProfile)
 }
 
 func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) bool {

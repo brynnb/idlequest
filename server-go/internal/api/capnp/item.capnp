@@ -2,7 +2,7 @@
 
 using Go = import "go.capnp";
 $Go.package("net");         # Go package name
-$Go.import("github.com/knervous/eqgo/internal/api/capnp");  # Go import path
+$Go.import("idlequest/internal/api/capnp");  # Go import path
 
 struct ItemInstance {
   mods @0 :Text;

@@ -2,7 +2,7 @@
 
 using Go = import "go.capnp";
 $Go.package("net");
-$Go.import("github.com/knervous/eqgo/internal/api/capnp");
+$Go.import("idlequest/internal/api/capnp");
 
 using Item = import "item.capnp";
 using Common = import "common.capnp";
@@ -45,6 +45,61 @@ struct CharacterSelectEntry {
   intel @27 :Int32;
   agi @28 :Int32;
   wis @29 :Int32;
+}
+
+# Unified character state message - single source of truth for all character data
+struct CharacterState {
+  # Identity
+  id @0 :Int32;
+  name @1 :Text;
+  lastName @2 :Text;
+  
+  # Class/Race/Deity
+  charClass @3 :Int32;
+  race @4 :Int32;
+  deity @5 :Int32;
+  gender @6 :Int32;
+  face @7 :Int32;
+  level @8 :Int32;
+  exp @9 :Int32;
+  
+  # Location
+  zoneId @10 :Int32;
+  zoneInstance @11 :Int32;
+  x @12 :Float32;
+  y @13 :Float32;
+  z @14 :Float32;
+  heading @15 :Float32;
+  
+  # HP/Mana/Endurance (current and max, all computed server-side)
+  curHp @16 :Int32;
+  maxHp @17 :Int32;
+  curMana @18 :Int32;
+  maxMana @19 :Int32;
+  endurance @20 :Int32;
+  maxEndurance @21 :Int32;
+  
+  # Computed combat stats
+  ac @22 :Int32;
+  atk @23 :Int32;
+  
+  # Base attributes (from DB + equipment bonuses computed server-side)
+  str @24 :Int32;
+  sta @25 :Int32;
+  cha @26 :Int32;
+  dex @27 :Int32;
+  intel @28 :Int32;
+  agi @29 :Int32;
+  wis @30 :Int32;
+  
+  # Currency
+  platinum @31 :Int32;
+  gold @32 :Int32;
+  silver @33 :Int32;
+  copper @34 :Int32;
+  
+  # Inventory - full item data
+  inventoryItems @35 :List(Item.ItemInstance);
 }
 
 struct CharSelectEquip {

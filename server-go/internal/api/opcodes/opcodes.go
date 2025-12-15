@@ -639,4 +639,7 @@ const (
 	// IdleQuest bind opcodes
 	UpdateBind
 	BindUpdated
+
+	// IdleQuest unified character state
+	CharacterState
 )

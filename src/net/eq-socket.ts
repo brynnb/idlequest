@@ -161,10 +161,16 @@ export class EqSocket {
 
       this.isConnected = true;
       this.retryCount = 0;
-      // watch for close
+      // watch for close - don't auto-reconnect on normal close
       this.webtransport.closed
-        .then(() => this.close())
-        .catch(() => this.close());
+        .then((info) => {
+          console.log("WebTransport closed:", info);
+          this.close(false);
+        })
+        .catch((e) => {
+          console.error("WebTransport closed with error:", e);
+          this.close(false);
+        });
 
       return true;
     } catch (e) {
