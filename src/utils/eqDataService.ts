@@ -16,6 +16,8 @@ import {
   GetSpellResponse,
   GetEqstrRequest,
   GetEqstrResponse,
+  ValidateNameRequest,
+  ValidateNameResponse,
 } from "@/net";
 
 export interface Item {
@@ -479,6 +481,34 @@ class EQDataService {
       };
     } catch (error) {
       console.error("Error fetching eqstr via Cap'n Proto:", error);
+      return null;
+    }
+  }
+
+  async validateName(name: string): Promise<{
+    valid: boolean;
+    available: boolean;
+    errorMessage: string;
+  } | null> {
+    try {
+      if (!WorldSocket.isConnected) {
+        console.warn("WorldSocket not connected for validateName");
+        return null;
+      }
+      const response = await WorldSocket.sendRequest(
+        OpCodes.ValidateNameRequest,
+        OpCodes.ValidateNameResponse,
+        ValidateNameRequest,
+        ValidateNameResponse,
+        { name }
+      );
+      return {
+        valid: response.valid === 1,
+        available: response.available === 1,
+        errorMessage: response.errorMessage,
+      };
+    } catch (error) {
+      console.error("Error validating name via Cap'n Proto:", error);
       return null;
     }
   }

@@ -13251,3 +13251,43 @@ export class GetEqstrResponse extends $.Struct {
     $.utils.setText(1, value, this);
   }
 }
+
+export class ValidateNameRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "ValidateNameRequest",
+    id: "a1b2c3d4e5f60050",
+    size: new $.ObjectSize(0, 1),
+  };
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+}
+
+export class ValidateNameResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "ValidateNameResponse",
+    id: "a1b2c3d4e5f60051",
+    size: new $.ObjectSize(8, 1),
+  };
+  get valid(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set valid(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get available(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set available(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get errorMessage(): string {
+    return $.utils.getText(0, this);
+  }
+  set errorMessage(value: string) {
+    $.utils.setText(0, value, this);
+  }
+}

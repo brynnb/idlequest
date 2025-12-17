@@ -29,6 +29,8 @@ export enum OpCodes {
   SendMembershipDetails,
   ZoneServerInfo,
   WebInitiateConnection,
+  ValidateNameRequest,
+  ValidateNameResponse,
 
   // Zone
   ZoneSession,

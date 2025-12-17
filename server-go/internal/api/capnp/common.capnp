@@ -2536,3 +2536,13 @@ struct GetEqstrResponse {
   id @2 :Int32;
   text @3 :Text;
 }
+
+struct ValidateNameRequest {
+  name @0 :Text;
+}
+
+struct ValidateNameResponse {
+  valid @0 :Int32;
+  available @1 :Int32;
+  errorMessage @2 :Text;
+}

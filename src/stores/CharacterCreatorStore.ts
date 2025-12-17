@@ -51,6 +51,18 @@ export interface CharacterCreatorStore {
   setSelectedDeity: (deity: DeityData | null) => void;
   setCharacterName: (name: string) => void;
   characterName: string;
+  nameValidation: {
+    isValid: boolean;
+    isAvailable: boolean;
+    errorMessage: string;
+    isValidating: boolean;
+  };
+  setNameValidation: (validation: {
+    isValid: boolean;
+    isAvailable: boolean;
+    errorMessage: string;
+    isValidating: boolean;
+  }) => void;
   allPointsAllocated: boolean;
   setAllPointsAllocated: (allocated: boolean) => void;
   resetStore: () => void;
@@ -192,6 +204,13 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
         setSelectedDeity: (deity) => set({ selectedDeity: deity }),
         setCharacterName: (name) => set({ characterName: name }),
         characterName: "",
+        nameValidation: {
+          isValid: false,
+          isAvailable: false,
+          errorMessage: "",
+          isValidating: false,
+        },
+        setNameValidation: (validation) => set({ nameValidation: validation }),
         allPointsAllocated: false,
         setAllPointsAllocated: (allocated) =>
           set({ allPointsAllocated: allocated }),
@@ -205,6 +224,12 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
             attributePoints: 0,
             selectedDeity: null,
             characterName: "",
+            nameValidation: {
+              isValid: false,
+              isAvailable: false,
+              errorMessage: "",
+              isValidating: false,
+            },
             allPointsAllocated: false,
             inventory: [],
             currentStep: 1,
@@ -228,6 +253,9 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
             case 1:
               return !!(
                 state.characterName &&
+                state.nameValidation.isValid &&
+                state.nameValidation.isAvailable &&
+                !state.nameValidation.isValidating &&
                 state.selectedRace &&
                 state.selectedClass &&
                 state.allPointsAllocated

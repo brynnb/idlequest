@@ -40,6 +40,7 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.GetNPCDialogueRequest:   HandleGetNPCDialogueRequest,
 		opcodes.GetSpellRequest:         HandleGetSpellRequest,
 		opcodes.GetEqstrRequest:         HandleGetEqstrRequest,
+		opcodes.ValidateNameRequest:     HandleValidateNameRequest,
 		// Zone handlers moved to world (no ZoneInstance needed for idle game)
 		opcodes.Camp:           HandleCamp,
 		opcodes.ChannelMessage: HandleChannelMessage,

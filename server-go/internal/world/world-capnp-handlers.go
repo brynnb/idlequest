@@ -7,6 +7,7 @@ import (
 
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/api/opcodes"
+	db_character "idlequest/internal/db/character"
 	"idlequest/internal/db/items"
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/db/spells"
@@ -633,6 +634,65 @@ func HandleGetEqstrRequest(ses *session.Session, payload []byte, wh *WorldHandle
 				resp.SetText(*eqstr.Text)
 			}
 		}
+		return nil
+	})
+
+	return false
+}
+
+func HandleValidateNameRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	msg, err := capnp.Unmarshal(payload)
+	if err != nil {
+		log.Printf("failed to unmarshal ValidateNameRequest: %v", err)
+		return false
+	}
+
+	req, err := eq.ReadRootValidateNameRequest(msg)
+	if err != nil {
+		log.Printf("failed to read ValidateNameRequest: %v", err)
+		return false
+	}
+
+	name, _ := req.Name()
+
+	// Check format validity using existing ValidateName function
+	isValid := ValidateName(name)
+
+	// Check availability - see if name already exists
+	isAvailable := true
+	errorMessage := ""
+
+	if !isValid {
+		if len(name) < 4 {
+			errorMessage = "Name must be at least 4 characters"
+		} else if len(name) > 15 {
+			errorMessage = "Name must be 15 characters or less"
+		} else {
+			errorMessage = "Name contains invalid characters or format"
+		}
+	} else {
+		// Check if name is already taken
+		existingChar, _ := db_character.GetCharacterByName(name)
+		if existingChar != nil && existingChar.ID > 0 {
+			isAvailable = false
+			errorMessage = "Name is already taken"
+		}
+	}
+
+	// Convert bools to int32 (1=true, 0=false)
+	var validInt, availableInt int32
+	if isValid {
+		validInt = 1
+	}
+	if isAvailable {
+		availableInt = 1
+	}
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootValidateNameResponse, opcodes.ValidateNameResponse, func(resp eq.ValidateNameResponse) error {
+		resp.SetValid(validInt)
+		resp.SetAvailable(availableInt)
+		resp.SetErrorMessage(errorMessage)
 		return nil
 	})
 

@@ -51,6 +51,8 @@ export {
   GetSpellResponse,
   GetEqstrRequest,
   GetEqstrResponse,
+  ValidateNameRequest,
+  ValidateNameResponse,
 } from "./capnp/common";
 
 export { DeleteItem } from "./capnp/item";

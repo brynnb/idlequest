@@ -43,6 +43,9 @@ const StyledButton = styled.button.attrs({ className: "selection-button" })<{
   &:focus {
     outline: none;
   }
+  &:not(:disabled):active {
+    background-image: url("/images/ui/actionbuttonpress.png");
+  }
 `;
 
 const SelectionButton = ({
