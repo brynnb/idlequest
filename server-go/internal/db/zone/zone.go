@@ -36,3 +36,24 @@ func GetZoneById(ctx context.Context, zoneID int) (*model.Zone, error) {
 	cache.GetCache().Set(cacheKey, &zone)
 	return &zone, nil
 }
+
+func GetAllZones(ctx context.Context) ([]model.Zone, error) {
+	cacheKey := "zones:all"
+	if val, found, err := cache.GetCache().Get(cacheKey); err == nil && found {
+		if zones, ok := val.([]model.Zone); ok {
+			return zones, nil
+		}
+	}
+
+	var zones []model.Zone
+	err := table.Zone.
+		SELECT(table.Zone.AllColumns).
+		FROM(table.Zone).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &zones)
+	if err != nil {
+		return nil, fmt.Errorf("query all zones: %w", err)
+	}
+
+	cache.GetCache().Set(cacheKey, zones)
+	return zones, nil
+}

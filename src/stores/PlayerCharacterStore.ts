@@ -773,34 +773,82 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             deities[0];
 
           // Build inventory items from server data
-          const inventoryItems: InventoryItem[] = await Promise.all(
-            (serverState.inventoryItems || [])
-              .filter((item: { itemId?: number; id?: number }) => {
-                const itemId = item.itemId || item.id;
-                return itemId && itemId > 0;
-              })
-              .map(
-                async (item: {
-                  itemId?: number;
-                  id?: number;
-                  bagSlot?: number;
-                  slot?: number;
-                  charges?: number;
-                }) => {
-                  const itemId = item.itemId || item.id;
-                  const itemDetails = await eqDataService.getItemById(
-                    itemId as number
-                  );
-                  return {
-                    bag: item.bagSlot ?? 0,
-                    slot: item.slot ?? 0,
-                    itemid: itemId,
-                    charges: item.charges || 0,
-                    itemDetails: itemDetails || undefined,
-                  } as InventoryItem;
-                }
-              )
+          // Server sends full item data embedded in ItemInstance - no need to fetch
+          console.log(
+            "[CharacterState] Raw inventoryItems:",
+            serverState.inventoryItems
           );
+          const inventoryItems: InventoryItem[] = (
+            serverState.inventoryItems || []
+          )
+            .filter(
+              (item: { name?: string; slot?: number }) =>
+                item.name && item.name.length > 0
+            )
+            .map(
+              (item: {
+                bagSlot?: number;
+                slot?: number;
+                charges?: number;
+                quantity?: number;
+                name?: string;
+                icon?: number;
+                slots?: number;
+                classes?: number;
+                races?: number;
+                weight?: number;
+                ac?: number;
+                damage?: number;
+                delay?: number;
+                magic?: number;
+                lore?: string;
+                nodrop?: number;
+                norent?: number;
+                size?: number;
+                itemtype?: number;
+                itemclass?: number;
+                bagslots?: number;
+                bagsize?: number;
+                bagtype?: number;
+                bagwr?: number;
+                light?: number;
+                color?: number;
+              }) => {
+                // Build itemDetails from the embedded item data
+                const itemDetails: Item = {
+                  id: 0, // Server doesn't send item ID in ItemInstance
+                  name: item.name || "",
+                  icon: item.icon || 0,
+                  slots: item.slots || 0,
+                  classes: item.classes || 0,
+                  races: item.races || 0,
+                  weight: item.weight || 0,
+                  ac: item.ac || 0,
+                  damage: item.damage || 0,
+                  delay: item.delay || 0,
+                  magic: item.magic || 0,
+                  lore: item.lore || "",
+                  nodrop: item.nodrop || 0,
+                  norent: item.norent || 0,
+                  size: item.size || 0,
+                  itemtype: item.itemtype || 0,
+                  itemclass: item.itemclass || 0,
+                  bagslots: item.bagslots || 0,
+                  bagsize: item.bagsize || 0,
+                  bagtype: item.bagtype || 0,
+                  bagwr: item.bagwr || 0,
+                  light: item.light || 0,
+                };
+
+                return {
+                  bag: item.bagSlot ?? 0,
+                  slot: item.slot ?? 0,
+                  charges: item.charges || 0,
+                  color: item.color,
+                  itemDetails,
+                } as InventoryItem;
+              }
+            );
 
           // Build profile directly from server values - no client calculations
           const newProfile: CharacterProfile = {

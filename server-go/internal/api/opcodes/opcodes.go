@@ -623,6 +623,10 @@ const (
 	GetZoneNPCsResponse
 	GetAdjacentZonesRequest
 	GetAdjacentZonesResponse
+	GetAllZonesRequest
+	GetAllZonesResponse
+	StaticDataRequest
+	StaticDataResponse
 	SendChatMessage
 	ChatMessageBroadcast
 	GetNPCDialogueRequest

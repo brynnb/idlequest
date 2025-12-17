@@ -12,6 +12,7 @@ import (
 	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/dialogue"
 	"idlequest/internal/session"
+	"idlequest/internal/staticdata"
 
 	"capnproto.org/go/capnp/v3"
 )
@@ -101,6 +102,202 @@ func HandleGetZoneRequest(ses *session.Session, payload []byte, wh *WorldHandler
 			resp.SetMinLevel(int32(zoneData.MinLevel))
 			resp.SetMaxLevel(0)
 		}
+		return nil
+	})
+
+	return false
+}
+
+// HandleGetAllZonesRequest handles GetAllZonesRequest Cap'n Proto messages
+func HandleGetAllZonesRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	// No need to deserialize - request is empty
+	ctx := context.Background()
+
+	zones, zonesErr := db_zone.GetAllZones(ctx)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootGetAllZonesResponse, opcodes.GetAllZonesResponse, func(resp eq.GetAllZonesResponse) error {
+		if zonesErr != nil {
+			resp.SetSuccess(0)
+			resp.SetError("Failed to fetch zones")
+			return nil
+		}
+
+		resp.SetSuccess(1)
+
+		zoneCount := int32(len(zones))
+		if zoneCount == 0 {
+			return nil
+		}
+
+		zoneList, err := eq.NewZoneData_List(resp.Segment(), zoneCount)
+		if err != nil {
+			log.Printf("Failed to create zone list: %v", err)
+			return err
+		}
+
+		for i, zone := range zones {
+			zoneData := zoneList.At(i)
+			zoneData.SetId(int32(zone.ID))
+			if zone.ShortName != nil {
+				zoneData.SetShortName(*zone.ShortName)
+			}
+			zoneData.SetLongName(zone.LongName)
+			zoneData.SetZoneidnumber(int32(zone.Zoneidnumber))
+			zoneData.SetSafeX(float32(zone.SafeX))
+			zoneData.SetSafeY(float32(zone.SafeY))
+			zoneData.SetSafeZ(float32(zone.SafeZ))
+			zoneData.SetMinLevel(int32(zone.MinLevel))
+			zoneData.SetMaxLevel(0)
+		}
+		resp.SetZones(zoneList)
+		return nil
+	})
+
+	return false
+}
+
+// HandleStaticDataRequest handles StaticDataRequest Cap'n Proto messages
+func HandleStaticDataRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	ctx := context.Background()
+
+	// Get all static data
+	data, dataErr := staticdata.GetStaticData(ctx)
+	zones, zonesErr := staticdata.GetAllZones(ctx)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootStaticDataResponse, opcodes.StaticDataResponse, func(resp eq.StaticDataResponse) error {
+		if dataErr != nil || zonesErr != nil {
+			resp.SetSuccess(0)
+			errMsg := "Failed to fetch static data"
+			if dataErr != nil {
+				errMsg = dataErr.Error()
+			} else if zonesErr != nil {
+				errMsg = zonesErr.Error()
+			}
+			resp.SetError(errMsg)
+			return nil
+		}
+
+		resp.SetSuccess(1)
+
+		// Set zones
+		if len(zones) > 0 {
+			zoneList, err := eq.NewZoneData_List(resp.Segment(), int32(len(zones)))
+			if err == nil {
+				for i, zone := range zones {
+					zd := zoneList.At(i)
+					zd.SetId(int32(zone.ID))
+					if zone.ShortName != nil {
+						zd.SetShortName(*zone.ShortName)
+					}
+					zd.SetLongName(zone.LongName)
+					zd.SetZoneidnumber(int32(zone.Zoneidnumber))
+					zd.SetSafeX(float32(zone.SafeX))
+					zd.SetSafeY(float32(zone.SafeY))
+					zd.SetSafeZ(float32(zone.SafeZ))
+					zd.SetMinLevel(int32(zone.MinLevel))
+					zd.SetMaxLevel(0)
+				}
+				resp.SetZones(zoneList)
+			}
+		}
+
+		// Set races
+		if len(data.Races) > 0 {
+			raceList, err := eq.NewRaceInfo_List(resp.Segment(), int32(len(data.Races)))
+			if err == nil {
+				for i, race := range data.Races {
+					r := raceList.At(i)
+					r.SetId(race.ID)
+					r.SetName(race.Name)
+					r.SetNoCoin(race.NoCoin)
+					if race.IsPlayable {
+						r.SetIsPlayable(1)
+					} else {
+						r.SetIsPlayable(0)
+					}
+					r.SetShortName(race.ShortName)
+					r.SetBitmask(race.Bitmask)
+				}
+				resp.SetRaces(raceList)
+			}
+		}
+
+		// Set classes
+		if len(data.Classes) > 0 {
+			classList, err := eq.NewClassInfo_List(resp.Segment(), int32(len(data.Classes)))
+			if err == nil {
+				for i, class := range data.Classes {
+					c := classList.At(i)
+					c.SetId(class.ID)
+					c.SetBitmask(class.Bitmask)
+					c.SetName(class.Name)
+					c.SetShortName(class.ShortName)
+					c.SetCreatePoints(class.CreatePoints)
+				}
+				resp.SetClasses(classList)
+			}
+		}
+
+		// Set deities
+		if len(data.Deities) > 0 {
+			deityList, err := eq.NewDeityInfo_List(resp.Segment(), int32(len(data.Deities)))
+			if err == nil {
+				for i, deity := range data.Deities {
+					d := deityList.At(i)
+					d.SetId(deity.ID)
+					d.SetName(deity.Name)
+					d.SetBitmask(deity.Bitmask)
+					d.SetDescription(deity.Description)
+				}
+				resp.SetDeities(deityList)
+			}
+		}
+
+		// Set char create combinations
+		if len(data.CharCreateCombinations) > 0 {
+			combList, err := eq.NewCharCreateCombination_List(resp.Segment(), int32(len(data.CharCreateCombinations)))
+			if err == nil {
+				for i, comb := range data.CharCreateCombinations {
+					c := combList.At(i)
+					c.SetAllocationId(int32(comb.AllocationID))
+					c.SetRace(int32(comb.Race))
+					c.SetClass(int32(comb.Class))
+					c.SetDeity(int32(comb.Deity))
+					c.SetStartZone(int32(comb.StartZone))
+					c.SetExpansionsReq(int32(comb.ExpansionsReq))
+				}
+				resp.SetCharCreateCombinations(combList)
+			}
+		}
+
+		// Set char create point allocations
+		if len(data.CharCreatePointAllocations) > 0 {
+			allocList, err := eq.NewCharCreatePointAllocation_List(resp.Segment(), int32(len(data.CharCreatePointAllocations)))
+			if err == nil {
+				for i, alloc := range data.CharCreatePointAllocations {
+					a := allocList.At(i)
+					a.SetId(int32(alloc.ID))
+					a.SetBaseStr(int32(alloc.BaseStr))
+					a.SetBaseSta(int32(alloc.BaseSta))
+					a.SetBaseDex(int32(alloc.BaseDex))
+					a.SetBaseAgi(int32(alloc.BaseAgi))
+					a.SetBaseInt(int32(alloc.BaseInt))
+					a.SetBaseWis(int32(alloc.BaseWis))
+					a.SetBaseCha(int32(alloc.BaseCha))
+					a.SetAllocStr(int32(alloc.AllocStr))
+					a.SetAllocSta(int32(alloc.AllocSta))
+					a.SetAllocDex(int32(alloc.AllocDex))
+					a.SetAllocAgi(int32(alloc.AllocAgi))
+					a.SetAllocInt(int32(alloc.AllocInt))
+					a.SetAllocWis(int32(alloc.AllocWis))
+					a.SetAllocCha(int32(alloc.AllocCha))
+				}
+				resp.SetCharCreatePointAllocations(allocList)
+			}
+		}
+
 		return nil
 	})
 

@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
-import deities from "@data/json/deities.json";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
-import charCreateCombinations from "@data/json/char_create_combinations.json";
+import useStaticDataStore from "@stores/StaticDataStore";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
 
@@ -35,21 +34,25 @@ const Title = styled.h2`
 const DeitySelector = () => {
   const { selectedDeity, setSelectedDeity, selectedRace, selectedClass } =
     useCharacterCreatorStore();
+  const deities = useStaticDataStore((state) => state.deities);
+  const combinations = useStaticDataStore(
+    (state) => state.charCreateCombinations
+  );
 
   const compatibleDeities = useMemo(() => {
-    return charCreateCombinations
+    return combinations
       .filter(
         (combination) =>
           combination.race === selectedRace?.id &&
           combination.class === selectedClass?.id
       )
       .map((combination) => combination.deity);
-  }, [selectedRace, selectedClass]);
+  }, [selectedRace, selectedClass, combinations]);
 
   const onSelectDeity = (deityId: number) => {
-    const selectedDeity = deities.find((deity) => deity.id === deityId);
-    if (selectedDeity && compatibleDeities.includes(deityId)) {
-      setSelectedDeity(selectedDeity);
+    const deity = deities.find((d) => d.id === deityId);
+    if (deity && compatibleDeities.includes(deityId)) {
+      setSelectedDeity(deity);
     }
   };
 
@@ -62,7 +65,7 @@ const DeitySelector = () => {
         setSelectedDeity(firstCompatibleDeity);
       }
     }
-  }, [compatibleDeities, selectedDeity, setSelectedDeity]);
+  }, [compatibleDeities, selectedDeity, setSelectedDeity, deities]);
 
   return (
     <DeitySelectorContainer>

@@ -34,6 +34,8 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.GetZoneRequest:          HandleGetZoneRequest,
 		opcodes.GetZoneNPCsRequest:      HandleGetZoneNPCsRequest,
 		opcodes.GetAdjacentZonesRequest: HandleGetAdjacentZonesRequest,
+		opcodes.GetAllZonesRequest:      HandleGetAllZonesRequest,
+		opcodes.StaticDataRequest:       HandleStaticDataRequest,
 		opcodes.SendChatMessage:         HandleSendChatMessage,
 		opcodes.GetNPCDialogueRequest:   HandleGetNPCDialogueRequest,
 		// Zone handlers moved to world (no ZoneInstance needed for idle game)

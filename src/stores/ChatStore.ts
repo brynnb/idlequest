@@ -153,6 +153,10 @@ const useChatStore = create<ChatStore>()(
             // Just check if already connected
             if (WorldSocket.isConnected) {
               set({ isConnected: true, connectionError: null });
+              // Load static data from server
+              import("./StaticDataStore").then((module) => {
+                module.default.getState().loadStaticData();
+              });
             } else {
               set({
                 isConnected: false,

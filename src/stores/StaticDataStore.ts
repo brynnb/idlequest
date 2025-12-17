@@ -1,0 +1,263 @@
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import {
+  WorldSocket,
+  OpCodes,
+  StaticDataRequest,
+  StaticDataResponse,
+} from "@/net";
+
+export interface RaceData {
+  id: number;
+  name: string;
+  no_coin: number;
+  is_playable: boolean;
+  short_name: string;
+  bitmask: number;
+}
+
+export interface ClassData {
+  id: number;
+  bitmask: number;
+  name: string;
+  shortName: string;
+  createPoints: number;
+}
+
+export interface DeityData {
+  id: number;
+  name: string;
+  bitmask: number;
+  description: string;
+}
+
+export interface ZoneData {
+  id: number;
+  zoneidnumber: number;
+  shortName: string;
+  longName: string;
+  safeX: number;
+  safeY: number;
+  safeZ: number;
+  minLevel: number;
+  maxLevel: number;
+}
+
+export interface CharCreateCombinationData {
+  allocationId: number;
+  race: number;
+  class: number;
+  deity: number;
+  startZone: number;
+  expansionsReq: number;
+}
+
+export interface CharCreatePointAllocationData {
+  id: number;
+  baseStr: number;
+  baseSta: number;
+  baseDex: number;
+  baseAgi: number;
+  baseInt: number;
+  baseWis: number;
+  baseCha: number;
+  allocStr: number;
+  allocSta: number;
+  allocDex: number;
+  allocAgi: number;
+  allocInt: number;
+  allocWis: number;
+  allocCha: number;
+}
+
+interface StaticDataStore {
+  isLoaded: boolean;
+  isLoading: boolean;
+  error: string | null;
+  zones: ZoneData[];
+  races: RaceData[];
+  classes: ClassData[];
+  deities: DeityData[];
+  charCreateCombinations: CharCreateCombinationData[];
+  charCreatePointAllocations: CharCreatePointAllocationData[];
+  loadStaticData: () => Promise<void>;
+  getRaceById: (id: number) => RaceData | undefined;
+  getClassById: (id: number) => ClassData | undefined;
+  getDeityById: (id: number) => DeityData | undefined;
+  getZoneByZoneIdNumber: (zoneidnumber: number) => ZoneData | undefined;
+}
+
+const useStaticDataStore = create<StaticDataStore>()(
+  devtools(
+    (set, get) => ({
+      isLoaded: false,
+      isLoading: false,
+      error: null,
+      zones: [],
+      races: [],
+      classes: [],
+      deities: [],
+      charCreateCombinations: [],
+      charCreatePointAllocations: [],
+
+      loadStaticData: async () => {
+        const { isLoaded, isLoading } = get();
+        if (isLoaded || isLoading) return;
+
+        set({ isLoading: true, error: null });
+
+        try {
+          if (!WorldSocket.isConnected) {
+            throw new Error("WorldSocket not connected");
+          }
+
+          const response = await WorldSocket.sendRequest(
+            OpCodes.StaticDataRequest,
+            OpCodes.StaticDataResponse,
+            StaticDataRequest,
+            StaticDataResponse,
+            {}
+          );
+
+          if (!response.success) {
+            throw new Error(response.error || "Failed to load static data");
+          }
+
+          // Parse zones
+          const zones: ZoneData[] = [];
+          for (let i = 0; i < response.zones.length; i++) {
+            const z = response.zones.get(i);
+            zones.push({
+              id: z.id,
+              zoneidnumber: z.zoneidnumber,
+              shortName: z.shortName,
+              longName: z.longName,
+              safeX: z.safeX,
+              safeY: z.safeY,
+              safeZ: z.safeZ,
+              minLevel: z.minLevel,
+              maxLevel: z.maxLevel,
+            });
+          }
+
+          // Parse races
+          const races: RaceData[] = [];
+          for (let i = 0; i < response.races.length; i++) {
+            const r = response.races.get(i);
+            races.push({
+              id: r.id,
+              name: r.name,
+              no_coin: r.noCoin,
+              is_playable: r.isPlayable === 1,
+              short_name: r.shortName,
+              bitmask: r.bitmask,
+            });
+          }
+
+          // Parse classes
+          const classes: ClassData[] = [];
+          for (let i = 0; i < response.classes.length; i++) {
+            const c = response.classes.get(i);
+            classes.push({
+              id: c.id,
+              bitmask: c.bitmask,
+              name: c.name,
+              shortName: c.shortName,
+              createPoints: c.createPoints,
+            });
+          }
+
+          // Parse deities
+          const deities: DeityData[] = [];
+          for (let i = 0; i < response.deities.length; i++) {
+            const d = response.deities.get(i);
+            deities.push({
+              id: d.id,
+              name: d.name,
+              bitmask: d.bitmask,
+              description: d.description,
+            });
+          }
+
+          // Parse char create combinations
+          const charCreateCombinations: CharCreateCombinationData[] = [];
+          for (let i = 0; i < response.charCreateCombinations.length; i++) {
+            const c = response.charCreateCombinations.get(i);
+            charCreateCombinations.push({
+              allocationId: c.allocationId,
+              race: c.race,
+              class: c.class,
+              deity: c.deity,
+              startZone: c.startZone,
+              expansionsReq: c.expansionsReq,
+            });
+          }
+
+          // Parse char create point allocations
+          const charCreatePointAllocations: CharCreatePointAllocationData[] =
+            [];
+          for (let i = 0; i < response.charCreatePointAllocations.length; i++) {
+            const a = response.charCreatePointAllocations.get(i);
+            charCreatePointAllocations.push({
+              id: a.id,
+              baseStr: a.baseStr,
+              baseSta: a.baseSta,
+              baseDex: a.baseDex,
+              baseAgi: a.baseAgi,
+              baseInt: a.baseInt,
+              baseWis: a.baseWis,
+              baseCha: a.baseCha,
+              allocStr: a.allocStr,
+              allocSta: a.allocSta,
+              allocDex: a.allocDex,
+              allocAgi: a.allocAgi,
+              allocInt: a.allocInt,
+              allocWis: a.allocWis,
+              allocCha: a.allocCha,
+            });
+          }
+
+          set({
+            isLoaded: true,
+            isLoading: false,
+            zones,
+            races,
+            classes,
+            deities,
+            charCreateCombinations,
+            charCreatePointAllocations,
+          });
+
+          console.log(
+            `[StaticData] Loaded: ${zones.length} zones, ${races.length} races, ${classes.length} classes, ${deities.length} deities`
+          );
+        } catch (error) {
+          console.error("Failed to load static data:", error);
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+      },
+
+      getRaceById: (id: number) => {
+        return get().races.find((r) => r.id === id);
+      },
+
+      getClassById: (id: number) => {
+        return get().classes.find((c) => c.id === id);
+      },
+
+      getDeityById: (id: number) => {
+        return get().deities.find((d) => d.id === id);
+      },
+
+      getZoneByZoneIdNumber: (zoneidnumber: number) => {
+        return get().zones.find((z) => z.zoneidnumber === zoneidnumber);
+      },
+    }),
+    { name: "Static Data Store" }
+  )
+);
+
+export default useStaticDataStore;

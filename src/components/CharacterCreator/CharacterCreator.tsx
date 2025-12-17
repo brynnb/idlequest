@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import useStaticDataStore from "@stores/StaticDataStore";
 import AttributeAllocator from "./AttributeAllocator";
 import RaceSelector from "./RaceSelector";
 import ClassSelector from "./ClassSelector";
@@ -8,8 +9,6 @@ import NameInput from "./NameInput";
 import ZoneSelector from "./StartingZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
 import styled from "styled-components";
-import classes from "@data/json/classes.json";
-import CharacterClass from "@entities/CharacterClass";
 import SelectionButton from "../Interface/SelectionButton";
 
 const Wrapper = styled.div`
@@ -60,12 +59,12 @@ const CharacterCreator = () => {
     resetStore,
   } = useCharacterCreatorStore();
 
+  const classes = useStaticDataStore((state) => state.classes);
+
   const handleClassSelection = (selectedClassId: number) => {
-    const selectedClass = classes.find(
-      (c: CharacterClass) => c.id === selectedClassId
-    );
-    if (selectedClass) {
-      useCharacterCreatorStore.getState().setSelectedClass(selectedClass);
+    const foundClass = classes.find((c) => c.id === selectedClassId);
+    if (foundClass) {
+      useCharacterCreatorStore.getState().setSelectedClass(foundClass);
     }
   };
 

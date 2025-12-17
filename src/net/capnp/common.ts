@@ -12040,6 +12040,444 @@ export class GetAdjacentZonesResponse extends $.Struct {
 }
 GetAdjacentZonesResponse._Zones = $.CompositeList(AdjacentZone);
 
+export class GetAllZonesRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetAllZonesRequest",
+    id: "a1b2c3d4e5f60020",
+    size: new $.ObjectSize(0, 0),
+  };
+}
+
+export class ZoneData extends $.Struct {
+  static readonly _capnp = {
+    displayName: "ZoneData",
+    id: "a1b2c3d4e5f60021",
+    size: new $.ObjectSize(24, 2),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get shortName(): string {
+    return $.utils.getText(0, this);
+  }
+  set shortName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get longName(): string {
+    return $.utils.getText(1, this);
+  }
+  set longName(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get zoneidnumber(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set zoneidnumber(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get safeX(): number {
+    return $.utils.getFloat32(8, this);
+  }
+  set safeX(value: number) {
+    $.utils.setFloat32(8, value, this);
+  }
+  get safeY(): number {
+    return $.utils.getFloat32(12, this);
+  }
+  set safeY(value: number) {
+    $.utils.setFloat32(12, value, this);
+  }
+  get safeZ(): number {
+    return $.utils.getFloat32(16, this);
+  }
+  set safeZ(value: number) {
+    $.utils.setFloat32(16, value, this);
+  }
+  get minLevel(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set minLevel(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+  get maxLevel(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set maxLevel(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+}
+
+export class GetAllZonesResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetAllZonesResponse",
+    id: "a1b2c3d4e5f60022",
+    size: new $.ObjectSize(8, 2),
+  };
+  static _Zones: $.ListCtor<ZoneData>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get zones(): $.List<ZoneData> {
+    return $.utils.getList(1, GetAllZonesResponse._Zones, this);
+  }
+  set zones(value: $.List<ZoneData>) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+}
+GetAllZonesResponse._Zones = $.CompositeList(ZoneData);
+
+export class StaticDataRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "StaticDataRequest",
+    id: "a1b2c3d4e5f60030",
+    size: new $.ObjectSize(0, 0),
+  };
+}
+
+export class RaceInfo extends $.Struct {
+  static readonly _capnp = {
+    displayName: "RaceInfo",
+    id: "a1b2c3d4e5f60031",
+    size: new $.ObjectSize(16, 2),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get noCoin(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set noCoin(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get isPlayable(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set isPlayable(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get shortName(): string {
+    return $.utils.getText(1, this);
+  }
+  set shortName(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get bitmask(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set bitmask(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+}
+
+export class ClassInfo extends $.Struct {
+  static readonly _capnp = {
+    displayName: "ClassInfo",
+    id: "a1b2c3d4e5f60032",
+    size: new $.ObjectSize(16, 2),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get bitmask(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set bitmask(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get shortName(): string {
+    return $.utils.getText(1, this);
+  }
+  set shortName(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get createPoints(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set createPoints(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+}
+
+export class DeityInfo extends $.Struct {
+  static readonly _capnp = {
+    displayName: "DeityInfo",
+    id: "a1b2c3d4e5f60033",
+    size: new $.ObjectSize(8, 2),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get bitmask(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set bitmask(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get description(): string {
+    return $.utils.getText(1, this);
+  }
+  set description(value: string) {
+    $.utils.setText(1, value, this);
+  }
+}
+
+export class CharCreateCombination extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CharCreateCombination",
+    id: "a1b2c3d4e5f60034",
+    size: new $.ObjectSize(24, 0),
+  };
+  get allocationId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set allocationId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get race(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set race(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get class(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set class(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get deity(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set deity(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get startZone(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set startZone(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get expansionsReq(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set expansionsReq(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+}
+
+export class CharCreatePointAllocation extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CharCreatePointAllocation",
+    id: "a1b2c3d4e5f60035",
+    size: new $.ObjectSize(64, 0),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get baseStr(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set baseStr(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get baseSta(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set baseSta(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get baseDex(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set baseDex(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get baseAgi(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set baseAgi(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get baseInt(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set baseInt(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+  get baseWis(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set baseWis(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+  get baseCha(): number {
+    return $.utils.getInt32(28, this);
+  }
+  set baseCha(value: number) {
+    $.utils.setInt32(28, value, this);
+  }
+  get allocStr(): number {
+    return $.utils.getInt32(32, this);
+  }
+  set allocStr(value: number) {
+    $.utils.setInt32(32, value, this);
+  }
+  get allocSta(): number {
+    return $.utils.getInt32(36, this);
+  }
+  set allocSta(value: number) {
+    $.utils.setInt32(36, value, this);
+  }
+  get allocDex(): number {
+    return $.utils.getInt32(40, this);
+  }
+  set allocDex(value: number) {
+    $.utils.setInt32(40, value, this);
+  }
+  get allocAgi(): number {
+    return $.utils.getInt32(44, this);
+  }
+  set allocAgi(value: number) {
+    $.utils.setInt32(44, value, this);
+  }
+  get allocInt(): number {
+    return $.utils.getInt32(48, this);
+  }
+  set allocInt(value: number) {
+    $.utils.setInt32(48, value, this);
+  }
+  get allocWis(): number {
+    return $.utils.getInt32(52, this);
+  }
+  set allocWis(value: number) {
+    $.utils.setInt32(52, value, this);
+  }
+  get allocCha(): number {
+    return $.utils.getInt32(56, this);
+  }
+  set allocCha(value: number) {
+    $.utils.setInt32(56, value, this);
+  }
+}
+
+export class StaticDataResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "StaticDataResponse",
+    id: "a1b2c3d4e5f60036",
+    size: new $.ObjectSize(8, 8),
+  };
+  static _Zones: $.ListCtor<ZoneData>;
+  static _Races: $.ListCtor<RaceInfo>;
+  static _Classes: $.ListCtor<ClassInfo>;
+  static _Deities: $.ListCtor<DeityInfo>;
+  static _CharCreateCombinations: $.ListCtor<CharCreateCombination>;
+  static _CharCreatePointAllocations: $.ListCtor<CharCreatePointAllocation>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get zones(): $.List<ZoneData> {
+    return $.utils.getList(1, StaticDataResponse._Zones, this);
+  }
+  set zones(value: $.List<ZoneData>) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+  get races(): $.List<RaceInfo> {
+    return $.utils.getList(2, StaticDataResponse._Races, this);
+  }
+  set races(value: $.List<RaceInfo>) {
+    $.utils.copyFrom(value, $.utils.getPointer(2, this));
+  }
+  get classes(): $.List<ClassInfo> {
+    return $.utils.getList(3, StaticDataResponse._Classes, this);
+  }
+  set classes(value: $.List<ClassInfo>) {
+    $.utils.copyFrom(value, $.utils.getPointer(3, this));
+  }
+  get deities(): $.List<DeityInfo> {
+    return $.utils.getList(4, StaticDataResponse._Deities, this);
+  }
+  set deities(value: $.List<DeityInfo>) {
+    $.utils.copyFrom(value, $.utils.getPointer(4, this));
+  }
+  get charCreateCombinations(): $.List<CharCreateCombination> {
+    return $.utils.getList(5, StaticDataResponse._CharCreateCombinations, this);
+  }
+  set charCreateCombinations(value: $.List<CharCreateCombination>) {
+    $.utils.copyFrom(value, $.utils.getPointer(5, this));
+  }
+  get charCreatePointAllocations(): $.List<CharCreatePointAllocation> {
+    return $.utils.getList(
+      6,
+      StaticDataResponse._CharCreatePointAllocations,
+      this
+    );
+  }
+  set charCreatePointAllocations(value: $.List<CharCreatePointAllocation>) {
+    $.utils.copyFrom(value, $.utils.getPointer(6, this));
+  }
+}
+StaticDataResponse._Zones = $.CompositeList(ZoneData);
+StaticDataResponse._Races = $.CompositeList(RaceInfo);
+StaticDataResponse._Classes = $.CompositeList(ClassInfo);
+StaticDataResponse._Deities = $.CompositeList(DeityInfo);
+StaticDataResponse._CharCreateCombinations = $.CompositeList(
+  CharCreateCombination
+);
+StaticDataResponse._CharCreatePointAllocations = $.CompositeList(
+  CharCreatePointAllocation
+);
+
 export class SendChatMessageRequest extends $.Struct {
   static readonly _capnp = {
     displayName: "SendChatMessageRequest",

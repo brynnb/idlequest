@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import useCharacterCreatorStore from "/src/stores/CharacterCreatorStore";
+import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import useStaticDataStore from "@stores/StaticDataStore";
 import AttributeAutoAllocatorButton from "./AttributeAutoAllocatorButton";
 import styled from "styled-components";
 
@@ -88,11 +89,28 @@ const AttributeAllocator: React.FC = () => {
     attributePoints,
     updateBaseAttributes,
     setAllPointsAllocated,
+    selectedRace,
+    selectedClass,
   } = useCharacterCreatorStore();
 
+  const allocations = useStaticDataStore(
+    (state) => state.charCreatePointAllocations
+  );
+  const combinations = useStaticDataStore(
+    (state) => state.charCreateCombinations
+  );
+
   useEffect(() => {
-    updateBaseAttributes();
-  }, []);
+    if (allocations.length > 0 && combinations.length > 0) {
+      updateBaseAttributes(allocations, combinations);
+    }
+  }, [
+    selectedRace,
+    selectedClass,
+    allocations,
+    combinations,
+    updateBaseAttributes,
+  ]);
 
   useEffect(() => {
     setAllPointsAllocated(attributePoints === 0);
@@ -104,12 +122,10 @@ const AttributeAllocator: React.FC = () => {
     }
   };
 
-  const decrementAttribute = (attr: keyof typeof attributes) => {
-    const baseValue = attributes[`base_${attr}`];
-    if (
-      attributes[attr] > 0 &&
-      attributes[`base_${attr}`] + attributes[attr] > baseValue
-    ) {
+  const decrementAttribute = (attr: (typeof baseAttributes)[number]) => {
+    const baseKey = `base_${attr}` as keyof typeof attributes;
+    const baseValue = attributes[baseKey];
+    if (attributes[attr] > baseValue) {
       setAttributes({ ...attributes, [attr]: attributes[attr] - 1 });
     }
   };
@@ -126,17 +142,11 @@ const AttributeAllocator: React.FC = () => {
           <AttributeControls>
             <AdjustButton
               onClick={() => decrementAttribute(attr)}
-              disabled={
-                attributes[attr] === 0 ||
-                attributes[`base_${attr}`] + attributes[attr] <=
-                  attributes[`base_${attr}`]
-              }
+              disabled={attributes[attr] <= attributes[`base_${attr}`]}
             >
               ‒
             </AdjustButton>
-            <AttributeNumber>
-              {attributes[`base_${attr}`] + attributes[attr]}
-            </AttributeNumber>
+            <AttributeNumber>{attributes[attr]}</AttributeNumber>
             <AdjustButton
               onClick={() => incrementAttribute(attr)}
               disabled={attributePoints === 0}

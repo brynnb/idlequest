@@ -2383,3 +2383,93 @@ struct LootGeneratedResponse {
   silver @3 :Int32;
   copper @4 :Int32;
 }
+
+# GetAllZones - bulk fetch all zones for client caching
+struct GetAllZonesRequest {
+  # Empty - fetches all zones
+}
+
+struct ZoneData {
+  id @0 :Int32;
+  shortName @1 :Text;
+  longName @2 :Text;
+  zoneidnumber @3 :Int32;
+  safeX @4 :Float32;
+  safeY @5 :Float32;
+  safeZ @6 :Float32;
+  minLevel @7 :Int32;
+  maxLevel @8 :Int32;
+}
+
+struct GetAllZonesResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  zones @2 :List(ZoneData);
+}
+
+# StaticData - comprehensive static data for character creation
+struct StaticDataRequest {
+  # Empty - fetches all static data
+}
+
+struct RaceInfo {
+  id @0 :Int32;
+  name @1 :Text;
+  noCoin @2 :Int32;
+  isPlayable @3 :Int32;
+  shortName @4 :Text;
+  bitmask @5 :Int32;
+}
+
+struct ClassInfo {
+  id @0 :Int32;
+  bitmask @1 :Int32;
+  name @2 :Text;
+  shortName @3 :Text;
+  createPoints @4 :Int32;
+}
+
+struct DeityInfo {
+  id @0 :Int32;
+  name @1 :Text;
+  bitmask @2 :Int32;
+  description @3 :Text;
+}
+
+struct CharCreateCombination {
+  allocationId @0 :Int32;
+  race @1 :Int32;
+  class @2 :Int32;
+  deity @3 :Int32;
+  startZone @4 :Int32;
+  expansionsReq @5 :Int32;
+}
+
+struct CharCreatePointAllocation {
+  id @0 :Int32;
+  baseStr @1 :Int32;
+  baseSta @2 :Int32;
+  baseDex @3 :Int32;
+  baseAgi @4 :Int32;
+  baseInt @5 :Int32;
+  baseWis @6 :Int32;
+  baseCha @7 :Int32;
+  allocStr @8 :Int32;
+  allocSta @9 :Int32;
+  allocDex @10 :Int32;
+  allocAgi @11 :Int32;
+  allocInt @12 :Int32;
+  allocWis @13 :Int32;
+  allocCha @14 :Int32;
+}
+
+struct StaticDataResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  zones @2 :List(ZoneData);
+  races @3 :List(RaceInfo);
+  classes @4 :List(ClassInfo);
+  deities @5 :List(DeityInfo);
+  charCreateCombinations @6 :List(CharCreateCombination);
+  charCreatePointAllocations @7 :List(CharCreatePointAllocation);
+}

@@ -7,7 +7,9 @@ import (
 
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/constants"
+	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/session"
+	"idlequest/internal/staticdata"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -240,95 +242,107 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 }
 
 func CheckCharCreateInfo(cc eq.CharCreate) bool {
-	// Map race to table index
-	raceMap := map[uint32]int{
-		RaceHuman:     0,
-		RaceBarbarian: 1,
-		RaceErudite:   2,
-		RaceWoodElf:   3,
-		RaceHighElf:   4,
-		RaceDarkElf:   5,
-		RaceHalfElf:   6,
-		RaceDwarf:     7,
-		RaceTroll:     8,
-		RaceOgre:      9,
-		RaceHalfling:  10,
-		RaceGnome:     11,
-		RaceIksar:     12,
-		RaceVahShir:   13,
-		RaceFroglok:   14,
-		RaceDrakkin:   15,
-	}
+	ctx := context.Background()
 	race := cc.Race()
 	class := cc.CharClass()
+	deity := cc.Deity()
 
-	raceIdx, ok := raceMap[uint32(race)]
-	if !ok || raceIdx >= 16 {
-		log.Printf("Race %d is out of range", race)
+	// Get static data from database
+	data, err := staticdata.GetStaticData(ctx)
+	if err != nil {
+		log.Printf("CheckCharCreateInfo: failed to get static data: %v", err)
 		return false
 	}
 
-	classIdx := int(class) - 1
-	if classIdx >= 16 {
-		log.Printf("Class %d is out of range", class)
+	// Find the allocation for this race/class/deity combination
+	var allocationID uint32
+	found := false
+	for _, combo := range data.CharCreateCombinations {
+		if combo.Race == uint32(race) && combo.Class == uint32(class) && combo.Deity == uint32(deity) {
+			allocationID = combo.AllocationID
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		log.Printf("CheckCharCreateInfo: no valid combination found for race=%d, class=%d, deity=%d", race, class, deity)
 		return false
 	}
 
-	// Check race/class combination
-	if !ClassRaceLookupTable[classIdx][raceIdx] {
-		log.Println("Invalid race/class combination")
+	// Find the allocation data
+	var alloc *model.CharCreatePointAllocations
+	for i := range data.CharCreatePointAllocations {
+		if data.CharCreatePointAllocations[i].ID == allocationID {
+			alloc = &data.CharCreatePointAllocations[i]
+			break
+		}
+	}
+
+	if alloc == nil {
+		log.Printf("CheckCharCreateInfo: allocation ID %d not found", allocationID)
 		return false
 	}
 
-	// Calculate base stats
-	bSTR := BaseClassStats[uint32(class)][0] + BaseRaceStats[uint32(race)][0]
-	bSTA := BaseClassStats[uint32(class)][1] + BaseRaceStats[uint32(race)][1]
-	bAGI := BaseClassStats[uint32(class)][2] + BaseRaceStats[uint32(race)][2]
-	bDEX := BaseClassStats[uint32(class)][3] + BaseRaceStats[uint32(race)][3]
-	bWIS := BaseClassStats[uint32(class)][4] + BaseRaceStats[uint32(race)][4]
-	bINT := BaseClassStats[uint32(class)][5] + BaseRaceStats[uint32(race)][5]
-	bCHA := BaseClassStats[uint32(class)][6] + BaseRaceStats[uint32(race)][6]
-	statPoints := BaseClassStats[uint32(class)][7]
+	// Get class create points
+	var createPoints uint32
+	for _, cls := range data.Classes {
+		if cls.ID == int32(class) {
+			createPoints = uint32(cls.CreatePoints)
+			break
+		}
+	}
 
-	bTotal := bSTR + bSTA + bAGI + bDEX + bWIS + bINT + bCHA
-	cTotal := cc.Str() + cc.Sta() + cc.Agi() + cc.Dex() + cc.Wis() + cc.Intel() + cc.Cha()
+	// Calculate expected totals from allocation data
+	bTotal := alloc.BaseStr + alloc.BaseSta + alloc.BaseAgi + alloc.BaseDex + alloc.BaseWis + alloc.BaseInt + alloc.BaseCha
+	allocTotal := alloc.AllocStr + alloc.AllocSta + alloc.AllocAgi + alloc.AllocDex + alloc.AllocWis + alloc.AllocInt + alloc.AllocCha
+	expectedTotal := bTotal + allocTotal + createPoints
+
+	cTotal := uint32(cc.Str() + cc.Sta() + cc.Agi() + cc.Dex() + cc.Wis() + cc.Intel() + cc.Cha())
 
 	errors := 0
-	if bTotal+statPoints != uint32(cTotal) {
-		log.Printf("Stat points total doesn't match: expected %d, got %d", bTotal+statPoints, cTotal)
+	if expectedTotal != cTotal {
+		log.Printf("Stat points total doesn't match: expected %d, got %d", expectedTotal, cTotal)
 		errors++
 	}
 
-	if uint32(cc.Str()) > bSTR+statPoints || cc.Str() < int32(bSTR) {
+	// Check each stat is within valid range (base to base+alloc+createPoints)
+	maxStat := func(base, allocd uint32) uint32 {
+		return base + allocd + createPoints
+	}
+
+	if uint32(cc.Str()) > maxStat(alloc.BaseStr, alloc.AllocStr) || uint32(cc.Str()) < alloc.BaseStr {
 		log.Println("Str out of range")
 		errors++
 	}
-	if uint32(cc.Sta()) > bSTA+statPoints || uint32(cc.Sta()) < bSTA {
+	if uint32(cc.Sta()) > maxStat(alloc.BaseSta, alloc.AllocSta) || uint32(cc.Sta()) < alloc.BaseSta {
 		log.Println("Sta out of range")
 		errors++
 	}
-	if uint32(cc.Agi()) > bAGI+statPoints || uint32(cc.Agi()) < bAGI {
+	if uint32(cc.Agi()) > maxStat(alloc.BaseAgi, alloc.AllocAgi) || uint32(cc.Agi()) < alloc.BaseAgi {
 		log.Println("Agi out of range")
 		errors++
 	}
-	if uint32(cc.Dex()) > bDEX+statPoints || uint32(cc.Dex()) < bDEX {
+	if uint32(cc.Dex()) > maxStat(alloc.BaseDex, alloc.AllocDex) || uint32(cc.Dex()) < alloc.BaseDex {
 		log.Println("Dex out of range")
 		errors++
 	}
-	if uint32(cc.Wis()) > bWIS+statPoints || uint32(cc.Wis()) < bWIS {
+	if uint32(cc.Wis()) > maxStat(alloc.BaseWis, alloc.AllocWis) || uint32(cc.Wis()) < alloc.BaseWis {
 		log.Println("Wis out of range")
 		errors++
 	}
-	if uint32(cc.Intel()) > bINT+statPoints || uint32(cc.Intel()) < bINT {
+	if uint32(cc.Intel()) > maxStat(alloc.BaseInt, alloc.AllocInt) || uint32(cc.Intel()) < alloc.BaseInt {
 		log.Println("Intel out of range")
 		errors++
 	}
-	if uint32(cc.Cha()) > bCHA+statPoints || uint32(cc.Cha()) < bCHA {
+	if uint32(cc.Cha()) > maxStat(alloc.BaseCha, alloc.AllocCha) || uint32(cc.Cha()) < alloc.BaseCha {
 		log.Println("Cha out of range")
 		errors++
 	}
 
-	log.Printf("Found %d errors in character creation request", errors)
+	if errors > 0 {
+		log.Printf("Found %d errors in character creation request", errors)
+	}
 	return errors == 0
 }
 

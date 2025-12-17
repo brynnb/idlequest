@@ -1,6 +1,5 @@
-import races from "@data/json/races.json";
-import Race from "@entities/Race";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import useStaticDataStore, { RaceData } from "@stores/StaticDataStore";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
 
@@ -14,9 +13,10 @@ const RaceSelector = () => {
       resetAttributes: state.resetAttributes,
     }));
 
+  const races = useStaticDataStore((state) => state.races);
   const playableRaces = races.filter((race) => race.is_playable);
 
-  const onSelectRace = (race: Race) => {
+  const onSelectRace = (race: RaceData) => {
     setSelectedRace(race);
     resetAttributes();
   };

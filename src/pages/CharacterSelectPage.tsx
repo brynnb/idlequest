@@ -16,8 +16,7 @@ import useCharacterSelectStore, {
 } from "@stores/CharacterSelectStore";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
-import races from "@data/json/races.json";
-import classes from "@data/json/classes.json";
+import useStaticDataStore from "@stores/StaticDataStore";
 import GameEngine from "@/scripts/GameEngine";
 
 const Wrapper = styled.div`
@@ -188,15 +187,10 @@ const CharacterSelectPage = () => {
     isLoading,
   } = useCharacterSelectStore();
   const { updateAllStats } = usePlayerCharacterStore();
-
-  // Get race/class names
-  const getRaceName = (raceId: number) => {
-    const race = races.find((r: { id: number }) => r.id === raceId);
-    return race?.name || "Unknown";
-  };
+  const { getClassById } = useStaticDataStore();
 
   const getClassName = (classId: number) => {
-    const charClass = classes.find((c: { id: number }) => c.id === classId);
+    const charClass = getClassById(classId);
     return charClass?.name || "Unknown";
   };
 
@@ -303,9 +297,12 @@ const CharacterSelectPage = () => {
   }
 
   const getZoneName = (zoneId: number) => {
-    const zones = useGameStatusStore.getState().zones;
-    const zone = zones.find((z: any) => z.zoneidnumber === zoneId);
-    return zone?.long_name || zone?.short_name || "Unknown Location";
+    const store = useGameStatusStore.getState();
+    return (
+      store.getZoneLongNameById(zoneId) ||
+      store.getZoneNameById(zoneId) ||
+      "Unknown Location"
+    );
   };
 
   // Create array of 8 slots, filling empty ones with null
@@ -323,7 +320,10 @@ const CharacterSelectPage = () => {
             {characterSlots.map((character, index) => (
               <SelectionButton
                 key={character?.name || `empty-${index}`}
-                $isSelected={selectedCharacter?.name === character?.name}
+                $isSelected={
+                  character !== null &&
+                  selectedCharacter?.name === character?.name
+                }
                 onClick={() => {
                   if (character) {
                     handleSelectCharacter(character);

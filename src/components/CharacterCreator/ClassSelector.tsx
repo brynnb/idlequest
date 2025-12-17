@@ -1,15 +1,8 @@
 import { useEffect } from "react";
-import classes from "@data/json/classes.json";
 import useCharacterStore from "@stores/CharacterCreatorStore";
-import CharacterClass from "@entities/CharacterClass";
-import charCreateCombinations from "@data/json/char_create_combinations.json";
+import useStaticDataStore, { ClassData } from "@stores/StaticDataStore";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
-
-interface CharCreateCombination {
-  race: number;
-  class: number;
-}
 
 interface ClassSelectorProps {
   onClassSelect?: (classId: number) => void;
@@ -19,20 +12,21 @@ const ClassSelectorContainer = styled.div``;
 
 const ClassSelector = ({ onClassSelect }: ClassSelectorProps) => {
   const { selectedClass, setSelectedClass, selectedRace } = useCharacterStore();
+  const classes = useStaticDataStore((state) => state.classes);
+  const combinations = useStaticDataStore(
+    (state) => state.charCreateCombinations
+  );
+
+  // Get first 14 classes (playable classes) sorted by name
   const availableClasses = classes
     .slice(0, 14)
-    .sort((a: CharacterClass, b: CharacterClass) =>
-      a.name.localeCompare(b.name)
-    );
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  const compatibleClasses = charCreateCombinations
-    .filter(
-      (combination: CharCreateCombination) =>
-        combination.race === selectedRace?.id
-    )
-    .map((combination: CharCreateCombination) => combination.class);
+  const compatibleClasses = combinations
+    .filter((combo) => combo.race === selectedRace?.id)
+    .map((combo) => combo.class);
 
-  const onSelectClass = (charClass: CharacterClass) => {
+  const onSelectClass = (charClass: ClassData) => {
     setSelectedClass(charClass);
     if (onClassSelect) {
       onClassSelect(charClass.id);
@@ -41,8 +35,8 @@ const ClassSelector = ({ onClassSelect }: ClassSelectorProps) => {
 
   useEffect(() => {
     if (selectedClass && !compatibleClasses.includes(selectedClass.id)) {
-      const firstCompatibleClass = availableClasses.find(
-        (classItem: CharacterClass) => compatibleClasses.includes(classItem.id)
+      const firstCompatibleClass = availableClasses.find((classItem) =>
+        compatibleClasses.includes(classItem.id)
       );
       if (firstCompatibleClass) {
         setSelectedClass(firstCompatibleClass);
@@ -62,7 +56,7 @@ const ClassSelector = ({ onClassSelect }: ClassSelectorProps) => {
 
   return (
     <ClassSelectorContainer>
-      {availableClasses.map((classItem: CharacterClass) => (
+      {availableClasses.map((classItem) => (
         <SelectionButton
           key={classItem.id}
           onClick={() => onSelectClass(classItem)}

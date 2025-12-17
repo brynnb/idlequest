@@ -5,6 +5,7 @@ import ErrorPage from "./pages/ErrorPage";
 import CharacterCreatorPage from "./pages/CharacterCreatorPage";
 import LoginPage from "./pages/LoginPage";
 import CharacterSelectPage from "./pages/CharacterSelectPage";
+import StaticDataGate from "./components/StaticDataGate";
 
 const router = createBrowserRouter([
   {
@@ -13,9 +14,30 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <LoginPage /> },
-      { path: "/game", element: <MainPage /> },
-      { path: "/characterselect", element: <CharacterSelectPage /> },
-      { path: "/create", element: <CharacterCreatorPage /> },
+      {
+        path: "/game",
+        element: (
+          <StaticDataGate>
+            <MainPage />
+          </StaticDataGate>
+        ),
+      },
+      {
+        path: "/characterselect",
+        element: (
+          <StaticDataGate>
+            <CharacterSelectPage />
+          </StaticDataGate>
+        ),
+      },
+      {
+        path: "/create",
+        element: (
+          <StaticDataGate>
+            <CharacterCreatorPage />
+          </StaticDataGate>
+        ),
+      },
     ],
   },
 ]);

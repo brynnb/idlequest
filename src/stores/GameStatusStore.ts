@@ -94,6 +94,29 @@ const useGameStatusStore = create<GameStatusStore>()(
               if (!forceReload && zones.length > 0) return;
 
               try {
+                // Try to get zones from StaticDataStore first (server-sourced)
+                const staticDataStore = await import("./StaticDataStore");
+                const staticData = staticDataStore.default.getState();
+
+                // If static data is loaded, use it
+                if (staticData.isLoaded && staticData.zones.length > 0) {
+                  // Map StaticDataStore zone format to GameStatusStore zone format
+                  const mappedZones = staticData.zones.map((z) => ({
+                    id: z.id,
+                    zoneidnumber: z.zoneidnumber,
+                    short_name: z.shortName,
+                    long_name: z.longName,
+                    safe_x: z.safeX,
+                    safe_y: z.safeY,
+                    safe_z: z.safeZ,
+                    min_level: z.minLevel,
+                    max_level: z.maxLevel,
+                  }));
+                  set({ zones: mappedZones as any });
+                  return;
+                }
+
+                // Fallback to eqDataService if static data not loaded yet
                 const loadedZones = await eqDataService.getAllZones();
                 set({ zones: loadedZones as any });
               } catch (error) {

@@ -10,6 +10,8 @@ import {
   GetZoneNPCsResponse,
   GetAdjacentZonesRequest,
   GetAdjacentZonesResponse,
+  GetAllZonesRequest,
+  GetAllZonesResponse,
 } from "@/net";
 
 export interface Item {
@@ -173,9 +175,42 @@ class EQDataService {
   }
 
   async getAllZones(): Promise<Zone[]> {
-    // Not implemented - would need a bulk zones endpoint
-    console.warn("getAllZones not yet implemented with Cap'n Proto");
-    return [];
+    try {
+      if (!WorldSocket.isConnected) {
+        console.warn("WorldSocket not connected for getAllZones");
+        return [];
+      }
+      const response = await WorldSocket.sendRequest(
+        OpCodes.GetAllZonesRequest,
+        OpCodes.GetAllZonesResponse,
+        GetAllZonesRequest,
+        GetAllZonesResponse,
+        {}
+      );
+      if (!response.success) {
+        console.error("GetAllZones failed:", response.error);
+        return [];
+      }
+      const zones: Zone[] = [];
+      for (let i = 0; i < response.zones.length; i++) {
+        const zone = response.zones.get(i);
+        zones.push({
+          id: zone.id,
+          zoneidnumber: zone.zoneidnumber,
+          short_name: zone.shortName,
+          long_name: zone.longName,
+          safe_x: zone.safeX,
+          safe_y: zone.safeY,
+          safe_z: zone.safeZ,
+          min_level: zone.minLevel,
+          max_level: zone.maxLevel,
+        });
+      }
+      return zones;
+    } catch (error) {
+      console.error("Error fetching all zones via Cap'n Proto:", error);
+      return [];
+    }
   }
 
   async getZoneNPCs(zoneName: string): Promise<NPCType[]> {
