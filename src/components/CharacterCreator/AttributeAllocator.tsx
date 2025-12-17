@@ -38,7 +38,7 @@ const LargeStyledText = styled(StyledText)`
   border-radius: 3px;
 `;
 
-const AttributeNumber = styled.span`
+const AttributeNumber = styled.span<{ $hasAllocation?: boolean }>`
   width: 75px;
   height: 75px;
   background: url(public/images/ui/charactercreation/attributenumberbackgroundlightsmall.png);
@@ -47,8 +47,9 @@ const AttributeNumber = styled.span`
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: ${({ $hasAllocation }) => ($hasAllocation ? "#0bed5e" : "white")};
   font-size: 26px;
+  font-weight: ${({ $hasAllocation }) => ($hasAllocation ? "bold" : "normal")};
 `;
 
 const AdjustButton = styled.button`
@@ -66,6 +67,23 @@ const AdjustButton = styled.button`
   outline: 2px solid #979494;
   border-radius: 0;
   background-color: #e8e5e5;
+  cursor: pointer;
+  transition: opacity 0.15s, background-color 0.15s;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: #b0adad;
+    color: #666;
+  }
+
+  &:not(:disabled):hover {
+    background-color: #d0cdcd;
+  }
+
+  &:not(:disabled):active {
+    background-color: #c0bdbd;
+  }
 `;
 
 const AttributeRow = styled.div`
@@ -146,7 +164,11 @@ const AttributeAllocator: React.FC = () => {
             >
               ‒
             </AdjustButton>
-            <AttributeNumber>{attributes[attr]}</AttributeNumber>
+            <AttributeNumber
+              $hasAllocation={attributes[attr] > attributes[`base_${attr}`]}
+            >
+              {attributes[attr]}
+            </AttributeNumber>
             <AdjustButton
               onClick={() => incrementAttribute(attr)}
               disabled={attributePoints === 0}

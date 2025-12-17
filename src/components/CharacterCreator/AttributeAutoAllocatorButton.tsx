@@ -4,8 +4,13 @@ import useStaticDataStore from "@stores/StaticDataStore";
 import SelectionButton from "../Interface/SelectionButton";
 
 const AttributeAutoAllocatorButton: React.FC = () => {
-  const { setAttributes, attributePoints, selectedRace, selectedClass } =
-    useCharacterCreatorStore();
+  const {
+    setAttributes,
+    setAttributePoints,
+    attributePoints,
+    selectedRace,
+    selectedClass,
+  } = useCharacterCreatorStore();
 
   const combinations = useStaticDataStore(
     (state) => state.charCreateCombinations
@@ -54,6 +59,7 @@ const AttributeAutoAllocatorButton: React.FC = () => {
     };
 
     setAttributes(newAttributes);
+    setAttributePoints(0); // All points are now allocated
   };
 
   return (

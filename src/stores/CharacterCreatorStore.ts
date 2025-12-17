@@ -166,6 +166,8 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
             if (!alloc) {
               return { attributes: { ...defaultAttributes } };
             }
+            // Set attributes to base values only - user allocates points manually
+            // or uses auto-allocate to apply the optimal allocation
             return {
               attributes: {
                 base_str: alloc.baseStr,
@@ -175,13 +177,13 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
                 base_wis: alloc.baseWis,
                 base_int: alloc.baseInt,
                 base_cha: alloc.baseCha,
-                str: alloc.baseStr + alloc.allocStr,
-                sta: alloc.baseSta + alloc.allocSta,
-                agi: alloc.baseAgi + alloc.allocAgi,
-                dex: alloc.baseDex + alloc.allocDex,
-                wis: alloc.baseWis + alloc.allocWis,
-                int: alloc.baseInt + alloc.allocInt,
-                cha: alloc.baseCha + alloc.allocCha,
+                str: alloc.baseStr,
+                sta: alloc.baseSta,
+                agi: alloc.baseAgi,
+                dex: alloc.baseDex,
+                wis: alloc.baseWis,
+                int: alloc.baseInt,
+                cha: alloc.baseCha,
               },
             };
           }),
