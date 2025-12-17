@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import useGameScreenStore from "@stores/GameScreenStore";
 
 interface MainContainerProps {
   $backgroundType: "login" | "characterCreation" | "none";
@@ -35,12 +36,10 @@ const MainContainer = styled.div<MainContainerProps>`
 `;
 
 const Layout = () => {
-  const location = useLocation();
-  const isLogin = location.pathname === "/";
+  const { currentScreen } = useGameScreenStore();
+  const isLogin = currentScreen === "login";
   const isCharacterCreation =
-    location.pathname === "/create" ||
-    location.pathname === "/login" ||
-    location.pathname === "/characterselect";
+    currentScreen === "characterCreate" || currentScreen === "characterSelect";
 
   const backgroundType = isLogin
     ? "login"

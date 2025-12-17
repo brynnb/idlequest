@@ -248,11 +248,7 @@ class GameEngine {
     if (!this.isAtFullHealth()) {
       // Only show the message once
       if (!this.waitingForRegenMessageShown) {
-        const { addMessage } = chatStore.getState();
-        addMessage(
-          "Waiting to regenerate to full health before engaging...",
-          MessageType.SYSTEM
-        );
+        console.log("Waiting to regenerate to full health before engaging...");
         this.waitingForRegenMessageShown = true;
       }
       // Check again in 1 second
@@ -291,8 +287,7 @@ class GameEngine {
   public instantKillNPC() {
     // This is now a no-op since combat is server-side
     // The server handles all combat logic
-    const { addMessage } = chatStore.getState();
-    addMessage("Combat is now server-controlled.", MessageType.SYSTEM);
+    console.log("Combat is now server-controlled.");
   }
 
   private startRegeneration() {
@@ -326,7 +321,9 @@ class GameEngine {
 
       // Regenerate 5% of max HP/Mana per tick
       const hpRegenAmount = Math.ceil(maxHp * GameEngine.REGEN_PERCENT);
-      const newHp = atFullHp ? currentHp : Math.min(currentHp + hpRegenAmount, maxHp);
+      const newHp = atFullHp
+        ? currentHp
+        : Math.min(currentHp + hpRegenAmount, maxHp);
 
       let newMana = currentMana;
       if (maxMana > 0 && !atFullMana) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import useGameScreenStore from "@stores/GameScreenStore";
 import AddInventoryItem from "@components/Inventory/AddInventoryItem";
 import DeleteAllInventory from "@components/Inventory/DeleteAllInventory";
 import EquipAllItems from "@components/Inventory/EquipAllItems";
@@ -27,8 +27,7 @@ import NoteDisplay from "@/components/Interface/NoteDisplay";
 import QuestDisplay from "@/components/Interface/QuestDisplay";
 import DiceRoller from "@/components/DiceRoller";
 const MainPage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation() as { state?: { fromCreate?: boolean } };
+  const { setScreen } = useGameScreenStore();
   const { hoveredItem, characterProfile } = usePlayerCharacterStore(
     (state) => ({
       hoveredItem: state?.hoveredItem,
@@ -46,19 +45,13 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     // Redirect to character creation if no character exists
     if (!characterProfile?.id && !characterProfile?.name) {
-      // If we just navigated here from the character creator, wait for
-      // the server-pushed CHARACTER_STATE instead of bouncing back.
-      if (location.state?.fromCreate) {
-        return;
-      }
-
-      console.log("No character found, redirecting to /create");
-      navigate("/create");
+      console.log("No character found, redirecting to character create");
+      setScreen("characterCreate");
       return;
     }
 
     initializeZones();
-  }, [characterProfile, navigate, initializeZones, location.state]);
+  }, [characterProfile, setScreen, initializeZones]);
 
   const [isRunning, setIsRunning] = useState(false);
   return (

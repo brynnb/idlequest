@@ -179,7 +179,7 @@ const ChatBox: React.FC = () => {
     connectionError,
   } = useChatStore();
   const chatContentRef = useRef<HTMLDivElement>(null);
-  const [currentChatType, setCurrentChatType] = useState<ChatType>("Default");
+  const [currentChatType, setCurrentChatType] = useState<ChatType>("Verbose");
 
   useEffect(() => {
     // Initialize the old WebTransport client for chat/data queries
@@ -203,15 +203,12 @@ const ChatBox: React.FC = () => {
     // and will handle its own connection lifecycle
   }, [initializeWebTransport, addMessage]);
 
-  // Display connection status in chat
+  // Log connection status (not stored in chat)
   useEffect(() => {
     if (isConnected) {
-      addMessage(
-        "Connected to chat server via WebTransport",
-        MessageType.SYSTEM
-      );
+      console.log("Connected to chat server via WebTransport");
     }
-  }, [isConnected, addMessage]);
+  }, [isConnected]);
 
   useEffect(() => {
     if (connectionError) {

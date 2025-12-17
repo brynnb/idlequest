@@ -158,9 +158,10 @@ const useChatStore = create<ChatStore>()(
                 module.default.getState().loadStaticData();
               });
             } else {
+              console.log("WorldSocket not connected");
               set({
                 isConnected: false,
-                connectionError: "WorldSocket not connected",
+                connectionError: null,
               });
             }
           } catch (error) {

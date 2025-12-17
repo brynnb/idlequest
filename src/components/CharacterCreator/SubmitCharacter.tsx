@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import useGameScreenStore from "@stores/GameScreenStore";
 import useCharacterSelectStore from "@stores/CharacterSelectStore";
 import {
   WorldSocket,
@@ -13,7 +13,7 @@ import {
 import SelectionButton from "../Interface/SelectionButton";
 
 const SubmitCharacter: React.FC = () => {
-  const navigate = useNavigate();
+  const { setScreen } = useGameScreenStore();
   const [loading, setLoading] = useState(false);
   const { setCharacters, setPendingSelectName } = useCharacterSelectStore();
   const {
@@ -53,12 +53,12 @@ const SubmitCharacter: React.FC = () => {
       (data) => {
         setLoading(false);
         if (data.value === 1) {
-          // Success - navigate to character select to pick the new character
+          // Success - switch to character select to pick the new character
           console.log("Character created successfully");
           // Set the pending name so the store auto-selects this character
           setPendingSelectName(characterName);
           resetStore();
-          navigate("/characterselect");
+          setScreen("characterSelect");
         } else {
           // Name rejected (likely duplicate)
           resetStore();

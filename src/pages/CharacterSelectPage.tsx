@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useGameScreenStore from "@stores/GameScreenStore";
 import SelectionButton from "@components/Interface/SelectionButton";
 import {
   WorldSocket,
@@ -175,7 +175,7 @@ const ModalButton = styled.button<{ $danger?: boolean }>`
 `;
 
 const CharacterSelectPage = () => {
-  const navigate = useNavigate();
+  const { setScreen } = useGameScreenStore();
   const [deleteTarget, setDeleteTarget] = useState<CharacterSelectEntry | null>(
     null
   );
@@ -233,8 +233,8 @@ const CharacterSelectPage = () => {
         // Load zone data now that we're connected and have entered the world
         GameEngine.getInstance().loadZoneData();
 
-        // Navigate to main game
-        navigate("/game");
+        // Switch to main game
+        setScreen("game");
       }
     );
 
@@ -247,13 +247,13 @@ const CharacterSelectPage = () => {
   };
 
   const handleCreateNew = () => {
-    navigate("/create");
+    setScreen("characterCreate");
   };
 
   const handleLogout = () => {
-    // Close connection and navigate to login
+    // Close connection and switch to login
     WorldSocket.close(false); // false = don't attempt reconnect
-    navigate("/");
+    setScreen("login");
   };
 
   const handleDeleteClick = (
@@ -284,9 +284,9 @@ const CharacterSelectPage = () => {
   // Redirect to login if not connected
   useEffect(() => {
     if (!WorldSocket.isConnected) {
-      navigate("/");
+      setScreen("login");
     }
-  }, [navigate]);
+  }, [setScreen]);
 
   if (isLoading) {
     return (

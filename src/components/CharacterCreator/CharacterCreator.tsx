@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import useGameScreenStore from "@stores/GameScreenStore";
 import useStaticDataStore from "@stores/StaticDataStore";
 import AttributeAllocator from "./AttributeAllocator";
 import RaceSelector from "./RaceSelector";
@@ -47,7 +47,7 @@ const StoryText = styled.div`
 `;
 
 const CharacterCreator = () => {
-  const navigate = useNavigate();
+  const { setScreen } = useGameScreenStore();
   const {
     currentStep,
     setCurrentStep,
@@ -80,7 +80,7 @@ const CharacterCreator = () => {
 
   const handleBackToCharacterSelect = () => {
     resetStore();
-    navigate("/characterselect");
+    setScreen("characterSelect");
   };
 
   const renderStep = () => {

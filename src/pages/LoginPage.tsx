@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useGameScreenStore from "@stores/GameScreenStore";
 import SelectionButton from "@components/Interface/SelectionButton";
 import {
   WorldSocket,
@@ -117,7 +117,7 @@ const OfflineText = styled(StatusText)`
 `;
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  const { setScreen } = useGameScreenStore();
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -211,8 +211,8 @@ const LoginPage = () => {
           const plainData = capnpToPlainObject(charSelect);
           setCharacters(plainData.characters || []);
           setIsLoading(false);
-          // Navigate to character select after receiving character list
-          navigate("/characterselect");
+          // Switch to character select after receiving character list
+          setScreen("characterSelect");
         }
       );
 
