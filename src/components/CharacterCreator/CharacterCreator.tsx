@@ -137,7 +137,7 @@ const CharacterCreator = () => {
             onClick={handleBackToCharacterSelect}
             $isSelected={false}
           >
-            Back to Character Select
+            Back
           </SelectionButton>
         ) : (
           <SelectionButton onClick={handleBack} $isSelected={false}>

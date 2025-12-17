@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import PlayerStats from "@components/Interface/PlayerStats";
 import TargetBar from "./TargetBar";
 import ActionButton from "@components/Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
+import useGameScreenStore from "@stores/GameScreenStore";
 import { useEffect, useState } from "react";
 import { WorldSocket, OpCodes } from "@/net";
 import useCharacterSelectStore from "@stores/CharacterSelectStore";
@@ -37,7 +37,7 @@ const BottomActionButtonContainer = styled.div.attrs({
 const marginBottomForBottomButtons = "12px";
 
 const RightSidebar = () => {
-  const navigate = useNavigate();
+  const { setScreen } = useGameScreenStore();
   const {
     isRunning,
     toggleRunning,
@@ -127,7 +127,7 @@ const RightSidebar = () => {
             }
             // Send Camp opcode to save character data before navigating
             await WorldSocket.sendMessage(OpCodes.Camp, null, null);
-            navigate("/characterselect");
+            setScreen("characterSelect");
           }}
           marginBottom={marginBottomForBottomButtons}
         />

@@ -10,6 +10,7 @@ import (
 
 	"idlequest/internal/cache"
 	"idlequest/internal/db"
+	"idlequest/internal/db/charcreate"
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/db/jetgen/eqgo/table"
 	db_zone "idlequest/internal/db/zone"
@@ -40,6 +41,7 @@ type DeityInfo struct {
 	Name        string `json:"name"`
 	Bitmask     int32  `json:"bitmask"`
 	Description string `json:"description"`
+	AltName     string `json:"alt_name"`
 }
 
 // StaticData holds all static game data
@@ -89,8 +91,8 @@ func loadStaticData(ctx context.Context) (*StaticData, error) {
 	}
 	data.Classes = classes
 
-	// Load deities from JSON file
-	deities, err := loadDeitiesFromJSON()
+	// Load deities from database (char_create_data table)
+	deities, err := loadDeitiesFromDB()
 	if err != nil {
 		return nil, fmt.Errorf("load deities: %w", err)
 	}
@@ -157,18 +159,57 @@ func loadClassesFromJSON() ([]ClassInfo, error) {
 	return classes, nil
 }
 
-func loadDeitiesFromJSON() ([]DeityInfo, error) {
-	path := filepath.Join(getDataPath(), "deities.json")
-	data, err := os.ReadFile(path)
+func loadDeitiesFromDB() ([]DeityInfo, error) {
+	dbDeities, err := charcreate.GetDeities()
 	if err != nil {
-		return nil, fmt.Errorf("read deities.json: %w", err)
+		return nil, fmt.Errorf("get deities from db: %w", err)
 	}
 
 	var deities []DeityInfo
-	if err := json.Unmarshal(data, &deities); err != nil {
-		return nil, fmt.Errorf("parse deities.json: %w", err)
+	for _, d := range dbDeities {
+		deity := DeityInfo{
+			ID:   *d.GameID,
+			Name: d.Name,
+		}
+		if d.Description != nil {
+			deity.Description = *d.Description
+		}
+		if d.AltName != nil {
+			deity.AltName = *d.AltName
+		}
+		// Calculate bitmask from position (1, 2, 4, 8, etc.)
+		// For now, use a simple lookup based on deity ID
+		deity.Bitmask = getBitmaskForDeity(deity.ID)
+		deities = append(deities, deity)
 	}
 	return deities, nil
+}
+
+func getBitmaskForDeity(deityID int32) int32 {
+	// Bitmask values from the original deities.json
+	bitmasks := map[int32]int32{
+		140: 1,     // Agnostic
+		201: 2,     // Bertoxxulous
+		202: 4,     // Brell Serilis
+		203: 8,     // Cazic Thule
+		204: 16,    // Erollisi Marr
+		205: 32,    // Bristlebane
+		206: 64,    // Innoruuk
+		207: 128,   // Karana
+		208: 256,   // Mithaniel Marr
+		209: 512,   // Prexus
+		210: 1024,  // Quellious
+		211: 2048,  // Rallos Zek
+		212: 4096,  // Rodcet Nife
+		213: 8192,  // Solusek Ro
+		214: 16384, // The Tribunal
+		215: 32768, // Tunare
+		216: 65536, // Veeshan
+	}
+	if bitmask, ok := bitmasks[deityID]; ok {
+		return bitmask
+	}
+	return 0
 }
 
 func loadCharCreateCombinations(ctx context.Context) ([]model.CharCreateCombinations, error) {

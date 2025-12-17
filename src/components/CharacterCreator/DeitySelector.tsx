@@ -2,33 +2,83 @@ import { useEffect, useMemo } from "react";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import useStaticDataStore from "@stores/StaticDataStore";
 import styled from "styled-components";
-import SelectionButton from "../Interface/SelectionButton";
 
 const DeitySelectorContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 20px;
   padding: 20px;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
-`;
-
-const DeitiesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-  width: 100%;
+  margin-top: 50px;
 `;
 
 const Title = styled.h2`
   font-family: "Times New Roman", Times, serif;
   text-transform: uppercase;
   font-weight: 900;
-  font-size: 32px;
-  text-shadow: 2px 2px 4px #d6d2d2;
+  font-size: 50px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
-  margin-bottom: 20px;
+  margin: 0 0 10px 0;
+  color: white;
+  width: 100%;
+`;
+
+const RightColumn = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const DeityButtonsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 300px;
+`;
+
+const DeityButton = styled.button<{
+  $isSelected: boolean;
+  $isDisabled?: boolean;
+}>`
+  width: 345px;
+  height: 45px;
+  background-image: ${({ $isSelected }) =>
+    $isSelected
+      ? "url('/images/ui/actionbuttonpress.png')"
+      : "url('/images/ui/actionbutton.png')"};
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: ${({ $isDisabled }) => ($isDisabled ? "not-allowed" : "pointer")};
+  outline: none;
+  color: ${({ $isDisabled }) => ($isDisabled ? "#363333" : "black")};
+  font-family: "Times New Roman", Times, serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  opacity: ${({ $isDisabled }) => ($isDisabled ? 0.6 : 1)};
+  white-space: nowrap;
+  font-size: 30px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const DescriptionBox = styled.div`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 20px;
+  color: #e0e0e0;
+  font-size: 24px;
+  line-height: 1.6;
+  min-height: 200px;
+  // font-family: "Times New Roman", Times, serif;
 `;
 
 const DeitySelector = () => {
@@ -69,20 +119,26 @@ const DeitySelector = () => {
 
   return (
     <DeitySelectorContainer>
-      <Title>Choose Your Deity</Title>
-      <DeitiesGrid>
+      <DeityButtonsColumn>
         {deities.map((deity) => (
-          <SelectionButton
+          <DeityButton
             key={deity.id}
             onClick={() => onSelectDeity(deity.id)}
             disabled={!compatibleDeities.includes(deity.id)}
             $isSelected={selectedDeity?.id === deity.id}
             $isDisabled={!compatibleDeities.includes(deity.id)}
           >
-            {deity.name}
-          </SelectionButton>
+            {deity.altName || deity.name}
+          </DeityButton>
         ))}
-      </DeitiesGrid>
+      </DeityButtonsColumn>
+      <RightColumn>
+        <Title>Choose A Deity</Title>
+        <DescriptionBox>
+          {selectedDeity?.description ||
+            "Select a deity to see its description."}
+        </DescriptionBox>
+      </RightColumn>
     </DeitySelectorContainer>
   );
 };

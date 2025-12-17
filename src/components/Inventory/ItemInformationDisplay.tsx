@@ -52,6 +52,7 @@ const ItemDisplayContent = styled.div`
   overflow: auto;
   word-wrap: break-word;
   white-space: pre-wrap;
+  padding-right: 25px;
 `;
 
 interface ItemDisplayProps {

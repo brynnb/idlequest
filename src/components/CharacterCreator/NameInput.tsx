@@ -1,6 +1,30 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useRandomName from "@hooks/useRandomName";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
+import SelectionButton from "@components/Interface/SelectionButton";
+import styled from "styled-components";
+
+const NameInputContainer = styled.div`
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+`;
+
+const StyledNameInput = styled.input`
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 12px;
+  color: #e0e0e0;
+  font-size: 24px;
+  outline: none;
+
+  &::placeholder {
+    color: rgba(224, 224, 224, 0.7);
+  }
+`;
 
 const NameInput: React.FC = () => {
   const { characterName, setCharacterName } = useCharacterCreatorStore();
@@ -19,16 +43,18 @@ const NameInput: React.FC = () => {
   };
 
   return (
-    <div>
-      <input
+    <NameInputContainer>
+      <StyledNameInput
         type="text"
         value={characterName}
         onChange={handleNameChange}
         maxLength={maxLength}
         placeholder="Enter character name"
       />
-      <button onClick={handleRandomName}>Random Name</button>
-    </div>
+      <SelectionButton onClick={handleRandomName} $isSelected={false}>
+        Random Name
+      </SelectionButton>
+    </NameInputContainer>
   );
 };
 

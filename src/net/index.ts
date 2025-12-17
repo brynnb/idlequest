@@ -47,6 +47,10 @@ export {
   DialogueHistoryEntry,
   GetNPCDialogueRequest,
   GetNPCDialogueResponse,
+  GetSpellRequest,
+  GetSpellResponse,
+  GetEqstrRequest,
+  GetEqstrResponse,
 } from "./capnp/common";
 
 export { DeleteItem } from "./capnp/item";

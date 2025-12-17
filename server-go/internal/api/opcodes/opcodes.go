@@ -646,4 +646,10 @@ const (
 
 	// IdleQuest unified character state
 	CharacterState
+
+	// IdleQuest spell/string lookup opcodes
+	GetSpellRequest
+	GetSpellResponse
+	GetEqstrRequest
+	GetEqstrResponse
 )

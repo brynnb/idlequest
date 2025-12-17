@@ -29,6 +29,7 @@ export interface DeityData {
   name: string;
   bitmask: number;
   description: string;
+  altName: string;
 }
 
 export interface ZoneData {
@@ -176,6 +177,7 @@ const useStaticDataStore = create<StaticDataStore>()(
               name: d.name,
               bitmask: d.bitmask,
               description: d.description,
+              altName: d.altName,
             });
           }
 

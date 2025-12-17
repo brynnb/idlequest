@@ -74,7 +74,6 @@ interface PageSelectionProps {
 }
 
 const PageSelection: React.FC<PageSelectionProps> = ({
-  pages,
   currentPage,
   onPageChange,
   useAttributeBackground = false,

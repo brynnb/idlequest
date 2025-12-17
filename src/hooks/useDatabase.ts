@@ -5,25 +5,14 @@ import {
   getAllFromTable,
   getZoneNPCs,
 } from "@utils/databaseOperations";
-import { Item } from "@entities/Item";
-import { Zone } from "@entities/Zone";
-import { NPCType } from "@entities/NPCType";
-import { Spell } from "@entities/Spell";
-
-interface EqString {
-  //this is the data for localized strings, like spell descriptions
-  id: number;
-  text: string;
-}
+import type { Item, Zone, NPCType } from "@utils/eqDataService";
 
 type TableTypes = {
   items: Item;
   zone: Zone;
-  spells: Spell;
-  eqstr_us: EqString;
 };
 
-export const useDatabase = <T extends keyof TableTypes>() => {
+export const useDatabase = <T extends "items" | "zone">() => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,14 +27,14 @@ export const useDatabase = <T extends keyof TableTypes>() => {
 
   const getByIdHook = useCallback(
     async (table: T, id: number): Promise<TableTypes[T] | undefined> => {
-      return getById(table, id);
+      return getById(table, id) as Promise<TableTypes[T] | undefined>;
     },
     []
   );
 
   const getAllFromTableHook = useCallback(
     async (table: T): Promise<TableTypes[T][]> => {
-      return getAllFromTable(table);
+      return getAllFromTable(table) as Promise<TableTypes[T][]>;
     },
     []
   );

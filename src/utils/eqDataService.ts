@@ -12,6 +12,10 @@ import {
   GetAdjacentZonesResponse,
   GetAllZonesRequest,
   GetAllZonesResponse,
+  GetSpellRequest,
+  GetSpellResponse,
+  GetEqstrRequest,
+  GetEqstrResponse,
 } from "@/net";
 
 export interface Item {
@@ -31,6 +35,8 @@ export interface Item {
   races?: number;
   bagslots?: number;
   bagsize?: number;
+  itemtype?: number;
+  scrolleffect?: number;
   [key: string]: unknown;
 }
 
@@ -56,6 +62,48 @@ export interface NPCType {
   hp?: number;
   gender?: number;
   [key: string]: unknown;
+}
+
+export interface Spell {
+  id: number;
+  name: string;
+  castTime?: number;
+  buffduration?: number;
+  mana?: number;
+  icon?: number;
+  descnum?: number;
+  effectBaseValue1?: number;
+  effectBaseValue2?: number;
+  effectBaseValue3?: number;
+  effectLimitValue1?: number;
+  effectLimitValue2?: number;
+  effectLimitValue3?: number;
+  max1?: number;
+  max2?: number;
+  max3?: number;
+  formula1?: number;
+  formula2?: number;
+  formula3?: number;
+  classes1?: number;
+  classes2?: number;
+  classes3?: number;
+  classes4?: number;
+  classes5?: number;
+  classes6?: number;
+  classes7?: number;
+  classes8?: number;
+  classes9?: number;
+  classes10?: number;
+  classes11?: number;
+  classes12?: number;
+  classes13?: number;
+  classes14?: number;
+  [key: string]: unknown;
+}
+
+export interface EqstrEntry {
+  id: number;
+  text: string;
 }
 
 class EQDataService {
@@ -93,6 +141,8 @@ class EQDataService {
         races: response.races,
         bagslots: response.bagslots,
         bagsize: response.bagsize,
+        itemtype: response.itemtype,
+        scrolleffect: response.scrolleffect,
       };
     } catch (error) {
       console.error("Error fetching item via Cap'n Proto:", error);
@@ -346,6 +396,91 @@ class EQDataService {
   async deleteCharacter(_id: number): Promise<boolean> {
     console.warn("deleteCharacter - use DeleteCharacter from Cap'n Proto flow");
     return false;
+  }
+
+  async getSpellById(id: number): Promise<Spell | null> {
+    try {
+      if (!WorldSocket.isConnected) {
+        console.warn("WorldSocket not connected for getSpellById");
+        return null;
+      }
+      const response = await WorldSocket.sendRequest(
+        OpCodes.GetSpellRequest,
+        OpCodes.GetSpellResponse,
+        GetSpellRequest,
+        GetSpellResponse,
+        { spellId: id }
+      );
+      if (!response.success) {
+        console.error("GetSpell failed:", response.error);
+        return null;
+      }
+      return {
+        id: response.id,
+        name: response.name,
+        castTime: response.castTime,
+        buffduration: response.buffduration,
+        mana: response.mana,
+        icon: response.icon,
+        descnum: response.descnum,
+        effectBaseValue1: response.effectBaseValue1,
+        effectBaseValue2: response.effectBaseValue2,
+        effectBaseValue3: response.effectBaseValue3,
+        effectLimitValue1: response.effectLimitValue1,
+        effectLimitValue2: response.effectLimitValue2,
+        effectLimitValue3: response.effectLimitValue3,
+        max1: response.max1,
+        max2: response.max2,
+        max3: response.max3,
+        formula1: response.formula1,
+        formula2: response.formula2,
+        formula3: response.formula3,
+        classes1: response.classes1,
+        classes2: response.classes2,
+        classes3: response.classes3,
+        classes4: response.classes4,
+        classes5: response.classes5,
+        classes6: response.classes6,
+        classes7: response.classes7,
+        classes8: response.classes8,
+        classes9: response.classes9,
+        classes10: response.classes10,
+        classes11: response.classes11,
+        classes12: response.classes12,
+        classes13: response.classes13,
+        classes14: response.classes14,
+      };
+    } catch (error) {
+      console.error("Error fetching spell via Cap'n Proto:", error);
+      return null;
+    }
+  }
+
+  async getEqstrById(id: number): Promise<EqstrEntry | null> {
+    try {
+      if (!WorldSocket.isConnected) {
+        console.warn("WorldSocket not connected for getEqstrById");
+        return null;
+      }
+      const response = await WorldSocket.sendRequest(
+        OpCodes.GetEqstrRequest,
+        OpCodes.GetEqstrResponse,
+        GetEqstrRequest,
+        GetEqstrResponse,
+        { stringId: id }
+      );
+      if (!response.success) {
+        console.error("GetEqstr failed:", response.error);
+        return null;
+      }
+      return {
+        id: response.id,
+        text: response.text,
+      };
+    } catch (error) {
+      console.error("Error fetching eqstr via Cap'n Proto:", error);
+      return null;
+    }
   }
 }
 

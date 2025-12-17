@@ -607,7 +607,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             OpCodes.SendCharInfo,
             CharacterSelect,
             (charSelect) => {
-              console.log("Received SendCharInfo:", charSelect);
               const plainData = capnpToPlainObject(charSelect);
               get().applyServerCharacterState(plainData);
             }
@@ -618,10 +617,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             OpCodes.CharacterState,
             CharacterState,
             (charState) => {
-              console.log("=== CHARACTERSTATE HANDLER FIRED ===");
-              console.log("Received CharacterState:", charState);
               const plainData = capnpToPlainObject(charState);
-              console.log("=== CHARACTERSTATE PLAIN DATA ===", plainData);
               get().applyCharacterState(plainData);
             }
           );
@@ -630,8 +626,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         // Apply server-pushed character state from Cap'n Proto CharacterSelect
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         applyServerCharacterState: async (charSelectData: any) => {
-          console.log("[CharData] Processing CharacterSelect:", charSelectData);
-
           if (
             !charSelectData.characters ||
             charSelectData.characters.length === 0
@@ -756,11 +750,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         // Apply unified CharacterState from server - single source of truth
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         applyCharacterState: async (serverState: any) => {
-          console.log(
-            "[CharacterState] Processing unified state:",
-            serverState
-          );
-
           // Look up race/class/deity from JSON data
           const raceData = races.find(
             (r: { id: number }) => r.id === serverState.race
@@ -774,10 +763,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
           // Build inventory items from server data
           // Server sends full item data embedded in ItemInstance - no need to fetch
-          console.log(
-            "[CharacterState] Raw inventoryItems:",
-            serverState.inventoryItems
-          );
           const inventoryItems: InventoryItem[] = (
             serverState.inventoryItems || []
           )
@@ -813,6 +798,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 bagwr?: number;
                 light?: number;
                 color?: number;
+                scrolleffect?: number;
               }) => {
                 // Build itemDetails from the embedded item data
                 const itemDetails: Item = {
@@ -838,6 +824,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                   bagtype: item.bagtype || 0,
                   bagwr: item.bagwr || 0,
                   light: item.light || 0,
+                  scrolleffect: item.scrolleffect || 0,
                 };
 
                 return {
@@ -889,18 +876,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             silver: serverState.silver || 0,
             copper: serverState.copper || 0,
           };
-
-          console.log("[CharacterState] Applied server values:", {
-            name: newProfile.name,
-            level: newProfile.level,
-            curHp: newProfile.curHp,
-            maxHp: newProfile.maxHp,
-            curMana: newProfile.mana,
-            maxMana: newProfile.maxMana,
-            ac: newProfile.stats?.ac,
-            atk: newProfile.stats?.atk,
-            items: inventoryItems.length,
-          });
 
           set({ characterProfile: newProfile });
           get().updateAllStats();

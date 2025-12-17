@@ -222,10 +222,8 @@ const CharacterSelectPage = () => {
       OpCodes.CharacterState,
       CharacterState,
       async (charState) => {
-        console.log("=== CHARSELECT PAGE: CHARACTERSTATE RECEIVED ===");
         // Apply the character state via the store
         const plainData = capnpToPlainObject(charState);
-        console.log("=== CHARSELECT PAGE: PLAIN DATA ===", plainData);
         await usePlayerCharacterStore.getState().applyCharacterState(plainData);
 
         updateAllStats();
@@ -254,14 +252,6 @@ const CharacterSelectPage = () => {
     // Close connection and switch to login
     WorldSocket.close(false); // false = don't attempt reconnect
     setScreen("login");
-  };
-
-  const handleDeleteClick = (
-    e: React.MouseEvent,
-    character: CharacterSelectEntry
-  ) => {
-    e.stopPropagation(); // Prevent selecting the character
-    setDeleteTarget(character);
   };
 
   const handleConfirmDelete = async () => {

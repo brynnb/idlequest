@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import { getNextAvailableSlot } from "@utils/inventoryUtils";
 import { InventoryItem } from "@entities/InventoryItem";
 import { eqDataService } from "@utils/eqDataService";
 
 const AddInventoryItem: React.FC = () => {
   const [itemId, setItemId] = useState("");
-  const { addInventoryItem, characterProfile } = usePlayerCharacterStore();
+  const { addInventoryItem } = usePlayerCharacterStore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -24,8 +23,10 @@ const AddInventoryItem: React.FC = () => {
       }
 
       const newItem: InventoryItem = {
+        bag: 0,
+        slot: 0,
         itemid: parseInt(itemId),
-        charges: itemDetails.maxcharges || 0,
+        charges: (itemDetails as { maxcharges?: number }).maxcharges || 0,
         color: 0,
         augslot1: 0,
         augslot2: 0,
@@ -34,7 +35,7 @@ const AddInventoryItem: React.FC = () => {
         augslot5: 0,
         augslot6: 0,
         instnodrop: 0,
-        itemDetails,
+        itemDetails: itemDetails as unknown as import("@entities/Item").Item,
       };
 
       await addInventoryItem(newItem);

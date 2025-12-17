@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import startingItemsData from "@data/json/starting_items.json";
-import { Item } from "@entities/Item";
-import { eqDataService } from "@utils/eqDataService";
+import { eqDataService, type Item } from "@utils/eqDataService";
 
 const useInventoryCreator = () => {
   const [loading, setLoading] = useState(false);
@@ -17,10 +16,10 @@ const useInventoryCreator = () => {
 
       const matchingStartingItems = startingItemsData.filter(
         (item) =>
-          (item.race === race || item.race === 0) &&
-          (item.class === characterClass || item.class === 0) &&
-          (item.deityid === deity || item.deityid === 0) &&
-          (item.zoneid === zone || item.zoneid === 0)
+          (item.race === Number(race) || item.race === 0) &&
+          (item.class === Number(characterClass) || item.class === 0) &&
+          (item.deityid === Number(deity) || item.deityid === 0) &&
+          (item.zoneid === Number(zone) || item.zoneid === 0)
       );
 
       const inventoryItems = await Promise.all(
@@ -34,7 +33,9 @@ const useInventoryCreator = () => {
       );
 
       setLoading(false);
-      return inventoryItems.filter((item): item is Item => item !== null);
+      return inventoryItems.filter(
+        (item): item is Item => item !== null && item !== undefined
+      );
     },
     []
   );

@@ -11668,7 +11668,7 @@ export class GetItemResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "GetItemResponse",
     id: "a1b2c3d4e5f60002",
-    size: new $.ObjectSize(72, 2),
+    size: new $.ObjectSize(80, 2),
   };
   get success(): number {
     return $.utils.getInt32(0, this);
@@ -11777,6 +11777,18 @@ export class GetItemResponse extends $.Struct {
   }
   set bagsize(value: number) {
     $.utils.setInt32(60, value, this);
+  }
+  get itemtype(): number {
+    return $.utils.getInt32(64, this);
+  }
+  set itemtype(value: number) {
+    $.utils.setInt32(64, value, this);
+  }
+  get scrolleffect(): number {
+    return $.utils.getInt32(68, this);
+  }
+  set scrolleffect(value: number) {
+    $.utils.setInt32(68, value, this);
   }
 }
 
@@ -12232,7 +12244,7 @@ export class DeityInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "DeityInfo",
     id: "a1b2c3d4e5f60033",
-    size: new $.ObjectSize(8, 2),
+    size: new $.ObjectSize(8, 3),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -12257,6 +12269,12 @@ export class DeityInfo extends $.Struct {
   }
   set description(value: string) {
     $.utils.setText(1, value, this);
+  }
+  get altName(): string {
+    return $.utils.getText(2, this);
+  }
+  set altName(value: string) {
+    $.utils.setText(2, value, this);
   }
 }
 
@@ -12941,3 +12959,295 @@ export class LootGeneratedResponse extends $.Struct {
   }
 }
 LootGeneratedResponse._Items = $.CompositeList(LootItem);
+
+// Spell lookup types
+export class GetSpellRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetSpellRequest",
+    id: "a1b2c3d4e5f60020",
+    size: new $.ObjectSize(8, 0),
+  };
+  get spellId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set spellId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+}
+
+export class GetSpellResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetSpellResponse",
+    id: "a1b2c3d4e5f60021",
+    size: new $.ObjectSize(152, 2),
+  };
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get id(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(1, this);
+  }
+  set name(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  get castTime(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set castTime(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get recoveryTime(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set recoveryTime(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get recastTime(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set recastTime(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get buffduration(): number {
+    return $.utils.getInt32(20, this);
+  }
+  set buffduration(value: number) {
+    $.utils.setInt32(20, value, this);
+  }
+  get mana(): number {
+    return $.utils.getInt32(24, this);
+  }
+  set mana(value: number) {
+    $.utils.setInt32(24, value, this);
+  }
+  get icon(): number {
+    return $.utils.getInt32(28, this);
+  }
+  set icon(value: number) {
+    $.utils.setInt32(28, value, this);
+  }
+  get descnum(): number {
+    return $.utils.getInt32(32, this);
+  }
+  set descnum(value: number) {
+    $.utils.setInt32(32, value, this);
+  }
+  get effectBaseValue1(): number {
+    return $.utils.getInt32(36, this);
+  }
+  set effectBaseValue1(value: number) {
+    $.utils.setInt32(36, value, this);
+  }
+  get effectBaseValue2(): number {
+    return $.utils.getInt32(40, this);
+  }
+  set effectBaseValue2(value: number) {
+    $.utils.setInt32(40, value, this);
+  }
+  get effectBaseValue3(): number {
+    return $.utils.getInt32(44, this);
+  }
+  set effectBaseValue3(value: number) {
+    $.utils.setInt32(44, value, this);
+  }
+  get effectLimitValue1(): number {
+    return $.utils.getInt32(48, this);
+  }
+  set effectLimitValue1(value: number) {
+    $.utils.setInt32(48, value, this);
+  }
+  get effectLimitValue2(): number {
+    return $.utils.getInt32(52, this);
+  }
+  set effectLimitValue2(value: number) {
+    $.utils.setInt32(52, value, this);
+  }
+  get effectLimitValue3(): number {
+    return $.utils.getInt32(56, this);
+  }
+  set effectLimitValue3(value: number) {
+    $.utils.setInt32(56, value, this);
+  }
+  get max1(): number {
+    return $.utils.getInt32(60, this);
+  }
+  set max1(value: number) {
+    $.utils.setInt32(60, value, this);
+  }
+  get max2(): number {
+    return $.utils.getInt32(64, this);
+  }
+  set max2(value: number) {
+    $.utils.setInt32(64, value, this);
+  }
+  get max3(): number {
+    return $.utils.getInt32(68, this);
+  }
+  set max3(value: number) {
+    $.utils.setInt32(68, value, this);
+  }
+  get formula1(): number {
+    return $.utils.getInt32(72, this);
+  }
+  set formula1(value: number) {
+    $.utils.setInt32(72, value, this);
+  }
+  get formula2(): number {
+    return $.utils.getInt32(76, this);
+  }
+  set formula2(value: number) {
+    $.utils.setInt32(76, value, this);
+  }
+  get formula3(): number {
+    return $.utils.getInt32(80, this);
+  }
+  set formula3(value: number) {
+    $.utils.setInt32(80, value, this);
+  }
+  get classes1(): number {
+    return $.utils.getInt32(84, this);
+  }
+  set classes1(value: number) {
+    $.utils.setInt32(84, value, this);
+  }
+  get classes2(): number {
+    return $.utils.getInt32(88, this);
+  }
+  set classes2(value: number) {
+    $.utils.setInt32(88, value, this);
+  }
+  get classes3(): number {
+    return $.utils.getInt32(92, this);
+  }
+  set classes3(value: number) {
+    $.utils.setInt32(92, value, this);
+  }
+  get classes4(): number {
+    return $.utils.getInt32(96, this);
+  }
+  set classes4(value: number) {
+    $.utils.setInt32(96, value, this);
+  }
+  get classes5(): number {
+    return $.utils.getInt32(100, this);
+  }
+  set classes5(value: number) {
+    $.utils.setInt32(100, value, this);
+  }
+  get classes6(): number {
+    return $.utils.getInt32(104, this);
+  }
+  set classes6(value: number) {
+    $.utils.setInt32(104, value, this);
+  }
+  get classes7(): number {
+    return $.utils.getInt32(108, this);
+  }
+  set classes7(value: number) {
+    $.utils.setInt32(108, value, this);
+  }
+  get classes8(): number {
+    return $.utils.getInt32(112, this);
+  }
+  set classes8(value: number) {
+    $.utils.setInt32(112, value, this);
+  }
+  get classes9(): number {
+    return $.utils.getInt32(116, this);
+  }
+  set classes9(value: number) {
+    $.utils.setInt32(116, value, this);
+  }
+  get classes10(): number {
+    return $.utils.getInt32(120, this);
+  }
+  set classes10(value: number) {
+    $.utils.setInt32(120, value, this);
+  }
+  get classes11(): number {
+    return $.utils.getInt32(124, this);
+  }
+  set classes11(value: number) {
+    $.utils.setInt32(124, value, this);
+  }
+  get classes12(): number {
+    return $.utils.getInt32(128, this);
+  }
+  set classes12(value: number) {
+    $.utils.setInt32(128, value, this);
+  }
+  get classes13(): number {
+    return $.utils.getInt32(132, this);
+  }
+  set classes13(value: number) {
+    $.utils.setInt32(132, value, this);
+  }
+  get classes14(): number {
+    return $.utils.getInt32(136, this);
+  }
+  set classes14(value: number) {
+    $.utils.setInt32(136, value, this);
+  }
+}
+
+// Localized string lookup types
+export class GetEqstrRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetEqstrRequest",
+    id: "a1b2c3d4e5f60022",
+    size: new $.ObjectSize(8, 0),
+  };
+  get stringId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set stringId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+}
+
+export class GetEqstrResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetEqstrResponse",
+    id: "a1b2c3d4e5f60023",
+    size: new $.ObjectSize(8, 2),
+  };
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get id(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get text(): string {
+    return $.utils.getText(1, this);
+  }
+  set text(value: string) {
+    $.utils.setText(1, value, this);
+  }
+}

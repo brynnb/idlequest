@@ -2220,6 +2220,8 @@ struct GetItemResponse {
   races @15 :Int32;
   bagslots @16 :Int32;
   bagsize @17 :Int32;
+  itemtype @18 :Int32;
+  scrolleffect @19 :Int32;
 }
 
 struct GetZoneRequest {
@@ -2434,6 +2436,7 @@ struct DeityInfo {
   name @1 :Text;
   bitmask @2 :Int32;
   description @3 :Text;
+  altName @4 :Text;
 }
 
 struct CharCreateCombination {
@@ -2472,4 +2475,64 @@ struct StaticDataResponse {
   deities @5 :List(DeityInfo);
   charCreateCombinations @6 :List(CharCreateCombination);
   charCreatePointAllocations @7 :List(CharCreatePointAllocation);
+}
+
+# Spell lookup messages
+struct GetSpellRequest {
+  spellId @0 :Int32;
+}
+
+struct GetSpellResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  id @2 :Int32;
+  name @3 :Text;
+  castTime @4 :Int32;
+  recoveryTime @5 :Int32;
+  recastTime @6 :Int32;
+  buffduration @7 :Int32;
+  mana @8 :Int32;
+  icon @9 :Int32;
+  descnum @10 :Int32;
+  effectBaseValue1 @11 :Int32;
+  effectBaseValue2 @12 :Int32;
+  effectBaseValue3 @13 :Int32;
+  effectLimitValue1 @14 :Int32;
+  effectLimitValue2 @15 :Int32;
+  effectLimitValue3 @16 :Int32;
+  max1 @17 :Int32;
+  max2 @18 :Int32;
+  max3 @19 :Int32;
+  formula1 @20 :Int32;
+  formula2 @21 :Int32;
+  formula3 @22 :Int32;
+  classes1 @23 :Int32;
+  classes2 @24 :Int32;
+  classes3 @25 :Int32;
+  classes4 @26 :Int32;
+  classes5 @27 :Int32;
+  classes6 @28 :Int32;
+  classes7 @29 :Int32;
+  classes8 @30 :Int32;
+  classes9 @31 :Int32;
+  classes10 @32 :Int32;
+  classes11 @33 :Int32;
+  classes12 @34 :Int32;
+  classes13 @35 :Int32;
+  classes14 @36 :Int32;
+  castOnYou @37 :Text;
+  youCast @38 :Text;
+  spellFades @39 :Text;
+}
+
+# Localized string lookup messages
+struct GetEqstrRequest {
+  stringId @0 :Int32;
+}
+
+struct GetEqstrResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  id @2 :Int32;
+  text @3 :Text;
 }

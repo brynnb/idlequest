@@ -1,7 +1,7 @@
 import React from "react";
 import { Item } from "@entities/Item";
 import { Spell } from "@entities/Spell";
-import { useDatabase } from "./useDatabase";
+import { eqDataService, Spell as ServiceSpell } from "@utils/eqDataService";
 import classesData from "@data/json/classes.json";
 import { calcSpellEffectValue } from "@utils/spellCalculations";
 
@@ -10,14 +10,10 @@ interface SpellInfo {
   description: string | null;
 }
 
-type SpellTableKey = "spells" | "eqstr_us";
-
 function processSpellDescription(description: string, spell: Spell): string {
-  // console.log("Processing spell:", spell);
   return description.replace(/[#$@](\d+)|%z/g, (match, number) => {
-    // console.log("Matching:", match, number);
     if (match === "%z") {
-      const minutes = spell.buffduration / 10;
+      const minutes = (spell.buffduration ?? 0) / 10;
       return `${minutes.toFixed(1)} minutes`;
     }
 
@@ -29,9 +25,6 @@ function processSpellDescription(description: string, spell: Spell): string {
         );
         const maxValue = Number(spell[`max${index}` as keyof Spell]);
         const formula = Number(spell[`formula${index}` as keyof Spell]);
-        // console.log(
-        //   `#${index}: baseValue=${baseValue}, maxValue=${maxValue}, formula=${formula}`
-        // );
         if (!isNaN(baseValue) && !isNaN(formula)) {
           const calculatedValue = calcSpellEffectValue(
             formula,
@@ -41,15 +34,12 @@ function processSpellDescription(description: string, spell: Spell): string {
             spell,
             0
           );
-          // console.log(`Calculated value for #${index}:`, calculatedValue);
           return Math.abs(calculatedValue).toString();
         }
-        // console.warn(`Invalid effect_base_value${index} for spell:`, spell);
         return match;
       }
       case "$": {
         const limitValue = spell[`effect_limit_value${index}` as keyof Spell];
-        // console.log(`$${index}: limitValue=${limitValue}`);
         return limitValue?.toString() ?? match;
       }
       case "@": {
@@ -57,7 +47,6 @@ function processSpellDescription(description: string, spell: Spell): string {
         const baseVal = Number(
           spell[`effect_base_value${index}` as keyof Spell]
         );
-        // console.log(`@${index}: maxVal=${maxVal}, baseVal=${baseVal}`);
         if (maxVal == 0) {
           return Math.abs(baseVal).toString();
         }
@@ -69,30 +58,67 @@ function processSpellDescription(description: string, spell: Spell): string {
   });
 }
 
+// Convert service spell to entity spell format
+function toEntitySpell(serviceSpell: ServiceSpell): Spell {
+  return {
+    id: serviceSpell.id,
+    name: serviceSpell.name,
+    buffduration: serviceSpell.buffduration ?? 0,
+    effect_base_value1: serviceSpell.effectBaseValue1 ?? 0,
+    effect_base_value2: serviceSpell.effectBaseValue2 ?? 0,
+    effect_base_value3: serviceSpell.effectBaseValue3 ?? 0,
+    effect_limit_value1: serviceSpell.effectLimitValue1 ?? 0,
+    effect_limit_value2: serviceSpell.effectLimitValue2 ?? 0,
+    effect_limit_value3: serviceSpell.effectLimitValue3 ?? 0,
+    max1: serviceSpell.max1 ?? 0,
+    max2: serviceSpell.max2 ?? 0,
+    max3: serviceSpell.max3 ?? 0,
+    formula1: serviceSpell.formula1 ?? 0,
+    formula2: serviceSpell.formula2 ?? 0,
+    formula3: serviceSpell.formula3 ?? 0,
+    classes1: serviceSpell.classes1 ?? 255,
+    classes2: serviceSpell.classes2 ?? 255,
+    classes3: serviceSpell.classes3 ?? 255,
+    classes4: serviceSpell.classes4 ?? 255,
+    classes5: serviceSpell.classes5 ?? 255,
+    classes6: serviceSpell.classes6 ?? 255,
+    classes7: serviceSpell.classes7 ?? 255,
+    classes8: serviceSpell.classes8 ?? 255,
+    classes9: serviceSpell.classes9 ?? 255,
+    classes10: serviceSpell.classes10 ?? 255,
+    classes11: serviceSpell.classes11 ?? 255,
+    classes12: serviceSpell.classes12 ?? 255,
+    classes13: serviceSpell.classes13 ?? 255,
+    classes14: serviceSpell.classes14 ?? 255,
+    descnum: serviceSpell.descnum ?? 0,
+  } as Spell;
+}
+
 export const useSpellInfo = (item: Item | null) => {
-  const { getById } = useDatabase();
   const [spellInfo, setSpellInfo] = React.useState<SpellInfo | null>(null);
 
   React.useEffect(() => {
     const fetchSpellInfo = async () => {
       if (item && Number(item.itemtype) === 20 && item.scrolleffect) {
         try {
-          const spell = await getById(
-            "spells" as SpellTableKey,
+          const serviceSpell = await eqDataService.getSpellById(
             Number(item.scrolleffect)
           );
 
-          if (spell) {
-            const descriptionEntry = await getById(
-              "eqstr_us" as SpellTableKey,
-              Number(spell.descnum)
-            );
-            let description = descriptionEntry ? descriptionEntry.text : null;
+          if (serviceSpell) {
+            const spell = toEntitySpell(serviceSpell);
+            let description: string | null = null;
 
-            if (description) {
-              // console.log("Original description:", description);
-              description = processSpellDescription(description, spell);
-              // console.log("Processed description:", description);
+            // Spell descriptions are stored at spell_id + 40000 in eqstr_us
+            const descriptionId = spell.id + 40000;
+            const descriptionEntry = await eqDataService.getEqstrById(
+              descriptionId
+            );
+            if (descriptionEntry) {
+              description = processSpellDescription(
+                descriptionEntry.text,
+                spell
+              );
             }
 
             setSpellInfo({ spell, description });
@@ -109,7 +135,7 @@ export const useSpellInfo = (item: Item | null) => {
     };
 
     fetchSpellInfo();
-  }, [item, getById]);
+  }, [item]);
 
   return spellInfo;
 };

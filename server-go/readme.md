@@ -60,6 +60,31 @@ If you already run the EverQuest `akk-stack` project, you can point EQ: GoServer
   - `openssl genpkey -algorithm RSA -out key.pem -pkeyopt rsa_keygen_bits:2048`
 - To avoid error when using `make` or `go run`, create a [Discord application](https://discord.com/developers/docs/quick-start/getting-started#step-1-creating-an-app), get your bot token, and paste it into `discord.txt` inside `server/internal/config`
 
+### Data Migrations
+
+After setting up the database, run migrations to add additional tables:
+
+```bash
+# Create eqstr_us table (localized strings for spell descriptions, etc.)
+mysql -u root eqgo < migrations/002_create_eqstr_us_table.sql
+
+# Import eqstr_us data from client text file
+cd migrations && ./import_eqstr_us.sh
+
+# Create char_create_data table (deity/city/race/class/stat descriptions for character creation)
+mysql -u root eqgo < migrations/003_create_char_create_data_table.sql
+mysql -u root eqgo < migrations/004_add_alt_name_to_char_create_data.sql
+
+# Import character creation data from eqstr_us.txt
+cd migrations && ./import_char_create_data.sh
+```
+
+**Note:** All import scripts use shared database configuration from `db_config.sh`. You can override defaults with environment variables:
+
+```bash
+DB_USER=myuser DB_PASS=mypass DB_NAME=mydb ./import_char_create_data.sh
+```
+
 ### Ready to launch
 
 - For the rest of the commands you should be cd into `server` in the root directory

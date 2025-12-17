@@ -9,6 +9,7 @@ import (
 	"idlequest/internal/api/opcodes"
 	"idlequest/internal/db/items"
 	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/db/spells"
 	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/dialogue"
 	"idlequest/internal/session"
@@ -53,6 +54,8 @@ func HandleGetItemRequest(ses *session.Session, payload []byte, wh *WorldHandler
 			resp.SetRaces(item.Races)
 			resp.SetBagslots(item.Bagslots)
 			resp.SetBagsize(item.Bagsize)
+			resp.SetItemtype(item.Itemtype)
+			resp.SetScrolleffect(item.Scrolleffect)
 		}
 		return nil
 	})
@@ -250,6 +253,7 @@ func HandleStaticDataRequest(ses *session.Session, payload []byte, wh *WorldHand
 					d.SetName(deity.Name)
 					d.SetBitmask(deity.Bitmask)
 					d.SetDescription(deity.Description)
+					d.SetAltName(deity.AltName)
 				}
 				resp.SetDeities(deityList)
 			}
@@ -536,6 +540,101 @@ func HandleGetNPCDialogueRequest(ses *session.Session, payload []byte, wh *World
 			return nil
 		})
 	}()
+
+	return false
+}
+
+// HandleGetSpellRequest handles GetSpellRequest Cap'n Proto messages
+func HandleGetSpellRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	req, err := session.Deserialize(ses, payload, eq.ReadRootGetSpellRequest)
+	if err != nil {
+		log.Printf("Failed to read GetSpellRequest: %v", err)
+		return false
+	}
+
+	spellId := req.SpellId()
+
+	// Get spell from database
+	spell, spellErr := spells.GetSpellByID(spellId)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootGetSpellResponse, opcodes.GetSpellResponse, func(resp eq.GetSpellResponse) error {
+		if spellErr != nil || spell == nil {
+			resp.SetSuccess(0)
+			resp.SetError("Spell not found")
+		} else {
+			resp.SetSuccess(1)
+			resp.SetId(spell.ID)
+			if spell.Name != nil {
+				resp.SetName(*spell.Name)
+			}
+			resp.SetCastTime(spell.CastTime)
+			resp.SetRecoveryTime(spell.RecoveryTime)
+			resp.SetRecastTime(spell.RecastTime)
+			resp.SetBuffduration(spell.Buffduration)
+			resp.SetMana(spell.Mana)
+			resp.SetIcon(spell.Icon)
+			resp.SetDescnum(spell.Descnum)
+			resp.SetEffectBaseValue1(spell.EffectBaseValue1)
+			resp.SetEffectBaseValue2(spell.EffectBaseValue2)
+			resp.SetEffectBaseValue3(spell.EffectBaseValue3)
+			resp.SetEffectLimitValue1(spell.EffectLimitValue1)
+			resp.SetEffectLimitValue2(spell.EffectLimitValue2)
+			resp.SetEffectLimitValue3(spell.EffectLimitValue3)
+			resp.SetMax1(spell.Max1)
+			resp.SetMax2(spell.Max2)
+			resp.SetMax3(spell.Max3)
+			resp.SetFormula1(spell.Formula1)
+			resp.SetFormula2(spell.Formula2)
+			resp.SetFormula3(spell.Formula3)
+			resp.SetClasses1(spell.Classes1)
+			resp.SetClasses2(spell.Classes2)
+			resp.SetClasses3(spell.Classes3)
+			resp.SetClasses4(spell.Classes4)
+			resp.SetClasses5(spell.Classes5)
+			resp.SetClasses6(spell.Classes6)
+			resp.SetClasses7(spell.Classes7)
+			resp.SetClasses8(spell.Classes8)
+			resp.SetClasses9(spell.Classes9)
+			resp.SetClasses10(spell.Classes10)
+			resp.SetClasses11(spell.Classes11)
+			resp.SetClasses12(spell.Classes12)
+			resp.SetClasses13(spell.Classes13)
+			resp.SetClasses14(spell.Classes14)
+		}
+		return nil
+	})
+
+	return false
+}
+
+// HandleGetEqstrRequest handles GetEqstrRequest Cap'n Proto messages
+func HandleGetEqstrRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	req, err := session.Deserialize(ses, payload, eq.ReadRootGetEqstrRequest)
+	if err != nil {
+		log.Printf("Failed to read GetEqstrRequest: %v", err)
+		return false
+	}
+
+	stringId := req.StringId()
+
+	// Get string from database
+	eqstr, eqstrErr := spells.GetEqstrByID(stringId)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootGetEqstrResponse, opcodes.GetEqstrResponse, func(resp eq.GetEqstrResponse) error {
+		if eqstrErr != nil || eqstr == nil {
+			resp.SetSuccess(0)
+			resp.SetError("String not found")
+		} else {
+			resp.SetSuccess(1)
+			resp.SetId(eqstr.ID)
+			if eqstr.Text != nil {
+				resp.SetText(*eqstr.Text)
+			}
+		}
+		return nil
+	})
 
 	return false
 }
