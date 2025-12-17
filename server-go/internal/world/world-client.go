@@ -294,9 +294,10 @@ func CheckCharCreateInfo(cc eq.CharCreate) bool {
 	}
 
 	// Calculate expected totals from allocation data
+	// The user gets createPoints to allocate however they want
+	// allocTotal in DB is just the recommended allocation, not additional points
 	bTotal := alloc.BaseStr + alloc.BaseSta + alloc.BaseAgi + alloc.BaseDex + alloc.BaseWis + alloc.BaseInt + alloc.BaseCha
-	allocTotal := alloc.AllocStr + alloc.AllocSta + alloc.AllocAgi + alloc.AllocDex + alloc.AllocWis + alloc.AllocInt + alloc.AllocCha
-	expectedTotal := bTotal + allocTotal + createPoints
+	expectedTotal := bTotal + createPoints
 
 	cTotal := uint32(cc.Str() + cc.Sta() + cc.Agi() + cc.Dex() + cc.Wis() + cc.Intel() + cc.Cha())
 
@@ -306,36 +307,37 @@ func CheckCharCreateInfo(cc eq.CharCreate) bool {
 		errors++
 	}
 
-	// Check each stat is within valid range (base to base+alloc+createPoints)
-	maxStat := func(base, allocd uint32) uint32 {
-		return base + allocd + createPoints
+	// Check each stat is within valid range (base to base+createPoints)
+	// User can put all createPoints into any single stat if they want
+	maxStat := func(base uint32) uint32 {
+		return base + createPoints
 	}
 
-	if uint32(cc.Str()) > maxStat(alloc.BaseStr, alloc.AllocStr) || uint32(cc.Str()) < alloc.BaseStr {
+	if uint32(cc.Str()) > maxStat(alloc.BaseStr) || uint32(cc.Str()) < alloc.BaseStr {
 		log.Println("Str out of range")
 		errors++
 	}
-	if uint32(cc.Sta()) > maxStat(alloc.BaseSta, alloc.AllocSta) || uint32(cc.Sta()) < alloc.BaseSta {
+	if uint32(cc.Sta()) > maxStat(alloc.BaseSta) || uint32(cc.Sta()) < alloc.BaseSta {
 		log.Println("Sta out of range")
 		errors++
 	}
-	if uint32(cc.Agi()) > maxStat(alloc.BaseAgi, alloc.AllocAgi) || uint32(cc.Agi()) < alloc.BaseAgi {
+	if uint32(cc.Agi()) > maxStat(alloc.BaseAgi) || uint32(cc.Agi()) < alloc.BaseAgi {
 		log.Println("Agi out of range")
 		errors++
 	}
-	if uint32(cc.Dex()) > maxStat(alloc.BaseDex, alloc.AllocDex) || uint32(cc.Dex()) < alloc.BaseDex {
+	if uint32(cc.Dex()) > maxStat(alloc.BaseDex) || uint32(cc.Dex()) < alloc.BaseDex {
 		log.Println("Dex out of range")
 		errors++
 	}
-	if uint32(cc.Wis()) > maxStat(alloc.BaseWis, alloc.AllocWis) || uint32(cc.Wis()) < alloc.BaseWis {
+	if uint32(cc.Wis()) > maxStat(alloc.BaseWis) || uint32(cc.Wis()) < alloc.BaseWis {
 		log.Println("Wis out of range")
 		errors++
 	}
-	if uint32(cc.Intel()) > maxStat(alloc.BaseInt, alloc.AllocInt) || uint32(cc.Intel()) < alloc.BaseInt {
+	if uint32(cc.Intel()) > maxStat(alloc.BaseInt) || uint32(cc.Intel()) < alloc.BaseInt {
 		log.Println("Intel out of range")
 		errors++
 	}
-	if uint32(cc.Cha()) > maxStat(alloc.BaseCha, alloc.AllocCha) || uint32(cc.Cha()) < alloc.BaseCha {
+	if uint32(cc.Cha()) > maxStat(alloc.BaseCha) || uint32(cc.Cha()) < alloc.BaseCha {
 		log.Println("Cha out of range")
 		errors++
 	}
