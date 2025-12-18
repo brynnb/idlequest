@@ -10,7 +10,7 @@ Though there may be implementation of 3D graphics in the future, the current foc
 
 I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](https://en.wikipedia.org/wiki/Progress_Quest) from 2002, which is also interestingly the example project used for the "idle games" article on Wikipedia. Though ProgressQuest is much simpler in nature and doesn't contain content from the real game, I want to recognize that this isn't a wholly original idea on my behalf, and I have fond memories of playing ProgressQuest 20+ years ago. Lots of credit also goes to the EQEmu project, whose data collection and server project is heavily relied upon, and the EQ:Requiem project, who converted large parts of the EQEmu project to Go.
 
-This project is very much in its early phase and the screenshots below are somewhat out of date. 
+This project is very much in its early phase and the screenshots below are somewhat out of date. Much more documentation lives in the /docs folder. 
 
 ## Early Screenshots
 
