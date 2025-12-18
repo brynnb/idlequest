@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 import useRandomName from "@hooks/useRandomName";
 import useCharacterCreatorStore from "@stores/CharacterCreatorStore";
 import SelectionButton from "@components/Interface/SelectionButton";
@@ -34,8 +34,8 @@ const RandomNameButtonContainer = styled.div`
 `;
 
 const ValidationMessage = styled.div<{ $isError: boolean }>`
-  color: ${(props) => (props.$isError ? "#ff6b6b" : "#6bff6b")};
-  font-size: 14px;
+  color: ${(props) => (props.$isError ? "#fabdbd" : "#6bff6b")};
+  font-size: 24px;
   text-align: center;
   margin-top: 8px;
   min-height: 20px;
@@ -48,25 +48,33 @@ const NameInput: React.FC = () => {
   const maxLength = Math.max(12, generateRandomName().length);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const validateName = useCallback(
-    async (name: string) => {
-      if (!name || name.length < 4) {
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(async () => {
+      if (!characterName || characterName.length < 4) {
         setNameValidation({
           isValid: false,
           isAvailable: false,
           errorMessage:
-            name.length > 0 ? "Name must be at least 4 characters" : "",
+            characterName.length > 0
+              ? "Name must be at least 4 characters"
+              : "",
           isValidating: false,
         });
         return;
       }
 
       setNameValidation({
-        ...nameValidation,
+        isValid: false,
+        isAvailable: false,
+        errorMessage: "",
         isValidating: true,
       });
 
-      const result = await eqDataService.validateName(name);
+      const result = await eqDataService.validateName(characterName);
 
       if (result) {
         setNameValidation({
@@ -83,17 +91,6 @@ const NameInput: React.FC = () => {
           isValidating: false,
         });
       }
-    },
-    [nameValidation, setNameValidation]
-  );
-
-  useEffect(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      validateName(characterName);
     }, 300);
 
     return () => {
@@ -101,7 +98,7 @@ const NameInput: React.FC = () => {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [characterName, validateName]);
+  }, [characterName, setNameValidation]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let newName = event.target.value;

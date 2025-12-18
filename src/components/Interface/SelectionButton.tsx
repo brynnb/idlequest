@@ -3,6 +3,7 @@ import styled from "styled-components";
 interface SelectionButtonProps {
   $isSelected: boolean;
   $isDisabled?: boolean;
+  $width?: string;
   onClick: () => void;
   children: React.ReactNode;
   disabled?: boolean;
@@ -11,8 +12,9 @@ interface SelectionButtonProps {
 const StyledButton = styled.button.attrs({ className: "selection-button" })<{
   $isSelected: boolean;
   $isDisabled?: boolean;
+  $width?: string;
 }>`
-  width: 230px;
+  width: ${({ $width }) => $width ?? "230px"};
   height: 70px;
   background-image: ${({ $isSelected }) =>
     $isSelected
@@ -51,6 +53,7 @@ const StyledButton = styled.button.attrs({ className: "selection-button" })<{
 const SelectionButton = ({
   $isSelected,
   $isDisabled,
+  $width,
   onClick,
   children,
   disabled,
@@ -59,6 +62,7 @@ const SelectionButton = ({
     <StyledButton
       $isSelected={$isSelected}
       $isDisabled={$isDisabled}
+      $width={$width}
       onClick={onClick}
       disabled={disabled}
     >

@@ -33,6 +33,19 @@ const NavigationContainer = styled.div`
   gap: 10px;
 `;
 
+const FourthColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Step1NavigationContainer = styled.div`
+  margin-top: auto;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+`;
+
 const StoryText = styled.div`
   font-family: "Times New Roman", Times, serif;
   font-size: 24px;
@@ -104,9 +117,27 @@ const CharacterCreator = () => {
             <div className="third-column">
               <ClassSelector onClassSelect={handleClassSelection} />
             </div>
-            <div className="fourth-column">
+            <FourthColumn className="fourth-column">
               <AttributeAllocator />
-            </div>
+              <Step1NavigationContainer>
+                <SelectionButton
+                  onClick={handleBackToCharacterSelect}
+                  $isSelected={false}
+                  $width="115px"
+                >
+                  Back
+                </SelectionButton>
+                <SelectionButton
+                  onClick={handleNext}
+                  disabled={!canProceedToNextStep()}
+                  $isSelected={false}
+                  $isDisabled={!canProceedToNextStep()}
+                  $width="115px"
+                >
+                  Next
+                </SelectionButton>
+              </Step1NavigationContainer>
+            </FourthColumn>
           </MainContainer>
         );
       case 2:
@@ -131,32 +162,25 @@ const CharacterCreator = () => {
   return (
     <Wrapper>
       {renderStep()}
-      <NavigationContainer>
-        {currentStep === 1 ? (
-          <SelectionButton
-            onClick={handleBackToCharacterSelect}
-            $isSelected={false}
-          >
-            Back
-          </SelectionButton>
-        ) : (
+      {currentStep !== 1 && (
+        <NavigationContainer>
           <SelectionButton onClick={handleBack} $isSelected={false}>
             Back
           </SelectionButton>
-        )}
-        {currentStep === 4 ? (
-          <SubmitCharacter />
-        ) : (
-          <SelectionButton
-            onClick={handleNext}
-            disabled={!canProceedToNextStep()}
-            $isSelected={false}
-            $isDisabled={!canProceedToNextStep()}
-          >
-            Next
-          </SelectionButton>
-        )}
-      </NavigationContainer>
+          {currentStep === 4 ? (
+            <SubmitCharacter />
+          ) : (
+            <SelectionButton
+              onClick={handleNext}
+              disabled={!canProceedToNextStep()}
+              $isSelected={false}
+              $isDisabled={!canProceedToNextStep()}
+            >
+              Next
+            </SelectionButton>
+          )}
+        </NavigationContainer>
+      )}
     </Wrapper>
   );
 };
