@@ -59,16 +59,14 @@ data/rawatlasart/*
 eqrequiem-ref/
 
 # Local Go server config override (contains real DB credentials, not committed)
-server-go/internal/config/eqgo_config.local.json
+server/internal/config/eqgo_config.local.json
 
 # Go server build artifacts
-server-go/server
-server-go/test-server
-server-go/daemon
-server-go/server.pid
-server-go/server.log
+server/bin/
+server/server.pid
+server/server.log
 items.dat
-server-go/tmp
+server/tmp/
 
 # Python virtual environments
 venv/

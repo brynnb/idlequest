@@ -2,12 +2,13 @@
 .PHONY: all build up down clean lint server start s capnp capn jet quest
 
 # Variables
+BIN_DIR = ./bin
 SERVER_SRC = ./cmd/server
-SERVER_NAME = server
+SERVER_NAME = $(BIN_DIR)/server
 DAEMON_SRC = ./cmd/daemon
 DUMP_SRC = ./cmd/dump
 IMPORT_SRC = ./cmd/import
-DAEMON_NAME = daemon
+DAEMON_NAME = $(BIN_DIR)/daemon
 CAPNP_SRC = ./cmd/capnp
 JET_SRC = ./cmd/jetgen
 PID_FILE = server.pid
@@ -42,6 +43,7 @@ jet:
 # Build the daemon binary
 build:
 	@echo "Building $(SERVER_NAME) and $(DAEMON_NAME)..."
+	@mkdir -p $(BIN_DIR)
 	@go build -o $(DAEMON_NAME) $(DAEMON_SRC)
 	@go build -o $(SERVER_NAME) $(SERVER_SRC)
 

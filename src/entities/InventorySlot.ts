@@ -1,4 +1,4 @@
-// Slot IDs match server-go/internal/constants/items.go exactly
+// Slot IDs match server/internal/constants/items.go exactly
 export enum InventorySlot {
   // Equipment slots (0-21)
   Charm = 0,

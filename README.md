@@ -4,7 +4,7 @@ IdleQuest is an online [idle/incremental game](https://en.wikipedia.org/wiki/Inc
 
 The game content and mechanics are as true to the original experience as can be reasonably done with a single developer - the interface, classes, races, zones, items, NPCs, loot drops, skills, spells, etc are all very close to original EverQuest content. It has, so far, implemented AI/LLM-based questing with over 5000 NPCs to exchange dialogue with, along with 26000 items, 16000 NPCs, 185 zones, and 3900 spells. It's incremental/idle combat based system also accurately drops loot for 20000+ spawns, with items and probabilities true to the original EverQuest experience.
 
-IdleQuest is aso online and multiplayer, and alllows for server-wide chatting, grouping with other characters, and plans to support all the same multiplayer features of the original.
+IdleQuest is aso online and multiplayer, and allows for server-wide chatting, grouping with other characters, and plans to support all the same multiplayer features of the original.
 
 Though there may be implementation of 3D graphics in the future, the current focus on this project is text-based adventuring with some visual aids. EverQuest was originally created from the era of MUDs (multi-user dungeons) which were basically EverQuest without graphics. It's fun to now return to the MUD heritage of the game, but with the addition of LLMs for dynamic quests, dialogue, and storytelling.
 

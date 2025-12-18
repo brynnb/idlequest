@@ -29,7 +29,7 @@ const getBagStartingSlot = (baseSlot: number): number => {
 
 /**
  * Tests to verify client slot IDs match server slot IDs.
- * Server slot scheme (from server-go/internal/constants/items.go):
+ * Server slot scheme (from server/internal/constants/items.go):
  * - Equipment: 0-21 (SlotCharm=0 to SlotAmmo=21)
  * - General Inventory: 22-29 (SlotGeneral1=22 to SlotGeneral8=29)
  * - Cursor: 30 (SlotCursor=30)
@@ -176,7 +176,7 @@ describe("Slot ID Conversion", () => {
 
   describe("Server slot ID compatibility", () => {
     // These tests verify the client slot IDs match what the server expects
-    // Based on server-go/internal/constants/items.go
+    // Based on server/internal/constants/items.go
 
     it("should match server equipment slot range (0-21)", () => {
       // Server: SlotCharm=0 to SlotAmmo=21

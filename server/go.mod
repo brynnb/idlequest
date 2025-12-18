@@ -4,7 +4,6 @@ go 1.24.2
 
 require (
 	capnproto.org/go/capnp/v3 v3.1.0-alpha.1
-	github.com/arl/go-detour v0.1.3
 	github.com/dgraph-io/ristretto/v2 v2.2.0
 	github.com/edsrzf/mmap-go v1.2.0
 	github.com/go-jet/jet/v2 v2.13.0
@@ -20,9 +19,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/arl/assertgo v0.0.0-20180702120748-a1be5afdc871 // indirect
-	github.com/arl/gogeo v0.0.0-20200405111831-9d419f5f7a90 // indirect
-	github.com/arl/math32 v0.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/colega/zeropool v0.0.0-20230505084239-6fb4a4f75381 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

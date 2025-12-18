@@ -117,7 +117,7 @@ func loadStaticData(ctx context.Context) (*StaticData, error) {
 }
 
 func getDataPath() string {
-	// Try relative path from server-go directory
+	// Try relative path from server directory
 	paths := []string{
 		"../data/json",
 		"data/json",
