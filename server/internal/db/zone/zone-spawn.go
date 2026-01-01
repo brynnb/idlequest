@@ -17,7 +17,6 @@ type SpawnPoolEntry struct {
 	Spawn2       *model.Spawn2
 	SpawnGroup   *model.Spawngroup
 	SpawnEntries []*SpawnEntryWithNPC
-	GridEntries  []GridEntries
 }
 
 type SpawnEntryWithNPC struct {

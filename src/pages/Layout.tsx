@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { Outlet } from "react-router-dom";
 import useGameScreenStore from "@stores/GameScreenStore";
+import ScreenRouter from "@/components/ScreenRouter";
 
 interface MainContainerProps {
   $backgroundType: "login" | "characterCreation" | "none";
@@ -44,8 +44,8 @@ const Layout = () => {
   const backgroundType = isLogin
     ? "login"
     : isCharacterCreation
-    ? "characterCreation"
-    : "none";
+      ? "characterCreation"
+      : "none";
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -58,7 +58,7 @@ const Layout = () => {
         onContextMenu={handleContextMenu}
         $backgroundType={backgroundType}
       >
-        <Outlet />
+        <ScreenRouter />
       </MainContainer>
     </>
   );

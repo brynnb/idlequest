@@ -1,8 +1,7 @@
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { RouterProvider } from "react-router-dom";
-import router from "./routes";
+import Layout from "./pages/Layout";
 import GameEngine from "./scripts/GameEngine";
 import useGameStatusStore from "./stores/GameStatusStore";
 import usePlayerCharacterStore from "./stores/PlayerCharacterStore";
@@ -17,7 +16,7 @@ const App = () => {
 
   return (
     <StrictMode>
-      <RouterProvider router={router} />
+      <Layout />
     </StrictMode>
   );
 };

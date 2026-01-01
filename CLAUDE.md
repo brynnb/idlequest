@@ -97,6 +97,11 @@ cd server && npm run build
 - Styled Components for styling
 - Custom hooks in `src/hooks/`
 
+### Navigation
+- **Single-Page App**: No URL-based routing - the app works like a video game
+- **Screen Navigation**: Use `GameScreenStore.setScreen()` to change screens (login, characterSelect, characterCreate, game)
+- **Component**: `ScreenRouter` in `src/components/` renders the appropriate page based on current screen state
+
 ### API Communication
 - Client API service: `src/utils/eqApiService.ts`
 - All API responses typed with interfaces

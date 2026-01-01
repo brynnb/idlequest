@@ -1,6 +1,6 @@
 import { useEffect, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import useStaticDataStore from "@stores/StaticDataStore";
+import useGameScreenStore from "@stores/GameScreenStore";
 import { WorldSocket } from "@/net";
 import LoadingScreen from "./LoadingScreen";
 
@@ -10,20 +10,20 @@ interface StaticDataGateProps {
 }
 
 const StaticDataGate = ({ children, fallback }: StaticDataGateProps) => {
-  const navigate = useNavigate();
+  const setScreen = useGameScreenStore((state) => state.setScreen);
   const { isLoaded, isLoading, loadStaticData } = useStaticDataStore();
 
   useEffect(() => {
     // If not connected, redirect to login
     if (!WorldSocket.isConnected) {
-      navigate("/");
+      setScreen("login");
       return;
     }
 
     if (!isLoaded && !isLoading) {
       loadStaticData();
     }
-  }, [isLoaded, isLoading, loadStaticData, navigate]);
+  }, [isLoaded, isLoading, loadStaticData, setScreen]);
 
   // If not connected, show loading while redirecting
   if (!WorldSocket.isConnected) {

@@ -73,6 +73,7 @@ export class EqSocket {
 
   public isConnected = false;
   private onClose: (() => void) | null = null;
+  private isClosing = false; // Track intentional close to suppress expected errors
 
   // Reconnect
   private url: string | null = null;
@@ -160,6 +161,7 @@ export class EqSocket {
       })();
 
       this.isConnected = true;
+      this.isClosing = false;
       this.retryCount = 0;
       // watch for close - don't auto-reconnect on normal close
       this.webtransport.closed
@@ -314,6 +316,7 @@ export class EqSocket {
   }
 
   public close(scheduleReconnect: boolean = true) {
+    this.isClosing = true;
     this.isConnected = false;
     this.datagramWriter?.releaseLock();
     this.controlWriter?.releaseLock();
@@ -361,7 +364,10 @@ export class EqSocket {
           this.opCodeHandlers[opcode]?.(payload);
         }
       } catch (e) {
-        console.error("Datagram loop error:", e);
+        // Only log if this wasn't an intentional close
+        if (!this.isClosing) {
+          console.error("Datagram loop error:", e);
+        }
       } finally {
         rdr.releaseLock();
       }
@@ -404,7 +410,10 @@ export class EqSocket {
           }
         }
       } catch (e) {
-        console.error("Control stream loop error:", e);
+        // Only log if this wasn't an intentional close
+        if (!this.isClosing) {
+          console.error("Control stream loop error:", e);
+        }
       } finally {
         rdr.releaseLock();
       }

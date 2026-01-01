@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { getRandomVideoIndex, getVideoByIndex } from "@utils/uiUtils";
-import { useLocation } from "react-router-dom";
 import useGameStatusStore from "@stores/GameStatusStore";
+import useGameScreenStore from "@stores/GameScreenStore";
 
 interface ViewContainerProps {
   $isCharacterCreation: boolean;
@@ -16,8 +16,8 @@ const ViewContainer = styled.div<ViewContainerProps>`
 `;
 
 const VideoBackground: React.FC = () => {
-  const location = useLocation();
-  const isCharacterCreation = location.pathname === "/create";
+  const currentScreen = useGameScreenStore((state) => state.currentScreen);
+  const isCharacterCreation = currentScreen === "characterCreate";
   const isMuted = useGameStatusStore((state) => state.isMuted);
   const currentVideoIndex = useGameStatusStore(
     (state) => state.currentVideoIndex

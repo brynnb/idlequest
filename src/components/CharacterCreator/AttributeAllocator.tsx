@@ -155,23 +155,26 @@ const AttributeAllocator: React.FC = () => {
       </div>
 
       {baseAttributes.map((attr) => (
-        <AttributeRow key={attr}>
+        <AttributeRow key={attr} data-testid={`attr-row-${attr}`}>
           <LargeStyledText>{attr.toUpperCase()}:</LargeStyledText>
           <AttributeControls>
             <AdjustButton
               onClick={() => decrementAttribute(attr)}
               disabled={attributes[attr] <= attributes[`base_${attr}`]}
+              data-testid={`attr-${attr}-minus`}
             >
               ‒
             </AdjustButton>
             <AttributeNumber
               $hasAllocation={attributes[attr] > attributes[`base_${attr}`]}
+              data-testid={`attr-${attr}-value`}
             >
               {attributes[attr]}
             </AttributeNumber>
             <AdjustButton
               onClick={() => incrementAttribute(attr)}
               disabled={attributePoints === 0}
+              data-testid={`attr-${attr}-plus`}
             >
               +
             </AdjustButton>
