@@ -141,7 +141,7 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 		return false
 	}
 	segment := pp.Segment()
-	_, err = pp.NewSkills(78)
+	_, err = pp.NewSkills(int32(constants.Skill_HIGHEST + 1))
 	if err != nil {
 		log.Printf("failed to create new Skills list: %v", err)
 		return false
@@ -500,7 +500,7 @@ func SetClassStartingSkills(pp *eq.PlayerProfile) {
 		log.Printf("failed to get skills: %v", err)
 		return
 	}
-	for i := 0; i <= 77; i++ {
+	for i := 0; i <= constants.Skill_HIGHEST; i++ {
 		if skills.At(i) == 0 {
 
 			if constants.IsSpecializedSkill(i) || (constants.IsTradeskill(i) && i != constants.Skill_Fishing) ||

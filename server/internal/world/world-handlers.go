@@ -137,6 +137,28 @@ func sendCharacterState(ses *session.Session, characterName string) {
 		charState.SetCopper(int32(currency.Copper))
 	}
 
+	// Add skills
+	skills, err := db_character.GetCharacterSkills(context.Background(), int64(charData.ID))
+	if err != nil {
+		log.Printf("sendCharacterState: failed to get skills for character %d: %v", charData.ID, err)
+	} else {
+		capSkills, err := charState.NewSkills(int32(constants.Skill_HIGHEST + 1))
+		if err != nil {
+			log.Printf("sendCharacterState: failed to create Skills array: %v", err)
+		} else {
+			// Initialize all to 0 first (default)
+			for i := 0; i <= constants.Skill_HIGHEST; i++ {
+				capSkills.Set(i, 0)
+			}
+			// Fill in values from DB
+			for _, s := range skills {
+				if int(s.SkillID) <= constants.Skill_HIGHEST {
+					capSkills.Set(int(s.SkillID), int32(s.Value))
+				}
+			}
+		}
+	}
+
 	// Add inventory items
 	charItems := ses.Client.Items()
 	charItemsLength := int32(len(charItems))
@@ -169,8 +191,8 @@ func sendCharacterState(ses *session.Session, characterName string) {
 		}
 	}
 
-	log.Printf("sendCharacterState: Sending for %s (level %d, HP %d/%d, Mana %d/%d, %d items)",
-		charData.Name, charData.Level, curHp, maxHp, curMana, maxMana, charItemsLength)
+	log.Printf("sendCharacterState: Sending for %s (level %d, HP %d/%d, Mana %d/%d, %d items, %d skills)",
+		charData.Name, charData.Level, curHp, maxHp, curMana, maxMana, charItemsLength, len(skills))
 	ses.SendStream(charState.Message(), opcodes.CharacterState)
 }
 

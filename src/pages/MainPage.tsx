@@ -11,6 +11,7 @@ import InventoryLayout from "@components/Inventory/InventoryLayout";
 import MapAndZoneSelection from "@components/Interface/MapAndZoneSelection";
 import Spellbook from "@/components/Interface/Spellbook";
 import QuestDisplay from "@/components/Interface/QuestDisplay";
+import AbilitiesDisplay from "@/components/Interface/AbilitiesDisplay";
 const MainPage: React.FC = () => {
   const { setScreen } = useGameScreenStore();
   const { characterProfile } = usePlayerCharacterStore((state) => ({
@@ -22,6 +23,7 @@ const MainPage: React.FC = () => {
     isMapOpen,
     isSpellbookOpen,
     isNoteOpen,
+    isAbilitiesOpen,
   } = useGameStatusStore();
 
   useEffect(() => {
@@ -59,6 +61,7 @@ const MainPage: React.FC = () => {
       {isMapOpen && <MapAndZoneSelection />}
       {isSpellbookOpen && <Spellbook />}
       {isNoteOpen && <QuestDisplay />}
+      {isAbilitiesOpen && <AbilitiesDisplay />}
     </>
   );
 };

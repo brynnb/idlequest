@@ -1442,7 +1442,7 @@ export class CharacterState extends $.Struct {
   static readonly _capnp = {
     displayName: "CharacterState",
     id: "e65defdab4639d25",
-    size: new $.ObjectSize(136, 3),
+    size: new $.ObjectSize(136, 4),
   };
   static _InventoryItems: $.ListCtor<ItemInstance>;
   get id(): number {
@@ -1663,6 +1663,24 @@ export class CharacterState extends $.Struct {
   }
   set inventoryItems(value: $.List<ItemInstance>) {
     $.utils.copyFrom(value, $.utils.getPointer(2, this));
+  }
+  _adoptSkills(value: $.Orphan<$.List<number>>): void {
+    $.utils.adopt(value, $.utils.getPointer(3, this));
+  }
+  _disownSkills(): $.Orphan<$.List<number>> {
+    return $.utils.disown(this.skills);
+  }
+  get skills(): $.List<number> {
+    return $.utils.getList(3, $.Int32List, this);
+  }
+  _hasSkills(): boolean {
+    return !$.utils.isNull($.utils.getPointer(3, this));
+  }
+  _initSkills(length: number): $.List<number> {
+    return $.utils.initList(3, $.Int32List, length, this);
+  }
+  set skills(value: $.List<number>) {
+    $.utils.copyFrom(value, $.utils.getPointer(3, this));
   }
   toString(): string {
     return "CharacterState_" + super.toString();

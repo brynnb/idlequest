@@ -45,6 +45,8 @@ interface GameStatusStore {
   toggleSpellbook: () => void;
   isNoteOpen: boolean;
   toggleNote: () => void;
+  isAbilitiesOpen: boolean;
+  toggleAbilities: () => void;
   containerPositions: Record<number, ContainerPosition>;
   setContainerPosition: (bagSlot: number, position: ContainerPosition) => void;
 }
@@ -237,10 +239,23 @@ const useGameStatusStore = create<GameStatusStore>()(
             toggleNote: () => {
               set((state) => ({
                 isNoteOpen: !state.isNoteOpen,
+                isAbilitiesOpen: false,
                 isInventoryOpen: state.isNoteOpen
                   ? false
                   : state.isInventoryOpen,
                 isMapOpen: state.isNoteOpen ? false : state.isMapOpen,
+              }));
+            },
+
+            isAbilitiesOpen: false,
+            toggleAbilities: () => {
+              set((state) => ({
+                isAbilitiesOpen: !state.isAbilitiesOpen,
+                isNoteOpen: false,
+                isInventoryOpen: state.isAbilitiesOpen
+                  ? false
+                  : state.isInventoryOpen,
+                isMapOpen: state.isAbilitiesOpen ? false : state.isMapOpen,
               }));
             },
 

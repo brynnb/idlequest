@@ -45,6 +45,8 @@ const RightSidebar = () => {
     toggleMap,
     isNoteOpen,
     toggleNote,
+    isAbilitiesOpen,
+    toggleAbilities,
     updateCurrentZoneNPCs,
     autoSellEnabled,
     toggleAutoSell,
@@ -86,7 +88,12 @@ const RightSidebar = () => {
       <PlayerStats />
       <TargetBar />
       <TopActionButtonContainer>
-        <ActionButton text="Abilities" onClick={() => {}} />
+        <ActionButton
+          text="Abilities"
+          onClick={toggleAbilities}
+          isPressed={isAbilitiesOpen}
+          isToggleable={true}
+        />
         <ActionButton
           text="Combat"
           onClick={toggleRunning}
@@ -110,12 +117,12 @@ const RightSidebar = () => {
         />
         <ActionButton
           text="Invite"
-          onClick={() => {}}
+          onClick={() => { }}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton
           text="Disband"
-          onClick={() => {}}
+          onClick={() => { }}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton

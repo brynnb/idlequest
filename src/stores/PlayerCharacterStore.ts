@@ -717,6 +717,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               wis: serverChar.wis || 75,
             },
             inventory: inventoryItems,
+            skills: serverChar.skills || [],
             // Use server-computed stats
             stats: {
               ac: serverChar.ac || 0,
@@ -909,6 +910,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
               wis: serverState.wis,
             },
             inventory: inventoryItems,
+            skills: serverState.skills || [],
             // Server-computed stats
             stats: {
               ac: serverState.ac,

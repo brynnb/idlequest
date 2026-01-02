@@ -100,6 +100,9 @@ struct CharacterState {
   
   # Inventory - full item data
   inventoryItems @35 :List(Item.ItemInstance);
+  
+  # Skills - array of skill values (index = skill ID)
+  skills @36 :List(Int32);
 }
 
 struct CharSelectEquip {

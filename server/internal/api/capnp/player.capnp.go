@@ -439,12 +439,12 @@ type CharacterState capnp.Struct
 const CharacterState_TypeID = 0xe65defdab4639d25
 
 func NewCharacterState(s *capnp.Segment) (CharacterState, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 136, PointerCount: 3})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 136, PointerCount: 4})
 	return CharacterState(st), err
 }
 
 func NewRootCharacterState(s *capnp.Segment) (CharacterState, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 136, PointerCount: 3})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 136, PointerCount: 4})
 	return CharacterState(st), err
 }
 
@@ -803,13 +803,36 @@ func (s CharacterState) NewInventoryItems(n int32) (ItemInstance_List, error) {
 	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
+func (s CharacterState) Skills() (capnp.Int32List, error) {
+	p, err := capnp.Struct(s).Ptr(3)
+	return capnp.Int32List(p.List()), err
+}
+
+func (s CharacterState) HasSkills() bool {
+	return capnp.Struct(s).HasPtr(3)
+}
+
+func (s CharacterState) SetSkills(v capnp.Int32List) error {
+	return capnp.Struct(s).SetPtr(3, v.ToPtr())
+}
+
+// NewSkills sets the skills field to a newly
+// allocated capnp.Int32List, preferring placement in s's segment.
+func (s CharacterState) NewSkills(n int32) (capnp.Int32List, error) {
+	l, err := capnp.NewInt32List(capnp.Struct(s).Segment(), n)
+	if err != nil {
+		return capnp.Int32List{}, err
+	}
+	err = capnp.Struct(s).SetPtr(3, l.ToPtr())
+	return l, err
+}
 
 // CharacterState_List is a list of CharacterState.
 type CharacterState_List = capnp.StructList[CharacterState]
 
 // NewCharacterState creates a new list of CharacterState.
 func NewCharacterState_List(s *capnp.Segment, sz int32) (CharacterState_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 136, PointerCount: 3}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 136, PointerCount: 4}, sz)
 	return capnp.StructList[CharacterState](l), err
 }
 

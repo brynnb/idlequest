@@ -28,7 +28,7 @@ import (
 
 const (
 	ClassCount = 15
-	SkillCount = 78
+	SkillCount = constants.Skill_HIGHEST + 1
 	LevelCount = 100
 	TotalSize  = ClassCount * SkillCount * LevelCount
 )
