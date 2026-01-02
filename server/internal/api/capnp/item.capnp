@@ -192,3 +192,17 @@ struct DeleteItem {
   slot @0 :Int8;
   bag @1 :Int8;
 }
+
+struct SellItem {
+  slot @0 :Int8;
+  bag @1 :Int8;
+}
+
+struct SellItemResponse {
+  success @0 :Bool;
+  platinum @1 :Int32;
+  gold @2 :Int32;
+  silver @3 :Int32;
+  copper @4 :Int32;
+  itemName @5 :Text;
+}

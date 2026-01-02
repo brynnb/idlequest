@@ -142,12 +142,106 @@ export const useInventoryActions = () => {
       }
     }
   };
+  // Auto-place cursor item using loot-like logic:
+  // 1. Try to equip in empty equipment slot
+  // 2. Check if item is an upgrade (swap with existing equipped item)
+  // 3. Fall back to first available general inventory slot
+  const handleAutoPlaceCursorItem = async () => {
+    const store = usePlayerCharacterStore.getState();
+    const inventory = store.characterProfile?.inventory || [];
+
+    const cursorKey: InventoryKey = { bag: 0, slot: InventorySlot.Cursor };
+    const cursorItem = inventory.find(
+      (item) => item.bag === 0 && item.slot === InventorySlot.Cursor
+    );
+
+    if (!cursorItem?.itemDetails) {
+      return false; // No item on cursor
+    }
+
+    const cc = store.characterProfile?.class;
+    const cr = store.characterProfile?.race;
+    const characterClass = cc && typeof cc === "object" ? (cc as CharacterClass) : undefined;
+    const characterRace = cr && typeof cr === "object" ? (cr as Race) : undefined;
+
+    if (!characterClass || !characterRace) {
+      return false;
+    }
+
+    const itemDetails = cursorItem.itemDetails;
+
+    // Step 1: Check if item can be equipped in an empty slot
+    if (itemDetails.slots !== undefined && itemDetails.itemclass !== ItemClass.CONTAINER) {
+      const equippableSlots = getEquippableSlots(itemDetails);
+
+      for (const slot of equippableSlots) {
+        if (slot >= 0 && slot <= 21) { // Equipment slots only
+          const existingItem = inventory.find(
+            (item) => item.bag === 0 && item.slot === slot
+          );
+
+          if (!existingItem) {
+            if (isSlotAvailableForItem(
+              cursorItem,
+              slot as InventorySlot,
+              characterClass,
+              characterRace,
+              inventory
+            )) {
+              await store.moveItemToSlot(cursorKey, { bag: 0, slot });
+              return true;
+            }
+          }
+        }
+      }
+
+      // Step 2: Check if item is an upgrade for any equipped slot
+      // (For simplicity, we'll just try to swap with occupied slots the user can equip to)
+      for (const slot of equippableSlots) {
+        if (slot >= 0 && slot <= 21) {
+          const existingItem = inventory.find(
+            (item) => item.bag === 0 && item.slot === slot
+          );
+
+          if (existingItem) {
+            if (isSlotAvailableForItem(
+              cursorItem,
+              slot as InventorySlot,
+              characterClass,
+              characterRace,
+              inventory
+            )) {
+              // Swap with the existing item (existing goes to cursor)
+              await store.swapItems(cursorKey, { bag: 0, slot });
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    // Step 3: Find first available general inventory slot
+    for (let slot = InventorySlot.General1; slot <= InventorySlot.General8; slot++) {
+      const existingItem = inventory.find(
+        (item) => item.bag === 0 && item.slot === slot
+      );
+
+      if (!existingItem) {
+        await store.moveItemToSlot(cursorKey, { bag: 0, slot });
+        return true;
+      }
+    }
+
+    // No available slot found
+    return false;
+  };
 
   return {
     handleItemClick,
     handleLoot,
     addItemToInventoryByItemId,
     handleEquipAllItems,
+    handleAutoPlaceCursorItem,
   };
 };
 

@@ -14,8 +14,9 @@ type HandlerRegistry struct {
 
 func (c *Client) NewClientRegistry() *HandlerRegistry {
 	handlers := map[opcodes.OpCode]DatagramHandler{
-		opcodes.MoveItem:   c.HandleMoveItem,
-		opcodes.DeleteItem: c.HandleDeleteItem,
+		opcodes.MoveItem:       c.HandleMoveItem,
+		opcodes.DeleteItem:     c.HandleDeleteItem,
+		opcodes.ShopPlayerSell: c.HandleShopPlayerSell,
 	}
 	registry := &HandlerRegistry{
 		handlers: handlers,

@@ -2,32 +2,19 @@ import React from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import { InventorySlot } from "@entities/InventorySlot";
 import { useInventoryActions } from "@hooks/useInventoryActions";
-import { getEquippableSlots } from "@utils/itemUtils";
-import { InventoryKey } from "@entities/InventoryItem";
 
 const PersonaView: React.FC = () => {
   const { characterProfile } = usePlayerCharacterStore();
-  const { handleItemClick } = useInventoryActions();
+  const { handleAutoPlaceCursorItem } = useInventoryActions();
 
   const cursorItem = characterProfile?.inventory?.find(
     (item) => item.bag === 0 && item.slot === InventorySlot.Cursor
   );
 
   const handleClick = async () => {
-    if (cursorItem?.itemDetails) {
-      const slots = cursorItem.itemDetails.slots;
-      if (slots) {
-        const possibleSlots = getEquippableSlots(cursorItem.itemDetails);
-        for (const slot of possibleSlots) {
-          const key: InventoryKey = { bag: 0, slot: slot as InventorySlot };
-          await handleItemClick(key);
-          // If the cursor is now empty, we successfully placed the item
-          const newCursorItem = characterProfile?.inventory?.find(
-            (item) => item.bag === 0 && item.slot === InventorySlot.Cursor
-          );
-          if (!newCursorItem) break;
-        }
-      }
+    if (cursorItem) {
+      // Use loot-like logic: try to equip, then try general inventory
+      await handleAutoPlaceCursorItem();
     }
   };
 

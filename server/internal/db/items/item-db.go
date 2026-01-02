@@ -10,6 +10,7 @@ import (
 	"idlequest/internal/db"
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/db/jetgen/eqgo/table"
+	"idlequest/internal/mechanics"
 
 	"github.com/go-jet/jet/v2/mysql"
 	"github.com/go-jet/jet/v2/stmtcache"
@@ -555,4 +556,205 @@ func UpdateItemInstance(instance constants.ItemInstance) error {
 	cache.GetCache().Delete(cacheKey)
 
 	return nil
+}
+
+// FindFirstAvailableSlot finds the first empty inventory or bag slot.
+// If isContainer is true, it only checks general slots (bag 0) to prevent nested containers.
+func FindFirstAvailableSlot(items map[constants.InventoryKey]*constants.ItemWithInstance, isContainer bool) (bag int8, slot int8) {
+	// 1. Check general slots (bag 0, slots 22-29)
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		if items[key] == nil {
+			return 0, s
+		}
+	}
+
+	// 2. Check inside bags (only if the item being placed is NOT a container)
+	if !isContainer {
+		for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+			container := items[constants.InventoryKey{Bag: 0, Slot: s}]
+			if container != nil && container.IsContainer() {
+				bagID := s + 1
+				for slotIdx := int8(0); slotIdx < int8(container.Item.Bagslots); slotIdx++ {
+					key := constants.InventoryKey{Bag: bagID, Slot: slotIdx}
+					if items[key] == nil {
+						return bagID, slotIdx
+					}
+				}
+			}
+		}
+	}
+
+	// No room in general inventory or bags!
+	return -1, -1
+}
+
+// ProcessAutoLoot determines where to put a looted item (equip, upgrade, or inventory) and performs the DB update.
+// Returns a list of slot updates (including the new item), the new item's instance ID, and any error.
+func ProcessAutoLoot(
+	playerID int32,
+	classID int,
+	raceID int,
+	currentItems map[constants.InventoryKey]*constants.ItemWithInstance,
+	itemTemplate model.Items,
+	charges uint8,
+) ([]SlotUpdate, int32, error) {
+	// Wrap newItem for helper methods
+	newItemWithInstance := &constants.ItemWithInstance{Item: itemTemplate}
+
+	targetBag := int8(0)
+	targetSlot := int8(-1)
+	isUpgrade := false
+	var oldItem *constants.ItemWithInstance
+
+	// Step 1: Check if equippable
+	if newItemWithInstance.IsEquippable(constants.RaceID(raceID), uint8(classID)) {
+		var equippableSlots []int8
+		for s := int8(0); s <= 30; s++ {
+			if newItemWithInstance.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+				equippableSlots = append(equippableSlots, s)
+			}
+		}
+
+		// A. Try empty equipment slots
+		for _, s := range equippableSlots {
+			if currentItems[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+				targetSlot = s
+				break
+			}
+		}
+
+		// B. Check for upgrades if no empty slots found
+		if targetSlot == -1 {
+			newScore := mechanics.GetItemScore(&itemTemplate, classID)
+			bestSlot := int8(-1)
+			maxDiff := 0
+
+			for _, s := range equippableSlots {
+				existing := currentItems[constants.InventoryKey{Bag: 0, Slot: s}]
+				if existing != nil {
+					existingScore := mechanics.GetItemScore(&existing.Item, classID)
+					diff := newScore - existingScore
+					if diff > maxDiff {
+						maxDiff = diff
+						bestSlot = s
+					}
+				}
+			}
+
+			if bestSlot != -1 {
+				targetSlot = bestSlot
+				isUpgrade = true
+				oldItem = currentItems[constants.InventoryKey{Bag: 0, Slot: bestSlot}]
+			}
+		}
+	}
+
+	// Step 2: If not equipped/upgraded, find free inventory/bag slot
+	if targetSlot == -1 {
+		targetBag, targetSlot = FindFirstAvailableSlot(currentItems, itemTemplate.Bagslots > 0)
+	}
+
+	// No slot found even after checking bags and cursor
+	if targetSlot == -1 {
+		return nil, 0, fmt.Errorf("inventory is full")
+	}
+
+	// Step 3: Execute DB operations
+	tx, err := db.GlobalWorldDB.DB.Begin()
+	if err != nil {
+		return nil, 0, fmt.Errorf("begin tx: %v", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	var updates []SlotUpdate
+
+	// Handle upgrade/swap
+	if isUpgrade && oldItem != nil {
+		// Find home for old item
+		freeBag, freeSlot := FindFirstAvailableSlot(currentItems, oldItem.IsContainer())
+		// Update old item in DB
+		_, err = table.CharacterInventory.
+			UPDATE(table.CharacterInventory.Bag, table.CharacterInventory.Slot).
+			SET(mysql.Int8(freeBag), mysql.Int8(freeSlot)).
+			WHERE(
+				table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
+					AND(table.CharacterInventory.ItemInstanceID.EQ(mysql.Int32(oldItem.ItemInstanceID))),
+			).
+			Exec(tx)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to move old item: %v", err)
+		}
+
+		// Add to updates list
+		updates = append(updates, SlotUpdate{
+			ItemInstanceID: oldItem.ItemInstanceID,
+			FromSlot:       targetSlot,
+			FromBag:        0,
+			ToSlot:         freeSlot,
+			ToBag:          freeBag,
+		})
+
+		// Update old item in memory map
+		oldKey := constants.InventoryKey{Bag: 0, Slot: targetSlot}
+		newKey := constants.InventoryKey{Bag: freeBag, Slot: freeSlot}
+		delete(currentItems, oldKey)
+		currentItems[newKey] = oldItem
+	}
+
+	// Create new item instance
+	instance := constants.ItemInstance{
+		ItemID:    itemTemplate.ID,
+		Charges:   charges,
+		Quantity:  1,
+		OwnerType: constants.OwnerTypeCharacter,
+	}
+	instanceID, err := CreateDBItemInstance(tx, instance, playerID)
+	if err != nil {
+		return nil, 0, fmt.Errorf("create item instance: %v", err)
+	}
+
+	// Add to inventory
+	_, err = table.CharacterInventory.
+		INSERT(
+			table.CharacterInventory.CharacterID,
+			table.CharacterInventory.Slot,
+			table.CharacterInventory.ItemInstanceID,
+			table.CharacterInventory.Bag,
+		).
+		VALUES(
+			playerID,
+			targetSlot,
+			instanceID,
+			targetBag,
+		).
+		Exec(tx)
+	if err != nil {
+		return nil, 0, fmt.Errorf("insert inventory row: %v", err)
+	}
+
+	// Add new item to updates list
+	updates = append(updates, SlotUpdate{
+		ItemInstanceID: instanceID,
+		FromSlot:       -1, // New item
+		FromBag:        0,
+		ToSlot:         targetSlot,
+		ToBag:          targetBag,
+	})
+
+	// Update memory map for new item
+	newItem := &constants.ItemWithInstance{
+		Item:           itemTemplate,
+		ItemInstanceID: instanceID,
+		Instance:       instance,
+	}
+	currentItems[constants.InventoryKey{Bag: targetBag, Slot: targetSlot}] = newItem
+
+	return updates, instanceID, nil
 }

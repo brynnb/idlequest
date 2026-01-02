@@ -16,9 +16,9 @@ import (
 	db_character "idlequest/internal/db/character"
 	db_combat "idlequest/internal/db/combat"
 	"idlequest/internal/db/items"
-	"idlequest/internal/db/jetgen/eqgo/model"
 	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/discord"
+	"idlequest/internal/mechanics"
 	"idlequest/internal/session"
 	"idlequest/internal/zone/client"
 
@@ -72,7 +72,9 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetGender(int32(charData.Gender))
 	charState.SetFace(int32(charData.Face))
 	charState.SetLevel(int32(charData.Level))
-	charState.SetExp(int32(charData.Exp))
+	// Send percent (0-10000) instead of raw XP so client doesn't need table
+	percent := mechanics.CalculateExpPercent(int(charData.Level), charData.Exp)
+	charState.SetExp(percent)
 
 	// Location
 	charState.SetZoneId(int32(charData.ZoneID))
@@ -83,7 +85,7 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetHeading(float32(charData.Heading))
 
 	// Compute HP using EQ formula
-	maxHp := calculateMaxHPForChar(charData)
+	maxHp := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
 	curHp := int(charData.CurHp)
 	if curHp > maxHp {
 		curHp = maxHp
@@ -92,7 +94,7 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetMaxHp(int32(maxHp))
 
 	// Compute Mana using EQ formula
-	maxMana := calculateMaxManaForCharSelect(int(charData.Class), int(charData.Level), int(charData.Int), int(charData.Wis))
+	maxMana := mechanics.CalculateMaxMana(int(charData.Level), int(charData.Int), int(charData.Wis), int(charData.Class))
 	curMana := int(charData.Mana)
 	if curMana > maxMana {
 		curMana = maxMana
@@ -105,9 +107,11 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetMaxEndurance(0)
 
 	// Compute AC and ATK
-	baseAC := calculateBaseACForCharSelect(int(charData.Level))
+	// Passing 0 for equipped AC here as we are just doing base calculation for display if needed,
+	// though usually we want full AC. Standardize to base for now if matches previous logic.
+	baseAC := mechanics.CalculatePlayerAC(int(charData.Level), int(charData.Race), 0)
 	charState.SetAc(int32(baseAC))
-	charState.SetAtk(int32(int(charData.Level)*2 + int(charData.Str)))
+	charState.SetAtk(int32(mechanics.CalculatePlayerATK(int(charData.Str), int(charData.Level))))
 
 	// Base attributes
 	charState.SetStr(int32(charData.Str))
@@ -118,11 +122,20 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetAgi(int32(charData.Agi))
 	charState.SetWis(int32(charData.Wis))
 
-	// Currency (from character_currency table, not loaded here - set to 0 for now)
-	charState.SetPlatinum(0)
-	charState.SetGold(0)
-	charState.SetSilver(0)
-	charState.SetCopper(0)
+	// Currency (from character_currency table)
+	currency, err := db_character.GetCharacterCurrency(context.Background(), charData.ID)
+	if err != nil {
+		log.Printf("sendCharacterState: failed to get currency for character %d: %v", charData.ID, err)
+		charState.SetPlatinum(0)
+		charState.SetGold(0)
+		charState.SetSilver(0)
+		charState.SetCopper(0)
+	} else {
+		charState.SetPlatinum(int32(currency.Platinum))
+		charState.SetGold(int32(currency.Gold))
+		charState.SetSilver(int32(currency.Silver))
+		charState.SetCopper(int32(currency.Copper))
+	}
 
 	// Add inventory items
 	charItems := ses.Client.Items()
@@ -284,8 +297,8 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 	log.Printf("[CharData] Loaded from DB: ID=%d, Name=%s, Level=%d, CurHp=%d, Exp=%d, Zone=%d",
 		charData.ID, charData.Name, charData.Level, charData.CurHp, charData.Exp, charData.ZoneID)
 
-	// Clamp current HP to max HP if over (e.g., new characters with 10k HP)
-	maxHP := calculateMaxHPForChar(charData)
+	// Clamp current HP to max HP if over
+	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
 	log.Printf("[CharData] Calculated maxHP=%d (Level=%d, STA=%d)", maxHP, charData.Level, charData.Sta)
 	if charData.CurHp > uint32(maxHP) {
 		log.Printf("[CharData] Clamping CurHp from %d to %d", charData.CurHp, maxHP)
@@ -311,83 +324,6 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 	enterWorld.SetValue(1)
 	ses.SendData(enterWorld.Message(), opcodes.ZoneSessionValid)
 	return false
-}
-
-// calculateMaxHPForChar calculates max HP using EQ formula
-// Formula: level * levelMultiplier + ((level * levelMultiplier) / 300) * stamina + 5
-func calculateMaxHPForChar(charData *model.CharacterData) int {
-	level := int(charData.Level)
-	stamina := int(charData.Sta)
-	classId := int(charData.Class)
-
-	levelMultiplier := getHpLevelMultiplier(classId, level)
-
-	term1 := level * levelMultiplier
-	term2 := ((level * levelMultiplier) * stamina / 300) + 5
-
-	return term1 + term2
-}
-
-// getHpLevelMultiplier returns the HP multiplier based on class and level
-func getHpLevelMultiplier(classId, level int) int {
-	switch classId {
-	case 1: // Warrior
-		if level <= 19 {
-			return 22
-		}
-		if level <= 29 {
-			return 23
-		}
-		if level <= 39 {
-			return 25
-		}
-		if level <= 52 {
-			return 27
-		}
-		if level <= 56 {
-			return 28
-		}
-		if level <= 59 {
-			return 29
-		}
-		return 30
-	case 2, 6, 10: // Cleric, Druid, Shaman
-		return 15
-	case 3, 5, 16: // Paladin, Shadowknight, Berserker
-		if level <= 34 {
-			return 21
-		}
-		if level <= 44 {
-			return 22
-		}
-		if level <= 50 {
-			return 23
-		}
-		if level <= 55 {
-			return 24
-		}
-		if level <= 59 {
-			return 25
-		}
-		return 26
-	case 4: // Ranger
-		if level <= 57 {
-			return 20
-		}
-		return 21
-	case 7, 8, 9, 15: // Monk, Bard, Rogue, Beastlord
-		if level <= 50 {
-			return 18
-		}
-		if level <= 57 {
-			return 19
-		}
-		return 20
-	case 11, 12, 13, 14: // Magician, Necromancer, Enchanter, Wizard
-		return 12
-	default:
-		return 15 // Default multiplier
-	}
 }
 
 func HandleCharacterCreate(ses *session.Session, payload []byte, wh *WorldHandler) bool {
@@ -579,20 +515,11 @@ func HandleMoveItemWorld(ses *session.Session, payload []byte, wh *WorldHandler)
 		}
 	}
 
-	// Send response for each move
-	for _, u := range updates {
-		pkt, err := session.NewMessage(ses, eq.NewRootMoveItem)
-		if err != nil {
-			log.Printf("failed to create MoveItem message: %v", err)
-			continue
-		}
-		pkt.SetFromSlot(u.FromSlot)
-		pkt.SetToSlot(u.ToSlot)
-		pkt.SetFromBagSlot(u.FromBag)
-		pkt.SetToBagSlot(u.ToBag)
-		pkt.SetNumberInStack(1)
-		ses.SendStream(pkt.Message(), opcodes.MoveItem)
-	}
+	// Note: We intentionally do NOT echo MoveItem back to the client here.
+	// The client already applied the move optimistically before sending the request.
+	// Echoing would cause "Attempted to move item to occupied slot" warnings
+	// because the client's inventory state is already updated.
+	// MoveItem opcodes should only be sent for server-initiated changes (e.g., loot auto-equip).
 
 	return false
 }
@@ -627,10 +554,19 @@ func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandle
 
 	db_character.PurgeCharacterItem(context.Background(), int32(ses.Client.CharData().ID), slot)
 
-	delete(ses.Client.Items(), constants.InventoryKey{
+	charItems := ses.Client.Items()
+	delete(charItems, constants.InventoryKey{
 		Bag:  0,
 		Slot: slot,
 	})
+
+	// Also clear any items that were inside this slot if it was a container
+	bagNum := int8(slot + 1)
+	for k := range charItems {
+		if k.Bag == bagNum {
+			delete(charItems, k)
+		}
+	}
 
 	ses.SendStream(req.Message(), opcodes.DeleteItem)
 	return false
@@ -648,7 +584,7 @@ func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	combat.GetManager().StopCombat(int64(charData.ID))
 
 	// Clamp HP to max before saving
-	maxHP := calculateMaxHPForChar(charData)
+	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
 	if charData.CurHp > uint32(maxHP) {
 		charData.CurHp = uint32(maxHP)
 	}
@@ -701,7 +637,7 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 
 	switch strings.ToLower(commandName) {
 	case "heal":
-		maxHP := calculateMaxHPForChar(charData)
+		maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
 		charData.CurHp = uint32(maxHP)
 		log.Printf("[GM] Healed %s to %d HP", charData.Name, maxHP)
 		sendCharacterState(ses, charData.Name)
@@ -728,7 +664,7 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 			fmt.Sscanf(amountStr, "%d", &amount)
 			if amount > 0 {
 				charData.Exp += uint32(amount)
-				charData.Level = uint32(combat.CalculateLevelFromExp(int(charData.Exp)))
+				charData.Level = uint32(mechanics.CalculateLevelFromExp(int(charData.Exp)))
 				log.Printf("[GM] Added %d exp to %s, now level %d", amount, charData.Name, charData.Level)
 				sendCharacterState(ses, charData.Name)
 			}
@@ -763,10 +699,31 @@ func HandleStartCombat(ses *session.Session, payload []byte, wh *WorldHandler) b
 	}
 
 	onEnd := func(result *combat.EndResult) {
+		// Include bind info in combat ended message for client-side teleport
 		sendCombatEnded(ses, result)
+
+		// If player died, move them to their bind point
+		if !result.Victory {
+			charData.ZoneID = uint32(result.BindZoneID)
+			charData.X = result.BindX
+			charData.Y = result.BindY
+			charData.Z = result.BindZ
+			charData.Heading = result.BindHeading
+			// Update session zone ID to match new zone
+			ses.ZoneID = int(result.BindZoneID)
+			log.Printf("Character %s died and is respawning at bind point in zone %d", charData.Name, charData.ZoneID)
+		}
+
+		// 1. Save changes (Exp gained, HP restored, new Zone/Pos) to DB so sendCharacterState loads fresh data
+		if err := db_character.UpdateCharacter(charData, int64(charData.AccountID)); err != nil {
+			log.Printf("Failed to save character state after combat: %v", err)
+		}
+
+		// 2. Sync client with full state (including calculated Experience Percent and new Zone)
+		sendCharacterState(ses, charData.Name)
 	}
 
-	onLoot := func(loot []db_combat.LootDropItem, money combat.MoneyDrop) {
+	onLoot := func(loot []db_combat.LootDropItem, money db_combat.MoneyDrop) {
 		sendLootGenerated(ses, loot, money)
 	}
 
@@ -903,10 +860,93 @@ func boolToInt32(b bool) int32 {
 	return 0
 }
 
-func sendLootGenerated(ses *session.Session, loot []db_combat.LootDropItem, money combat.MoneyDrop) {
+func sendLootGenerated(ses *session.Session, loot []db_combat.LootDropItem, money db_combat.MoneyDrop) {
 	if ses == nil || ses.Client == nil {
 		return
 	}
+	charData := ses.Client.CharData()
+	if charData == nil {
+		return
+	}
+
+	ctx := context.Background()
+
+	// Add currency to character if any money dropped
+	if money.Platinum > 0 || money.Gold > 0 || money.Silver > 0 || money.Copper > 0 {
+		if err := db_character.AddCurrency(ctx, int32(charData.ID), money.Platinum, money.Gold, money.Silver, money.Copper); err != nil {
+			log.Printf("Failed to add currency to character %d: %v", charData.ID, err)
+		}
+	}
+
+	// Add each item to inventory and track assigned slots
+	type lootedItem struct {
+		ItemID     int32
+		Name       string
+		Charges    int32
+		Icon       int32
+		Slot       int8
+		Bag        int8
+		InstanceID int32
+	}
+	var lootedItems []lootedItem
+
+	for _, item := range loot {
+		// Fetch full item details for scoring/ProcessAutoLoot
+		itemTemplate, err := items.GetItemTemplateByID(item.ItemID)
+		if err != nil {
+			log.Printf("Failed to get item template for ID %d: %v", item.ItemID, err)
+			continue
+		}
+
+		// Use ProcessAutoLoot to handle equip/upgrade/inventory logic
+		updates, instanceID, err := items.ProcessAutoLoot(
+			int32(charData.ID),
+			int(charData.Class),
+			int(charData.Race),
+			ses.Client.Items(),
+			itemTemplate,
+			uint8(item.ItemCharges),
+		)
+		if err != nil {
+			if err.Error() == "inventory is full" {
+				SendSystemMessage(ses, fmt.Sprintf("Your inventory is full, you could not loot %s.", item.Name))
+			} else {
+				log.Printf("Failed to process auto-loot for item %s: %v", item.Name, err)
+			}
+			continue
+		}
+
+		for _, u := range updates {
+			if u.FromSlot != -1 {
+				// This was an old item being moved to make room for an upgrade
+				pkt, err := session.NewMessage(ses, eq.NewRootMoveItem)
+				if err != nil {
+					log.Printf("Failed to create MoveItem message: %v", err)
+					continue
+				}
+				pkt.SetFromSlot(u.FromSlot)
+				pkt.SetToSlot(u.ToSlot)
+				pkt.SetFromBagSlot(u.FromBag)
+				pkt.SetToBagSlot(u.ToBag)
+				pkt.SetNumberInStack(1)
+				ses.SendStream(pkt.Message(), opcodes.MoveItem)
+				log.Printf("Auto-upgraded: Moved instance %d from %d to %d (bag %d)", u.ItemInstanceID, u.FromSlot, u.ToSlot, u.ToBag)
+			} else {
+				// This is the new item
+				lootedItems = append(lootedItems, lootedItem{
+					ItemID:     item.ItemID,
+					Name:       item.Name,
+					Charges:    item.ItemCharges,
+					Icon:       item.Icon,
+					Slot:       u.ToSlot,
+					Bag:        u.ToBag,
+					InstanceID: instanceID,
+				})
+			}
+		}
+	}
+
+	// Create response message
 	msg, err := session.NewMessage(ses, eq.NewRootLootGeneratedResponse)
 	if err != nil {
 		log.Printf("Failed to create LootGeneratedResponse: %v", err)
@@ -919,25 +959,31 @@ func sendLootGenerated(ses *session.Session, loot []db_combat.LootDropItem, mone
 	msg.SetSilver(int32(money.Silver))
 	msg.SetCopper(int32(money.Copper))
 
-	// TODO: Add items to player inventory and set in message
-	// For now, just send the money
-	items, err := msg.NewItems(int32(len(loot)))
+	// Set items with actual inventory slots
+	itemsList, err := msg.NewItems(int32(len(lootedItems)))
 	if err != nil {
 		log.Printf("Failed to create loot items list: %v", err)
 	} else {
-		for i, item := range loot {
-			lootItem := items.At(i)
+		for i, item := range lootedItems {
+			lootItem := itemsList.At(i)
 			lootItem.SetItemId(item.ItemID)
 			lootItem.SetName(item.Name)
-			lootItem.SetCharges(item.ItemCharges)
+			lootItem.SetCharges(item.Charges)
 			lootItem.SetIcon(item.Icon)
-			// TODO: Set actual slot after adding to inventory
-			lootItem.SetSlot(int32(23 + i)) // General inventory starts at 23
-			lootItem.SetBagSlot(0)
+			lootItem.SetSlot(int32(item.Slot))
+			lootItem.SetBagSlot(int32(item.Bag))
 		}
 	}
 
 	ses.SendStream(msg.Message(), opcodes.LootGenerated)
+}
+
+func SendSystemMessage(ses *session.Session, text string) {
+	session.QueueMessage(ses, eq.NewRootChatMessageCapnp, opcodes.ChatMessageBroadcast, func(resp eq.ChatMessageCapnp) error {
+		resp.SetText(text)
+		resp.SetMessageType("system")
+		return nil
+	})
 }
 
 // HandleUpdateBind updates the character's bind point to their current zone

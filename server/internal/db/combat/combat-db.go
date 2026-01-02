@@ -12,6 +12,14 @@ import (
 	"github.com/go-jet/jet/v2/mysql"
 )
 
+// MoneyDrop represents money dropped by an NPC
+type MoneyDrop struct {
+	Platinum int
+	Gold     int
+	Silver   int
+	Copper   int
+}
+
 // NPCForCombat contains the NPC data needed for combat
 type NPCForCombat struct {
 	ID          int32
@@ -32,6 +40,13 @@ type LootDropItem struct {
 	Chance      float64
 	ItemCharges int32
 	Icon        int32
+}
+
+// LoottableCurrency contains the currency drop info from a loottable
+type LoottableCurrency struct {
+	Mincash uint32
+	Maxcash uint32
+	Avgcoin uint32
 }
 
 // GetRandomNPCForZone selects a random NPC from the zone appropriate for the player's level
@@ -108,6 +123,7 @@ func GetNPCLoot(ctx context.Context, loottableID uint32) ([]LootDropItem, error)
 		ItemID      int32   `alias:"items.id"`
 		Name        string  `alias:"items.name"`
 		Chance      float64 `alias:"lootdrop_entries.chance"`
+		Probability float64 `alias:"loottable_entries.probability"`
 		ItemCharges int32   `alias:"lootdrop_entries.item_charges"`
 		Icon        int32   `alias:"items.icon"`
 	}
@@ -118,6 +134,7 @@ func GetNPCLoot(ctx context.Context, loottableID uint32) ([]LootDropItem, error)
 		table.Items.ID.AS("items.id"),
 		table.Items.Name.AS("items.name"),
 		table.LootdropEntries.Chance.AS("lootdrop_entries.chance"),
+		table.LoottableEntries.Probability.AS("loottable_entries.probability"),
 		table.LootdropEntries.ItemCharges.AS("lootdrop_entries.item_charges"),
 		table.Items.Icon.AS("items.icon"),
 	).FROM(
@@ -134,10 +151,18 @@ func GetNPCLoot(ctx context.Context, loottableID uint32) ([]LootDropItem, error)
 
 	items := make([]LootDropItem, len(results))
 	for i, r := range results {
+		// Combined chance = (lootdrop chance / 100) * loottable probability
+		// EQ logic: loottable_entries.probability is chance of the whole lootdrop group.
+		// lootdrop_entries.chance is the chance of that specific item within the group.
+		combinedChance := r.Chance
+		if r.Probability > 0 && r.Probability < 100 {
+			combinedChance = (r.Chance * r.Probability) / 100.0
+		}
+
 		items[i] = LootDropItem{
 			ItemID:      r.ItemID,
 			Name:        r.Name,
-			Chance:      r.Chance,
+			Chance:      combinedChance,
 			ItemCharges: r.ItemCharges,
 			Icon:        r.Icon,
 		}
@@ -165,4 +190,61 @@ func RollLoot(potentialLoot []LootDropItem) []LootDropItem {
 // Based on EQEmu formula: (level * level * 75 * 35) / 10
 func CalculateExperience(npcLevel int) int {
 	return (npcLevel * npcLevel * 75 * 35) / 10
+}
+
+// GetLoottableCurrency retrieves the currency drop info for a loottable
+func GetLoottableCurrency(ctx context.Context, loottableID uint32) (*LoottableCurrency, error) {
+	if loottableID == 0 {
+		return nil, nil
+	}
+
+	var loottables []model.Loottable
+	stmt := table.Loottable.SELECT(
+		table.Loottable.Mincash,
+		table.Loottable.Maxcash,
+		table.Loottable.Avgcoin,
+	).WHERE(
+		table.Loottable.ID.EQ(mysql.Uint32(loottableID)),
+	)
+
+	if err := stmt.Query(db.GlobalWorldDB.DB, &loottables); err != nil {
+		return nil, fmt.Errorf("failed to query loottable currency for %d: %w", loottableID, err)
+	}
+
+	if len(loottables) == 0 {
+		return nil, nil
+	}
+
+	lt := loottables[0]
+	return &LoottableCurrency{
+		Mincash: lt.Mincash,
+		Maxcash: lt.Maxcash,
+		Avgcoin: lt.Avgcoin,
+	}, nil
+}
+
+// GenerateCurrencyDrop generates a random currency drop between mincash and maxcash
+// Returns platinum, gold, silver, copper
+func GenerateCurrencyDrop(currency *LoottableCurrency) (platinum, gold, silver, copper int) {
+	if currency == nil || currency.Maxcash == 0 {
+		return 0, 0, 0, 0
+	}
+
+	// Generate random amount between mincash and maxcash (in copper)
+	var totalCopper int
+	if currency.Maxcash > currency.Mincash {
+		totalCopper = int(currency.Mincash) + rand.Intn(int(currency.Maxcash-currency.Mincash)+1)
+	} else {
+		totalCopper = int(currency.Mincash)
+	}
+
+	// Convert copper to platinum/gold/silver/copper
+	platinum = totalCopper / 1000
+	totalCopper %= 1000
+	gold = totalCopper / 100
+	totalCopper %= 100
+	silver = totalCopper / 10
+	copper = totalCopper % 10
+
+	return platinum, gold, silver, copper
 }

@@ -6,9 +6,9 @@ import (
 	"unicode"
 
 	eq "idlequest/internal/api/capnp"
-	"idlequest/internal/combat"
 	"idlequest/internal/constants"
 	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/mechanics"
 	"idlequest/internal/session"
 	"idlequest/internal/staticdata"
 
@@ -240,8 +240,14 @@ func InitializeNewCharacterProfile(pp *eq.PlayerProfile, cc eq.CharCreate) {
 	pp.SetPoints(5)
 
 	// Calculate correct starting HP
-	maxHP := combat.CalculateMaxHPFromStats(1, int(cc.Sta()))
+	maxHP := mechanics.CalculateMaxHPFromStats(1, int(cc.Sta()), int(cc.CharClass()))
+	pp.SetMaxHp(int64(maxHP))
 	pp.SetCurHp(int32(maxHP))
+
+	// Calculate correct starting Mana
+	maxMana := mechanics.CalculateMaxMana(1, int(cc.Intel()), int(cc.Wis()), int(cc.CharClass()))
+	pp.SetMaxMana(int64(maxMana))
+	pp.SetMana(int32(maxMana))
 
 	pp.SetHungerLevel(6000)
 	pp.SetThirstLevel(6000)

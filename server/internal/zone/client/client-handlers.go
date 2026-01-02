@@ -112,22 +112,11 @@ func (c *Client) HandleMoveItem(z entity.ZoneAccess, ses *session.Session, paylo
 		}
 	}
 
-	// 6) notify the game client of each individual move
-	for _, u := range updates {
-		pkt, err := session.NewMessage(ses, eq.NewRootMoveItem)
-		if err != nil {
-			log.Printf("failed to create MoveItem message: %v", err)
-			continue
-		}
-		pkt.SetFromSlot(u.FromSlot)
-		pkt.SetToSlot(u.ToSlot)
-		pkt.SetFromBagSlot((u.FromBag))
-		pkt.SetToBagSlot((u.ToBag))
-		pkt.SetNumberInStack(1) // or your actual stack count
-
-		ses.SendStream(pkt.Message(), opcodes.MoveItem)
-	}
-
+	// Note: We intentionally do NOT echo MoveItem back to the client here.
+	// The client already applied the move optimistically before sending the request.
+	// Echoing would cause "Attempted to move item to occupied slot" warnings
+	// because the client's inventory state is already updated.
+	// MoveItem opcodes should only be sent for server-initiated changes (e.g., loot auto-equip).
 }
 
 func (c *Client) HandleDeleteItem(z entity.ZoneAccess, ses *session.Session, payload []byte) {
@@ -145,9 +134,103 @@ func (c *Client) HandleDeleteItem(z entity.ZoneAccess, ses *session.Session, pay
 
 	db_character.PurgeCharacterItem(context.Background(), int32(c.CharData().ID), slot)
 
-	delete(c.items, constants.InventoryKey{
+	charItems := c.items
+	delete(charItems, constants.InventoryKey{
 		Bag:  0,
 		Slot: slot,
 	})
+
+	// Also clear any items that were inside this slot if it was a container
+	bagNum := int8(slot + 1)
+	for k := range charItems {
+		if k.Bag == bagNum {
+			delete(charItems, k)
+		}
+	}
+
 	ses.SendStream(req.Message(), opcodes.DeleteItem)
+}
+
+// HandleShopPlayerSell handles selling an item from the player's inventory
+func (c *Client) HandleShopPlayerSell(z entity.ZoneAccess, ses *session.Session, payload []byte) {
+	req, err := session.Deserialize(ses, payload, eq.ReadRootSellItem)
+	if err != nil {
+		log.Printf("failed to read SellItem request: %v", err)
+		return
+	}
+
+	slot := req.Slot()
+	bag := req.Bag()
+
+	// Get the item from inventory
+	key := constants.InventoryKey{Bag: bag, Slot: slot}
+	item := c.Items()[key]
+	if item == nil {
+		log.Printf("SellItem: no item at bag=%d slot=%d", bag, slot)
+		return
+	}
+
+	// Validate item can be sold:
+	// - Not NO DROP (nodrop == 0 means it IS no drop)
+	// - Not NO RENT (norent == 0 means it IS no rent)
+	// - Not a container (itemclass != 1)
+	if item.Item.Nodrop == 0 {
+		log.Printf("SellItem: cannot sell NO DROP item %d", item.Instance.ItemID)
+		return
+	}
+	if item.Item.Norent == 0 {
+		log.Printf("SellItem: cannot sell NO RENT item %d", item.Instance.ItemID)
+		return
+	}
+	if item.Item.Itemclass == 1 {
+		log.Printf("SellItem: cannot sell container item %d", item.Instance.ItemID)
+		return
+	}
+
+	// Get item price
+	price := int(item.Item.Price)
+	if price <= 0 {
+		log.Printf("SellItem: item %d has no value", item.Instance.ItemID)
+		return
+	}
+
+	// Calculate currency breakdown
+	platinum := price / 1000
+	gold := (price % 1000) / 100
+	silver := (price % 100) / 10
+	copper := price % 10
+
+	// Update character currency in DB
+	charData := c.CharData()
+	ctx := context.Background()
+	err = db_character.AddCurrency(ctx, int32(charData.ID), platinum, gold, silver, copper)
+	if err != nil {
+		log.Printf("SellItem: failed to add currency: %v", err)
+		return
+	}
+
+	// Remove item from DB
+	db_character.PurgeCharacterItem(ctx, int32(charData.ID), slot)
+
+	// Remove from in-memory inventory
+	delete(c.items, key)
+
+	// Get item name for response
+	itemName := item.Item.Name
+
+	// Send response to client
+	resp, err := session.NewMessage(ses, eq.NewRootSellItemResponse)
+	if err != nil {
+		log.Printf("SellItem: failed to create response: %v", err)
+		return
+	}
+	resp.SetSuccess(true)
+	resp.SetPlatinum(int32(platinum))
+	resp.SetGold(int32(gold))
+	resp.SetSilver(int32(silver))
+	resp.SetCopper(int32(copper))
+	resp.SetItemName(itemName)
+
+	ses.SendStream(resp.Message(), opcodes.ShopPlayerSell)
+	log.Printf("SellItem: sold %s for %dp %dg %ds %dc", itemName, platinum, gold, silver, copper)
 }

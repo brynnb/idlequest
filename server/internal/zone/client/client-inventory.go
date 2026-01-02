@@ -35,6 +35,7 @@ func (c *Client) MoveItem(fromKey, toKey constants.InventoryKey) error {
 		c.updateBagContents(oldBagNum, newBagNum)
 	}
 
+	c.UpdateStats()
 	return nil
 }
 
@@ -71,6 +72,7 @@ func (c *Client) SwapItems(fromKey, toKey constants.InventoryKey) error {
 		c.swapBagContents(oldFromBagNum, oldToBagNum)
 	}
 
+	c.UpdateStats()
 	return nil
 }
 
@@ -82,6 +84,7 @@ func (c *Client) DeleteItem(key constants.InventoryKey) *constants.ItemWithInsta
 
 	item := c.items[key]
 	delete(c.items, key)
+	c.UpdateStats()
 	return item
 }
 
@@ -102,6 +105,7 @@ func (c *Client) SetItem(key constants.InventoryKey, item *constants.ItemWithIns
 	} else {
 		delete(c.items, key)
 	}
+	c.UpdateStats()
 }
 
 // getBagNumForSlot returns the bag number for items stored inside a container at the given slot.

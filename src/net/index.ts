@@ -55,7 +55,7 @@ export {
   ValidateNameResponse,
 } from "./capnp/common";
 
-export { DeleteItem } from "./capnp/item";
+export { DeleteItem, SellItem, SellItemResponse } from "./capnp/item";
 
 export {
   CharacterSelect,

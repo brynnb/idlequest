@@ -9,11 +9,8 @@ import { InventorySlot } from "@entities/InventorySlot";
 import useChatStore, { MessageType } from "./ChatStore";
 import useGameStatusStore from "./GameStatusStore";
 import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
-import { getExperienceLevel } from "@entities/ExperienceLevel";
-import {
-  calculatePlayerHP,
-  calculatePlayerMana,
-} from "@utils/playerCharacterUtils";
+
+
 import {
   calculateTotalWeight,
   calculateTotalResistances,
@@ -79,6 +76,7 @@ interface PlayerCharacterStore {
   applyServerCharacterState: (state: any) => Promise<void>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   applyCharacterState: (state: any) => Promise<void>;
+  addInventoryItemFromLoot: (item: Partial<InventoryItem>) => void;
 }
 
 const getBagNumForContainerSlot = (key: InventoryKey): number => {
@@ -201,6 +199,25 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
           get().updateAllStats();
         },
+
+        addInventoryItemFromLoot: (item: Partial<InventoryItem>) => {
+          set((state) => {
+            const inventory = [...(state.characterProfile.inventory || [])];
+            // Remove any existing item in this slot to avoid duplicates (shouldn't happen with correct server logic)
+            const filteredInventory = inventory.filter(
+              (i) => !(i.bag === item.bag && i.slot === item.slot)
+            );
+
+            return {
+              characterProfile: {
+                ...state.characterProfile,
+                inventory: [...filteredInventory, item as InventoryItem],
+              },
+            };
+          });
+
+          get().updateAllStats();
+        },
         removeInventoryItem: (bag: number, slot: number) => {
           set((state) => ({
             characterProfile: {
@@ -278,10 +295,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             );
           // Stop combat and clear target when zoning
           useGameStatusStore.getState().setIsRunning(false);
-          useGameStatusStore.setState({
-            targetNPC: null,
-            currentNPCHealth: null,
-          });
+          useGameStatusStore.getState().setCurrentZone(zoneId);
           set((state) => ({
             characterProfile: {
               ...state.characterProfile,
@@ -305,6 +319,15 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             const movingItem = state.characterProfile.inventory?.find(
               (item) => item.bag === from.bag && item.slot === from.slot
             );
+
+            // Prevent placing a container inside another container (EQ rule)
+            if (
+              movingItem?.itemDetails?.itemclass === ItemClass.CONTAINER &&
+              to.bag > 0
+            ) {
+              console.warn("Cannot place a container inside another container");
+              return state;
+            }
 
             let updatedInventory = state.characterProfile.inventory || [];
             // Move the base item
@@ -453,7 +476,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 ...state.characterProfile,
                 inventory: (state.characterProfile.inventory || []).filter(
                   (item) =>
-                    !(item.bag === 0 && item.slot === InventorySlot.Cursor)
+                    !(item.bag === 0 && item.slot === InventorySlot.Cursor) &&
+                    !(item.bag === InventorySlot.Cursor + 1)
                 ),
               },
             };
@@ -484,24 +508,10 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           }));
         },
         updateMaxHP: () => {
-          const { characterProfile } = get();
-          const newMaxHP = calculatePlayerHP(characterProfile);
-          set((state) => ({
-            characterProfile: {
-              ...state.characterProfile,
-              maxHp: newMaxHP,
-            },
-          }));
+          // Deprecated: Server is authoritative
         },
         updateMaxMana: () => {
-          const { characterProfile } = get();
-          const newMaxMana = calculatePlayerMana(characterProfile);
-          set((state) => ({
-            characterProfile: {
-              ...state.characterProfile,
-              maxMana: newMaxMana,
-            },
-          }));
+          // Deprecated: Server is authoritative
         },
         updateHealthAndMana: (newHealth: number, newMana: number) => {
           set((state) => ({
@@ -512,37 +522,9 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             },
           }));
         },
-        addExperience: (experience: number) =>
-          set((state) => {
-            const { characterProfile } = state;
-            if (!characterProfile) return state;
-
-            const oldLevel = characterProfile.level || 0;
-            const newExp = (characterProfile.exp || 0) + experience;
-            const { level } = getExperienceLevel(newExp);
-
-            const newState = {
-              characterProfile: {
-                ...characterProfile,
-                exp: newExp,
-                level: level,
-              } as CharacterProfile,
-            };
-
-            if (level > oldLevel) {
-              setTimeout(() => {
-                const { addMessage } = useChatStore.getState();
-
-                addMessage(
-                  `Congratulations! You have reached level ${level}!`,
-                  MessageType.EXPERIENCE_GAIN
-                );
-                get().updateAllStats();
-              }, 0);
-            }
-
-            return newState;
-          }),
+        addExperience: (_experience: number) => {
+          // Client does not calculate XP locally. Server sends updates.
+        },
         updateWeight: () => {
           const { characterProfile } = get();
           const newWeight = calculateTotalWeight(characterProfile);
@@ -569,17 +551,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             get().characterProfile
           );
           const ac = calculateSimpleArmorClass(get().characterProfile);
-          const newMaxHp = calculatePlayerHP({
-            ...get().characterProfile,
-            totalAttributes,
-          });
 
           set((state) => {
-            const curHp = state.characterProfile.curHp || 0;
-            const maxHp = state.characterProfile.maxHp || 1;
-            const hpRatio = curHp / maxHp;
-            const newCurHp = Math.floor(hpRatio * newMaxHp);
-
             return {
               characterProfile: {
                 ...state.characterProfile,
@@ -592,8 +565,6 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                   ...defaultAttributes,
                 },
                 totalAttributes: { ...totalAttributes },
-                maxHp: newMaxHp,
-                curHp: newCurHp || newMaxHp,
                 weightAllowance: totalAttributes.str ?? 0,
               },
             };
@@ -619,6 +590,18 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             (charState) => {
               const plainData = capnpToPlainObject(charState);
               get().applyCharacterState(plainData);
+            }
+          );
+
+          // Handler for MoveItem (moved item notifications from server)
+          WorldSocket.registerOpCodeHandler(
+            OpCodes.MoveItem,
+            MoveItem,
+            (move) => {
+              get().moveItemToSlot(
+                { bag: move.fromBagSlot, slot: move.fromSlot },
+                { bag: move.toBagSlot, slot: move.toSlot }
+              );
             }
           );
         },
@@ -879,6 +862,12 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
           set({ characterProfile: newProfile });
           get().updateAllStats();
+
+          // Sync game status zone if it differs from server state
+          const gameStatus = useGameStatusStore.getState();
+          if (newProfile.zoneId !== gameStatus.currentZone) {
+            gameStatus.setCurrentZone(newProfile.zoneId);
+          }
         },
       }),
       { name: "player-character-storage" }

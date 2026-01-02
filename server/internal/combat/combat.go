@@ -11,6 +11,7 @@ import (
 	db_character "idlequest/internal/db/character"
 	db_combat "idlequest/internal/db/combat"
 	"idlequest/internal/db/jetgen/eqgo/model"
+	"idlequest/internal/mechanics"
 	"idlequest/internal/session"
 )
 
@@ -41,7 +42,7 @@ type CombatSession struct {
 	State   CombatState
 	onRound func(result *RoundResult)
 	onEnd   func(result *EndResult)
-	onLoot  func(loot []db_combat.LootDropItem, money MoneyDrop)
+	onLoot  func(loot []db_combat.LootDropItem, money db_combat.MoneyDrop)
 }
 
 // RoundResult contains the result of a combat round
@@ -70,14 +71,6 @@ type EndResult struct {
 	BindY       float64
 	BindZ       float64
 	BindHeading float64
-}
-
-// MoneyDrop represents money dropped by an NPC
-type MoneyDrop struct {
-	Platinum int
-	Gold     int
-	Silver   int
-	Copper   int
 }
 
 var globalManager *CombatManager
@@ -147,7 +140,7 @@ func (m *CombatManager) StartCombat(
 	playerLevel int,
 	onRound func(*RoundResult),
 	onEnd func(*EndResult),
-	onLoot func([]db_combat.LootDropItem, MoneyDrop),
+	onLoot func([]db_combat.LootDropItem, db_combat.MoneyDrop),
 ) (*db_combat.NPCForCombat, error) {
 	charID := int64(ses.Client.CharData().ID)
 
@@ -246,8 +239,8 @@ func (cs *CombatSession) processCombatRound() {
 
 	cs.State.RoundNumber++
 
-	// Calculate max HP based on level and STA (simplified formula)
-	maxHP := calculateMaxHP(charData)
+	// Calculate max HP based on level and STA
+	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
 
 	// Calculate player attack
 	playerHit, playerDamage, playerCrit := cs.calculatePlayerAttack()
@@ -301,66 +294,11 @@ func (cs *CombatSession) processCombatRound() {
 	}
 }
 
-// calculateMaxHP calculates max HP based on level and STA
-// CalculateMaxHPFromStats calculates max HP based on level and STA
-func CalculateMaxHPFromStats(level int, sta int) int {
-	// Simple formula: base HP + (level * 10) + (STA * 2)
-	baseHP := 20
-	levelBonus := level * 10
-	staBonus := sta * 2
-	return baseHP + levelBonus + staBonus
-}
-
-func calculateMaxHP(charData *model.CharacterData) int {
-	return CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta))
-}
-
-// calculatePlayerAC calculates AC from equipment and stats
-func calculatePlayerAC(charData *model.CharacterData) int {
-	// Simple formula: AGI / 10 + level
-	return int(charData.Agi)/10 + int(charData.Level)
-}
-
-// calculatePlayerATK calculates ATK from stats
-func calculatePlayerATK(charData *model.CharacterData) int {
-	// Simple formula: STR + level
-	return int(charData.Str) + int(charData.Level)
-}
-
-// Experience thresholds for each level (level -> total exp needed)
-var experienceTable = []int{
-	0,       // level 0 (unused)
-	0,       // level 1
-	1000,    // level 2
-	8000,    // level 3
-	27000,   // level 4
-	64000,   // level 5
-	125000,  // level 6
-	216000,  // level 7
-	343000,  // level 8
-	512000,  // level 9
-	729000,  // level 10
-	1000000, // level 11
-	1331000, // level 12
-	1728000, // level 13
-	2197000, // level 14
-	2744000, // level 15
-	3375000, // level 16
-	4096000, // level 17
-	4913000, // level 18
-	5832000, // level 19
-	6859000, // level 20
-	8000000, // level 21
-}
-
-// CalculateLevelFromExp returns the level for a given experience total
-func CalculateLevelFromExp(exp int) int {
-	for level := len(experienceTable) - 1; level >= 1; level-- {
-		if exp >= experienceTable[level] {
-			return level
-		}
-	}
-	return 1
+// calculatePlayerAC calculates AC from level, race, and equipped items
+func (cs *CombatSession) calculatePlayerAC() int {
+	charData := cs.Session.Client.CharData()
+	equippedAC := cs.Session.Client.GetEquippedAC()
+	return mechanics.CalculatePlayerAC(int(charData.Level), int(charData.Race), equippedAC)
 }
 
 func (cs *CombatSession) calculatePlayerAttack() (hit bool, damage int, critical bool) {
@@ -368,14 +306,8 @@ func (cs *CombatSession) calculatePlayerAttack() (hit bool, damage int, critical
 	npc := cs.State.NPC
 
 	// Simple hit calculation: 80% base hit chance, modified by level difference
-	levelDiff := int(charData.Level) - int(npc.Level)
-	hitChance := 80 + (levelDiff * 2)
-	if hitChance > 95 {
-		hitChance = 95
-	}
-	if hitChance < 20 {
-		hitChance = 20
-	}
+	// Simple hit calculation: 80% base hit chance, modified by level difference
+	hitChance := mechanics.CalculateHitChance(int(charData.Level), int(npc.Level), 80, 20, 95)
 
 	if rand.Intn(100) >= hitChance {
 		return false, 0, false
@@ -383,7 +315,7 @@ func (cs *CombatSession) calculatePlayerAttack() (hit bool, damage int, critical
 
 	// Calculate damage based on player stats
 	// Base damage from calculated ATK, modified by STR
-	playerATK := calculatePlayerATK(charData)
+	playerATK := mechanics.CalculatePlayerATK(int(charData.Str), int(charData.Level))
 	baseDamage := playerATK / 10
 	if baseDamage < 1 {
 		baseDamage = 1
@@ -394,10 +326,8 @@ func (cs *CombatSession) calculatePlayerAttack() (hit bool, damage int, critical
 	damage = baseDamage + strBonus + rand.Intn(baseDamage+1)
 
 	// Apply NPC AC mitigation
-	acMitigation := float64(npc.AC) / 400.0
-	if acMitigation > 0.5 {
-		acMitigation = 0.5
-	}
+	// Apply NPC AC mitigation
+	acMitigation := mechanics.CalculateMitigation(int(npc.AC))
 	damage = int(float64(damage) * (1.0 - acMitigation))
 
 	if damage < 1 {
@@ -418,14 +348,8 @@ func (cs *CombatSession) calculateNPCAttack() (hit bool, damage int) {
 	npc := cs.State.NPC
 
 	// Simple hit calculation for NPC
-	levelDiff := int(npc.Level) - int(charData.Level)
-	hitChance := 70 + (levelDiff * 2)
-	if hitChance > 90 {
-		hitChance = 90
-	}
-	if hitChance < 20 {
-		hitChance = 20
-	}
+	// Simple hit calculation for NPC
+	hitChance := mechanics.CalculateHitChance(int(npc.Level), int(charData.Level), 70, 20, 90)
 
 	if rand.Intn(100) >= hitChance {
 		return false, 0
@@ -444,11 +368,9 @@ func (cs *CombatSession) calculateNPCAttack() (hit bool, damage int) {
 	damage = minDmg + rand.Intn(maxDmg-minDmg+1)
 
 	// Apply player AC mitigation
-	playerAC := calculatePlayerAC(charData)
-	acMitigation := float64(playerAC) / 400.0
-	if acMitigation > 0.5 {
-		acMitigation = 0.5
-	}
+	// Apply player AC mitigation
+	playerAC := cs.calculatePlayerAC()
+	acMitigation := mechanics.CalculateMitigation(playerAC)
 	damage = int(float64(damage) * (1.0 - acMitigation))
 
 	if damage < 1 {
@@ -465,17 +387,17 @@ func (cs *CombatSession) handleNPCDeath() {
 	// Calculate experience
 	expGained := db_combat.CalculateExperience(int(npc.Level))
 
-	// Add experience to character
-	charData.Exp += uint32(expGained)
+	// Add experience to character, respecting level cap
+	charData.Exp = mechanics.AddExperience(charData.Exp, expGained)
 
 	// Recalculate level based on new experience
-	charData.Level = uint32(CalculateLevelFromExp(int(charData.Exp)))
+	charData.Level = uint32(mechanics.CalculateLevelFromExp(int(charData.Exp)))
 
 	// Mark combat as ended
 	cs.State.Active = false
 
 	// Send end result
-	maxHP := calculateMaxHP(charData)
+	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
 	if cs.onEnd != nil {
 		cs.onEnd(&EndResult{
 			Victory:     true,
@@ -514,14 +436,17 @@ func (cs *CombatSession) handlePlayerDeath() {
 		}
 	}
 
+	// Restore player to full HP before sending death message so it's saved in DB
+	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
+	charData.CurHp = uint32(maxHP)
+
 	// Send end result with 0 HP (death state) and bind zone info
-	maxHP := calculateMaxHP(charData)
 	if cs.onEnd != nil {
 		cs.onEnd(&EndResult{
 			Victory:     false,
 			NPCName:     npc.Name,
 			ExpGained:   0,
-			PlayerHP:    0, // Show 0 HP on death
+			PlayerHP:    0, // Show 0 HP on death to client
 			PlayerMaxHP: maxHP,
 			BindZoneID:  bind.ZoneID,
 			BindX:       bind.X,
@@ -530,9 +455,6 @@ func (cs *CombatSession) handlePlayerDeath() {
 			BindHeading: bind.Heading,
 		})
 	}
-
-	// Restore player to full HP after sending death message
-	charData.CurHp = uint32(maxHP)
 
 	// Remove from manager
 	GetManager().StopCombat(int64(charData.ID))
@@ -551,16 +473,13 @@ func (cs *CombatSession) generateLoot() {
 	// Roll for loot
 	droppedLoot := db_combat.RollLoot(potentialLoot)
 
-	// Generate money drop based on NPC level
-	money := MoneyDrop{
-		Copper: rand.Intn(int(npc.Level) * 10),
-		Silver: rand.Intn(int(npc.Level) * 2),
-	}
-	if npc.Level > 10 {
-		money.Gold = rand.Intn(int(npc.Level))
-	}
-	if npc.Level > 30 {
-		money.Platinum = rand.Intn(int(npc.Level) / 10)
+	// Generate money drop from loottable database (mincash/maxcash)
+	var money db_combat.MoneyDrop
+	currency, err := db_combat.GetLoottableCurrency(context.Background(), npc.LoottableID)
+	if err != nil {
+		log.Printf("Failed to get loottable currency for NPC %s: %v", npc.Name, err)
+	} else if currency != nil {
+		money.Platinum, money.Gold, money.Silver, money.Copper = db_combat.GenerateCurrencyDrop(currency)
 	}
 
 	// Send loot to callback

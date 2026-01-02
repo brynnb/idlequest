@@ -24,6 +24,7 @@ type Client interface {
 	Name() string
 	Say(msg string)
 	Type() int32 // EntityTypePlayer, EntityTypeNPC, etc.
+	GetEquippedAC() int
 
 	// Inventory manipulation methods
 	MoveItem(fromKey, toKey constants.InventoryKey) error

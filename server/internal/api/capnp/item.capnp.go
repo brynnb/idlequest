@@ -1771,3 +1771,205 @@ func (f DeleteItem_Future) Struct() (DeleteItem, error) {
 	p, err := f.Future.Ptr()
 	return DeleteItem(p.Struct()), err
 }
+
+type SellItem capnp.Struct
+
+// SellItem_TypeID is the unique identifier for the type SellItem.
+const SellItem_TypeID = 0xb372c3983eb6f2ef
+
+func NewSellItem(s *capnp.Segment) (SellItem, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return SellItem(st), err
+}
+
+func NewRootSellItem(s *capnp.Segment) (SellItem, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return SellItem(st), err
+}
+
+func ReadRootSellItem(msg *capnp.Message) (SellItem, error) {
+	root, err := msg.Root()
+	return SellItem(root.Struct()), err
+}
+
+func (s SellItem) String() string {
+	str, _ := text.Marshal(0xb372c3983eb6f2ef, capnp.Struct(s))
+	return str
+}
+
+func (s SellItem) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SellItem) DecodeFromPtr(p capnp.Ptr) SellItem {
+	return SellItem(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SellItem) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SellItem) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SellItem) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SellItem) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s SellItem) Slot() int8 {
+	return int8(capnp.Struct(s).Uint8(0))
+}
+
+func (s SellItem) SetSlot(v int8) {
+	capnp.Struct(s).SetUint8(0, uint8(v))
+}
+
+func (s SellItem) Bag() int8 {
+	return int8(capnp.Struct(s).Uint8(1))
+}
+
+func (s SellItem) SetBag(v int8) {
+	capnp.Struct(s).SetUint8(1, uint8(v))
+}
+
+// SellItem_List is a list of SellItem.
+type SellItem_List = capnp.StructList[SellItem]
+
+// NewSellItem creates a new list of SellItem.
+func NewSellItem_List(s *capnp.Segment, sz int32) (SellItem_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	return capnp.StructList[SellItem](l), err
+}
+
+// SellItem_Future is a wrapper for a SellItem promised by a client call.
+type SellItem_Future struct{ *capnp.Future }
+
+func (f SellItem_Future) Struct() (SellItem, error) {
+	p, err := f.Future.Ptr()
+	return SellItem(p.Struct()), err
+}
+
+type SellItemResponse capnp.Struct
+
+// SellItemResponse_TypeID is the unique identifier for the type SellItemResponse.
+const SellItemResponse_TypeID = 0xff5e32957fd88ada
+
+func NewSellItemResponse(s *capnp.Segment) (SellItemResponse, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1})
+	return SellItemResponse(st), err
+}
+
+func NewRootSellItemResponse(s *capnp.Segment) (SellItemResponse, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1})
+	return SellItemResponse(st), err
+}
+
+func ReadRootSellItemResponse(msg *capnp.Message) (SellItemResponse, error) {
+	root, err := msg.Root()
+	return SellItemResponse(root.Struct()), err
+}
+
+func (s SellItemResponse) String() string {
+	str, _ := text.Marshal(0xff5e32957fd88ada, capnp.Struct(s))
+	return str
+}
+
+func (s SellItemResponse) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SellItemResponse) DecodeFromPtr(p capnp.Ptr) SellItemResponse {
+	return SellItemResponse(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SellItemResponse) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SellItemResponse) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SellItemResponse) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SellItemResponse) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s SellItemResponse) Success() bool {
+	return capnp.Struct(s).Bit(0)
+}
+
+func (s SellItemResponse) SetSuccess(v bool) {
+	capnp.Struct(s).SetBit(0, v)
+}
+
+func (s SellItemResponse) Platinum() int32 {
+	return int32(capnp.Struct(s).Uint32(4))
+}
+
+func (s SellItemResponse) SetPlatinum(v int32) {
+	capnp.Struct(s).SetUint32(4, uint32(v))
+}
+
+func (s SellItemResponse) Gold() int32 {
+	return int32(capnp.Struct(s).Uint32(8))
+}
+
+func (s SellItemResponse) SetGold(v int32) {
+	capnp.Struct(s).SetUint32(8, uint32(v))
+}
+
+func (s SellItemResponse) Silver() int32 {
+	return int32(capnp.Struct(s).Uint32(12))
+}
+
+func (s SellItemResponse) SetSilver(v int32) {
+	capnp.Struct(s).SetUint32(12, uint32(v))
+}
+
+func (s SellItemResponse) Copper() int32 {
+	return int32(capnp.Struct(s).Uint32(16))
+}
+
+func (s SellItemResponse) SetCopper(v int32) {
+	capnp.Struct(s).SetUint32(16, uint32(v))
+}
+
+func (s SellItemResponse) ItemName() (string, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.Text(), err
+}
+
+func (s SellItemResponse) HasItemName() bool {
+	return capnp.Struct(s).HasPtr(0)
+}
+
+func (s SellItemResponse) ItemNameBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s SellItemResponse) SetItemName(v string) error {
+	return capnp.Struct(s).SetText(0, v)
+}
+
+// SellItemResponse_List is a list of SellItemResponse.
+type SellItemResponse_List = capnp.StructList[SellItemResponse]
+
+// NewSellItemResponse creates a new list of SellItemResponse.
+func NewSellItemResponse_List(s *capnp.Segment, sz int32) (SellItemResponse_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1}, sz)
+	return capnp.StructList[SellItemResponse](l), err
+}
+
+// SellItemResponse_Future is a wrapper for a SellItemResponse promised by a client call.
+type SellItemResponse_Future struct{ *capnp.Future }
+
+func (f SellItemResponse_Future) Struct() (SellItemResponse, error) {
+	p, err := f.Future.Ptr()
+	return SellItemResponse(p.Struct()), err
+}

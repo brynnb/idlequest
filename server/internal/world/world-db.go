@@ -18,6 +18,7 @@ import (
 	"idlequest/internal/db/items"
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/db/jetgen/eqgo/table"
+	"idlequest/internal/mechanics"
 
 	"github.com/go-jet/jet/v2/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -244,10 +245,7 @@ func GetCharSelectInfo(ses *session.Session, ctx context.Context, accountID int6
 		characterSelectEntry.SetId(int32(c.ID))
 		characterSelectEntry.SetExp(int32(c.Exp))
 		// Clamp HP to max before sending (using EQ formula)
-		levelMultiplier := getHpLevelMultiplierForCharSelect(int(c.Class), int(c.Level))
-		term1 := int(c.Level) * levelMultiplier
-		term2 := ((int(c.Level) * levelMultiplier) * int(c.Sta) / 300) + 5
-		maxHP := term1 + term2
+		maxHP := mechanics.CalculateMaxHPFromStats(int(c.Level), int(c.Sta), int(c.Class))
 		curHp := int(c.CurHp)
 		log.Printf("[CharSelect] Char %s: DB CurHp=%d, maxHP=%d (Level=%d, Class=%d, STA=%d)", c.Name, c.CurHp, maxHP, c.Level, c.Class, c.Sta)
 		if curHp > maxHP {
@@ -258,7 +256,7 @@ func GetCharSelectInfo(ses *session.Session, ctx context.Context, accountID int6
 		characterSelectEntry.SetMaxHp(int32(maxHP))
 
 		// Calculate and set mana
-		maxMana := calculateMaxManaForCharSelect(int(c.Class), int(c.Level), int(c.Int), int(c.Wis))
+		maxMana := mechanics.CalculateMaxMana(int(c.Level), int(c.Int), int(c.Wis), int(c.Class))
 		curMana := int(c.Mana)
 		if curMana > maxMana {
 			curMana = maxMana
@@ -267,11 +265,11 @@ func GetCharSelectInfo(ses *session.Session, ctx context.Context, accountID int6
 		characterSelectEntry.SetCurMana(int32(curMana))
 
 		// Calculate AC (base AC from level)
-		ac := calculateBaseACForCharSelect(int(c.Level))
+		ac := mechanics.CalculatePlayerAC(int(c.Level), int(c.Race), 0)
 		characterSelectEntry.SetAc(int32(ac))
 
 		// Set ATK (simple formula based on level and str)
-		atk := int(c.Level)*2 + int(c.Str)
+		atk := mechanics.CalculatePlayerATK(int(c.Str), int(c.Level))
 		characterSelectEntry.SetAtk(int32(atk))
 
 		// Set base attributes
@@ -862,102 +860,4 @@ func GetZone(ctx context.Context, zoneID int32) (model.Zone, error) {
 		return model.Zone{}, fmt.Errorf("failed to get zone (id=%d): %w", zoneID, err)
 	}
 	return zone, nil
-}
-
-// calculateMaxManaForCharSelect calculates max mana using EQ formula
-func calculateMaxManaForCharSelect(classId, level, intel, wis int) int {
-	// Warriors, Monks, and Rogues have no mana
-	if classId == 1 || classId == 7 || classId == 9 {
-		return 0
-	}
-
-	// Determine which attribute to use based on class
-	// Wisdom classes: Cleric(2), Paladin(3), Druid(6), Shaman(10), Ranger(4)
-	var manaAttribute int
-	if classId == 2 || classId == 3 || classId == 6 || classId == 10 || classId == 4 {
-		manaAttribute = wis
-	} else {
-		manaAttribute = intel
-	}
-
-	var manaGained int
-	if manaAttribute <= 200 {
-		manaGained = (80 * level * manaAttribute) / 425
-	} else {
-		manaGained = (40 * level * manaAttribute) / 425
-	}
-
-	return manaGained
-}
-
-// calculateBaseACForCharSelect calculates base AC from level
-func calculateBaseACForCharSelect(level int) int {
-	if level <= 19 {
-		return level * 15
-	} else if level <= 49 {
-		return 285 + (level-19)*30
-	}
-	return 1185 + (level-49)*60
-}
-
-// getHpLevelMultiplierForCharSelect returns the HP multiplier based on class and level
-func getHpLevelMultiplierForCharSelect(classId, level int) int {
-	switch classId {
-	case 1: // Warrior
-		if level <= 19 {
-			return 22
-		}
-		if level <= 29 {
-			return 23
-		}
-		if level <= 39 {
-			return 25
-		}
-		if level <= 52 {
-			return 27
-		}
-		if level <= 56 {
-			return 28
-		}
-		if level <= 59 {
-			return 29
-		}
-		return 30
-	case 2, 6, 10: // Cleric, Druid, Shaman
-		return 15
-	case 3, 5, 16: // Paladin, Shadowknight, Berserker
-		if level <= 34 {
-			return 21
-		}
-		if level <= 44 {
-			return 22
-		}
-		if level <= 50 {
-			return 23
-		}
-		if level <= 55 {
-			return 24
-		}
-		if level <= 59 {
-			return 25
-		}
-		return 26
-	case 4: // Ranger
-		if level <= 57 {
-			return 20
-		}
-		return 21
-	case 7, 8, 9, 15: // Monk, Bard, Rogue, Beastlord
-		if level <= 50 {
-			return 18
-		}
-		if level <= 57 {
-			return 19
-		}
-		return 20
-	case 11, 12, 13, 14: // Magician, Necromancer, Enchanter, Wizard
-		return 12
-	default:
-		return 15 // Default multiplier
-	}
 }

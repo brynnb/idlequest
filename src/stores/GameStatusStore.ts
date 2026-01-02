@@ -146,7 +146,11 @@ const useGameStatusStore = create<GameStatusStore>()(
             },
 
             setCurrentZone: async (zoneId) => {
-              set({ currentZone: zoneId });
+              set({
+                currentZone: zoneId,
+                targetNPC: null,
+                currentNPCHealth: null,
+              });
               await get().updateCurrentZoneNPCs();
             },
 
@@ -265,7 +269,7 @@ const useGameStatusStore = create<GameStatusStore>()(
         },
         {
           name: "game-status-storage",
-          onRehydrateStorage: () => () => {},
+          onRehydrateStorage: () => () => { },
         }
       ),
       { name: "Game Status Store" }

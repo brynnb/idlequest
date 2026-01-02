@@ -28,6 +28,29 @@ func (c *Client) Items() map[constants.InventoryKey]*constants.ItemWithInstance 
 	return c.items
 }
 
+// GetEquippedAC returns the cached AC value from equipped items
+func (c *Client) GetEquippedAC() int {
+	return c.mob.AC
+}
+
+// calculateEquippedAC sums the AC values from all equipped items
+func (c *Client) calculateEquippedAC() int {
+	c.itemsMu.RLock()
+	defer c.itemsMu.RUnlock()
+
+	totalAC := 0
+	// Equipment slots are 0-21 (SlotCharm through SlotAmmo)
+	for key, item := range c.items {
+		// Only count items in equipment slots (bag == -1 or bag == 0 with slot < 22)
+		if key.Bag == -1 || (key.Bag == 0 && key.Slot >= 0 && key.Slot <= 21) {
+			if item != nil {
+				totalAC += int(item.Item.Ac)
+			}
+		}
+	}
+	return totalAC
+}
+
 func (c *Client) WithItems(caller func(map[constants.InventoryKey]*constants.ItemWithInstance)) {
 	c.itemsMu.RLock()
 	defer c.itemsMu.RUnlock()

@@ -172,6 +172,9 @@ func UpdateCharacter(charData *model.CharacterData, accountID int64) error {
 	if _, err := cache.GetCache().Set(cacheKey, charData); err != nil {
 		return err
 	}
+	nameCacheKey := fmt.Sprintf("character:name:%s", charData.Name)
+	cache.GetCache().Delete(nameCacheKey)
+
 	charSelectCacheKey := fmt.Sprintf("account:characters:%d", accountID)
 	cache.GetCache().Delete(charSelectCacheKey)
 
@@ -370,31 +373,39 @@ func PurgeCharacterItems(ctx context.Context, charID int32) error {
 }
 
 func PurgeCharacterItem(ctx context.Context, charID int32, slot int8) error {
+	bagNum := int8(slot + 1)
 
-	// 1) delete only those item_instances that are in equipment slots for this character
+	// 1) select item_instance IDs for the item itself AND anything inside it (if it's a container)
 	subQ := table.CharacterInventory.
 		SELECT(table.CharacterInventory.ItemInstanceID).
 		FROM(table.CharacterInventory).
 		WHERE(
 			table.CharacterInventory.CharacterID.EQ(mysql.Int32(charID)).
-				AND(table.CharacterInventory.Slot.EQ(mysql.Int8(slot))),
+				AND(
+					table.CharacterInventory.Bag.EQ(mysql.Int8(0)).AND(table.CharacterInventory.Slot.EQ(mysql.Int8(slot))).
+						OR(table.CharacterInventory.Bag.EQ(mysql.Int8(bagNum))),
+				),
 		)
 
 	if _, err := table.ItemInstances.
 		DELETE().
 		WHERE(table.ItemInstances.ID.IN(subQ)).
 		ExecContext(ctx, db.GlobalWorldDB.DB); err != nil {
-		return fmt.Errorf("delete equipped instances for char %d: %w", charID, err)
+		return fmt.Errorf("delete instances for char %d at slot %d (and bag %d): %w", charID, slot, bagNum, err)
 	}
 
+	// 2) delete the inventory rows
 	if _, err := table.CharacterInventory.
 		DELETE().
 		WHERE(
 			table.CharacterInventory.CharacterID.EQ(mysql.Int32(charID)).
-				AND(table.CharacterInventory.Slot.EQ(mysql.Int8(slot))),
+				AND(
+					table.CharacterInventory.Bag.EQ(mysql.Int8(0)).AND(table.CharacterInventory.Slot.EQ(mysql.Int8(slot))).
+						OR(table.CharacterInventory.Bag.EQ(mysql.Int8(bagNum))),
+				),
 		).
 		ExecContext(ctx, db.GlobalWorldDB.DB); err != nil {
-		return fmt.Errorf("delete character_inventory for char %d: %w", charID, err)
+		return fmt.Errorf("delete character_inventory for char %d at slot %d (and bag %d): %w", charID, slot, bagNum, err)
 	}
 
 	return nil
@@ -710,4 +721,39 @@ func DeleteItemInstance(ctx context.Context, itemInstanceID int32) error {
 	}
 
 	return nil
+}
+
+// AddCurrency adds currency to a character's on-person currency (platinum, gold, silver, copper)
+func AddCurrency(ctx context.Context, charID int32, platinum, gold, silver, copper int) error {
+	// Use raw SQL for atomic update with addition
+	query := `
+		INSERT INTO character_currency (id, platinum, gold, silver, copper)
+		VALUES (?, ?, ?, ?, ?)
+		ON DUPLICATE KEY UPDATE
+			platinum = platinum + VALUES(platinum),
+			gold = gold + VALUES(gold),
+			silver = silver + VALUES(silver),
+			copper = copper + VALUES(copper)
+	`
+	_, err := db.GlobalWorldDB.DB.ExecContext(ctx, query, charID, platinum, gold, silver, copper)
+	if err != nil {
+		return fmt.Errorf("add currency for char %d: %w", charID, err)
+	}
+	return nil
+}
+
+// GetCharacterCurrency retrieves the character's currency from character_currency table
+func GetCharacterCurrency(ctx context.Context, charID uint32) (*model.CharacterCurrency, error) {
+	var results []model.CharacterCurrency
+	err := table.CharacterCurrency.
+		SELECT(table.CharacterCurrency.AllColumns).
+		WHERE(table.CharacterCurrency.ID.EQ(mysql.Uint32(charID))).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &results)
+
+	if err != nil || len(results) == 0 {
+		// If no row exists yet, return default empty currency
+		return &model.CharacterCurrency{ID: charID}, nil
+	}
+
+	return &results[0], nil
 }

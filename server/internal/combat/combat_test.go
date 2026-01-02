@@ -42,6 +42,7 @@ func (m *MockClient) SwapItems(fromKey, toKey constants.InventoryKey) error     
 func (m *MockClient) DeleteItem(key constants.InventoryKey) *constants.ItemWithInstance             { return nil }
 func (m *MockClient) GetItem(key constants.InventoryKey) *constants.ItemWithInstance                { return nil }
 func (m *MockClient) SetItem(key constants.InventoryKey, item *constants.ItemWithInstance)          {}
+func (m *MockClient) GetEquippedAC() int                                                            { return 0 }
 
 // TestCombatFlow tests the core combat ticks and logic without a real DB or network
 func TestCombatFlow(t *testing.T) {

@@ -9,8 +9,7 @@ func (c *Client) CalcBonuses() {
 	// client.CalcItemBonuses()
 	// client.CalcAABonuses()
 	// client.CalcSpellBonuses()
-
-	// client.CalcAC()
+	c.CalcAC()
 	c.CalcATK()
 	c.CalcHaste()
 
@@ -33,6 +32,10 @@ func (c *Client) CalcBonuses() {
 	// HP / Mana
 	c.CalcMaxHP()
 	c.CalcMaxMana()
+}
+
+func (client *Client) CalcAC() {
+	client.mob.AC = client.calculateEquippedAC()
 }
 
 func (client *Client) CalcATK() {

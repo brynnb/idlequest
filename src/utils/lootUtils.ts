@@ -18,8 +18,30 @@ import { InventorySlot } from "@entities/InventorySlot";
 import CharacterClass from "@entities/CharacterClass";
 import Race from "@entities/Race";
 import { ItemClass } from "@entities/ItemClass";
+import { WorldSocket, OpCodes, SellItem } from "@/net";
 
-const sellSingleItem = (itemDetails: Item) => {
+// Sells an item to the server and removes it from the client inventory
+const sellItemToServer = async (
+  bag: number,
+  slot: number,
+  itemDetails: Item
+): Promise<boolean> => {
+  // Send sell request to server
+  try {
+    await WorldSocket.sendStreamMessage(OpCodes.ShopPlayerSell, SellItem, {
+      slot: slot,
+      bag: bag,
+    });
+    console.log(`Selling ${itemDetails.name} to server from bag=${bag} slot=${slot}`);
+    return true;
+  } catch (error) {
+    console.error("Failed to send sell request to server:", error);
+    return false;
+  }
+};
+
+// Client-side sell validation and optimistic update (for immediate UI feedback)
+const sellSingleItem = (itemDetails: Item, bag: number = 0, slot: number = 0) => {
   if (
     itemDetails.itemclass != 1 &&
     itemDetails.nodrop != 0 &&
@@ -31,6 +53,7 @@ const sellSingleItem = (itemDetails: Item) => {
     const silver = Math.floor((price % 100) / 10);
     const copper = price % 10;
 
+    // Optimistic client-side update for responsiveness
     usePlayerCharacterStore.setState((state) => ({
       characterProfile: {
         ...state.characterProfile,
@@ -41,6 +64,9 @@ const sellSingleItem = (itemDetails: Item) => {
       },
     }));
     console.log(`Selling ${itemDetails.name} for ${price} copper`);
+
+    // Send to server for authoritative processing
+    sellItemToServer(bag, slot, itemDetails);
     return true;
   }
   return false;
@@ -235,7 +261,7 @@ const addItemToInventory = async (
           invItem.itemDetails.nodrop != 0 && // Don't sell NO DROP
           invItem.itemDetails.norent != 0 // Don't sell NO RENT
         ) {
-          if (sellSingleItem(invItem.itemDetails)) {
+          if (sellSingleItem(invItem.itemDetails, invItem.bag, invItem.slot)) {
             usePlayerCharacterStore
               .getState()
               .removeInventoryItem(invItem.bag, invItem.slot);
@@ -306,10 +332,9 @@ export const processLootItems = async (
       if (itemDetails?.name) {
         const startsWithArticle = /^(a|an)\s+/i.test(itemDetails.name);
         (options?.addChatMessage || useChatStore.getState().addMessage)(
-          `You have looted ${
-            startsWithArticle
-              ? ""
-              : (/^[aeiou]/i.test(itemDetails.name) ? "an" : "a") + " "
+          `You have looted ${startsWithArticle
+            ? ""
+            : (/^[aeiou]/i.test(itemDetails.name) ? "an" : "a") + " "
           }${itemDetails.name}`,
           MessageType.LOOT
         );

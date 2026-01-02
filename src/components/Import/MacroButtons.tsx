@@ -21,7 +21,7 @@ const MacroButtonsGrid = styled.div.attrs({ className: "macro-buttons-grid" })`
   gap: 14px;
 `;
 
-const MacroButton = styled.button.attrs({ className: "macro-button" })<{
+const MacroButton = styled.button.attrs({ className: "macro-button" }) <{
   $isPressed: boolean;
 }>`
   width: 95px;
@@ -100,8 +100,8 @@ const MacroButtons = () => {
     addItemToInventoryByItemId(2660);
   };
 
-  const handleAddTestItem2 = async () => {
-    addItemToInventoryByItemId(5024);
+  const handleAddBag = async () => {
+    addItemToInventoryByItemId(17005); // Backpack - 8 slot container
   };
 
   const renderMacroButton = (num: number) => {
@@ -117,7 +117,7 @@ const MacroButtons = () => {
       case 5:
         return "Add Test Item";
       case 6:
-        return "Add Test Item 2";
+        return "Add Bag";
       default:
         return num.toString();
     }
@@ -141,7 +141,7 @@ const MacroButtons = () => {
         handleAddTestItem();
         break;
       case 6:
-        handleAddTestItem2();
+        handleAddBag();
         break;
       default:
         console.log(`Button ${num} clicked`);

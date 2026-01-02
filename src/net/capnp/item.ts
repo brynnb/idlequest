@@ -1130,5 +1130,74 @@ export class DeleteItem extends $.Struct {
     return "DeleteItem_" + super.toString();
   }
 }
+export class SellItem extends $.Struct {
+  static readonly _capnp = {
+    displayName: "SellItem",
+    id: "b1c2d3e4f5a6b7c8",
+    size: new $.ObjectSize(8, 0)
+  };
+  get slot(): number {
+    return $.utils.getInt8(0, this);
+  }
+  set slot(value: number) {
+    $.utils.setInt8(0, value, this);
+  }
+  get bag(): number {
+    return $.utils.getInt8(1, this);
+  }
+  set bag(value: number) {
+    $.utils.setInt8(1, value, this);
+  }
+  toString(): string {
+    return "SellItem_" + super.toString();
+  }
+}
+export class SellItemResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "SellItemResponse",
+    id: "c2d3e4f5a6b7c8d9",
+    size: new $.ObjectSize(16, 1)
+  };
+  get success(): boolean {
+    return $.utils.getBit(0, this);
+  }
+  set success(value: boolean) {
+    $.utils.setBit(0, value, this);
+  }
+  get platinum(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set platinum(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get gold(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set gold(value: number) {
+    $.utils.setInt32(8, value, this);
+  }
+  get silver(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set silver(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get copper(): number {
+    return $.utils.getInt32(16, this);
+  }
+  set copper(value: number) {
+    $.utils.setInt32(16, value, this);
+  }
+  get itemName(): string {
+    return $.utils.getText(0, this);
+  }
+  set itemName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  toString(): string {
+    return "SellItemResponse_" + super.toString();
+  }
+}
 BulkItemPacket._Items = $.CompositeList(ItemInstance);
 BulkDeleteItem._Items = $.CompositeList(DeleteItem);
+

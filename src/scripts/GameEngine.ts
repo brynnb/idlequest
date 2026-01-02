@@ -217,12 +217,36 @@ class GameEngine {
       addMessage(`You loot ${moneyParts.join(", ")}!`, MessageType.LOOT);
     }
 
-    // Report items
-    for (const item of loot.items) {
-      addMessage(`You loot ${item.name}!`, MessageType.LOOT);
+    // Add currency to character profile
+    if (loot.platinum > 0 || loot.gold > 0 || loot.silver > 0 || loot.copper > 0) {
+      playerCharacterStore.setState((state) => ({
+        characterProfile: {
+          ...state.characterProfile,
+          platinum: (state.characterProfile.platinum || 0) + loot.platinum,
+          gold: (state.characterProfile.gold || 0) + loot.gold,
+          silver: (state.characterProfile.silver || 0) + loot.silver,
+          copper: (state.characterProfile.copper || 0) + loot.copper,
+        },
+      }));
     }
 
-    // TODO: Add items to inventory via server push or client request
+    // Report items and add to inventory
+    for (const item of loot.items) {
+      addMessage(`You loot ${item.name}!`, MessageType.LOOT);
+
+      // Add item to inventory - the server has already created the item instance
+      // We just need to update the client-side inventory display
+      playerCharacterStore.getState().addInventoryItemFromLoot({
+        slot: item.slot,
+        bag: item.bagSlot,
+        itemId: item.itemId,
+        itemDetails: {
+          id: item.itemId,
+          name: item.name,
+          icon: item.icon,
+        } as any, // Item details will be fetched by the store if needed
+      });
+    }
   }
 
   // Public method to load zone data - can be called after connection is established
