@@ -157,15 +157,27 @@ const useGameStatusStore = create<GameStatusStore>()(
             },
 
             updateCurrentZoneNPCs: async () => {
-              const { currentZone, getZoneNameById } = get();
+              const { currentZone, getZoneNameById, zones } = get();
               if (currentZone === null) {
                 return;
               }
+
+              // Check if zones are loaded
+              if (!zones || zones.length === 0) {
+                console.log(
+                  "Zones not loaded yet, skipping NPC fetch for zone:",
+                  currentZone
+                );
+                return;
+              }
+
               const zoneName = getZoneNameById(currentZone);
               if (!zoneName) {
-                console.error(
-                  "Zone name not found for current zone:",
-                  currentZone
+                console.warn(
+                  "Zone name not found for zone ID:",
+                  currentZone,
+                  "- available zones:",
+                  zones.length
                 );
                 return;
               }

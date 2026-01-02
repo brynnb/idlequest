@@ -316,11 +316,28 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 	req, err := session.Deserialize(ses, payload, eq.ReadRootGetZoneNPCsRequest)
 	if err != nil {
 		log.Printf("Failed to read GetZoneNPCsRequest: %v", err)
+		// Still send an error response so the client doesn't timeout
+		session.QueueMessage(ses, eq.NewRootGetZoneNPCsResponse, opcodes.GetZoneNPCsResponse, func(resp eq.GetZoneNPCsResponse) error {
+			resp.SetSuccess(0)
+			resp.SetError("Failed to parse request")
+			return nil
+		})
 		return false
 	}
 
 	zoneName, _ := req.ZoneName()
 	log.Printf("GetZoneNPCsRequest for zone: %s", zoneName)
+
+	// Validate zone name is not empty
+	if zoneName == "" {
+		log.Printf("GetZoneNPCsRequest received empty zone name")
+		session.QueueMessage(ses, eq.NewRootGetZoneNPCsResponse, opcodes.GetZoneNPCsResponse, func(resp eq.GetZoneNPCsResponse) error {
+			resp.SetSuccess(0)
+			resp.SetError("Empty zone name provided")
+			return nil
+		})
+		return false
+	}
 
 	// Get zone spawn pool
 	spawnPool, spawnErr := db_zone.GetZoneSpawnPool(zoneName)
@@ -351,12 +368,16 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 		// Create NPC list
 		npcCount := int32(len(npcMap))
 		if npcCount == 0 {
+			// Still return success, just with no NPCs
+			log.Printf("GetZoneNPCsRequest: zone %s has 0 NPCs", zoneName)
 			return nil
 		}
-		npcList, err := eq.NewNPCData_List(resp.Segment(), npcCount)
-		if err != nil {
-			log.Printf("Failed to create NPC list: %v", err)
-			return err
+		npcList, listErr := eq.NewNPCData_List(resp.Segment(), npcCount)
+		if listErr != nil {
+			// Log the error but still send a response (with 0 NPCs)
+			log.Printf("Failed to create NPC list for zone %s: %v", zoneName, listErr)
+			// Don't return error - we still want to send a response
+			return nil
 		}
 		i := 0
 		for _, npc := range npcMap {
@@ -374,10 +395,17 @@ func HandleGetZoneNPCsRequest(ses *session.Session, payload []byte, wh *WorldHan
 			i++
 		}
 		resp.SetNpcs(npcList)
+		log.Printf("GetZoneNPCsRequest: sending %d NPCs for zone %s", npcCount, zoneName)
 		return nil
 	})
 	if err != nil {
 		log.Printf("GetZoneNPCsRequest QueueMessage error: %v", err)
+		// Try to send an error response as a last resort
+		session.QueueMessage(ses, eq.NewRootGetZoneNPCsResponse, opcodes.GetZoneNPCsResponse, func(resp eq.GetZoneNPCsResponse) error {
+			resp.SetSuccess(0)
+			resp.SetError("Failed to send NPC data")
+			return nil
+		})
 	}
 
 	return false
