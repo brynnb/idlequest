@@ -40,32 +40,18 @@ const sellItemToServer = async (
   }
 };
 
-// Client-side sell validation and optimistic update (for immediate UI feedback)
+// Sends a sell request to the server - server is authoritative for price calculation
+// Server will respond with SellItemResponse containing the actual currency earned
 const sellSingleItem = (itemDetails: Item, bag: number = 0, slot: number = 0) => {
+  // Validate item can be sold (client-side check for UI feedback)
+  // Server performs the same validation authoritatively
   if (
     itemDetails.itemclass != 1 &&
     itemDetails.nodrop != 0 &&
     itemDetails.norent != 0
   ) {
-    const price = Math.floor(itemDetails.price || 0);
-    const platinum = Math.floor(price / 1000);
-    const gold = Math.floor((price % 1000) / 100);
-    const silver = Math.floor((price % 100) / 10);
-    const copper = price % 10;
-
-    // Optimistic client-side update for responsiveness
-    usePlayerCharacterStore.setState((state) => ({
-      characterProfile: {
-        ...state.characterProfile,
-        platinum: (state.characterProfile.platinum || 0) + platinum,
-        gold: (state.characterProfile.gold || 0) + gold,
-        silver: (state.characterProfile.silver || 0) + silver,
-        copper: (state.characterProfile.copper || 0) + copper,
-      },
-    }));
-    console.log(`Selling ${itemDetails.name} for ${price} copper`);
-
-    // Send to server for authoritative processing
+    console.log(`Requesting sell of ${itemDetails.name} to server`);
+    // Server calculates price from database and updates currency authoritatively
     sellItemToServer(bag, slot, itemDetails);
     return true;
   }

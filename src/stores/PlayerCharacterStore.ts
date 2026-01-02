@@ -25,6 +25,7 @@ import {
   capnpToPlainObject,
   MoveItem,
   DeleteItem,
+  SellItemResponse,
 } from "@/net";
 import races from "@data/json/races.json";
 import classes from "@data/json/classes.json";
@@ -602,6 +603,29 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 { bag: move.fromBagSlot, slot: move.fromSlot },
                 { bag: move.toBagSlot, slot: move.toSlot }
               );
+            }
+          );
+
+          // Handler for SellItemResponse (server confirms item was sold)
+          WorldSocket.registerOpCodeHandler(
+            OpCodes.ShopPlayerSell,
+            SellItemResponse,
+            (response) => {
+              if (response.success) {
+                // Update currency from server (authoritative)
+                set((state) => ({
+                  characterProfile: {
+                    ...state.characterProfile,
+                    platinum: (state.characterProfile.platinum || 0) + response.platinum,
+                    gold: (state.characterProfile.gold || 0) + response.gold,
+                    silver: (state.characterProfile.silver || 0) + response.silver,
+                    copper: (state.characterProfile.copper || 0) + response.copper,
+                  },
+                }));
+                const itemName = response.itemName;
+                const price = response.platinum * 1000 + response.gold * 100 + response.silver * 10 + response.copper;
+                console.log(`Sold ${itemName} for ${price} copper`);
+              }
             }
           );
         },
