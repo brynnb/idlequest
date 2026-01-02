@@ -5,11 +5,12 @@ import EquippedItemsInventory from "@components/Inventory/EquippedItemsInventory
 import GeneralInventorySlots from "@components/Inventory/GeneralInventorySlots";
 import ItemInformationDisplay from "@components/Inventory/ItemInformationDisplay";
 import CursorInventorySlot from "@components/Inventory/CursorInventorySlot";
-import DeleteItemOnCursorButton from "@components/Inventory/DeleteItemOnCursorButton";
-import SellGeneralInventory from "@components/Inventory/SellGeneralInventory";
 import PlayerCurrencyDisplay from "@components/Inventory/PlayerCurrencyDisplay";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 
 const InventoryAndStats: React.FC = () => {
+  const { hoveredItem } = usePlayerCharacterStore();
+
   return (
     <>
       <GeneralInventorySlots />
@@ -17,15 +18,12 @@ const InventoryAndStats: React.FC = () => {
       <AddInventoryItem />
       <DeleteAllInventory />
       <EquipAllItems />
-      <DeleteItemOnCursorButton />
-      <SellGeneralInventory />
       <CursorInventorySlot />
 
       <PlayerCurrencyDisplay />
       <ItemInformationDisplay
         item={hoveredItem}
         isVisible={hoveredItem !== null}
-        // isVisible={true}
       />
     </>
   );

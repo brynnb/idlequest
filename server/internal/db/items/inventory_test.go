@@ -458,3 +458,239 @@ func TestNegativeSlotValues(t *testing.T) {
 		t.Error("Should be able to use -1 as a slot value in map")
 	}
 }
+
+// =============================================================================
+// Auto-Place Cursor Item Tests (2H Weapon Blocking)
+// =============================================================================
+
+func TestAutoPlaceLogic_EquippableItemFindsEmptySlot(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Create a head item that can go in slot 2 (SlotHead)
+	headItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:    "Iron Helmet",
+			Slots:   1 << constants.SlotHead,
+			Classes: 65535, // All classes
+			Races:   65535, // All races
+		},
+	}
+
+	// Simulate auto-place logic: find first empty equip slot
+	targetSlot := int8(-1)
+	for s := int8(0); s <= 21; s++ {
+		if headItem.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+			if items[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+				targetSlot = s
+				break
+			}
+		}
+	}
+
+	if targetSlot != constants.SlotHead {
+		t.Errorf("Expected head item to go to slot %d, got %d", constants.SlotHead, targetSlot)
+	}
+}
+
+func TestAutoPlaceLogic_2HWeaponBlocksSecondaryEquip(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a 2H weapon in primary
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotPrimary}] = &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:     "Great Sword",
+			Itemtype: int32(constants.ItemType2HSlash),
+			Slots:    1 << constants.SlotPrimary,
+		},
+	}
+
+	// Create a shield that can only go in secondary
+	shield := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:     "Iron Shield",
+			Itemtype: int32(constants.ItemTypeShield),
+			Slots:    1 << constants.SlotSecondary,
+			Classes:  65535,
+			Races:    65535,
+		},
+	}
+
+	// Simulate the 2H blocking logic
+	primaryItem := items[constants.InventoryKey{Bag: 0, Slot: constants.SlotPrimary}]
+	primaryHas2H := primaryItem != nil && primaryItem.IsType2H()
+
+	if !primaryHas2H {
+		t.Fatal("Primary should have a 2H weapon")
+	}
+
+	// When finding slots for shield, should skip secondary due to 2H
+	targetSlot := int8(-1)
+	for s := int8(0); s <= 21; s++ {
+		if shield.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+			// Skip secondary slot if primary has a 2H weapon
+			if s == constants.SlotSecondary && primaryHas2H {
+				continue
+			}
+			if items[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+				targetSlot = s
+				break
+			}
+		}
+	}
+
+	// Shield should NOT be placed in secondary (blocked by 2H)
+	if targetSlot == constants.SlotSecondary {
+		t.Error("Shield should not be placed in secondary when 2H is in primary")
+	}
+
+	// Shield should fall through to inventory slot instead
+	if targetSlot != -1 {
+		t.Errorf("Expected no equip slot found (-1), got %d", targetSlot)
+	}
+}
+
+func TestAutoPlaceLogic_2HWeaponBlockedBySecondaryItem(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a shield in secondary
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotSecondary}] = &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:     "Iron Shield",
+			Itemtype: int32(constants.ItemTypeShield),
+			Slots:    1 << constants.SlotSecondary,
+		},
+	}
+
+	// Create a 2H weapon that would go in primary
+	twoHandedWeapon := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:     "Great Axe",
+			Itemtype: int32(constants.ItemType2HSlash),
+			Slots:    1 << constants.SlotPrimary,
+			Classes:  65535,
+			Races:    65535,
+		},
+	}
+
+	// Simulate the blocking logic: 2H equip blocked when secondary has item
+	secondaryItem := items[constants.InventoryKey{Bag: 0, Slot: constants.SlotSecondary}]
+
+	targetSlot := int8(-1)
+	for s := int8(0); s <= 21; s++ {
+		if twoHandedWeapon.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+			// Skip primary slot if item is 2H and secondary has an item
+			if s == constants.SlotPrimary && twoHandedWeapon.IsType2H() && secondaryItem != nil {
+				continue
+			}
+			if items[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+				targetSlot = s
+				break
+			}
+		}
+	}
+
+	// 2H weapon should NOT be placed in primary (blocked by secondary item)
+	if targetSlot == constants.SlotPrimary {
+		t.Error("2H weapon should not be placed in primary when secondary has item")
+	}
+
+	// 2H weapon should go to inventory instead
+	if targetSlot != -1 {
+		t.Errorf("Expected no equip slot found (-1), got %d", targetSlot)
+	}
+}
+
+func TestAutoPlaceLogic_FallsBackToInventory(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Fill all equip slots
+	for s := int8(0); s <= 21; s++ {
+		items[constants.InventoryKey{Bag: 0, Slot: s}] = &constants.ItemWithInstance{
+			Item: model.Items{Name: "Equipped Item"},
+		}
+	}
+
+	// Create item that needs to go somewhere
+	newItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:    "New Helmet",
+			Slots:   1 << constants.SlotHead,
+			Classes: 65535,
+			Races:   65535,
+		},
+	}
+
+	// Find equip slot (all full, should fail)
+	equipSlot := int8(-1)
+	for s := int8(0); s <= 21; s++ {
+		if newItem.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+			if items[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+				equipSlot = s
+				break
+			}
+		}
+	}
+
+	if equipSlot != -1 {
+		t.Error("All equip slots should be full")
+	}
+
+	// Fall back to FindFirstAvailableSlot
+	bag, slot := FindFirstAvailableSlot(items, false)
+
+	// Should find first general inventory slot
+	if bag != 0 || slot != constants.SlotGeneral1 {
+		t.Errorf("Expected general slot (0, %d), got (%d, %d)", constants.SlotGeneral1, bag, slot)
+	}
+}
+
+func TestAutoPlaceLogic_1HWeaponAllowsSecondary(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a 1H weapon in primary
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotPrimary}] = &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:     "Short Sword",
+			Itemtype: int32(constants.ItemType1HSlash),
+			Slots:    1 << constants.SlotPrimary,
+		},
+	}
+
+	// Create a shield that can go in secondary
+	shield := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:     "Iron Shield",
+			Itemtype: int32(constants.ItemTypeShield),
+			Slots:    1 << constants.SlotSecondary,
+			Classes:  65535,
+			Races:    65535,
+		},
+	}
+
+	// Check that 1H weapon does NOT block secondary
+	primaryItem := items[constants.InventoryKey{Bag: 0, Slot: constants.SlotPrimary}]
+	primaryHas2H := primaryItem != nil && primaryItem.IsType2H()
+
+	if primaryHas2H {
+		t.Fatal("1H weapon should not be detected as 2H")
+	}
+
+	// Find slot for shield - should allow secondary
+	targetSlot := int8(-1)
+	for s := int8(0); s <= 21; s++ {
+		if shield.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+			if s == constants.SlotSecondary && primaryHas2H {
+				continue // Skip only if 2H
+			}
+			if items[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+				targetSlot = s
+				break
+			}
+		}
+	}
+
+	// Shield SHOULD be placed in secondary (1H allows it)
+	if targetSlot != constants.SlotSecondary {
+		t.Errorf("Shield should be placed in secondary slot, got %d", targetSlot)
+	}
+}

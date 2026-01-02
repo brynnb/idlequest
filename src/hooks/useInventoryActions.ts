@@ -209,6 +209,30 @@ export const useInventoryActions = () => {
       }
     }
 
+    // Step 4: Find first available bag slot
+    for (let generalSlot = InventorySlot.General1; generalSlot <= InventorySlot.General8; generalSlot++) {
+      const bagContainer = inventory.find(
+        (item) => item.bag === 0 && item.slot === generalSlot
+      );
+
+      // Check if this general slot has a bag/container
+      if (bagContainer?.itemDetails?.itemclass === ItemClass.CONTAINER && bagContainer.itemDetails.bagslots) {
+        const bagId = generalSlot + 1; // Bag IDs are slot+1
+        const bagSlots = bagContainer.itemDetails.bagslots;
+
+        for (let bagSlot = 0; bagSlot < bagSlots; bagSlot++) {
+          const itemInBagSlot = inventory.find(
+            (item) => item.bag === bagId && item.slot === bagSlot
+          );
+
+          if (!itemInBagSlot) {
+            await store.moveItemToSlot(cursorKey, { bag: bagId, slot: bagSlot });
+            return true;
+          }
+        }
+      }
+    }
+
     // No available slot found
     return false;
   };

@@ -95,11 +95,20 @@ const MacroButtons = () => {
     clearInventory();
   };
 
-  const handleAddTestItem = async () => {
-    WorldSocket.sendMessage(OpCodes.GMCommand, CommandMessage, {
-      command: "item",
-      args: ["2660"],
-    });
+  const handleEquipUp = async () => {
+    const items = [
+      31233, 31246, 26766, 32107, 7385, 25857, 26562, 5972, 32109, 28798, 28895,
+      16257, 11029, 8364, 2883, 7871, 8289, 8288,
+    ];
+
+    for (const itemId of items) {
+      WorldSocket.sendMessage(OpCodes.GMCommand, CommandMessage, {
+        command: "item",
+        args: [itemId.toString()],
+      });
+      // Small delay between items
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
   };
 
   const handleAddBag = async () => {
@@ -120,7 +129,7 @@ const MacroButtons = () => {
       case 4:
         return "Sell General Inventory";
       case 5:
-        return "Add Test Item";
+        return "Equip Up";
       case 6:
         return "Add Bag";
       default:
@@ -143,7 +152,7 @@ const MacroButtons = () => {
         sellGeneralInventory(true);
         break;
       case 5:
-        handleAddTestItem();
+        handleEquipUp();
         break;
       case 6:
         handleAddBag();

@@ -200,15 +200,27 @@ func (item *ItemWithInstance) IsClassBook() bool {
 }
 
 func (item *ItemWithInstance) IsType1HWeapon() bool {
+	if item == nil {
+		return false
+	}
 	return uint8(item.Item.Itemtype) >= ItemType1HBlunt && uint8(item.Item.Itemtype) <= ItemType1HPiercing
 }
 func (item *ItemWithInstance) IsType2HWeapon() bool {
+	if item == nil {
+		return false
+	}
 	return uint8(item.Item.Itemtype) >= ItemType2HBlunt && uint8(item.Item.Itemtype) <= ItemType2HPiercing
 }
 func (item *ItemWithInstance) IsTypeMartial() bool {
+	if item == nil {
+		return false
+	}
 	return uint8(item.Item.Itemtype) == ItemTypeMartial
 }
 func (item *ItemWithInstance) IsTypeShield() bool {
+	if item == nil {
+		return false
+	}
 	return uint8(item.Item.Itemtype) == ItemTypeShield
 }
 func (item *ItemWithInstance) IsType1H() bool {

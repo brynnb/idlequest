@@ -52,6 +52,13 @@ export const isSlotAvailableForItem = (
       primaryItem?.itemDetails?.itemtype !== undefined &&
       [1, 4, 35].includes(primaryItem.itemDetails.itemtype)
     ) {
+      // Import dynamically to avoid circular dependencies
+      import("@stores/ChatStore").then((module) => {
+        module.default.getState().addMessage(
+          "You cannot equip an off-hand item while wielding a two-handed weapon.",
+          module.MessageType.SYSTEM
+        );
+      });
       return false;
     }
   }
@@ -66,6 +73,13 @@ export const isSlotAvailableForItem = (
       (inv) => inv.bag === 0 && inv.slot === InventorySlot.Secondary
     );
     if (secondaryItem) {
+      // Import dynamically to avoid circular dependencies
+      import("@stores/ChatStore").then((module) => {
+        module.default.getState().addMessage(
+          "You cannot equip a two-handed weapon while holding an item in your off-hand.",
+          module.MessageType.SYSTEM
+        );
+      });
       return false;
     }
   }
@@ -110,9 +124,21 @@ export const getItemTypeNameWrapper = (itemtype: string | undefined) => {
 export const getClassNames = (classes: number | undefined) => {
   if (classes === undefined) return "UNKNOWN";
   const classesBitmask = parseInt(classes.toString());
-  if (classesBitmask === 32767) return "ALL";
 
+  // Get playable classes (first 14 in the list)
   const playableClasses = classesData.slice(0, 14);
+
+  // Calculate the "ALL" bitmask dynamically by summing all playable class bitmasks
+  const allClassesBitmask = playableClasses.reduce(
+    (sum, classInfo) => sum + (classInfo.bitmask || 0),
+    0
+  );
+
+  // Check if all playable classes are included, or if it's a common "ALL" value like 65535
+  if (classesBitmask === 65535 || (classesBitmask & allClassesBitmask) === allClassesBitmask) {
+    return "ALL";
+  }
+
   const classNames = playableClasses
     .filter(
       (classInfo) => classInfo.bitmask && classesBitmask & classInfo.bitmask
@@ -125,11 +151,23 @@ export const getClassNames = (classes: number | undefined) => {
 export const getRaceNames = (races: number | undefined) => {
   if (races === undefined) return "UNKNOWN";
   const racesBitmask = parseInt(races.toString());
-  if (racesBitmask === 16383) return "ALL";
 
+  // Get only playable races with valid bitmasks
   const playableRaces = racesData.filter(
     (race) => race.is_playable && race.short_name && race.bitmask !== undefined
   );
+
+  // Calculate the "ALL" bitmask dynamically by summing all playable race bitmasks
+  const allRacesBitmask = playableRaces.reduce(
+    (sum, race) => sum + (race.bitmask || 0),
+    0
+  );
+
+  // Check if all playable races are included, or if it's a common "ALL" value like 65535
+  if (racesBitmask === 65535 || (racesBitmask & allRacesBitmask) === allRacesBitmask) {
+    return "ALL";
+  }
+
   const raceNames = playableRaces
     .filter((race) => race.bitmask !== undefined && racesBitmask & race.bitmask)
     .map((race) => race.short_name)

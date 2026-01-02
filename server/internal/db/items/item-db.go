@@ -609,9 +609,17 @@ func ProcessAutoLoot(
 
 	// Step 1: Check if equippable
 	if newItemWithInstance.IsEquippable(constants.RaceID(raceID), uint8(classID)) {
+		// Check if primary slot has a 2H weapon (blocks secondary slot)
+		primaryItem := currentItems[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotPrimary)}]
+		primaryHas2H := primaryItem != nil && primaryItem.IsType2H()
+
 		var equippableSlots []int8
 		for s := int8(0); s <= 30; s++ {
 			if newItemWithInstance.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+				// Skip secondary slot if primary has a 2H weapon
+				if s == int8(constants.SlotSecondary) && primaryHas2H {
+					continue
+				}
 				equippableSlots = append(equippableSlots, s)
 			}
 		}
@@ -674,6 +682,14 @@ func ProcessAutoLoot(
 	}()
 
 	var updates []SlotUpdate
+
+	// If equipping a 2H weapon to primary slot and secondary has an item, block the action
+	if targetSlot == int8(constants.SlotPrimary) && newItemWithInstance.IsType2H() {
+		secondaryItem := currentItems[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotSecondary)}]
+		if secondaryItem != nil {
+			return nil, 0, fmt.Errorf("You cannot equip a two-handed weapon while holding an item in your off-hand.")
+		}
+	}
 
 	// Handle upgrade/swap
 	if isUpgrade && oldItem != nil {

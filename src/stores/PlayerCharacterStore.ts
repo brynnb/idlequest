@@ -806,6 +806,24 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 light?: number;
                 color?: number;
                 scrolleffect?: number;
+                // Stat bonuses
+                astr?: number;
+                asta?: number;
+                adex?: number;
+                aagi?: number;
+                aint?: number;
+                awis?: number;
+                acha?: number;
+                hp?: number;
+                mana?: number;
+                endur?: number;
+                // Resistances
+                fr?: number;
+                cr?: number;
+                dr?: number;
+                pr?: number;
+                mr?: number;
+                svcorruption?: number;
               }) => {
                 // Build itemDetails from the embedded item data
                 const itemDetails: Item = {
@@ -832,6 +850,24 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                   bagwr: item.bagwr || 0,
                   light: item.light || 0,
                   scrolleffect: item.scrolleffect || 0,
+                  // Stat bonuses
+                  astr: item.astr || 0,
+                  asta: item.asta || 0,
+                  adex: item.adex || 0,
+                  aagi: item.aagi || 0,
+                  aint: item.aint || 0,
+                  awis: item.awis || 0,
+                  acha: item.acha || 0,
+                  hp: item.hp || 0,
+                  mana: item.mana || 0,
+                  endur: item.endur || 0,
+                  // Resistances
+                  fr: item.fr || 0,
+                  cr: item.cr || 0,
+                  dr: item.dr || 0,
+                  pr: item.pr || 0,
+                  mr: item.mr || 0,
+                  svcorruption: item.svcorruption || 0,
                 };
 
                 return {
@@ -843,6 +879,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 } as InventoryItem;
               }
             );
+
 
           // Build profile directly from server values - no client calculations
           const newProfile: CharacterProfile = {
@@ -889,7 +926,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
 
           // Sync game status zone if it differs from server state
           const gameStatus = useGameStatusStore.getState();
-          if (newProfile.zoneId !== gameStatus.currentZone) {
+          if (newProfile.zoneId != null && newProfile.zoneId !== gameStatus.currentZone) {
             gameStatus.setCurrentZone(newProfile.zoneId);
           }
         },

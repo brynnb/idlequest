@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { getSpellGems, SpellGem } from "/src/utils/uiUtils";
+import { getSpellGems, SpellGem } from "@utils/uiUtils";
 
 const SpellGemDiv = styled.div.attrs({
   className: 'spell-gem'

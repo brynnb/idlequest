@@ -641,6 +641,9 @@ export enum OpCodes {
   // IdleQuest unified character state
   CharacterState,
 
+  // IdleQuest auto-place cursor item (PersonaView click)
+  AutoPlaceCursorItem,
+
   // IdleQuest spell/string lookup opcodes
   GetSpellRequest,
   GetSpellResponse,

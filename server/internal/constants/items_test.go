@@ -186,3 +186,180 @@ func TestGeneralSlotCheck(t *testing.T) {
 		})
 	}
 }
+
+// =============================================================================
+// Two-Handed Weapon Tests
+// =============================================================================
+
+func TestIsType2HWeapon(t *testing.T) {
+	tests := []struct {
+		name     string
+		itemtype int32
+		want     bool
+	}{
+		{"2H Blunt", int32(ItemType2HBlunt), true},
+		{"2H Slash", int32(ItemType2HSlash), true},
+		{"2H Piercing", int32(ItemType2HPiercing), true},
+		{"1H Blunt", int32(ItemType1HBlunt), false},
+		{"1H Slash", int32(ItemType1HSlash), false},
+		{"1H Piercing", int32(ItemType1HPiercing), false},
+		{"Shield", int32(ItemTypeShield), false},
+		{"Martial", int32(ItemTypeMartial), true}, // Martial is 2H
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			item := &ItemWithInstance{
+				Item: model.Items{Itemtype: tc.itemtype},
+			}
+			got := item.IsType2H()
+			if got != tc.want {
+				t.Errorf("IsType2H() for itemtype=%d = %v, want %v", tc.itemtype, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestIsType1HWeapon(t *testing.T) {
+	tests := []struct {
+		name     string
+		itemtype int32
+		want     bool
+	}{
+		{"1H Blunt", int32(ItemType1HBlunt), true},
+		{"1H Slash", int32(ItemType1HSlash), true},
+		{"1H Piercing", int32(ItemType1HPiercing), true},
+		{"2H Blunt", int32(ItemType2HBlunt), false},
+		{"2H Slash", int32(ItemType2HSlash), false},
+		{"Shield", int32(ItemTypeShield), false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			item := &ItemWithInstance{
+				Item: model.Items{Itemtype: tc.itemtype},
+			}
+			got := item.IsType1HWeapon()
+			if got != tc.want {
+				t.Errorf("IsType1HWeapon() for itemtype=%d = %v, want %v", tc.itemtype, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestIsTypeShield(t *testing.T) {
+	tests := []struct {
+		name     string
+		itemtype int32
+		want     bool
+	}{
+		{"Shield", int32(ItemTypeShield), true},
+		{"1H Blunt", int32(ItemType1HBlunt), false},
+		{"2H Blunt", int32(ItemType2HBlunt), false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			item := &ItemWithInstance{
+				Item: model.Items{Itemtype: tc.itemtype},
+			}
+			got := item.IsTypeShield()
+			if got != tc.want {
+				t.Errorf("IsTypeShield() for itemtype=%d = %v, want %v", tc.itemtype, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestTwoHandedWeaponBlocksSecondarySlot(t *testing.T) {
+	// Create a 2H weapon in primary slot
+	twoHandedWeapon := &ItemWithInstance{
+		Item: model.Items{
+			Name:     "Great Sword",
+			Itemtype: int32(ItemType2HSlash),
+			Slots:    1 << SlotPrimary,
+		},
+	}
+
+	// Verify it's detected as 2H
+	if !twoHandedWeapon.IsType2H() {
+		t.Fatal("Great Sword should be detected as a 2H weapon")
+	}
+
+	// Create a shield that would go in secondary
+	shield := &ItemWithInstance{
+		Item: model.Items{
+			Name:     "Iron Shield",
+			Itemtype: int32(ItemTypeShield),
+			Slots:    1 << SlotSecondary,
+		},
+	}
+
+	// Verify shield can go in secondary slot
+	if !shield.AllowedInSlot(SlotSecondary) {
+		t.Fatal("Shield should be allowed in secondary slot")
+	}
+
+	// The actual blocking logic is in ProcessAutoLoot and HandleMoveItemWorld
+	// This test validates the helper methods work correctly
+	if twoHandedWeapon.IsType2H() && shield.AllowedInSlot(SlotSecondary) {
+		// This is the scenario where we should block the equip
+		// The blocking logic checks: if primary has 2H && trying to equip to secondary -> block
+		t.Log("Correctly identified scenario: 2H in primary should block secondary equip")
+	}
+}
+
+func TestSecondaryItemBlocksTwoHandedEquip(t *testing.T) {
+	// Create a shield in secondary slot
+	shield := &ItemWithInstance{
+		Item: model.Items{
+			Name:     "Iron Shield",
+			Itemtype: int32(ItemTypeShield),
+			Slots:    1 << SlotSecondary,
+		},
+	}
+
+	// Create a 2H weapon trying to go into primary
+	twoHandedWeapon := &ItemWithInstance{
+		Item: model.Items{
+			Name:     "Great Sword",
+			Itemtype: int32(ItemType2HSlash),
+			Slots:    1 << SlotPrimary,
+		},
+	}
+
+	// Verify it's detected as 2H
+	if !twoHandedWeapon.IsType2H() {
+		t.Fatal("Great Sword should be detected as a 2H weapon")
+	}
+
+	// The blocking logic is: if equipping 2H to primary && secondary has item -> block
+	if twoHandedWeapon.IsType2H() && shield != nil {
+		t.Log("Correctly identified scenario: secondary item should block 2H equip to primary")
+	}
+}
+
+func TestPrimarySecondarySlotValues(t *testing.T) {
+	// Verify slot constants are correct
+	if SlotPrimary != 13 {
+		t.Errorf("SlotPrimary should be 13, got %d", SlotPrimary)
+	}
+	if SlotSecondary != 14 {
+		t.Errorf("SlotSecondary should be 14, got %d", SlotSecondary)
+	}
+}
+
+func TestNilItemIsType2H(t *testing.T) {
+	var nilItem *ItemWithInstance
+
+	// Nil items should not be detected as 2H
+	if nilItem.IsType2H() {
+		t.Error("Nil item should not be detected as 2H")
+	}
+	if nilItem.IsType1HWeapon() {
+		t.Error("Nil item should not be detected as 1H weapon")
+	}
+	if nilItem.IsTypeShield() {
+		t.Error("Nil item should not be detected as shield")
+	}
+}

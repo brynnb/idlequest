@@ -52,6 +52,8 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.StopCombat:  HandleStopCombat,
 		// Bind handlers
 		opcodes.UpdateBind: HandleUpdateBind,
+		// Auto-equip handlers
+		opcodes.AutoPlaceCursorItem: HandleAutoPlaceCursorItem,
 	}
 
 	globalOpcodes := make(map[opcodes.OpCode]bool)

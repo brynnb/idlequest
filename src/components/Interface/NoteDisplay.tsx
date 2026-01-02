@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import useDialogueStore from "@stores/DialogueStore";
 import { getNPCDialogue } from "@utils/getNPCDialogue";
-import { LoadingJokeUtil } from "@utils/getRandomLoadingJoke";
 
 const NoteDisplayContainer = styled.div.attrs({
   className: "note-display-container",
@@ -41,7 +40,7 @@ const DialogueDisplay = styled.div.attrs({
 
 const DialogueEntry = styled.div.attrs({
   className: "dialogue-entry",
-})<{ $isPlayer: boolean }>`
+}) <{ $isPlayer: boolean }>`
   max-width: 80%;
   padding: 8px 12px;
   margin: 4px 0;
@@ -148,10 +147,11 @@ const NoteDisplay: React.FC = () => {
               )}
               {!isLoading &&
                 currentDialogue &&
+                'responses' in currentDialogue &&
                 Array.isArray(currentDialogue.responses) &&
                 currentDialogue.responses.length > 0 && (
                   <QuestionsList>
-                    {currentDialogue.responses.map((response, index) => (
+                    {currentDialogue.responses.map((response: string | { text: string }, index: number) => (
                       <QuestionItem
                         key={index}
                         onClick={() =>

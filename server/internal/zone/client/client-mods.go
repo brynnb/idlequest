@@ -6,9 +6,9 @@ import (
 )
 
 func (c *Client) CalcBonuses() {
-	// client.CalcItemBonuses()
-	// client.CalcAABonuses()
-	// client.CalcSpellBonuses()
+	c.CalcItemBonuses()
+	// c.CalcAABonuses()
+	// c.CalcSpellBonuses()
 	c.CalcAC()
 	c.CalcATK()
 	c.CalcHaste()
@@ -32,6 +32,80 @@ func (c *Client) CalcBonuses() {
 	// HP / Mana
 	c.CalcMaxHP()
 	c.CalcMaxMana()
+}
+
+// CalcItemBonuses calculates stat bonuses from all equipped items
+// and stores them in mob.ItemBonuses
+func (c *Client) CalcItemBonuses() {
+	c.itemsMu.RLock()
+	defer c.itemsMu.RUnlock()
+
+	// Initialize or reset ItemBonuses
+	c.mob.ItemBonuses = &constants.StatBonuses{}
+	bonuses := c.mob.ItemBonuses
+
+	for key, item := range c.items {
+		// Only include items in equipment slots (bag == 0 with slot 0-21)
+		if key.Bag != 0 || !constants.IsEquipSlot(key.Slot) {
+			continue
+		}
+		if item == nil {
+			continue
+		}
+
+		// Core stats
+		bonuses.STR += item.Item.Astr
+		bonuses.STA += item.Item.Asta
+		bonuses.DEX += item.Item.Adex
+		bonuses.AGI += item.Item.Aagi
+		bonuses.INT += item.Item.Aint
+		bonuses.WIS += item.Item.Awis
+		bonuses.CHA += item.Item.Acha
+
+		// HP and Mana
+		bonuses.HP += int64(item.Item.Hp)
+		bonuses.Mana += int64(item.Item.Mana)
+		bonuses.HPRegen += int64(item.Item.Regen)
+		bonuses.ManaRegen += int64(item.Item.Manaregen)
+		bonuses.Endurance += int64(item.Item.Endur)
+		bonuses.EnduranceRegen += int64(item.Item.Enduranceregen)
+
+		// AC (for display, actual AC calculation happens in CalcAC)
+		bonuses.AC += item.Item.Ac
+
+		// Attack
+		bonuses.ATK += item.Item.Attack
+
+		// Resists
+		bonuses.MR += item.Item.Mr
+		bonuses.FR += item.Item.Fr
+		bonuses.CR += item.Item.Cr
+		bonuses.DR += item.Item.Dr
+		bonuses.PR += item.Item.Pr
+
+		// Haste (stored as percentage, capped later)
+		bonuses.Haste += item.Item.Haste
+
+		// Damage shield
+		bonuses.DamageShield += int(item.Item.Damageshield)
+
+		// Accuracy and avoidance
+		bonuses.AvoidMeleeChance += item.Item.Avoidance
+		bonuses.HitChance += item.Item.Accuracy
+
+		// Shielding and spell shield
+		bonuses.SpellShield += int(item.Item.Spellshield)
+		bonuses.DSMitigation += item.Item.Dotshielding
+
+		// Strike through and stun resist
+		bonuses.StrikeThrough += item.Item.Strikethrough
+		bonuses.StunResist += item.Item.Stunresist
+
+		// Heal and spell damage
+		bonuses.HealAmt += int32(item.Item.Healamt)
+		bonuses.SpellDmg += int32(item.Item.Spelldmg)
+		bonuses.Clairvoyance += int32(item.Item.Clairvoyance)
+	}
 }
 
 func (client *Client) CalcAC() {

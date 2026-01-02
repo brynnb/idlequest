@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { LoadingJokeUtil } from "@utils/getRandomLoadingJoke";
 
 const Wrapper = styled.div`
   display: flex;
@@ -63,6 +64,28 @@ const LoadingScreen = ({
   isIndeterminate = false,
 }: LoadingScreenProps) => {
   const [animatedProgress, setAnimatedProgress] = useState(0);
+  const [loadingJoke, setLoadingJoke] = useState(() =>
+    LoadingJokeUtil.getRandomLoadingJoke()
+  );
+  const [dots, setDots] = useState("");
+
+  // Rotate through random jokes every 3 seconds
+  useEffect(() => {
+    const jokeInterval = setInterval(() => {
+      setLoadingJoke(LoadingJokeUtil.getRandomLoadingJoke());
+    }, 3000);
+
+    return () => clearInterval(jokeInterval);
+  }, []);
+
+  // Animate the ellipsis
+  useEffect(() => {
+    const dotsInterval = setInterval(() => {
+      setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
+    }, 400);
+
+    return () => clearInterval(dotsInterval);
+  }, []);
 
   useEffect(() => {
     if (isIndeterminate) {
@@ -82,7 +105,10 @@ const LoadingScreen = ({
   return (
     <Wrapper>
       <LoadingContainer>
-        <LoadingText>{message}</LoadingText>
+        <LoadingText>
+          {loadingJoke}
+          {dots}
+        </LoadingText>
         <LoadingBarContainer>
           <LoadingBarFill $progress={animatedProgress} />
         </LoadingBarContainer>

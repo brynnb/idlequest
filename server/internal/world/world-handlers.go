@@ -481,6 +481,26 @@ func HandleMoveItemWorld(ses *session.Session, payload []byte, wh *WorldHandler)
 	fromItem := ses.Client.Items()[fromKey]
 	toItem := ses.Client.Items()[toKey]
 
+	// Check 2H weapon constraints for manual equip actions
+	if toBag == 0 { // Only check equipment slots (bag 0)
+		primaryItem := ses.Client.Items()[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotPrimary)}]
+
+		// Case 1: Trying to equip to secondary slot when primary has 2H weapon
+		if toSlot == int8(constants.SlotSecondary) && primaryItem != nil && primaryItem.IsType2H() {
+			SendSystemMessage(ses, "You cannot equip an off-hand item while wielding a two-handed weapon.")
+			return false
+		}
+
+		// Case 2: Trying to equip a 2H weapon to primary when secondary has an item
+		if toSlot == int8(constants.SlotPrimary) && fromItem != nil && fromItem.IsType2H() {
+			secondaryItem := ses.Client.Items()[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotSecondary)}]
+			if secondaryItem != nil {
+				SendSystemMessage(ses, "You cannot equip a two-handed weapon while holding an item in your off-hand.")
+				return false
+			}
+		}
+	}
+
 	// Do the DB swap
 	updates, err := items.SwapItemSlots(
 		int32(ses.Client.CharData().ID),
@@ -600,9 +620,10 @@ func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	return false
 }
 
-// HandleChannelMessage is a no-op for single-player idle game
+// HandleChannelMessage handles legacy EQ channel messages.
+// Note: IdleQuest uses HandleSendChatMessage for chat broadcasting instead.
 func HandleChannelMessage(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	// No-op: Single-player idle game doesn't need chat broadcasting
+	// Legacy opcode - chat is handled by HandleSendChatMessage
 	return false
 }
 
@@ -1069,6 +1090,86 @@ func HandleUpdateBind(ses *session.Session, payload []byte, wh *WorldHandler) bo
 	}
 	msg.SetValue(int32(charData.ZoneID))
 	ses.SendStream(msg.Message(), opcodes.BindUpdated)
+
+	return false
+}
+
+// HandleAutoPlaceCursorItem handles the auto-place cursor item request (PersonaView click)
+// Uses the same logic as auto-loot: try to equip, then find inventory/bag slot
+func HandleAutoPlaceCursorItem(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		return false
+	}
+
+	charData := ses.Client.CharData()
+	currentItems := ses.Client.Items()
+
+	// Get cursor item
+	cursorKey := constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotCursor)}
+	cursorItem := currentItems[cursorKey]
+	if cursorItem == nil {
+		return false // No item on cursor
+	}
+
+	targetBag := int8(0)
+	targetSlot := int8(-1)
+
+	// Wrap cursor item for helper methods
+	itemWithInstance := cursorItem
+
+	// Step 1: Check if equippable in an empty slot
+	if itemWithInstance.IsEquippable(constants.RaceID(charData.Race), uint8(charData.Class)) {
+		// Check if primary slot has a 2H weapon (blocks secondary slot)
+		primaryItem := currentItems[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotPrimary)}]
+		primaryHas2H := primaryItem != nil && primaryItem.IsType2H()
+
+		for s := int8(0); s <= 21; s++ { // Equipment slots only
+			if itemWithInstance.AllowedInSlot(s) && constants.IsEquipSlot(s) {
+				// Skip secondary slot if primary has a 2H weapon
+				if s == int8(constants.SlotSecondary) && primaryHas2H {
+					continue
+				}
+				// Skip primary slot if item is 2H and secondary has an item
+				if s == int8(constants.SlotPrimary) && itemWithInstance.IsType2H() {
+					secondaryItem := currentItems[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotSecondary)}]
+					if secondaryItem != nil {
+						continue
+					}
+				}
+				// Check if slot is empty
+				if currentItems[constants.InventoryKey{Bag: 0, Slot: s}] == nil {
+					targetSlot = s
+					break
+				}
+			}
+		}
+	}
+
+	// Step 2: If not equipped, find free inventory/bag slot
+	if targetSlot == -1 {
+		targetBag, targetSlot = items.FindFirstAvailableSlot(currentItems, cursorItem.IsContainer())
+	}
+
+	// No slot found
+	if targetSlot == -1 {
+		SendSystemMessage(ses, "Your inventory is full.")
+		return false
+	}
+
+	// Step 3: Execute the move via SwapItemSlots
+	_, err := items.SwapItemSlots(
+		int32(charData.ID),
+		int8(constants.SlotCursor), targetSlot,
+		targetBag, 0,
+		cursorItem, nil,
+	)
+	if err != nil {
+		log.Printf("HandleAutoPlaceCursorItem: failed to move item: %v", err)
+		return false
+	}
+
+	// Send updated character state to client
+	sendCharacterState(ses, charData.Name)
 
 	return false
 }

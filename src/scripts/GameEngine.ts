@@ -239,7 +239,7 @@ class GameEngine {
       playerCharacterStore.getState().addInventoryItemFromLoot({
         slot: item.slot,
         bag: item.bagSlot,
-        itemId: item.itemId,
+        itemid: item.itemId,
         itemDetails: {
           id: item.itemId,
           name: item.name,
