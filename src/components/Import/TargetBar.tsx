@@ -52,7 +52,7 @@ const TargetBar: React.FC = () => {
   const percentDone = currentNPCHealth / Number(targetNPC.hp);
 
   return (
-    <TargetContainer className="target_and_actions">
+    <TargetContainer className="target_and_actions" data-testid="target-bar" data-percent={percentDone} data-npc-name={targetNPC.name}>
       <TargetHealthBar>
         <TargetFullHealthContainer $percentDone={percentDone}>
           <TargetFullHealthImage

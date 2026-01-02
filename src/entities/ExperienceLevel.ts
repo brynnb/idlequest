@@ -5,7 +5,7 @@ export interface Experience {
 }
 
 export const EXPERIENCE_TABLE: Experience[] = [
-  { level: 1, totalExperience: 1000, experienceToLevelUp: 1000 },
+  { level: 1, totalExperience: 1000, experienceToLevelUp: 1000 }, //intentionally set to 1000
   { level: 2, totalExperience: 8000, experienceToLevelUp: 7000 },
   { level: 3, totalExperience: 27000, experienceToLevelUp: 19000 },
   { level: 4, totalExperience: 64000, experienceToLevelUp: 37000 },

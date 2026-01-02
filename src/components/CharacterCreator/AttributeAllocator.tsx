@@ -41,7 +41,7 @@ const LargeStyledText = styled(StyledText)`
 const AttributeNumber = styled.span<{ $hasAllocation?: boolean }>`
   width: 75px;
   height: 75px;
-  background: url(public/images/ui/charactercreation/attributenumberbackgroundlightsmall.png);
+  background: url(/images/ui/charactercreation/attributenumberbackgroundlightsmall.png);
   background-size: contain;
   background-repeat: no-repeat;
   display: inline-flex;

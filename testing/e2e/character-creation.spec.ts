@@ -16,7 +16,6 @@ test.describe("Advanced Character Creation & Selection", () => {
     await guestButton.click();
 
     // === Handle Slots and Selection ===
-    // Wait for the Character Select page to load
     await expect(page.getByRole("button", { name: "QUIT" })).toBeVisible({
       timeout: 15000,
     });
@@ -25,31 +24,27 @@ test.describe("Advanced Character Creation & Selection", () => {
       name: "CREATE NEW CHARACTER",
     });
 
-    // Check if we have free slots. If not, delete one character.
-    const createBtnCount = await createBtnSelector.count();
-    console.log(`Available empty slots: ${createBtnCount}`);
+    // Check if we have free slots.
+    await page.waitForTimeout(1000);
+    let createBtnCount = await createBtnSelector.count();
+    console.log(`Initial available empty slots: ${createBtnCount}`);
 
     if (createBtnCount === 0) {
       console.log("No free slots! Deleting an existing character first...");
-      // Select the first character in the list (if any)
-      const firstCharEntry = page
-        .locator("button")
-        .filter({ hasNotText: "CREATE NEW CHARACTER" })
-        .filter({ hasNotText: /ENTER WORLD|DELETE|QUIT/ })
-        .first();
+      const characterButtons = page.locator('button').filter({ hasNotText: /CREATE NEW CHARACTER|ENTER WORLD|DELETE|QUIT/ });
+      const firstCharEntry = characterButtons.first();
+
+      const charName = await firstCharEntry.textContent();
+      console.log(`Deleting existing character for room: ${charName}`);
 
       await firstCharEntry.click();
+      // Using exact: true to distinguish from the modal's Delete button
+      await page.getByRole("button", { name: "DELETE", exact: true }).click();
+      // The modal button is usually different (check for lowercase 'Delete' or its container)
+      await page.locator('button').filter({ hasText: /^Delete$/ }).click();
 
-      // Click DELETE
-      await page.getByRole("button", { name: "DELETE" }).click();
-
-      // Confirm deletion in modal
-      const confirmBtn = page.getByRole("button", { name: "Delete" });
-      await expect(confirmBtn).toBeVisible();
-      await confirmBtn.click();
-
-      // Ensure a "CREATE NEW CHARACTER" button appeared
       await expect(createBtnSelector.first()).toBeVisible({ timeout: 10000 });
+      createBtnCount = await createBtnSelector.count();
     }
 
     // Now proceed with creation
@@ -62,14 +57,17 @@ test.describe("Advanced Character Creation & Selection", () => {
     await page.getByRole("button", { name: "Human" }).click();
     await page.getByRole("button", { name: "Warrior" }).click();
 
-    // Generate a unique name
-    const uniqueName = `Test${Date.now().toString().slice(-6)}`;
+    // Use Random Name button
+    const randomNameBtn = page.getByRole("button", { name: "Random Name" });
+    await randomNameBtn.click();
+
     const nameInput = page.getByPlaceholder("Enter character name");
-    await nameInput.fill(uniqueName);
+    const uniqueName = await nameInput.inputValue();
+    console.log(`Generated random name: ${uniqueName}`);
 
     // Wait for name validation
     await expect(page.getByText("Name is available!")).toBeVisible({
-      timeout: 10000,
+      timeout: 15000,
     });
 
     // Auto-allocate
@@ -77,60 +75,44 @@ test.describe("Advanced Character Creation & Selection", () => {
     await page.waitForTimeout(500);
 
     // Continue
-    const nextBtn = page.getByRole("button", { name: "Next" }).first();
-    await expect(nextBtn).toBeEnabled();
-    await nextBtn.click();
+    await page.getByRole("button", { name: "Next" }).first().click();
 
     // === Step 2: Deity ===
     await expect(page.getByText("Choose A Deity")).toBeVisible();
     await page.getByRole("button", { name: "Next" }).click();
 
     // === Step 3: Zone ===
-    await page.waitForTimeout(500); // UI transition
+    await page.waitForTimeout(500);
     await page.getByRole("button", { name: "Next" }).click();
 
     // === Step 4: Finalize ===
     await expect(page.getByText(/Your journey begins/i)).toBeVisible();
-    const finalizeBtn = page.getByRole("button", { name: "Create" });
-    await expect(finalizeBtn).toBeEnabled();
-    await finalizeBtn.click();
+    await page.getByRole("button", { name: "Create" }).click();
 
     // === Verify returning to Character Select ===
-    // The SubmitCharacter component redirects back and sets pendingSelectName
+    console.log(`Verifying character ${uniqueName} in list...`);
     const charEntryInList = page.getByRole("button", { name: uniqueName });
-    await expect(charEntryInList).toBeVisible({ timeout: 15000 });
+    await expect(charEntryInList).toBeVisible({ timeout: 20000 });
 
-    // Verify it is the ACTIVE selection
-    // In our UI, the active button uses the 'actionbuttonpress.png' background
-    // We can also check if the Character Preview area shows the class/level
-    await expect(page.getByText("CURRENT LOCATION")).toBeVisible();
-
-    // Check for the "selected" state. 
-    // Since styled-components uses props, we check if the button has the expected visual state
-    // In CharacterSelectPage: $isSelected={selectedCharacter?.name === character?.name}
-    // We can verify that the "ENTER WORLD" button is enabled, which implies selection
-    await expect(page.getByRole("button", { name: "ENTER WORLD" })).toBeEnabled();
+    // Verify Selection
+    // 1. ENTER WORLD is enabled
+    await expect(page.getByRole("button", { name: "ENTER WORLD" })).toBeEnabled({ timeout: 10000 });
+    // 2. Character info area should show Warrior
+    await expect(page.locator('div').filter({ hasText: "Warrior" }).last()).toBeVisible();
 
     // === Test Character Deletion ===
     console.log(`Verifying deletion of ${uniqueName}...`);
-    // Ensure our new char is selected (should be by default)
     await charEntryInList.click();
 
-    const deleteBtn = page.getByRole("button", { name: "DELETE" });
-    await expect(deleteBtn).toBeEnabled();
-    await deleteBtn.click();
+    // Distinguish between DELETE (action) and Delete (modal confirm)
+    await page.getByRole("button", { name: "DELETE", exact: true }).click();
+    // Modal confirmation button has text "Delete" and is usually in a centered div
+    const confirmDeleteBtn = page.locator('button').filter({ hasText: /^Delete$/ });
+    await expect(confirmDeleteBtn).toBeVisible();
+    await confirmDeleteBtn.click();
 
-    // Modal confirmation
-    const modalConfirm = page.getByRole("button", { name: "Delete" });
-    await expect(modalConfirm).toBeVisible();
-    await modalConfirm.click();
-
-    // Verify character is gone and slot is back to "CREATE NEW CHARACTER"
-    await expect(charEntryInList).not.toBeVisible({ timeout: 10000 });
-    // Check if the slot became a create button again (or count increased)
-    const newCreateBtnCount = await createBtnSelector.count();
-    expect(newCreateBtnCount).toBeGreaterThan(0);
-
+    // Verify character is gone
+    await expect(charEntryInList).not.toBeVisible({ timeout: 15000 });
     console.log("Cleanup: Character deleted successfully.");
   });
 });

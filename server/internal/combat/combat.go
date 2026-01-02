@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"math/rand"
+	"os"
 	"sync"
 	"time"
 
@@ -12,6 +13,9 @@ import (
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/session"
 )
+
+// dependency injection for testing
+var getCharacterBind = db_character.GetCharacterBind
 
 // CombatState represents the current state of combat for a player
 type CombatState struct {
@@ -93,7 +97,12 @@ func GetManager() *CombatManager {
 
 // Start begins the combat tick loop
 func (m *CombatManager) Start() {
-	m.ticker = time.NewTicker(1 * time.Second)
+	tickRate := 1 * time.Second
+	if os.Getenv("IDLEQUEST_TEST_MODE") == "true" {
+		tickRate = 50 * time.Millisecond // 20x faster
+		log.Println("=== COMBAT TEST MODE ENABLED (20x faster) ===")
+	}
+	m.ticker = time.NewTicker(tickRate)
 	go m.tickLoop()
 	log.Println("Combat manager started")
 }
@@ -194,6 +203,27 @@ func (m *CombatManager) IsInCombat(charID int64) bool {
 	return ok && cs.State.Active
 }
 
+// DebugSetNPCLowHP sets the current NPC's HP to 1 for the given character
+func (m *CombatManager) DebugSetNPCLowHP(charID int64) {
+	m.mu.RLock()
+	cs, ok := m.sessions[charID]
+	m.mu.RUnlock()
+
+	if ok {
+		cs.mu.Lock()
+		if cs.State.Active {
+			cs.State.NPCCurrentHP = 1
+		}
+		cs.mu.Unlock()
+	}
+}
+
+// DebugSetPlayerLowHP sets the player's HP to 1 in the session context (actual char update happens on tick)
+// Note: This only affects the combat loop's knowledge if we were tracking it there, but
+// the authoritative player HP is in the client/session struct, so this might need call site handling.
+// Actually, combat loop reads from session.Client.CharData() every tick.
+// So we don't strictly need a method here if we update CharData directly in the handler.
+
 func (cs *CombatSession) processCombatRound() {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
@@ -272,12 +302,17 @@ func (cs *CombatSession) processCombatRound() {
 }
 
 // calculateMaxHP calculates max HP based on level and STA
-func calculateMaxHP(charData *model.CharacterData) int {
+// CalculateMaxHPFromStats calculates max HP based on level and STA
+func CalculateMaxHPFromStats(level int, sta int) int {
 	// Simple formula: base HP + (level * 10) + (STA * 2)
 	baseHP := 20
-	levelBonus := int(charData.Level) * 10
-	staBonus := int(charData.Sta) * 2
+	levelBonus := level * 10
+	staBonus := sta * 2
 	return baseHP + levelBonus + staBonus
+}
+
+func calculateMaxHP(charData *model.CharacterData) int {
+	return CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta))
 }
 
 // calculatePlayerAC calculates AC from equipment and stats
@@ -318,8 +353,8 @@ var experienceTable = []int{
 	8000000, // level 21
 }
 
-// calculateLevelFromExp returns the level for a given experience total
-func calculateLevelFromExp(exp int) int {
+// CalculateLevelFromExp returns the level for a given experience total
+func CalculateLevelFromExp(exp int) int {
 	for level := len(experienceTable) - 1; level >= 1; level-- {
 		if exp >= experienceTable[level] {
 			return level
@@ -434,7 +469,7 @@ func (cs *CombatSession) handleNPCDeath() {
 	charData.Exp += uint32(expGained)
 
 	// Recalculate level based on new experience
-	charData.Level = uint32(calculateLevelFromExp(int(charData.Exp)))
+	charData.Level = uint32(CalculateLevelFromExp(int(charData.Exp)))
 
 	// Mark combat as ended
 	cs.State.Active = false
@@ -466,7 +501,7 @@ func (cs *CombatSession) handlePlayerDeath() {
 	cs.State.Active = false
 
 	// Get bind point for respawn
-	bind, err := db_character.GetCharacterBind(context.Background(), charData.ID)
+	bind, err := getCharacterBind(context.Background(), charData.ID)
 	if err != nil {
 		log.Printf("Failed to get bind point for character %d: %v", charData.ID, err)
 		// Default to current zone if bind not found

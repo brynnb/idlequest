@@ -15,7 +15,8 @@
     "test:inventory": "npx playwright test e2e/inventory-persistence.spec.ts --headed",
     "server:go": "cd server && (air || go run ./cmd/daemon)",
     "server": "set -a && source .env && set +a && npm run server:go",
-    "dev:all": "npm run server:go & sleep 3 && npm run dev"
+    "dev:all": "npm run server:go & sleep 3 && npm run dev",
+    "dev:test": "VITE_TEST_MODE=true IDLEQUEST_TEST_MODE=true npm run dev:all"
   },
   "dependencies": {
     "@tanstack/react-query-devtools": "^5.58.0",

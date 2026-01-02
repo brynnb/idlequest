@@ -62,7 +62,7 @@ const StatBar: React.FC<BarProps> = ({
 }) => {
   return (
     <>
-      <BarContainer $top={top}>
+      <BarContainer $top={top} data-testid={`stat-bar-${type}`} data-percent={percent}>
         <EmptyBar
           src={`/images/${type}bar_empty.png`}
           className={`empty-${type}`}
@@ -102,7 +102,7 @@ const CustomXPBarSub: React.FC<{ percent: number; topOffset: number }> = ({
   );
 };
 
-const XPBarSubContainer = styled.div.attrs({ className: "xp-bar-sub" })<{
+const XPBarSubContainer = styled.div.attrs({ className: "xp-bar-sub" }) <{
   $topOffset: number;
 }>`
   position: absolute;
@@ -117,7 +117,7 @@ const XPBarSubContainer = styled.div.attrs({ className: "xp-bar-sub" })<{
 
 const FullXPContainerSub = styled.div.attrs({
   className: "full-xp-container-sub",
-})<{
+}) <{
   width: string;
   $topOffset: number;
 }>`

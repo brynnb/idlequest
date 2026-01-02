@@ -6,6 +6,7 @@ import (
 	"unicode"
 
 	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/combat"
 	"idlequest/internal/constants"
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/session"
@@ -159,32 +160,9 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 		return false
 	}
 
-	if !eq.CopyErrorValue(cc.Name, pp.SetName) {
-		return false
-	}
-	pp.SetRace(cc.Race())
-	pp.SetCharClass(cc.CharClass())
-	pp.SetGender(cc.Gender())
-	pp.SetDeity(cc.Deity())
-	pp.SetStr(cc.Str())
-	pp.SetSta(cc.Sta())
-	pp.SetAgi(cc.Agi())
-	pp.SetDex(cc.Dex())
-	pp.SetWis(cc.Wis())
-	pp.SetIntel(cc.Intel())
-	pp.SetCha(cc.Cha())
-	pp.SetFace(cc.Face())
-	pp.SetLevel(1)
-	pp.SetPoints(5)
-	pp.SetCurHp(1000)
-	pp.SetHungerLevel(6000)
-	pp.SetThirstLevel(6000)
-	pp.SetHeading(0)
-	pp.SetPvp(0)
-	pp.SetZoneId(2) // Qeynos as default
-	pp.SetX(-1)
-	pp.SetY(-1)
-	pp.SetZ(-1)
+	// Initialize stats
+	InitializeNewCharacterProfile(&pp, cc)
+
 	skills, _ := pp.Skills()
 	skills.Set(27, 50) // Swimming
 	skills.Set(55, 50) // Sense Heading
@@ -239,6 +217,40 @@ func CharacterCreate(ses *session.Session, accountId int64, cc eq.CharCreate) bo
 	result := StoreCharacter(accountId, &pp)
 	log.Printf("StoreCharacter returned: %v", result)
 	return result
+}
+
+func InitializeNewCharacterProfile(pp *eq.PlayerProfile, cc eq.CharCreate) {
+	if !eq.CopyErrorValue(cc.Name, pp.SetName) {
+		// Should handle error? But return type is void in requested instruction usually for simplicity
+		return
+	}
+	pp.SetRace(cc.Race())
+	pp.SetCharClass(cc.CharClass())
+	pp.SetGender(cc.Gender())
+	pp.SetDeity(cc.Deity())
+	pp.SetStr(cc.Str())
+	pp.SetSta(cc.Sta())
+	pp.SetAgi(cc.Agi())
+	pp.SetDex(cc.Dex())
+	pp.SetWis(cc.Wis())
+	pp.SetIntel(cc.Intel())
+	pp.SetCha(cc.Cha())
+	pp.SetFace(cc.Face())
+	pp.SetLevel(1)
+	pp.SetPoints(5)
+
+	// Calculate correct starting HP
+	maxHP := combat.CalculateMaxHPFromStats(1, int(cc.Sta()))
+	pp.SetCurHp(int32(maxHP))
+
+	pp.SetHungerLevel(6000)
+	pp.SetThirstLevel(6000)
+	pp.SetHeading(0)
+	pp.SetPvp(0)
+	pp.SetZoneId(2) // Qeynos as default
+	pp.SetX(-1)
+	pp.SetY(-1)
+	pp.SetZ(-1)
 }
 
 func CheckCharCreateInfo(cc eq.CharCreate) bool {

@@ -4,34 +4,50 @@ import CharacterSelectPage from "@/pages/CharacterSelectPage";
 import CharacterCreatorPage from "@/pages/CharacterCreatorPage";
 import MainPage from "@/pages/MainPage";
 import StaticDataGate from "./StaticDataGate";
+import DevPanel from "./Interface/DevPanel";
+
+const IS_TEST_MODE = import.meta.env.VITE_TEST_MODE === "true";
 
 const ScreenRouter = () => {
   const { currentScreen } = useGameScreenStore();
 
+  let content;
   switch (currentScreen) {
     case "login":
-      return <LoginPage />;
+      content = <LoginPage />;
+      break;
     case "characterSelect":
-      return (
+      content = (
         <StaticDataGate>
           <CharacterSelectPage />
         </StaticDataGate>
       );
+      break;
     case "characterCreate":
-      return (
+      content = (
         <StaticDataGate>
           <CharacterCreatorPage />
         </StaticDataGate>
       );
+      break;
     case "game":
-      return (
+      content = (
         <StaticDataGate>
           <MainPage />
         </StaticDataGate>
       );
+      break;
     default:
-      return <LoginPage />;
+      content = <LoginPage />;
+      break;
   }
+
+  return (
+    <>
+      {content}
+      {IS_TEST_MODE && currentScreen !== "login" && <DevPanel />}
+    </>
+  );
 };
 
 export default ScreenRouter;

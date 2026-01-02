@@ -246,6 +246,7 @@ const ChatBox: React.FC = () => {
           <ChatMessage
             key={message.id}
             className={getMessageClass(message.type)}
+            data-testid="chat-message"
           >
             {message.text}
           </ChatMessage>

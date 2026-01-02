@@ -3,7 +3,10 @@ package world
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	eq "idlequest/internal/api/capnp"
 	"idlequest/internal/api/opcodes"
@@ -676,9 +679,65 @@ func HandleClientAnimation(ses *session.Session, payload []byte, wh *WorldHandle
 
 // HandleGMCommand handles GM commands
 func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	// GM commands can be implemented here if needed
-	// For now, just log and ignore
-	log.Printf("GM command received from session %d", ses.SessionID)
+	if os.Getenv("IDLEQUEST_TEST_MODE") != "true" {
+		log.Printf("GM command rejected (not in test mode) from session %d", ses.SessionID)
+		return false
+	}
+
+	req, err := session.Deserialize(ses, payload, eq.ReadRootCommandMessage)
+	if err != nil {
+		log.Printf("failed to read CommandMessage: %v", err)
+		return false
+	}
+
+	commandName, _ := req.Command()
+	args, _ := req.Args()
+	log.Printf("GM command received: %s with %d args", commandName, args.Len())
+
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		return false
+	}
+	charData := ses.Client.CharData()
+
+	switch strings.ToLower(commandName) {
+	case "heal":
+		maxHP := calculateMaxHPForChar(charData)
+		charData.CurHp = uint32(maxHP)
+		log.Printf("[GM] Healed %s to %d HP", charData.Name, maxHP)
+		sendCharacterState(ses, charData.Name)
+
+	case "suicide":
+		charData.CurHp = 1
+		log.Printf("[GM] Player %s set to 1 HP (Near Death)", charData.Name)
+		sendCharacterState(ses, charData.Name)
+
+	case "kill", "win":
+		// If in combat, set NPC HP to 1
+		cms := combat.GetManager()
+		if cms.IsInCombat(int64(charData.ID)) {
+			cms.DebugSetNPCLowHP(int64(charData.ID))
+			log.Printf("[GM] Weakened %s's target to 1 HP", charData.Name)
+		} else {
+			log.Printf("[GM] 'win' command ignored - %s is not in combat", charData.Name)
+		}
+
+	case "exp":
+		if args.Len() > 0 {
+			amountStr, _ := args.At(0)
+			var amount int
+			fmt.Sscanf(amountStr, "%d", &amount)
+			if amount > 0 {
+				charData.Exp += uint32(amount)
+				charData.Level = uint32(combat.CalculateLevelFromExp(int(charData.Exp)))
+				log.Printf("[GM] Added %d exp to %s, now level %d", amount, charData.Name, charData.Level)
+				sendCharacterState(ses, charData.Name)
+			}
+		}
+
+	default:
+		log.Printf("Unknown GM command: %s", commandName)
+	}
+
 	return false
 }
 

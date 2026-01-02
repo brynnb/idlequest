@@ -15,12 +15,19 @@ const gameStatusStore = useGameStatusStore;
 const playerCharacterStore = usePlayerCharacterStore;
 const chatStore = useChatStore;
 
+const IS_TEST_MODE = (import.meta as any).env?.VITE_TEST_MODE === 'true';
+const TEST_SPEED_UP = 20;
+
+function getTestDelay(ms: number): number {
+  return IS_TEST_MODE ? Math.max(10, Math.floor(ms / TEST_SPEED_UP)) : ms;
+}
+
 class GameEngine {
   private static instance: GameEngine;
   private combatActive = false;
   private regenInterval: ReturnType<typeof setInterval> | null = null;
   private waitingForRegenMessageShown = false;
-  private static readonly REGEN_TICK_MS = 600; // Regen every 0.6 seconds (10x faster)
+  private static readonly REGEN_TICK_MS = IS_TEST_MODE ? 30 : 600; // Regen 20x faster in test mode
   private static readonly REGEN_PERCENT = 0.05; // 5% of max HP per tick
 
   private constructor() {
@@ -115,8 +122,7 @@ class GameEngine {
     if (round.playerHit) {
       const critMsg = round.playerCritical ? " **CRITICAL**" : "";
       addMessage(
-        `You hit ${targetNPC?.name || "the enemy"} for ${
-          round.playerDamage
+        `You hit ${targetNPC?.name || "the enemy"} for ${round.playerDamage
         } damage!${critMsg}`,
         MessageType.COMBAT_OUTGOING
       );
@@ -129,8 +135,7 @@ class GameEngine {
 
     if (round.npcHit) {
       addMessage(
-        `${targetNPC?.name || "The enemy"} hits you for ${
-          round.npcDamage
+        `${targetNPC?.name || "The enemy"} hits you for ${round.npcDamage
         } damage!`,
         MessageType.COMBAT_INCOMING
       );
@@ -167,7 +172,7 @@ class GameEngine {
 
       // Start next combat if still running
       if (isRunning) {
-        setTimeout(() => this.startCombat(), 1000);
+        setTimeout(() => this.startCombat(), getTestDelay(1000));
       }
     } else {
       // Player died
@@ -251,13 +256,13 @@ class GameEngine {
         console.log("Waiting to regenerate to full health before engaging...");
         this.waitingForRegenMessageShown = true;
       }
-      // Check again in 1 second
+      // Check again after a delay
       setTimeout(() => {
         const { isRunning } = gameStatusStore.getState();
         if (isRunning && !this.combatActive) {
           this.startCombat();
         }
-      }, 1000);
+      }, getTestDelay(1000));
       return;
     }
 
