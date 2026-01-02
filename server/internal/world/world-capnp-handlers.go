@@ -487,10 +487,29 @@ func HandleSendChatMessage(ses *session.Session, payload []byte, wh *WorldHandle
 
 	text, _ := req.Text()
 	messageType, _ := req.MessageType()
-	_ = text
-	_ = messageType
 
-	// TODO: Broadcast to other clients via ChatMessageBroadcast
+	// Get sender name from session
+	senderName := "Unknown"
+	if ses.Client != nil && ses.Client.CharData() != nil {
+		senderName = ses.Client.CharData().Name
+	}
+
+	log.Printf("[Chat] %s: %s (type: %s)", senderName, text, messageType)
+
+	// Broadcast to all authenticated sessions
+	sm := session.GetSessionManager()
+	sm.ForEachSession(func(targetSes *session.Session) {
+		if !targetSes.Authenticated {
+			return
+		}
+		session.QueueMessage(targetSes, eq.NewRootChatMessageCapnp, opcodes.ChatMessageBroadcast, func(resp eq.ChatMessageCapnp) error {
+			resp.SetSenderName(senderName)
+			resp.SetText(text)
+			resp.SetMessageType(messageType)
+			return nil
+		})
+	})
+
 	return false
 }
 

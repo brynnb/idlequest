@@ -210,8 +210,22 @@ func (m *Mob) CalcMaxHP() {
 	if m.SpellBonuses != nil {
 		m.MaxHp += int(m.SpellBonuses.HP)
 	}
-	// todo c++ conversion
-	// 	max_hp += max_hp * ((aabonuses.MaxHPChange + spellbonuses.MaxHPChange + itembonuses.MaxHPChange) / 10000.0f);
+
+	// Apply percentage-based MaxHPChange bonuses from AA, spell, and item bonuses
+	// MaxHPChange is stored as basis points (1/100th of a percent), so divide by 10000
+	var maxHPChange int32
+	if m.AABonuses != nil {
+		maxHPChange += m.AABonuses.MaxHPChange
+	}
+	if m.SpellBonuses != nil {
+		maxHPChange += m.SpellBonuses.MaxHPChange
+	}
+	if m.ItemBonuses != nil {
+		maxHPChange += m.ItemBonuses.MaxHPChange
+	}
+	if maxHPChange != 0 {
+		m.MaxHp += int(float64(m.MaxHp) * (float64(maxHPChange) / 10000.0))
+	}
 }
 
 func (m *Mob) CalcMaxMana() {

@@ -124,6 +124,8 @@ const LoginPage = () => {
   const [serverStatus, setServerStatus] = useState<
     "checking" | "online" | "offline"
   >("checking");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const { setCharacters, setIsLoading } = useCharacterSelectStore();
 
   // Check if already connected
@@ -237,12 +239,100 @@ const LoginPage = () => {
     }
   };
 
-  const handleConnect = () => {
-    // TODO: Implement real authentication
+  const handleConnect = async () => {
+    if (serverStatus !== "online") {
+      setError("Server is offline");
+      return;
+    }
+    if (!username.trim()) {
+      setError("Please enter a username");
+      return;
+    }
+    if (!password.trim()) {
+      setError("Please enter a password");
+      return;
+    }
+    setIsConnecting(true);
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      // Connect if not already connected
+      if (!WorldSocket.isConnected) {
+        const connected = await WorldSocket.connect("127.0.0.1", 443, () => {
+          setIsConnected(false);
+        });
+
+        if (!connected) {
+          throw new Error("Failed to connect to server");
+        }
+        setIsConnected(true);
+      }
+
+      // Register handler for JWT response
+      const jwtPromise = new Promise<boolean>((resolve) => {
+        WorldSocket.registerOpCodeHandler(
+          OpCodes.JWTResponse,
+          JWTResponse,
+          (response) => {
+            if (response.status > 0) {
+              resolve(true);
+            } else {
+              console.error("Authentication failed");
+              resolve(false);
+            }
+          }
+        );
+      });
+
+      // Register handler for character list (SendCharInfo)
+      WorldSocket.registerOpCodeHandler(
+        OpCodes.SendCharInfo,
+        CharacterSelect,
+        (charSelect) => {
+          const plainData = capnpToPlainObject(charSelect);
+          setCharacters(plainData.characters || []);
+          setIsLoading(false);
+          // Switch to character select after receiving character list
+          setScreen("characterSelect");
+        }
+      );
+
+      // Send JWT login with credentials
+      // Note: In production, you'd hash/encode the password and use proper JWT tokens
+      await WorldSocket.sendMessage(OpCodes.JWTLogin, JWTLogin, {
+        token: `${username}:${password}`,
+      });
+
+      // Wait for JWT response
+      const authenticated = await jwtPromise;
+      if (!authenticated) {
+        throw new Error("Invalid username or password");
+      }
+
+      // Server will send SendCharInfo after successful auth
+      // Navigation happens in the handler above
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError(err instanceof Error ? err.message : "Login failed");
+      setIsConnecting(false);
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
-    // TODO: Implement cancel behavior
+    // Reset login state
+    setIsConnecting(false);
+    setError(null);
+    setUsername("");
+    setPassword("");
+    setIsLoading(false);
+
+    // Disconnect if connected
+    if (WorldSocket.isConnected) {
+      WorldSocket.close(false);
+      setIsConnected(false);
+    }
   };
 
   return (
@@ -298,6 +388,9 @@ const LoginPage = () => {
               type="text"
               placeholder="Enter username"
               autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleConnect()}
             />
           </InputGroup>
           <InputGroup>
@@ -307,6 +400,9 @@ const LoginPage = () => {
               type="password"
               placeholder="Enter password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleConnect()}
             />
           </InputGroup>
         </CredentialsPanel>

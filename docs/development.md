@@ -1,51 +1,91 @@
 # Development
 
-This project is built using React/TypeScript and Zustand for the client, and started as an entirely local offline project. It evolved to a Node.js/Express server using Socket.IO for real-time multiplayer features, and then finally adopted the EQEmu server, as partially coverted to Go by the EQ:Requiem project, as the foundation for IdleQuest's custom server it now uses.
+This project is built using React/TypeScript and Zustand for the client. The server is a Go implementation derived from the EQEmu server, as partially converted to Go by the EQ:Requiem project, and customized for IdleQuest. Communication between the client and server uses WebTransport over HTTP/3 with Cap'n Proto for message serialization.
 
-TODO: Info below is very out of date and needs updating.
+## Quick Start
 
-## Installation
+### Prerequisites
+
+- **Node.js 18+** with pnpm
+- **Go 1.24+**
+- **MySQL/MariaDB**
+- Port 443 available for WebTransport
+
+### Installation
 
 ```bash
+# Install client dependencies
 pnpm install
+
+# The server uses Go modules (no npm install needed for server)
 ```
 
 ## Server Setup
 
-1. Install server dependencies:
+The server is located in the `server/` directory and is written in Go. See `server/readme.md` for detailed setup instructions.
 
+### Quick Server Setup
+
+1. **Database Setup**: Import the EQ database dump
    ```bash
-   cd server && npm install
+   mysql -u root -e "CREATE DATABASE IF NOT EXISTS eqgo"
+   mysql -u root eqgo < dumpfile.sql
    ```
-2. Create a `.env` file in the `server/` directory:
 
-   ```
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_USER=root
-   DB_PASSWORD=
-   DB_NAME=idlequest
-   DB_DIALECT=mysql
-   PORT=3000
-   CLIENT_URL=http://localhost:5173
-   ```
-3. Ensure MySQL is running:
-
+2. **Configuration**: Copy and configure the config file
    ```bash
-   brew services start mysql
+   cp server/internal/config/eqgo_config_template.json server/eqgo_config.json
    ```
-4. Create the database:
+   Edit `eqgo_config.json` with your MySQL credentials.
 
+3. **Generate SSL key** (for WebTransport):
    ```bash
-   mysql -u root -e "CREATE DATABASE IF NOT EXISTS idlequest;"
+   cd server/internal/config
+   openssl genpkey -algorithm RSA -out key.pem -pkeyopt rsa_keygen_bits:2048
    ```
 
-## Database Setup
+4. **Run migrations** (see `server/readme.md` for details):
+   ```bash
+   cd server/migrations
+   mysql -u root eqgo < 002_create_eqstr_us_table.sql
+   ./import_eqstr_us.sh
+   ```
+
+## Running the Dev Environment
+
+**Run client only (Vite dev server):**
+
+```bash
+pnpm run dev
+```
+
+The client runs on `http://localhost:5173` by default.
+
+**Run server only:**
+
+```bash
+cd server
+
+# Using Make
+make s
+
+# Or directly with Go
+go run ./cmd/server
+```
+
+The server listens on port 443 for WebTransport and port 7100 for the certificate hash API.
+
+**Hot reload for server** (using [Air](https://github.com/cosmtrek/air)):
+
+```bash
+cd server && air
+```
+
+## Database Setup (EQ Game Data)
 
 1. Clone or download the ProjectEQ quests repository from https://github.com/ProjectEQ/projecteqquests and place the `projecteqquests-master` folder in the `/data` directory.
-2. If for some reason you want to pre-process map images, download "EverQuest Atlas: The Maps Of Myrist" from https://archive.org/details/ever-uest-atlas-the-maps-of-myrist/mode/2up and take screenshots of the maps. Place these screenshots in the `/data/rawatlasart` directory. This is probably not needed since this repo is already tracking all the optimized versions of these images, though it doesn't include all zones as of right now since the screenshotting process is a little tedious and I just did the first ~100 zones from the first expansions.
-3. Get the required CSV files:
 
+2. Get the required CSV files:
    - Download the SQL dumps from The Al'Kabor Project (EQMacEmu): https://github.com/EQMacEmu/Server/tree/main/utils/sql/database_full
    - Convert the SQL dumps to CSV format
    - Place the following CSV files in the `/data/csv` directory:
@@ -62,8 +102,7 @@ pnpm install
      - spells.csv
      - zone_points.csv
 
-   The Al'Kabor Project is an EverQuest emulator specifically for MacOS that maintains the most accessible and comprehensive public database of the original game data that I was able to find.
-4. Run the database setup scripts in order:
+3. Run the database setup scripts in order:
 
 ```bash
 # Build the main database from CSV files
@@ -79,32 +118,50 @@ python3 data/scripts/convert_eqstr_to_db.py
 python3 data/scripts/convert_atlas_images.py
 ```
 
-## Running the Dev Environment
+## Architecture Overview
 
-**Run both client and server (recommended):**
+### Client (React/TypeScript)
+- **State Management**: Zustand stores in `src/stores/`
+- **Networking**: WebTransport via `src/net/eq-socket.ts`
+- **Cap'n Proto**: Message serialization in `src/net/capnp/`
+- **Build Tool**: Vite
 
-```bash
-npm run dev:all
-```
+### Server (Go)
+- **Location**: `server/`
+- **Protocol**: WebTransport over HTTP/3
+- **Serialization**: Cap'n Proto (`server/internal/api/capnp/`)
+- **Database**: MySQL with Jet-generated models (`server/internal/db/jetgen/`)
+- **Game Logic**: 
+  - Combat: `server/internal/combat/`
+  - Mechanics (stats, spells): `server/internal/mechanics/`
+  - World/Zone handlers: `server/internal/world/`
 
-**Run client only:**
-
-```bash
-pnpm run dev
-```
-
-**Run server only:**
-
-```bash
-cd server && npm run dev
-```
-
-The `dev:all` command runs both the React client (Vite) and the Node.js server with Socket.IO for real-time multiplayer features.
+### Communication Flow
+1. Client connects via WebTransport to `https://127.0.0.1/eq`
+2. Messages are serialized with Cap'n Proto
+3. Opcodes route messages to appropriate handlers
+4. Server responds with Cap'n Proto-serialized data
 
 ## Testing
 
-The test suite currently has limited coverage and isn't very maintained but can be run with:
+**Client tests (Vitest):**
 
 ```bash
 pnpm test --run
+
+# Run specific test
+pnpm test --run <test-name>
 ```
+
+**Server tests (Go):**
+
+```bash
+cd server && go test ./...
+```
+
+## WebTransport Local Development
+
+For WebTransport HTTPS requirements in local development, see `docs/webtransport-local-dev.md` for the detailed setup involving:
+- Dynamic certificate generation
+- Certificate hash API on port 7100
+- Vite proxy configuration

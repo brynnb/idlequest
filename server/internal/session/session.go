@@ -221,6 +221,17 @@ func (sm *SessionManager) UpdateZone(sessionID int, zoneID int) {
 	}
 }
 
+// ForEachSession iterates over all active sessions and calls the provided function for each.
+// The callback should not modify the sessions map.
+func (sm *SessionManager) ForEachSession(fn func(*Session)) {
+	sm.mu.RLock()
+	defer sm.mu.RUnlock()
+
+	for _, session := range sm.sessions {
+		fn(session)
+	}
+}
+
 type capnpMessage interface {
 	Message() *capnp.Message
 }
