@@ -5,8 +5,7 @@ import useChatStore, { MessageType } from "@stores/ChatStore";
 import { useInventoryActions } from "@hooks/useInventoryActions";
 import { useInventorySelling } from "@hooks/useInventorySelling";
 import PageSelection from "../Interface/PageSelection";
-import { WorldSocket } from "@/net";
-import { OpCodes } from "@/net/opcodes";
+import { WorldSocket, OpCodes, CommandMessage } from "@/net";
 
 const Container = styled.div.attrs({ className: "macro-buttons-container" })`
   display: flex;
@@ -97,11 +96,17 @@ const MacroButtons = () => {
   };
 
   const handleAddTestItem = async () => {
-    addItemToInventoryByItemId(2660);
+    WorldSocket.sendMessage(OpCodes.GMCommand, CommandMessage, {
+      command: "item",
+      args: ["2660"],
+    });
   };
 
   const handleAddBag = async () => {
-    addItemToInventoryByItemId(17005); // Backpack - 8 slot container
+    WorldSocket.sendMessage(OpCodes.GMCommand, CommandMessage, {
+      command: "item",
+      args: ["17005"], // Backpack - 8 slot container
+    });
   };
 
   const renderMacroButton = (num: number) => {

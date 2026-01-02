@@ -40,29 +40,6 @@ export const useInventoryActions = () => {
     });
   };
 
-  const addItemToInventoryByItemId = async (itemId: number) => {
-    const { addInventoryItem, characterProfile, setInventory } =
-      usePlayerCharacterStore.getState();
-    const { autoSellEnabled } = useGameStatusStore.getState();
-    const addChatMessage = useChatStore.getState().addMessage;
-
-    const item = { id: itemId };
-
-    const profileForLoot = characterProfile as unknown as {
-      inventory?: InventoryItem[];
-      class?: CharacterClass;
-      race?: Race;
-    };
-
-    await processLootItems([item], profileForLoot, {
-      addInventoryItem,
-      setInventory,
-      addChatMessage,
-      sellItem: () => sellGeneralInventory(false),
-      autoSellEnabled,
-    });
-  };
-
   const handleEquipAllItems = async () => {
     const store = usePlayerCharacterStore.getState();
     let inventory = store.characterProfile?.inventory || [];
@@ -239,7 +216,6 @@ export const useInventoryActions = () => {
   return {
     handleItemClick,
     handleLoot,
-    addItemToInventoryByItemId,
     handleEquipAllItems,
     handleAutoPlaceCursorItem,
   };

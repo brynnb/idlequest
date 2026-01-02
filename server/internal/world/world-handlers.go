@@ -552,7 +552,10 @@ func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandle
 
 	log.Printf("DeleteItem (world) for session %d: slot %d", ses.SessionID, slot)
 
-	db_character.PurgeCharacterItem(context.Background(), int32(ses.Client.CharData().ID), slot)
+	if err := db_character.PurgeCharacterItem(context.Background(), int32(ses.Client.CharData().ID), slot); err != nil {
+		log.Printf("Failed to purge item from database: %v", err)
+		return false
+	}
 
 	charItems := ses.Client.Items()
 	delete(charItems, constants.InventoryKey{
@@ -615,8 +618,16 @@ func HandleClientAnimation(ses *session.Session, payload []byte, wh *WorldHandle
 
 // HandleGMCommand handles GM commands
 func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if os.Getenv("IDLEQUEST_TEST_MODE") != "true" {
-		log.Printf("GM command rejected (not in test mode) from session %d", ses.SessionID)
+	if ses.Client == nil || ses.Client.CharData() == nil {
+		return false
+	}
+	charData := ses.Client.CharData()
+
+	serverConfig, _ := config.Get()
+	isDefaultLocalGM := serverConfig.Local && ses.AccountID == 1
+
+	if charData.Gm == 0 && os.Getenv("IDLEQUEST_TEST_MODE") != "true" && !isDefaultLocalGM {
+		log.Printf("GM command rejected (not GM, not in test mode, and not default local account) from session %d (char: %s)", ses.SessionID, charData.Name)
 		return false
 	}
 
@@ -629,11 +640,6 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 	commandName, _ := req.Command()
 	args, _ := req.Args()
 	log.Printf("GM command received: %s with %d args", commandName, args.Len())
-
-	if ses.Client == nil || ses.Client.CharData() == nil {
-		return false
-	}
-	charData := ses.Client.CharData()
 
 	switch strings.ToLower(commandName) {
 	case "heal":
@@ -666,6 +672,42 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 				charData.Exp += uint32(amount)
 				charData.Level = uint32(mechanics.CalculateLevelFromExp(int(charData.Exp)))
 				log.Printf("[GM] Added %d exp to %s, now level %d", amount, charData.Name, charData.Level)
+				sendCharacterState(ses, charData.Name)
+			}
+		}
+
+	case "item":
+		if args.Len() > 0 {
+			itemIDStr, _ := args.At(0)
+			var itemID int
+			fmt.Sscanf(itemIDStr, "%d", &itemID)
+			if itemID > 0 {
+				itemTemplate, err := items.GetItemTemplateByID(int32(itemID))
+				if err != nil {
+					log.Printf("[GM] Item %d not found: %v", itemID, err)
+					return false
+				}
+
+				log.Printf("[GM] Adding item %d (%s) to %s", itemID, itemTemplate.Name, charData.Name)
+
+				// Get current inventory from session client
+				currentItems := ses.Client.Items()
+
+				// Use ProcessAutoLoot to find a slot and save to DB
+				_, _, err = items.ProcessAutoLoot(
+					int32(charData.ID),
+					int(charData.Class),
+					int(charData.Race),
+					currentItems,
+					itemTemplate,
+					1, // charges
+				)
+				if err != nil {
+					log.Printf("[GM] Failed to add item %d to %s: %v", itemID, charData.Name, err)
+					return false
+				}
+
+				// Sync with client
 				sendCharacterState(ses, charData.Name)
 			}
 		}

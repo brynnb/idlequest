@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	eq "idlequest/internal/api/capnp"
+	"idlequest/internal/config"
 	"idlequest/internal/constants"
 	"idlequest/internal/session"
 
@@ -528,14 +529,22 @@ func GetOrCreateCharacterID(ctx context.Context, accountId int64, pp *eq.PlayerP
 		return int64(acc.ID), nil
 	}
 
+	gmLevel := 0
+	serverConfig, _ := config.Get()
+	if serverConfig.Local && accountId == 1 {
+		gmLevel = 1
+	}
+
 	res, err := table.CharacterData.
 		INSERT(
 			table.CharacterData.AccountID,
 			table.CharacterData.Name,
+			table.CharacterData.Gm,
 		).
 		VALUES(
 			mysql.Int(accountId),
 			mysql.String(name),
+			mysql.Int64(int64(gmLevel)),
 		).
 		ExecContext(ctx, db.GlobalWorldDB.DB)
 	if err != nil {

@@ -53,6 +53,7 @@ export {
   GetEqstrResponse,
   ValidateNameRequest,
   ValidateNameResponse,
+  CommandMessage,
 } from "./capnp/common";
 
 export { DeleteItem, SellItem, SellItemResponse } from "./capnp/item";
