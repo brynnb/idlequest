@@ -43,4 +43,8 @@ type Client interface {
 	TakeDamage(damage int) (newHp int, alive bool)
 	HealDamage(amount int) int
 	RestoreToFull()
+
+	// Auto-sell state
+	AutoSellEnabled() bool
+	SetAutoSellEnabled(enabled bool)
 }

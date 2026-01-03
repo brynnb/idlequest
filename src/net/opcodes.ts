@@ -649,4 +649,7 @@ export enum OpCodes {
   GetSpellResponse,
   GetEqstrRequest,
   GetEqstrResponse,
+
+  // IdleQuest auto-sell toggle
+  SetAutoSell,
 }

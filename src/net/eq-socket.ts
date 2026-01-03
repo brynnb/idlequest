@@ -101,7 +101,7 @@ export class EqSocket {
     onClose: () => void
   ): Promise<boolean> {
     const WT = (window as any).WebTransport as {
-      new (url: string, opts?: WebTransportOptions): WebTransport;
+      new(url: string, opts?: WebTransportOptions): WebTransport;
     };
     if (!WT) {
       console.error("WebTransport not supported");
@@ -203,6 +203,11 @@ export class EqSocket {
     const op = new Uint16Array([opCode]).buffer;
     const packet = concatArrayBuffer(op, buf);
     await this.sendDatagram(new Uint8Array(packet));
+  }
+
+  /** Send a raw datagram (opcode should already be included in the buffer) */
+  public async sendRawDatagram(buf: Uint8Array): Promise<void> {
+    await this.sendDatagram(buf);
   }
 
   /** Reliable, ordered “stream” message */

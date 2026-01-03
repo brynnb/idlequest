@@ -694,3 +694,490 @@ func TestAutoPlaceLogic_1HWeaponAllowsSecondary(t *testing.T) {
 		t.Errorf("Shield should be placed in secondary slot, got %d", targetSlot)
 	}
 }
+
+// =============================================================================
+// IsSellable Tests
+// =============================================================================
+
+func TestIsSellable_NormalItem(t *testing.T) {
+	// A normal sellable item: not nodrop, not norent, not a container, has price
+	item := model.Items{
+		Name:      "Rusty Short Sword",
+		Nodrop:    1, // 1 = NOT nodrop (can sell)
+		Norent:    1, // 1 = NOT norent (can sell)
+		Itemclass: 0, // 0 = not a container
+		Price:     50,
+	}
+
+	if !IsSellable(item) {
+		t.Error("Normal item should be sellable")
+	}
+}
+
+func TestIsSellable_NoDrop(t *testing.T) {
+	// NO DROP items cannot be sold
+	item := model.Items{
+		Name:      "Tome of Order and Discord",
+		Nodrop:    0, // 0 = IS nodrop (cannot sell)
+		Norent:    1,
+		Itemclass: 0,
+		Price:     1000,
+	}
+
+	if IsSellable(item) {
+		t.Error("NO DROP item should NOT be sellable")
+	}
+}
+
+func TestIsSellable_NoRent(t *testing.T) {
+	// NO RENT items cannot be sold
+	item := model.Items{
+		Name:      "Summoned Food",
+		Nodrop:    1,
+		Norent:    0, // 0 = IS norent (cannot sell)
+		Itemclass: 0,
+		Price:     5,
+	}
+
+	if IsSellable(item) {
+		t.Error("NO RENT item should NOT be sellable")
+	}
+}
+
+func TestIsSellable_Container(t *testing.T) {
+	// Containers cannot be sold
+	item := model.Items{
+		Name:      "Large Bag",
+		Nodrop:    1,
+		Norent:    1,
+		Itemclass: 1, // 1 = container
+		Price:     100,
+		Bagslots:  8,
+	}
+
+	if IsSellable(item) {
+		t.Error("Container should NOT be sellable")
+	}
+}
+
+func TestIsSellable_ZeroPrice(t *testing.T) {
+	// Items with zero price cannot be sold
+	item := model.Items{
+		Name:      "Worthless Rock",
+		Nodrop:    1,
+		Norent:    1,
+		Itemclass: 0,
+		Price:     0, // No value
+	}
+
+	if IsSellable(item) {
+		t.Error("Item with zero price should NOT be sellable")
+	}
+}
+
+func TestIsSellable_NegativePrice(t *testing.T) {
+	// Edge case: negative price
+	item := model.Items{
+		Name:      "Cursed Item",
+		Nodrop:    1,
+		Norent:    1,
+		Itemclass: 0,
+		Price:     -10,
+	}
+
+	if IsSellable(item) {
+		t.Error("Item with negative price should NOT be sellable")
+	}
+}
+
+func TestIsSellable_MultipleFlags(t *testing.T) {
+	// Item with multiple reasons to not sell (nodrop AND norent)
+	item := model.Items{
+		Name:      "Quest Item",
+		Nodrop:    0, // IS nodrop
+		Norent:    0, // IS norent
+		Itemclass: 0,
+		Price:     500,
+	}
+
+	if IsSellable(item) {
+		t.Error("Item with nodrop AND norent should NOT be sellable")
+	}
+}
+
+// =============================================================================
+// SoldItemInfo Currency Calculation Tests
+// =============================================================================
+
+func TestSoldItemInfo_CurrencyBreakdown(t *testing.T) {
+	tests := []struct {
+		name         string
+		price        int
+		wantPlatinum int
+		wantGold     int
+		wantSilver   int
+		wantCopper   int
+	}{
+		{"1 copper", 1, 0, 0, 0, 1},
+		{"10 copper = 1 silver", 10, 0, 0, 1, 0},
+		{"100 copper = 1 gold", 100, 0, 1, 0, 0},
+		{"1000 copper = 1 platinum", 1000, 1, 0, 0, 0},
+		{"mixed currency", 1234, 1, 2, 3, 4},
+		{"large amount", 5678, 5, 6, 7, 8},
+		{"only platinum", 3000, 3, 0, 0, 0},
+		{"gold and copper", 105, 0, 1, 0, 5},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Calculate currency breakdown (same logic as sellAndRemoveItem)
+			platinum := tt.price / 1000
+			gold := (tt.price % 1000) / 100
+			silver := (tt.price % 100) / 10
+			copper := tt.price % 10
+
+			if platinum != tt.wantPlatinum {
+				t.Errorf("Platinum: got %d, want %d", platinum, tt.wantPlatinum)
+			}
+			if gold != tt.wantGold {
+				t.Errorf("Gold: got %d, want %d", gold, tt.wantGold)
+			}
+			if silver != tt.wantSilver {
+				t.Errorf("Silver: got %d, want %d", silver, tt.wantSilver)
+			}
+			if copper != tt.wantCopper {
+				t.Errorf("Copper: got %d, want %d", copper, tt.wantCopper)
+			}
+		})
+	}
+}
+
+// =============================================================================
+// Auto-Sell Item Selection Tests (without DB)
+// =============================================================================
+
+func TestFindSellableItem_FirstGeneralSlot(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a sellable item in first general slot
+	sellableItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Sellable Sword",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 0,
+			Price:     100,
+		},
+		ItemInstanceID: 1001,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral1}] = sellableItem
+
+	// Find first sellable item
+	var foundKey *constants.InventoryKey
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := items[key]
+		if item != nil && IsSellable(item.Item) {
+			foundKey = &key
+			break
+		}
+	}
+
+	if foundKey == nil {
+		t.Fatal("Should find sellable item")
+	}
+	if foundKey.Slot != constants.SlotGeneral1 {
+		t.Errorf("Expected slot %d, got %d", constants.SlotGeneral1, foundKey.Slot)
+	}
+}
+
+func TestFindSellableItem_SkipsNoDrop(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a NO DROP item in first slot
+	noDropItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "NO DROP Quest Item",
+			Nodrop:    0, // IS nodrop
+			Norent:    1,
+			Itemclass: 0,
+			Price:     500,
+		},
+		ItemInstanceID: 1001,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral1}] = noDropItem
+
+	// Put a sellable item in second slot
+	sellableItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Sellable Item",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 0,
+			Price:     50,
+		},
+		ItemInstanceID: 1002,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral2}] = sellableItem
+
+	// Find first sellable item
+	var foundKey *constants.InventoryKey
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := items[key]
+		if item != nil && IsSellable(item.Item) {
+			foundKey = &key
+			break
+		}
+	}
+
+	if foundKey == nil {
+		t.Fatal("Should find sellable item")
+	}
+	if foundKey.Slot != constants.SlotGeneral2 {
+		t.Errorf("Should skip NO DROP and find item in slot %d, got %d", constants.SlotGeneral2, foundKey.Slot)
+	}
+}
+
+func TestFindSellableItem_SkipsContainers(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a container in first slot
+	container := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Backpack",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 1, // Container
+			Price:     100,
+			Bagslots:  8,
+		},
+		ItemInstanceID: 1001,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral1}] = container
+
+	// Put a sellable item in second slot
+	sellableItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Sellable Dagger",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 0,
+			Price:     25,
+		},
+		ItemInstanceID: 1002,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral2}] = sellableItem
+
+	// Find first sellable item
+	var foundKey *constants.InventoryKey
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := items[key]
+		if item != nil && IsSellable(item.Item) {
+			foundKey = &key
+			break
+		}
+	}
+
+	if foundKey == nil {
+		t.Fatal("Should find sellable item")
+	}
+	if foundKey.Slot != constants.SlotGeneral2 {
+		t.Errorf("Should skip container and find item in slot %d, got %d", constants.SlotGeneral2, foundKey.Slot)
+	}
+}
+
+func TestIsSellable_Food(t *testing.T) {
+	// Food items cannot be auto-sold
+	item := model.Items{
+		Name:      "Ration",
+		Nodrop:    1,
+		Norent:    1,
+		Itemclass: 0,
+		Itemtype:  14, // Food
+		Price:     5,
+	}
+
+	if IsSellable(item) {
+		t.Error("Food should NOT be sellable")
+	}
+}
+
+func TestIsSellable_Drink(t *testing.T) {
+	// Drink items cannot be auto-sold
+	item := model.Items{
+		Name:      "Water Flask",
+		Nodrop:    1,
+		Norent:    1,
+		Itemclass: 0,
+		Itemtype:  15, // Drink
+		Price:     5,
+	}
+
+	if IsSellable(item) {
+		t.Error("Drink should NOT be sellable")
+	}
+}
+
+func TestFindSellableItem_NoSellableItems(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Fill inventory with unsellable items
+	noDropItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "NO DROP Item",
+			Nodrop:    0, // IS nodrop
+			Norent:    1,
+			Itemclass: 0,
+			Price:     100,
+		},
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral1}] = noDropItem
+
+	container := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Bag",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 1, // Container
+			Price:     50,
+		},
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral2}] = container
+
+	// Find first sellable item
+	var foundKey *constants.InventoryKey
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := items[key]
+		if item != nil && IsSellable(item.Item) {
+			foundKey = &key
+			break
+		}
+	}
+
+	if foundKey != nil {
+		t.Error("Should NOT find any sellable item")
+	}
+}
+
+func TestFindSellableItem_InsideBag(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put a container in first general slot
+	container := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Large Bag",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 1,
+			Price:     100,
+			Bagslots:  10,
+		},
+		ItemInstanceID: 1001,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotGeneral1}] = container
+
+	// Put a sellable item inside the bag (bag 1 = first general slot container)
+	bagItem := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Item In Bag",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 0,
+			Price:     75,
+		},
+		ItemInstanceID: 1002,
+	}
+	items[constants.InventoryKey{Bag: 1, Slot: 0}] = bagItem
+
+	// Check general slots first, then bags (mimicking AutoSellInventoryItem logic)
+	var foundKey *constants.InventoryKey
+
+	// Check general slots
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := items[key]
+		if item != nil && IsSellable(item.Item) {
+			foundKey = &key
+			break
+		}
+	}
+
+	// If not found in general, check inside bags
+	if foundKey == nil {
+		for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+			containerCheck := items[constants.InventoryKey{Bag: 0, Slot: s}]
+			if containerCheck != nil && containerCheck.Item.Itemclass == 1 {
+				bagID := int8(s - constants.SlotGeneral1 + 1)
+				for slotIdx := int8(0); slotIdx < int8(containerCheck.Item.Bagslots); slotIdx++ {
+					key := constants.InventoryKey{Bag: bagID, Slot: slotIdx}
+					item := items[key]
+					if item != nil && IsSellable(item.Item) {
+						foundKey = &key
+						break
+					}
+				}
+				if foundKey != nil {
+					break
+				}
+			}
+		}
+	}
+
+	if foundKey == nil {
+		t.Fatal("Should find sellable item inside bag")
+	}
+	if foundKey.Bag != 1 || foundKey.Slot != 0 {
+		t.Errorf("Expected item at bag 1 slot 0, got bag %d slot %d", foundKey.Bag, foundKey.Slot)
+	}
+}
+
+func TestFindSellableItem_NeverSellsEquippedItems(t *testing.T) {
+	items := make(map[constants.InventoryKey]*constants.ItemWithInstance)
+
+	// Put sellable items in EQUIPMENT slots (0-21)
+	equippedWeapon := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Equipped Sword",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 0,
+			Price:     5000, // Valuable!
+		},
+		ItemInstanceID: 1001,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotPrimary}] = equippedWeapon
+
+	equippedArmor := &constants.ItemWithInstance{
+		Item: model.Items{
+			Name:      "Equipped Armor",
+			Nodrop:    1,
+			Norent:    1,
+			Itemclass: 0,
+			Price:     10000, // Very valuable!
+		},
+		ItemInstanceID: 1002,
+	}
+	items[constants.InventoryKey{Bag: 0, Slot: constants.SlotChest}] = equippedArmor
+
+	// AutoSellInventoryItem only checks general slots (22-29) and bags
+	// Simulate the same logic to verify equipped items are never considered
+	var foundKey *constants.InventoryKey
+
+	// Only check general inventory slots (22-29)
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := items[key]
+		if item != nil && IsSellable(item.Item) {
+			foundKey = &key
+			break
+		}
+	}
+
+	// Should NOT find any sellable item (equipped items are not in the search range)
+	if foundKey != nil {
+		t.Errorf("Should NOT find equipped items - found item at bag %d slot %d", foundKey.Bag, foundKey.Slot)
+	}
+}

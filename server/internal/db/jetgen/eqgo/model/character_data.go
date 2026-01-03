@@ -117,4 +117,5 @@ type CharacterData struct {
 	ELastInvsnapshot      uint32
 	DeletedAt             *time.Time
 	IllusionBlock         uint8
+	AutosellEnabled       uint8
 }

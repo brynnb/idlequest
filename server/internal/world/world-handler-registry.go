@@ -54,6 +54,8 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.UpdateBind: HandleUpdateBind,
 		// Auto-equip handlers
 		opcodes.AutoPlaceCursorItem: HandleAutoPlaceCursorItem,
+		// Auto-sell toggle
+		opcodes.SetAutoSell: HandleSetAutoSell,
 	}
 
 	globalOpcodes := make(map[opcodes.OpCode]bool)

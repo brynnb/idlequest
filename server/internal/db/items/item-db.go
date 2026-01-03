@@ -25,6 +25,18 @@ type SlotUpdate struct {
 	ToBag          int8
 }
 
+// IsSellable checks if an item can be sold.
+// An item is sellable if:
+// - (Nodrop != 0 || Fvnodrop != 0) (EITHER being non-zero means it is tradeable)
+// - Norent != 0 (norent = 0 means it is a temporary/no-rent item)
+// - Itemclass != 1 (itemclass 1 are containers/bags)
+// - Itemtype != 14 (Food)
+// - Itemtype != 15 (Drink)
+func IsSellable(item model.Items) bool {
+	isTradeable := item.Nodrop != 0 || item.Fvnodrop != 0
+	return isTradeable && item.Norent != 0 && item.Itemclass != 1 && item.Itemtype != 14 && item.Itemtype != 15
+}
+
 // CreateItemInstance creates a new item_instances row and returns its auto-increment ID.
 func CreateDBItemInstance(tx *stmtcache.Tx, itemInstance constants.ItemInstance, ownerId int32) (int32, error) {
 	// 1) marshal mods JSON
@@ -589,8 +601,138 @@ func FindFirstAvailableSlot(items map[constants.InventoryKey]*constants.ItemWith
 	return -1, -1
 }
 
+// SoldItemInfo contains information about an item that was auto-sold
+type SoldItemInfo struct {
+	ItemName string
+	Platinum int
+	Gold     int
+	Silver   int
+	Copper   int
+}
+
+// AutoSellAllInventoryItems finds and sells all eligible items in the player's general inventory or bags.
+// Returns the consolidated sold item info, or nil if no items could be sold.
+// Also removes the items from the DB and the currentItems map.
+func AutoSellAllInventoryItems(
+	playerID int32,
+	currentItems map[constants.InventoryKey]*constants.ItemWithInstance,
+) (*SoldItemInfo, error) {
+	totalCopper := 0
+	itemsSold := []string{}
+
+	// Helper to sell one item
+	sellOne := func(key constants.InventoryKey, item *constants.ItemWithInstance) error {
+		price := int(item.Item.Price)
+		totalCopper += price
+		itemsSold = append(itemsSold, item.Item.Name)
+
+		// Remove from DB
+		_, err := table.CharacterInventory.
+			DELETE().
+			WHERE(
+				table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
+					AND(table.CharacterInventory.ItemInstanceID.EQ(mysql.Int32(item.ItemInstanceID))),
+			).
+			Exec(db.GlobalWorldDB.DB)
+		if err != nil {
+			return err
+		}
+
+		// Remove from memory map
+		delete(currentItems, key)
+		return nil
+	}
+
+	// 1. Check general inventory slots (22-29) first
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		key := constants.InventoryKey{Bag: 0, Slot: s}
+		item := currentItems[key]
+		if item != nil && IsSellable(item.Item) {
+			if err := sellOne(key, item); err != nil {
+				return nil, fmt.Errorf("failed to sell item %s: %v", item.Item.Name, err)
+			}
+		}
+	}
+
+	// 2. Check inside bags
+	for s := int8(constants.SlotGeneral1); s <= int8(constants.SlotGeneral8); s++ {
+		container := currentItems[constants.InventoryKey{Bag: 0, Slot: s}]
+		if container != nil && container.IsContainer() {
+			bagID := s + 1
+			for slotIdx := int8(0); slotIdx < int8(container.Item.Bagslots); slotIdx++ {
+				key := constants.InventoryKey{Bag: bagID, Slot: slotIdx}
+				item := currentItems[key]
+				if item != nil && IsSellable(item.Item) {
+					if err := sellOne(key, item); err != nil {
+						return nil, fmt.Errorf("failed to sell item %s from bag: %v", item.Item.Name, err)
+					}
+				}
+			}
+		}
+	}
+
+	if len(itemsSold) == 0 {
+		return nil, fmt.Errorf("no sellable items found")
+	}
+
+	summaryName := fmt.Sprintf("%d items", len(itemsSold))
+	if len(itemsSold) == 1 {
+		summaryName = itemsSold[0]
+	}
+
+	log.Printf("Bulk Auto-sold %d items for character %d, total value: %d copper", len(itemsSold), playerID, totalCopper)
+
+	return &SoldItemInfo{
+		ItemName: summaryName,
+		Platinum: totalCopper / 1000,
+		Gold:     (totalCopper % 1000) / 100,
+		Silver:   (totalCopper % 100) / 10,
+		Copper:   totalCopper % 10,
+	}, nil
+}
+
+// sellAndRemoveItem performs the DB deletion and returns the sold item info.
+func sellAndRemoveItem(
+	playerID int32,
+	key constants.InventoryKey,
+	item *constants.ItemWithInstance,
+	currentItems map[constants.InventoryKey]*constants.ItemWithInstance,
+) (*SoldItemInfo, error) {
+	// Calculate currency from price
+	price := int(item.Item.Price)
+	platinum := price / 1000
+	gold := (price % 1000) / 100
+	silver := (price % 100) / 10
+	copper := price % 10
+
+	// Remove from DB
+	_, err := table.CharacterInventory.
+		DELETE().
+		WHERE(
+			table.CharacterInventory.CharacterID.EQ(mysql.Int32(playerID)).
+				AND(table.CharacterInventory.ItemInstanceID.EQ(mysql.Int32(item.ItemInstanceID))),
+		).
+		Exec(db.GlobalWorldDB.DB)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete item from inventory: %v", err)
+	}
+
+	// Remove from memory map
+	delete(currentItems, key)
+
+	log.Printf("Auto-sold item %s (ID=%d) for %dp %dg %ds %dc", item.Item.Name, item.ItemInstanceID, platinum, gold, silver, copper)
+
+	return &SoldItemInfo{
+		ItemName: item.Item.Name,
+		Platinum: platinum,
+		Gold:     gold,
+		Silver:   silver,
+		Copper:   copper,
+	}, nil
+}
+
 // ProcessAutoLoot determines where to put a looted item (equip, upgrade, or inventory) and performs the DB update.
-// Returns a list of slot updates (including the new item), the new item's instance ID, and any error.
+// Returns a list of slot updates (including the new item), the new item's instance ID, any sold item info, and any error.
 func ProcessAutoLoot(
 	playerID int32,
 	classID int,
@@ -598,7 +740,8 @@ func ProcessAutoLoot(
 	currentItems map[constants.InventoryKey]*constants.ItemWithInstance,
 	itemTemplate model.Items,
 	charges uint8,
-) ([]SlotUpdate, int32, error) {
+	autoSellEnabled bool,
+) ([]SlotUpdate, int32, *SoldItemInfo, error) {
 	// Wrap newItem for helper methods
 	newItemWithInstance := &constants.ItemWithInstance{Item: itemTemplate}
 
@@ -665,13 +808,45 @@ func ProcessAutoLoot(
 
 	// No slot found even after checking bags and cursor
 	if targetSlot == -1 {
-		return nil, 0, fmt.Errorf("inventory is full")
+		// If auto-sell is enabled, try to sell items to make room
+		if autoSellEnabled {
+			soldInfo, sellErr := AutoSellAllInventoryItems(playerID, currentItems)
+			if sellErr != nil {
+				return nil, 0, nil, fmt.Errorf("inventory is full and no sellable items found")
+			}
+			// Try to find a slot again after selling
+			targetBag, targetSlot = FindFirstAvailableSlot(currentItems, itemTemplate.Bagslots > 0)
+			if targetSlot == -1 {
+				return nil, 0, soldInfo, fmt.Errorf("inventory still full after auto-selling all qualifying items")
+			}
+			// Continue below with the slot we found, passing soldInfo through
+			return finishProcessAutoLoot(playerID, currentItems, itemTemplate, charges, targetBag, targetSlot, false, nil, soldInfo)
+		}
+		return nil, 0, nil, fmt.Errorf("inventory is full")
 	}
 
+	return finishProcessAutoLoot(playerID, currentItems, itemTemplate, charges, targetBag, targetSlot, isUpgrade, oldItem, nil)
+}
+
+// finishProcessAutoLoot performs the DB operations for ProcessAutoLoot
+func finishProcessAutoLoot(
+	playerID int32,
+	currentItems map[constants.InventoryKey]*constants.ItemWithInstance,
+	itemTemplate model.Items,
+	charges uint8,
+	targetBag int8,
+	targetSlot int8,
+	isUpgrade bool,
+	oldItem *constants.ItemWithInstance,
+	soldInfo *SoldItemInfo,
+) ([]SlotUpdate, int32, *SoldItemInfo, error) {
+	newItemWithInstance := &constants.ItemWithInstance{Item: itemTemplate}
+
 	// Step 3: Execute DB operations
+	var err error
 	tx, err := db.GlobalWorldDB.DB.Begin()
 	if err != nil {
-		return nil, 0, fmt.Errorf("begin tx: %v", err)
+		return nil, 0, soldInfo, fmt.Errorf("begin tx: %v", err)
 	}
 	defer func() {
 		if err != nil {
@@ -687,7 +862,7 @@ func ProcessAutoLoot(
 	if targetSlot == int8(constants.SlotPrimary) && newItemWithInstance.IsType2H() {
 		secondaryItem := currentItems[constants.InventoryKey{Bag: 0, Slot: int8(constants.SlotSecondary)}]
 		if secondaryItem != nil {
-			return nil, 0, fmt.Errorf("You cannot equip a two-handed weapon while holding an item in your off-hand.")
+			return nil, 0, soldInfo, fmt.Errorf("You cannot equip a two-handed weapon while holding an item in your off-hand.")
 		}
 	}
 
@@ -705,7 +880,7 @@ func ProcessAutoLoot(
 			).
 			Exec(tx)
 		if err != nil {
-			return nil, 0, fmt.Errorf("failed to move old item: %v", err)
+			return nil, 0, soldInfo, fmt.Errorf("failed to move old item: %v", err)
 		}
 
 		// Add to updates list
@@ -733,7 +908,7 @@ func ProcessAutoLoot(
 	}
 	instanceID, err := CreateDBItemInstance(tx, instance, playerID)
 	if err != nil {
-		return nil, 0, fmt.Errorf("create item instance: %v", err)
+		return nil, 0, soldInfo, fmt.Errorf("create item instance: %v", err)
 	}
 
 	// Add to inventory
@@ -752,7 +927,7 @@ func ProcessAutoLoot(
 		).
 		Exec(tx)
 	if err != nil {
-		return nil, 0, fmt.Errorf("insert inventory row: %v", err)
+		return nil, 0, soldInfo, fmt.Errorf("insert inventory row: %v", err)
 	}
 
 	// Add new item to updates list
@@ -772,5 +947,5 @@ func ProcessAutoLoot(
 	}
 	currentItems[constants.InventoryKey{Bag: targetBag, Slot: targetSlot}] = newItem
 
-	return updates, instanceID, nil
+	return updates, instanceID, soldInfo, nil
 }

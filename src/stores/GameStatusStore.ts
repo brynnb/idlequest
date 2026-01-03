@@ -3,6 +3,7 @@ import { devtools, persist, subscribeWithSelector } from "zustand/middleware";
 import { NPCType } from "@entities/NPCType";
 import Zone from "@entities/Zone";
 import { eqDataService } from "@utils/eqDataService";
+import { WorldSocket, OpCodes } from "@/net";
 
 interface ContainerPosition {
   x: number;
@@ -282,9 +283,19 @@ const useGameStatusStore = create<GameStatusStore>()(
             },
 
             toggleAutoSell: () => {
-              set((state) => ({
-                autoSellEnabled: !state.autoSellEnabled,
-              }));
+              const currentState = get().autoSellEnabled;
+              const newAutoSellEnabled = !currentState;
+              console.log(`[AutoSell] Toggling: ${currentState} -> ${newAutoSellEnabled}`);
+              set({ autoSellEnabled: newAutoSellEnabled });
+
+              // Send auto-sell state to server
+              // Create raw datagram: 2 bytes opcode (little-endian) + 1 byte payload
+              const buffer = new ArrayBuffer(3);
+              const view = new DataView(buffer);
+              view.setUint16(0, OpCodes.SetAutoSell, true); // little-endian
+              view.setUint8(2, newAutoSellEnabled ? 1 : 0);
+              console.log(`[AutoSell] Sending opcode ${OpCodes.SetAutoSell} with value ${newAutoSellEnabled ? 1 : 0}`);
+              WorldSocket.sendRawDatagram(new Uint8Array(buffer));
             },
 
             toggleDeleteNoDrop: () => {

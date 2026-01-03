@@ -105,7 +105,12 @@ func ConvertItemTemplateToCapnp(ses *session.Session, item *model.Items, i *eq.I
 	i.SetHerosforgemodel(item.Herosforgemodel)
 	i.SetMaxcharges(item.Maxcharges)
 	i.SetMr(item.Mr)
-	i.SetNodrop(1 - item.Nodrop) // XOR because this is revered in the db
+	// If either standard or FV nodrop is non-zero, treat as tradeable (1)
+	if item.Nodrop != 0 || item.Fvnodrop != 0 {
+		i.SetNodrop(1)
+	} else {
+		i.SetNodrop(0)
+	}
 	i.SetNorent(item.Norent)
 	i.SetPendingloreflag(uint32(item.Pendingloreflag))
 	i.SetPr(item.Pr)

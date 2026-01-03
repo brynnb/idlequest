@@ -653,6 +653,33 @@ func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandle
 	return false
 }
 
+// HandleSetAutoSell handles the auto-sell toggle request from the client
+func HandleSetAutoSell(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	if !ses.HasValidClient() {
+		return false
+	}
+
+	// Payload is a single byte: 1 = enabled, 0 = disabled
+	if len(payload) < 1 {
+		log.Printf("SetAutoSell: invalid payload length")
+		return false
+	}
+
+	enabled := payload[0] != 0
+	ses.Client.SetAutoSellEnabled(enabled)
+
+	// Persist to database
+	charID := ses.Client.CharData().ID
+	ctx := context.Background()
+	if err := db_character.SetAutoSellEnabled(ctx, int32(charID), enabled); err != nil {
+		log.Printf("SetAutoSell: failed to persist to database for character %d: %v", charID, err)
+	}
+
+	log.Printf("SetAutoSell: auto-sell %s for character %s", map[bool]string{true: "enabled", false: "disabled"}[enabled], ses.Client.CharData().Name)
+
+	return false
+}
+
 // HandleCamp saves player data and sends updated character info
 func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	if !ses.HasValidClient() {
@@ -773,14 +800,15 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 				// Get current inventory from session client
 				currentItems := ses.Client.Items()
 
-				// Use ProcessAutoLoot to find a slot and save to DB
-				_, _, err = items.ProcessAutoLoot(
+				// Use ProcessAutoLoot to find a slot and save to DB (no auto-sell for GM commands)
+				_, _, _, err = items.ProcessAutoLoot(
 					int32(charData.ID),
 					int(charData.Class),
 					int(charData.Race),
 					currentItems,
 					itemTemplate,
-					1, // charges
+					1,     // charges
+					false, // autoSellEnabled
 				)
 				if err != nil {
 					log.Printf("[GM] Failed to add item %d to %s: %v", itemID, charData.Name, err)
@@ -1029,16 +1057,28 @@ func sendLootGenerated(ses *session.Session, loot []db_combat.LootDropItem, mone
 		}
 
 		// Use ProcessAutoLoot to handle equip/upgrade/inventory logic
-		updates, instanceID, err := items.ProcessAutoLoot(
+		autoSellEnabled := ses.Client.AutoSellEnabled()
+		updates, instanceID, soldInfo, err := items.ProcessAutoLoot(
 			int32(charData.ID),
 			int(charData.Class),
 			int(charData.Race),
 			ses.Client.Items(),
 			itemTemplate,
 			uint8(item.ItemCharges),
+			autoSellEnabled,
 		)
+
+		// If an item was auto-sold, add currency to player and notify them
+		if soldInfo != nil {
+			ctx := context.Background()
+			if err := db_character.AddCurrency(ctx, int32(charData.ID), soldInfo.Platinum, soldInfo.Gold, soldInfo.Silver, soldInfo.Copper); err != nil {
+				log.Printf("Failed to add auto-sell currency: %v", err)
+			}
+			SendSystemMessage(ses, fmt.Sprintf("Auto-sold %s for %dp %dg %ds %dc", soldInfo.ItemName, soldInfo.Platinum, soldInfo.Gold, soldInfo.Silver, soldInfo.Copper))
+		}
+
 		if err != nil {
-			if err.Error() == "inventory is full" {
+			if err.Error() == "inventory is full" || err.Error() == "inventory is full and no sellable items found" {
 				SendSystemMessage(ses, fmt.Sprintf("Your inventory is full, you could not loot %s.", item.Name))
 			} else {
 				log.Printf("Failed to process auto-loot for item %s: %v", item.Name, err)

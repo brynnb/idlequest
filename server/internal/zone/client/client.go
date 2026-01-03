@@ -16,12 +16,13 @@ import (
 var _ entity.Client = (*Client)(nil)
 
 type Client struct {
-	mob            entity.Mob
-	items          map[constants.InventoryKey]*constants.ItemWithInstance
-	itemsMu        sync.RWMutex
-	packetHandlers *HandlerRegistry
-	charData       *model.CharacterData
-	ConnectionID   string
+	mob             entity.Mob
+	items           map[constants.InventoryKey]*constants.ItemWithInstance
+	itemsMu         sync.RWMutex
+	packetHandlers  *HandlerRegistry
+	charData        *model.CharacterData
+	ConnectionID    string
+	autoSellEnabled bool
 }
 
 func (c *Client) Items() map[constants.InventoryKey]*constants.ItemWithInstance {
@@ -106,6 +107,9 @@ func NewClient(charData *model.CharacterData) (entity.Client, error) {
 	}
 
 	client.CalcBonuses()
+
+	// Load persisted auto-sell preference (1 = enabled, 0 = disabled)
+	client.autoSellEnabled = charData.AutosellEnabled != 0
 
 	return client, nil
 }
@@ -287,4 +291,14 @@ func (c *Client) HealDamage(amount int) int {
 func (c *Client) RestoreToFull() {
 	c.SetCurrentHp(c.mob.MaxHp)
 	c.SetCurrentMana(c.mob.MaxMana)
+}
+
+// AutoSellEnabled returns whether auto-sell is enabled for this client.
+func (c *Client) AutoSellEnabled() bool {
+	return c.autoSellEnabled
+}
+
+// SetAutoSellEnabled sets whether auto-sell is enabled for this client.
+func (c *Client) SetAutoSellEnabled(enabled bool) {
+	c.autoSellEnabled = enabled
 }

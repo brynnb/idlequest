@@ -657,4 +657,7 @@ const (
 	GetSpellResponse
 	GetEqstrRequest
 	GetEqstrResponse
+
+	// IdleQuest auto-sell toggle
+	SetAutoSell
 )

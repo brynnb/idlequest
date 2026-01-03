@@ -665,3 +665,21 @@ func GetCharacterCurrency(ctx context.Context, charID uint32) (*model.CharacterC
 
 	return &results[0], nil
 }
+
+// SetAutoSellEnabled updates the autosell_enabled flag for a character
+func SetAutoSellEnabled(ctx context.Context, charID int32, enabled bool) error {
+	value := uint8(0)
+	if enabled {
+		value = 1
+	}
+
+	_, err := table.CharacterData.
+		UPDATE(table.CharacterData.AutosellEnabled).
+		SET(value).
+		WHERE(table.CharacterData.ID.EQ(mysql.Int32(charID))).
+		ExecContext(ctx, db.GlobalWorldDB.DB)
+	if err != nil {
+		return fmt.Errorf("update autosell_enabled for char %d: %w", charID, err)
+	}
+	return nil
+}
