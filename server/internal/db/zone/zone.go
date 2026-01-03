@@ -49,7 +49,10 @@ func GetAllZones(ctx context.Context) ([]model.Zone, error) {
 	err := table.Zone.
 		SELECT(table.Zone.AllColumns).
 		FROM(table.Zone).
-		WHERE(table.Zone.Version.EQ(mysql.Uint8(0))).
+		WHERE(
+			table.Zone.Version.EQ(mysql.Uint8(0)).
+				AND(table.Zone.MinExpansion.LT(mysql.Int8(99))),
+		).
 		QueryContext(ctx, db.GlobalWorldDB.DB, &zones)
 	if err != nil {
 		return nil, fmt.Errorf("query all zones: %w", err)

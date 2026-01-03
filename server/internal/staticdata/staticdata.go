@@ -1,3 +1,4 @@
+// Package staticdata handles loading of game data from the database.
 package staticdata
 
 import (
@@ -221,13 +222,20 @@ func loadClassesFromDB(ctx context.Context) ([]ClassInfo, error) {
 
 	var classes []ClassInfo
 	for _, c := range dbClasses {
-		classes = append(classes, ClassInfo{
-			ID:           c.ID,
-			Bitmask:      *c.Bitmask,
-			Name:         c.Name,
-			ShortName:    *c.ShortName,
-			CreatePoints: *c.CreatePoints,
-		})
+		info := ClassInfo{
+			ID:   c.ID,
+			Name: c.Name,
+		}
+		if c.Bitmask != nil {
+			info.Bitmask = *c.Bitmask
+		}
+		if c.ShortName != nil {
+			info.ShortName = *c.ShortName
+		}
+		if c.CreatePoints != nil {
+			info.CreatePoints = *c.CreatePoints
+		}
+		classes = append(classes, info)
 	}
 	return classes, nil
 }
@@ -244,12 +252,15 @@ func loadCombinationDescriptionsFromDB(ctx context.Context) ([]CombinationDescri
 
 	var descriptions []CombinationDescription
 	for _, d := range dbDescs {
-		descriptions = append(descriptions, CombinationDescription{
-			RaceID:      d.RaceID,
-			ClassID:     d.ClassID,
-			DeityID:     d.DeityID,
-			Description: *d.Description,
-		})
+		desc := CombinationDescription{
+			RaceID:  d.RaceID,
+			ClassID: d.ClassID,
+			DeityID: d.DeityID,
+		}
+		if d.Description != nil {
+			desc.Description = *d.Description
+		}
+		descriptions = append(descriptions, desc)
 	}
 	return descriptions, nil
 }
@@ -266,11 +277,16 @@ func loadZoneDescriptionsFromDB(ctx context.Context) ([]ZoneDescriptionInfo, err
 
 	var descriptions []ZoneDescriptionInfo
 	for _, d := range dbDescs {
-		descriptions = append(descriptions, ZoneDescriptionInfo{
-			ZoneID:      d.ZoneID,
-			Description: *d.Description,
-			Welcome:     *d.Welcome,
-		})
+		desc := ZoneDescriptionInfo{
+			ZoneID: d.ZoneID,
+		}
+		if d.Description != nil {
+			desc.Description = *d.Description
+		}
+		if d.Welcome != nil {
+			desc.Welcome = *d.Welcome
+		}
+		descriptions = append(descriptions, desc)
 	}
 	return descriptions, nil
 }

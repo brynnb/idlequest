@@ -34,7 +34,7 @@ type SlotUpdate struct {
 // - Itemtype != 15 (Drink)
 func IsSellable(item model.Items) bool {
 	isTradeable := item.Nodrop != 0 || item.Fvnodrop != 0
-	return isTradeable && item.Norent != 0 && item.Itemclass != 1 && item.Itemtype != 14 && item.Itemtype != 15
+	return isTradeable && item.Norent != 0 && item.Itemclass != 1 && item.Itemtype != 14 && item.Itemtype != 15 && item.Price > 0
 }
 
 // CreateItemInstance creates a new item_instances row and returns its auto-increment ID.

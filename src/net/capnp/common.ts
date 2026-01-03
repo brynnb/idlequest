@@ -12483,11 +12483,37 @@ export class StartZone extends $.Struct {
   }
   toString(): string { return "StartZone_" + super.toString(); }
 }
+export class ZoneDescription extends $.Struct {
+  static readonly _capnp = {
+    displayName: "ZoneDescription",
+    id: "f37a5e929b0115ee",
+    size: new $.ObjectSize(8, 2),
+  };
+  get zoneId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set zoneId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get description(): string {
+    return $.utils.getText(0, this);
+  }
+  set description(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get welcome(): string {
+    return $.utils.getText(1, this);
+  }
+  set welcome(value: string) {
+    $.utils.setText(1, value, this);
+  }
+  toString(): string { return "ZoneDescription_" + super.toString(); }
+}
 export class StaticDataResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "StaticDataResponse",
     id: "cd39989290a115ee",
-    size: new $.ObjectSize(8, 9),
+    size: new $.ObjectSize(8, 10),
   };
   static _Zones: $.ListCtor<ZoneData>;
   static _Races: $.ListCtor<RaceInfo>;
@@ -12497,6 +12523,7 @@ export class StaticDataResponse extends $.Struct {
   static _CharCreatePointAllocations: $.ListCtor<CharCreatePointAllocation>;
   static _CombinationDescriptions: $.ListCtor<CombinationDescription>;
   static _StartZones: $.ListCtor<StartZone>;
+  static _ZoneDescriptions: $.ListCtor<ZoneDescription>;
   get success(): number {
     return $.utils.getInt32(0, this);
   }
@@ -12652,6 +12679,24 @@ export class StaticDataResponse extends $.Struct {
   }
   set startZones(value: $.List<StartZone>) {
     $.utils.copyFrom(value, $.utils.getPointer(8, this));
+  }
+  _adoptZoneDescriptions(value: $.Orphan<$.List<ZoneDescription>>): void {
+    $.utils.adopt(value, $.utils.getPointer(9, this));
+  }
+  _disownZoneDescriptions(): $.Orphan<$.List<ZoneDescription>> {
+    return $.utils.disown(this.zoneDescriptions);
+  }
+  get zoneDescriptions(): $.List<ZoneDescription> {
+    return $.utils.getList(9, StaticDataResponse._ZoneDescriptions, this);
+  }
+  _hasZoneDescriptions(): boolean {
+    return !$.utils.isNull($.utils.getPointer(9, this));
+  }
+  _initZoneDescriptions(length: number): $.List<ZoneDescription> {
+    return $.utils.initList(9, StaticDataResponse._ZoneDescriptions, length, this);
+  }
+  set zoneDescriptions(value: $.List<ZoneDescription>) {
+    $.utils.copyFrom(value, $.utils.getPointer(9, this));
   }
   toString(): string { return "StaticDataResponse_" + super.toString(); }
 }
@@ -13346,6 +13391,7 @@ StaticDataResponse._CharCreateCombinations = $.CompositeList(CharCreateCombinati
 StaticDataResponse._CharCreatePointAllocations = $.CompositeList(CharCreatePointAllocation);
 StaticDataResponse._CombinationDescriptions = $.CompositeList(CombinationDescription);
 StaticDataResponse._StartZones = $.CompositeList(StartZone);
+StaticDataResponse._ZoneDescriptions = $.CompositeList(ZoneDescription);
 GetRecipesResponse._Recipes = $.CompositeList(RecipeData);
 GetRecipeDetailsResponse._Components = $.CompositeList(RecipeComponent);
 GetRecipeDetailsResponse._Outputs = $.CompositeList(RecipeComponent);
