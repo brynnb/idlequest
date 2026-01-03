@@ -20,14 +20,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// GetCharacterByName loads character data from the database.
+// NOTE: We intentionally do NOT cache character data because:
+// 1. Active sessions use the Client object as the authoritative source of truth
+// 2. Caching mutable data caused staleness issues (HP reset bugs)
+// 3. Character data is only loaded on login/zone-in, not frequently
 func GetCharacterByName(name string) (*model.CharacterData, error) {
-	cacheKey := fmt.Sprintf("character:name:%s", name)
-	if val, found, err := cache.GetCache().Get(cacheKey); err == nil && found {
-		if character, ok := val.(*model.CharacterData); ok {
-			return character, nil
-		}
-	}
-
 	var character model.CharacterData
 	ctx := context.Background()
 	// Select only the columns that exist in our database schema
@@ -83,18 +81,12 @@ func GetCharacterByName(name string) (*model.CharacterData, error) {
 		return nil, fmt.Errorf("query character_data: %w", err)
 	}
 
-	cache.GetCache().Set(cacheKey, &character)
 	return &character, nil
 }
 
+// GetCharacterByID loads character data from the database by ID.
+// NOTE: We intentionally do NOT cache character data - see GetCharacterByName for reasoning.
 func GetCharacterByID(id int32) (*model.CharacterData, error) {
-	cacheKey := fmt.Sprintf("character:id:%d", id)
-	if val, found, err := cache.GetCache().Get(cacheKey); err == nil && found {
-		if character, ok := val.(*model.CharacterData); ok {
-			return character, nil
-		}
-	}
-
 	var character model.CharacterData
 	ctx := context.Background()
 	err := table.CharacterData.
@@ -148,7 +140,6 @@ func GetCharacterByID(id int32) (*model.CharacterData, error) {
 		return nil, fmt.Errorf("query character_data by id: %w", err)
 	}
 
-	cache.GetCache().Set(cacheKey, &character)
 	return &character, nil
 }
 
@@ -167,14 +158,11 @@ func GetCharacterSkills(ctx context.Context, characterID int64) ([]model.Charact
 	return skills, nil
 }
 
+// UpdateCharacter saves character data to the database.
+// NOTE: We don't cache mutable character data - see GetCharacterByName for reasoning.
+// We do still invalidate character select cache since that's a list display.
 func UpdateCharacter(charData *model.CharacterData, accountID int64) error {
-	cacheKey := fmt.Sprintf("character:id:%d", charData.ID)
-	if _, err := cache.GetCache().Set(cacheKey, charData); err != nil {
-		return err
-	}
-	nameCacheKey := fmt.Sprintf("character:name:%s", charData.Name)
-	cache.GetCache().Delete(nameCacheKey)
-
+	// Invalidate character select cache to ensure the list display is up-to-date
 	charSelectCacheKey := fmt.Sprintf("account:characters:%d", accountID)
 	cache.GetCache().Delete(charSelectCacheKey)
 

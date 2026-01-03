@@ -35,9 +35,9 @@ func sendCharInfo(ses *session.Session, accountId int64) {
 	ses.SendStream(charInfo.Message(), opcodes.SendCharInfo)
 }
 
-// sendCharacterState sends the unified CharacterState message with all character data
-// This is the single source of truth for character data sent to the client
-func sendCharacterState(ses *session.Session, characterName string) {
+// sendCharacterStateFromDB loads character data fresh from the database, creates a new Client,
+// and sends the CharacterState message. Use this ONLY for initial login / EnterWorld.
+func sendCharacterStateFromDB(ses *session.Session, characterName string) {
 	charData, err := db_character.GetCharacterByName(characterName)
 	if err != nil {
 		log.Printf("sendCharacterState: failed to get character %q: %v", characterName, err)
@@ -45,7 +45,6 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	}
 
 	// Create client for this character (loads inventory, etc.)
-	// Always create a new client to ensure we load the correct character's data
 	log.Printf("sendCharacterState: Creating new client for character ID=%d, Name=%q", charData.ID, charData.Name)
 	ses.Client, err = client.NewClient(charData)
 	if err != nil {
@@ -53,10 +52,38 @@ func sendCharacterState(ses *session.Session, characterName string) {
 		return
 	}
 
+	buildAndSendCharacterState(ses)
+}
+
+// sendUpdatedCharacterState sends the CharacterState using the EXISTING session client.
+// This preserves current HP/Mana values. Use for equipment changes, combat, stat updates.
+func sendUpdatedCharacterState(ses *session.Session) {
+	if !ses.HasValidClient() {
+		log.Printf("sendUpdatedCharacterState: no client or charData")
+		return
+	}
+
+	// Recalculate bonuses with current inventory (also heals when MaxHp increases)
+	ses.Client.UpdateStats()
+
+	buildAndSendCharacterState(ses)
+}
+
+// buildAndSendCharacterState is the core function that builds and sends the CharacterState message.
+// It uses the existing session client - callers are responsible for setting up the client first.
+func buildAndSendCharacterState(ses *session.Session) {
+	if !ses.HasValidClient() {
+		log.Printf("buildAndSendCharacterState: no client or charData")
+		return
+	}
+
+	charData := ses.Client.CharData()
+	mob := ses.Client.GetMob()
+
 	// Build CharacterState message
 	charState, err := session.NewMessage(ses, eq.NewRootCharacterState)
 	if err != nil {
-		log.Printf("sendCharacterState: failed to create CharacterState message: %v", err)
+		log.Printf("buildAndSendCharacterState: failed to create CharacterState message: %v", err)
 		return
 	}
 
@@ -72,6 +99,7 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetGender(int32(charData.Gender))
 	charState.SetFace(int32(charData.Face))
 	charState.SetLevel(int32(charData.Level))
+
 	// Send percent (0-10000) instead of raw XP so client doesn't need table
 	percent := mechanics.CalculateExpPercent(int(charData.Level), charData.Exp)
 	charState.SetExp(percent)
@@ -84,18 +112,17 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetZ(float32(charData.Z))
 	charState.SetHeading(float32(charData.Heading))
 
-	// Compute HP using EQ formula
-	maxHp := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
-	curHp := int(charData.CurHp)
+	// HP/Mana - use the client's calculated MaxHp/MaxMana which include item bonuses
+	maxHp := mob.MaxHp
+	curHp := mob.CurrentHp
 	if curHp > maxHp {
 		curHp = maxHp
 	}
 	charState.SetCurHp(int32(curHp))
 	charState.SetMaxHp(int32(maxHp))
 
-	// Compute Mana using EQ formula
-	maxMana := mechanics.CalculateMaxMana(int(charData.Level), int(charData.Int), int(charData.Wis), int(charData.Class))
-	curMana := int(charData.Mana)
+	maxMana := mob.MaxMana
+	curMana := mob.CurrentMana
 	if curMana > maxMana {
 		curMana = maxMana
 	}
@@ -107,8 +134,6 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	charState.SetMaxEndurance(0)
 
 	// Compute AC and ATK
-	// Passing 0 for equipped AC here as we are just doing base calculation for display if needed,
-	// though usually we want full AC. Standardize to base for now if matches previous logic.
 	baseAC := mechanics.CalculatePlayerAC(int(charData.Level), int(charData.Race), 0)
 	charState.SetAc(int32(baseAC))
 	charState.SetAtk(int32(mechanics.CalculatePlayerATK(int(charData.Str), int(charData.Level))))
@@ -125,7 +150,7 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	// Currency (from character_currency table)
 	currency, err := db_character.GetCharacterCurrency(context.Background(), charData.ID)
 	if err != nil {
-		log.Printf("sendCharacterState: failed to get currency for character %d: %v", charData.ID, err)
+		log.Printf("buildAndSendCharacterState: failed to get currency for character %d: %v", charData.ID, err)
 		charState.SetPlatinum(0)
 		charState.SetGold(0)
 		charState.SetSilver(0)
@@ -140,11 +165,11 @@ func sendCharacterState(ses *session.Session, characterName string) {
 	// Add skills
 	skills, err := db_character.GetCharacterSkills(context.Background(), int64(charData.ID))
 	if err != nil {
-		log.Printf("sendCharacterState: failed to get skills for character %d: %v", charData.ID, err)
+		log.Printf("buildAndSendCharacterState: failed to get skills for character %d: %v", charData.ID, err)
 	} else {
 		capSkills, err := charState.NewSkills(int32(constants.Skill_HIGHEST + 1))
 		if err != nil {
-			log.Printf("sendCharacterState: failed to create Skills array: %v", err)
+			log.Printf("buildAndSendCharacterState: failed to create Skills array: %v", err)
 		} else {
 			// Initialize all to 0 first (default)
 			for i := 0; i <= constants.Skill_HIGHEST; i++ {
@@ -159,14 +184,14 @@ func sendCharacterState(ses *session.Session, characterName string) {
 		}
 	}
 
-	// Add inventory items
+	// Add inventory items from client
 	charItems := ses.Client.Items()
 	charItemsLength := int32(len(charItems))
 
 	if charItemsLength > 0 {
 		capCharItems, err := charState.NewInventoryItems(charItemsLength)
 		if err != nil {
-			log.Printf("sendCharacterState: failed to create InventoryItems array: %v", err)
+			log.Printf("buildAndSendCharacterState: failed to create InventoryItems array: %v", err)
 		} else {
 			itemIdx := 0
 			for slot, charItem := range charItems {
@@ -175,7 +200,7 @@ func sendCharacterState(ses *session.Session, characterName string) {
 				}
 				mods, err := json.Marshal(charItem.Instance.Mods)
 				if err != nil {
-					log.Printf("sendCharacterState: failed to marshal mods for itemID %d: %v", charItem.Instance.ItemID, err)
+					log.Printf("buildAndSendCharacterState: failed to marshal mods for itemID %d: %v", charItem.Instance.ItemID, err)
 					continue
 				}
 
@@ -191,7 +216,7 @@ func sendCharacterState(ses *session.Session, characterName string) {
 		}
 	}
 
-	log.Printf("sendCharacterState: Sending for %s (level %d, HP %d/%d, Mana %d/%d, %d items, %d skills)",
+	log.Printf("sendUpdatedCharacterState: Sending for %s (level %d, HP %d/%d, Mana %d/%d, %d items, %d skills)",
 		charData.Name, charData.Level, curHp, maxHp, curMana, maxMana, charItemsLength, len(skills))
 	ses.SendStream(charState.Message(), opcodes.CharacterState)
 }
@@ -297,7 +322,8 @@ func HandleEnterWorld(ses *session.Session, payload []byte, wh *WorldHandler) bo
 	ses.SendData(enterWorld.Message(), opcodes.PostEnterWorld)
 
 	// For IdleQuest, send CharacterState immediately (no zone server)
-	sendCharacterState(ses, name)
+	// This is the initial load, so we create a fresh client from the database
+	sendCharacterStateFromDB(ses, name)
 	return false
 }
 
@@ -319,14 +345,6 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 	log.Printf("[CharData] Loaded from DB: ID=%d, Name=%s, Level=%d, CurHp=%d, Exp=%d, Zone=%d",
 		charData.ID, charData.Name, charData.Level, charData.CurHp, charData.Exp, charData.ZoneID)
 
-	// Clamp current HP to max HP if over
-	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
-	log.Printf("[CharData] Calculated maxHP=%d (Level=%d, STA=%d)", maxHP, charData.Level, charData.Sta)
-	if charData.CurHp > uint32(maxHP) {
-		log.Printf("[CharData] Clamping CurHp from %d to %d", charData.CurHp, maxHP)
-		charData.CurHp = uint32(maxHP)
-	}
-
 	// Ensure combat is stopped on login
 	combat.GetManager().StopCombat(int64(charData.ID))
 
@@ -335,6 +353,15 @@ func HandleZoneSession(ses *session.Session, payload []byte, wh *WorldHandler) b
 		log.Printf("failed to create client for character %q: %v", ses.CharacterName, err)
 		return false
 	}
+
+	// Clamp current HP to max HP if over using synchronized methods
+	maxHP := ses.Client.GetMaxHp()
+	log.Printf("[CharData] Calculated maxHP=%d (Level=%d, STA=%d, with item bonuses)", maxHP, charData.Level, charData.Sta)
+	if ses.Client.GetCurrentHp() > maxHP {
+		log.Printf("[CharData] Clamping CurHp from %d to %d", ses.Client.GetCurrentHp(), maxHP)
+		ses.Client.SetCurrentHp(maxHP)
+	}
+
 	ses.ZoneID = int(req.ZoneId())
 	ses.InstanceID = int(req.InstanceId())
 
@@ -563,6 +590,15 @@ func HandleMoveItemWorld(ses *session.Session, payload []byte, wh *WorldHandler)
 	// because the client's inventory state is already updated.
 	// MoveItem opcodes should only be sent for server-initiated changes (e.g., loot auto-equip).
 
+	// If either slot is an equipment slot, recalculate stats and send updated character state
+	// This ensures HP/Mana bonuses from equipment are reflected in the UI
+	// Use sendUpdatedCharacterState to preserve current HP/Mana values
+	fromIsEquipSlot := fromBag == 0 && constants.IsEquipSlot(fromSlot)
+	toIsEquipSlot := toBag == 0 && constants.IsEquipSlot(toSlot)
+	if fromIsEquipSlot || toIsEquipSlot {
+		sendUpdatedCharacterState(ses)
+	}
+
 	return false
 }
 
@@ -619,7 +655,7 @@ func HandleDeleteItemWorld(ses *session.Session, payload []byte, wh *WorldHandle
 
 // HandleCamp saves player data and sends updated character info
 func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if ses.Client == nil || ses.Client.CharData() == nil {
+	if !ses.HasValidClient() {
 		return false
 	}
 
@@ -628,10 +664,10 @@ func HandleCamp(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	// Stop combat when camping
 	combat.GetManager().StopCombat(int64(charData.ID))
 
-	// Clamp HP to max before saving
-	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
-	if charData.CurHp > uint32(maxHP) {
-		charData.CurHp = uint32(maxHP)
+	// Clamp HP to max before saving using synchronized methods
+	maxHP := ses.Client.GetMaxHp()
+	if ses.Client.GetCurrentHp() > maxHP {
+		ses.Client.SetCurrentHp(maxHP)
 	}
 
 	if err := db_character.UpdateCharacter(charData, ses.AccountID); err != nil {
@@ -661,7 +697,7 @@ func HandleClientAnimation(ses *session.Session, payload []byte, wh *WorldHandle
 
 // HandleGMCommand handles GM commands
 func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if ses.Client == nil || ses.Client.CharData() == nil {
+	if !ses.HasValidClient() {
 		return false
 	}
 	charData := ses.Client.CharData()
@@ -686,15 +722,16 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 
 	switch strings.ToLower(commandName) {
 	case "heal":
-		maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
-		charData.CurHp = uint32(maxHP)
-		log.Printf("[GM] Healed %s to %d HP", charData.Name, maxHP)
-		sendCharacterState(ses, charData.Name)
+		// Use synchronized RestoreToFull method
+		ses.Client.RestoreToFull()
+		log.Printf("[GM] Healed %s to %d HP", charData.Name, ses.Client.GetMaxHp())
+		sendUpdatedCharacterState(ses)
 
 	case "suicide":
-		charData.CurHp = 1
+		// Use synchronized SetCurrentHp method
+		ses.Client.SetCurrentHp(1)
 		log.Printf("[GM] Player %s set to 1 HP (Near Death)", charData.Name)
-		sendCharacterState(ses, charData.Name)
+		sendUpdatedCharacterState(ses)
 
 	case "kill", "win":
 		// If in combat, set NPC HP to 1
@@ -715,7 +752,7 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 				charData.Exp += uint32(amount)
 				charData.Level = uint32(mechanics.CalculateLevelFromExp(int(charData.Exp)))
 				log.Printf("[GM] Added %d exp to %s, now level %d", amount, charData.Name, charData.Level)
-				sendCharacterState(ses, charData.Name)
+				sendUpdatedCharacterState(ses)
 			}
 		}
 
@@ -750,8 +787,15 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 					return false
 				}
 
-				// Sync with client
-				sendCharacterState(ses, charData.Name)
+				// Log HP values for debugging
+				log.Printf("[GM] Before UpdateStats: CurrentHp=%d, MaxHp=%d",
+					ses.Client.GetCurrentHp(), ses.Client.GetMaxHp())
+
+				// Sync with client (preserves current HP/Mana)
+				sendUpdatedCharacterState(ses)
+
+				log.Printf("[GM] After UpdateStats: CurrentHp=%d, MaxHp=%d",
+					ses.Client.GetCurrentHp(), ses.Client.GetMaxHp())
 			}
 		}
 
@@ -764,7 +808,7 @@ func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) boo
 
 // HandleStartCombat starts server-side combat for the player
 func HandleStartCombat(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if ses.Client == nil || ses.Client.CharData() == nil {
+	if !ses.HasValidClient() {
 		log.Printf("No client or character data for StartCombat")
 		return false
 	}
@@ -799,13 +843,14 @@ func HandleStartCombat(ses *session.Session, payload []byte, wh *WorldHandler) b
 			log.Printf("Character %s died and is respawning at bind point in zone %d", charData.Name, charData.ZoneID)
 		}
 
-		// 1. Save changes (Exp gained, HP restored, new Zone/Pos) to DB so sendCharacterState loads fresh data
+		// Save changes (Exp gained, HP update, new Zone/Pos) to DB
+		// Note: HP/Mana are already synchronized via combat's use of Client methods
 		if err := db_character.UpdateCharacter(charData, int64(charData.AccountID)); err != nil {
 			log.Printf("Failed to save character state after combat: %v", err)
 		}
 
-		// 2. Sync client with full state (including calculated Experience Percent and new Zone)
-		sendCharacterState(ses, charData.Name)
+		// Sync client with full state using existing client (preserves correct HP/Mana)
+		sendUpdatedCharacterState(ses)
 	}
 
 	onLoot := func(loot []db_combat.LootDropItem, money db_combat.MoneyDrop) {
@@ -835,7 +880,7 @@ func HandleStartCombat(ses *session.Session, payload []byte, wh *WorldHandler) b
 
 // HandleStopCombat stops server-side combat for the player
 func HandleStopCombat(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if ses.Client == nil || ses.Client.CharData() == nil {
+	if !ses.HasValidClient() {
 		return false
 	}
 
@@ -1073,7 +1118,7 @@ func SendSystemMessage(ses *session.Session, text string) {
 
 // HandleUpdateBind updates the character's bind point to their current zone
 func HandleUpdateBind(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if ses.Client == nil || ses.Client.CharData() == nil {
+	if !ses.HasValidClient() {
 		return false
 	}
 
@@ -1119,7 +1164,7 @@ func HandleUpdateBind(ses *session.Session, payload []byte, wh *WorldHandler) bo
 // HandleAutoPlaceCursorItem handles the auto-place cursor item request (PersonaView click)
 // Uses the same logic as auto-loot: try to equip, then find inventory/bag slot
 func HandleAutoPlaceCursorItem(ses *session.Session, payload []byte, wh *WorldHandler) bool {
-	if ses.Client == nil || ses.Client.CharData() == nil {
+	if !ses.HasValidClient() {
 		return false
 	}
 
@@ -1190,8 +1235,13 @@ func HandleAutoPlaceCursorItem(ses *session.Session, payload []byte, wh *WorldHa
 		return false
 	}
 
-	// Send updated character state to client
-	sendCharacterState(ses, charData.Name)
+	// Update in-memory inventory
+	targetKey := constants.InventoryKey{Bag: targetBag, Slot: targetSlot}
+	currentItems[targetKey] = cursorItem
+	delete(currentItems, cursorKey)
+
+	// Send updated character state to client (preserves current HP/Mana)
+	sendUpdatedCharacterState(ses)
 
 	return false
 }

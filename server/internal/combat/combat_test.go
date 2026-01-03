@@ -44,6 +44,49 @@ func (m *MockClient) GetItem(key constants.InventoryKey) *constants.ItemWithInst
 func (m *MockClient) SetItem(key constants.InventoryKey, item *constants.ItemWithInstance)          {}
 func (m *MockClient) GetEquippedAC() int                                                            { return 0 }
 
+// HP/Mana management methods
+func (m *MockClient) SetCurrentHp(hp int) {
+	if hp < 0 {
+		hp = 0
+	}
+	if hp > m.mob.MaxHp {
+		hp = m.mob.MaxHp
+	}
+	m.charData.CurHp = uint32(hp)
+	m.mob.CurrentHp = hp
+}
+func (m *MockClient) SetCurrentMana(mana int) {
+	if mana < 0 {
+		mana = 0
+	}
+	m.charData.Mana = uint32(mana)
+	m.mob.CurrentMana = mana
+}
+func (m *MockClient) GetCurrentHp() int   { return m.mob.CurrentHp }
+func (m *MockClient) GetCurrentMana() int { return m.mob.CurrentMana }
+func (m *MockClient) GetMaxHp() int       { return m.mob.MaxHp }
+func (m *MockClient) GetMaxMana() int     { return m.mob.MaxMana }
+func (m *MockClient) TakeDamage(damage int) (newHp int, alive bool) {
+	newHp = m.mob.CurrentHp - damage
+	if newHp < 0 {
+		newHp = 0
+	}
+	m.SetCurrentHp(newHp)
+	return newHp, newHp > 0
+}
+func (m *MockClient) HealDamage(amount int) int {
+	newHp := m.mob.CurrentHp + amount
+	if newHp > m.mob.MaxHp {
+		newHp = m.mob.MaxHp
+	}
+	m.SetCurrentHp(newHp)
+	return newHp
+}
+func (m *MockClient) RestoreToFull() {
+	m.SetCurrentHp(m.mob.MaxHp)
+	m.SetCurrentMana(m.mob.MaxMana)
+}
+
 // TestCombatFlow tests the core combat ticks and logic without a real DB or network
 func TestCombatFlow(t *testing.T) {
 	// 1. Setup Mock Client & Session
@@ -62,7 +105,10 @@ func TestCombatFlow(t *testing.T) {
 
 	mockClient := &MockClient{
 		charData: charData,
-		mob:      &entity.Mob{}, // Minimal mob
+		mob: &entity.Mob{
+			MaxHp:     1000, // Set a reasonable max HP for testing
+			CurrentHp: 100,  // Match charData.CurHp
+		},
 	}
 
 	testSession := &session.Session{
@@ -154,8 +200,10 @@ func TestCombatFlow(t *testing.T) {
 		// Reset result
 		lastEndResult = nil
 
-		// Set player to 1 HP
-		charData.CurHp = 1
+		// Reset combat state and set player to 1 HP using synchronized method
+		cs.State.Active = true
+		cs.State.NPCCurrentHP = 1000 // High NPC HP so player dies first
+		mockClient.SetCurrentHp(1)
 
 		// Keep processing until combat ends
 		dead := false
@@ -180,8 +228,8 @@ func TestCombatFlow(t *testing.T) {
 					t.Errorf("Expected EndResult to show 0 HP, got %d", lastEndResult.PlayerHP)
 				}
 				// Verify player was healed AFTER combat (implementation detail)
-				if charData.CurHp != 1000 { // MaxHP logic for lvl 10 sta 50?
-					t.Logf("Player post-death HP: %d", charData.CurHp)
+				if int(charData.CurHp) != mockClient.GetMaxHp() {
+					t.Logf("Player post-death HP: %d (expected %d)", charData.CurHp, mockClient.GetMaxHp())
 				}
 			}
 		}
@@ -191,9 +239,9 @@ func TestCombatFlow(t *testing.T) {
 		// Reset result
 		lastEndResult = nil
 
-		// Reset state
+		// Reset state using synchronized method
 		cs.State.Active = true
-		charData.CurHp = 220
+		mockClient.SetCurrentHp(220)
 		initialExp := charData.Exp
 
 		// Set NPC to 0 HP manually to force an immediate victory on the next round process

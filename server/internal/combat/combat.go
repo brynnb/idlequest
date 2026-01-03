@@ -226,21 +226,16 @@ func (cs *CombatSession) processCombatRound() {
 	}
 
 	// Check if session is still valid before processing
-	if cs.Session == nil || cs.Session.Client == nil {
-		cs.State.Active = false
-		return
-	}
-
-	charData := cs.Session.Client.CharData()
-	if charData == nil {
+	if cs.Session == nil || cs.Session.Client == nil || cs.Session.Client.CharData() == nil {
 		cs.State.Active = false
 		return
 	}
 
 	cs.State.RoundNumber++
 
-	// Calculate max HP based on level and STA
-	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
+	// Get HP values using synchronized client methods
+	client := cs.Session.Client
+	maxHP := client.GetMaxHp()
 
 	// Calculate player attack
 	playerHit, playerDamage, playerCrit := cs.calculatePlayerAttack()
@@ -262,13 +257,14 @@ func (cs *CombatSession) processCombatRound() {
 	// Calculate NPC attack
 	npcHit, npcDamage := cs.calculateNPCAttack()
 
-	// Apply NPC damage to player
+	// Apply NPC damage to player using synchronized method
+	var currentHP int
+	var alive bool
 	if npcHit {
-		if uint32(npcDamage) >= charData.CurHp {
-			charData.CurHp = 0
-		} else {
-			charData.CurHp -= uint32(npcDamage)
-		}
+		currentHP, alive = client.TakeDamage(npcDamage)
+	} else {
+		currentHP = client.GetCurrentHp()
+		alive = currentHP > 0
 	}
 
 	// Send round update (including the killing blow if player dies)
@@ -279,7 +275,7 @@ func (cs *CombatSession) processCombatRound() {
 			PlayerCritical: playerCrit,
 			NPCHit:         npcHit,
 			NPCDamage:      npcDamage,
-			PlayerHP:       int(charData.CurHp),
+			PlayerHP:       currentHP,
 			PlayerMaxHP:    maxHP,
 			NPCHP:          int(cs.State.NPCCurrentHP),
 			NPCMaxHP:       int(cs.State.NPC.HP),
@@ -288,7 +284,7 @@ func (cs *CombatSession) processCombatRound() {
 	}
 
 	// Check if player is dead (after sending round update so killing blow is shown)
-	if charData.CurHp == 0 {
+	if !alive {
 		cs.handlePlayerDeath()
 		return
 	}
@@ -396,8 +392,9 @@ func (cs *CombatSession) handleNPCDeath() {
 	// Mark combat as ended
 	cs.State.Active = false
 
-	// Send end result
-	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
+	// Get max HP using synchronized client method
+	client := cs.Session.Client
+	maxHP := client.GetMaxHp()
 	if cs.onEnd != nil {
 		cs.onEnd(&EndResult{
 			Victory:     true,
@@ -437,8 +434,10 @@ func (cs *CombatSession) handlePlayerDeath() {
 	}
 
 	// Restore player to full HP before sending death message so it's saved in DB
-	maxHP := mechanics.CalculateMaxHPFromStats(int(charData.Level), int(charData.Sta), int(charData.Class))
-	charData.CurHp = uint32(maxHP)
+	// Use synchronized method to update both charData and mob
+	client := cs.Session.Client
+	client.RestoreToFull()
+	maxHP := client.GetMaxHp()
 
 	// Send end result with 0 HP (death state) and bind zone info
 	if cs.onEnd != nil {

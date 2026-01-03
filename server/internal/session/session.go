@@ -44,6 +44,12 @@ type Session struct {
 	closedMu           sync.RWMutex
 }
 
+// HasValidClient returns true if the session has a valid client with character data.
+// Use this to guard handlers that require a logged-in character.
+func (s *Session) HasValidClient() bool {
+	return s.Client != nil && s.Client.CharData() != nil
+}
+
 // SessionManager manages active sessions.
 type SessionManager struct {
 	sessions map[int]*Session // sessionID -> Session

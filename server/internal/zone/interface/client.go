@@ -32,4 +32,15 @@ type Client interface {
 	DeleteItem(key constants.InventoryKey) *constants.ItemWithInstance
 	GetItem(key constants.InventoryKey) *constants.ItemWithInstance
 	SetItem(key constants.InventoryKey, item *constants.ItemWithInstance)
+
+	// HP/Mana management - these sync both charData and mob atomically
+	SetCurrentHp(hp int)
+	SetCurrentMana(mana int)
+	GetCurrentHp() int
+	GetCurrentMana() int
+	GetMaxHp() int
+	GetMaxMana() int
+	TakeDamage(damage int) (newHp int, alive bool)
+	HealDamage(amount int) int
+	RestoreToFull()
 }
