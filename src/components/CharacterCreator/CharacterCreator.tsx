@@ -10,6 +10,7 @@ import ZoneSelector from "./StartingZoneSelector";
 import SubmitCharacter from "./SubmitCharacter";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
+import { getRaceImageUrl } from "@/utils/raceImageUtils";
 
 const Wrapper = styled.div`
   position: relative;
@@ -59,6 +60,51 @@ const StoryText = styled.div`
   border-radius: 8px;
 `;
 
+const ViewportContainer = styled.div`
+  position: relative;
+  width: 500px;
+  height: 750px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Align images to bottom */
+  overflow: hidden;
+`;
+
+const ViewportFrame = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height:750px;
+  z-index: 2;
+  pointer-events: none;
+`;
+
+const RaceImage = styled.img`
+  position: absolute;
+  z-index: 1;
+  height: 750px;
+`;
+
+const ViewportColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 20px;
+`;
+
+const StyledSecondColumn = styled(ViewportColumn)`
+  grid-column: 2;
+`;
+
+const StyledSecondColumnBottom = styled.div`
+  margin-top: 20px;
+`;
+
+const StyledThirdColumn = styled.div`
+  grid-column: 3;
+`;
+
 const CharacterCreator = () => {
   const { setScreen } = useGameScreenStore();
   const {
@@ -73,6 +119,8 @@ const CharacterCreator = () => {
   } = useCharacterCreatorStore();
 
   const classes = useStaticDataStore((state) => state.classes);
+  // Default to 'm' for now until gender selection is added to store
+  const selectedGender: "m" | "f" = "m";
 
   const handleClassSelection = (selectedClassId: number) => {
     const foundClass = classes.find((c) => c.id === selectedClassId);
@@ -96,27 +144,34 @@ const CharacterCreator = () => {
     setScreen("characterSelect");
   };
 
+  const getRaceImageUrlHelper = () => {
+    if (!selectedRace) return "";
+    return getRaceImageUrl(selectedRace.name, selectedGender);
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
           <MainContainer>
             <RaceSelector />
-            <div className="second-column">
-              <div className="second-column-top">
-                <img
-                  src="/images/ui/charactercreation/creationviewport.png"
+            <StyledSecondColumn>
+              <ViewportContainer>
+                {selectedRace && (
+                  <RaceImage src={getRaceImageUrlHelper()} alt={selectedRace.name} />
+                )}
+                <ViewportFrame
+                  src="/images/ui/charactercreation/creationviewporttransparent.png"
                   alt="Creation Viewport"
-                  style={{ maxWidth: "500px" }}
                 />
-              </div>
-              <div className="second-column-bottom">
+              </ViewportContainer>
+              <StyledSecondColumnBottom>
                 <NameInput />
-              </div>
-            </div>
-            <div className="third-column">
+              </StyledSecondColumnBottom>
+            </StyledSecondColumn>
+            <StyledThirdColumn>
               <ClassSelector onClassSelect={handleClassSelection} />
-            </div>
+            </StyledThirdColumn>
             <FourthColumn className="fourth-column">
               <AttributeAllocator />
               <Step1NavigationContainer>

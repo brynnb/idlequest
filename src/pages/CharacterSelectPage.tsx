@@ -18,6 +18,7 @@ import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import useStaticDataStore from "@stores/StaticDataStore";
 import GameEngine from "@/scripts/GameEngine";
+import { getRaceImageUrl } from "@/utils/raceImageUtils";
 
 const Wrapper = styled.div`
   display: flex;
@@ -30,8 +31,8 @@ const Wrapper = styled.div`
 
 const ContentContainer = styled.div`
   display: grid;
-  grid-template-columns: 280px 500px;
-  gap: 60px;
+  grid-template-columns: 840px 500px;
+  gap: 10px;
   padding: 40px;
 `;
 
@@ -46,14 +47,33 @@ const CharacterList = styled.div`
   flex-direction: column;
   gap: 5px;
   flex: 1;
+  align-items: center;
+`;
+
+const Title = styled.h2`
+  font-family: "Times New Roman", Times, serif;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 50px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  margin: 0 0 10px 0;
+  color: white;
+  width: 100%;
 `;
 
 const BottomButtons = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 10px;
   margin-top: 10px;
   justify-content: space-between;
+  width: 690px;
+  align-self: center;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
 const RightColumn = styled.div`
@@ -73,7 +93,7 @@ const CharacterPreview = styled.div`
 const CharacterImageContainer = styled.div`
   position: relative;
   width: 500px;
-  height: 500px;
+  height: 750px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,6 +116,7 @@ const CharacterLabel = styled.div`
   text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   line-height: 1.4;
+  z-index: 10;
 `;
 
 const LocationInfo = styled.div`
@@ -187,11 +208,16 @@ const CharacterSelectPage = () => {
     isLoading,
   } = useCharacterSelectStore();
   const { updateAllStats } = usePlayerCharacterStore();
-  const { getClassById } = useStaticDataStore();
+  const { getClassById, getRaceById } = useStaticDataStore();
 
   const getClassName = (classId: number) => {
     const charClass = getClassById(classId);
     return charClass?.name || "Unknown";
+  };
+
+  const getRaceName = (raceId: number) => {
+    const race = getRaceById(raceId);
+    return race?.name || "";
   };
 
   const handleSelectCharacter = (character: CharacterSelectEntry) => {
@@ -307,6 +333,7 @@ const CharacterSelectPage = () => {
         {/* Left Column - Character Selection */}
         <LeftColumn>
           <CharacterList>
+            <Title>SELECT A CHARACTER</Title>
             {characterSlots.map((character, index) => (
               <SelectionButton
                 key={character?.name || `empty-${index}`}
@@ -321,11 +348,13 @@ const CharacterSelectPage = () => {
                     handleCreateNew();
                   }
                 }}
+                $width="690px"
               >
                 {character ? character.name : "CREATE NEW CHARACTER"}
               </SelectionButton>
             ))}
           </CharacterList>
+
           <BottomButtons>
             <SelectionButton
               onClick={handleEnterWorld}
@@ -335,21 +364,28 @@ const CharacterSelectPage = () => {
             >
               ENTER WORLD
             </SelectionButton>
-            <SelectionButton
-              onClick={() => {
-                if (selectedCharacter) {
-                  setDeleteTarget(selectedCharacter);
-                }
-              }}
-              $isSelected={false}
-              $isDisabled={!selectedCharacter}
-              disabled={!selectedCharacter}
-            >
-              DELETE
-            </SelectionButton>
-            <SelectionButton onClick={handleLogout} $isSelected={false}>
-              QUIT
-            </SelectionButton>
+            <ButtonGroup>
+              <SelectionButton
+                onClick={() => {
+                  if (selectedCharacter) {
+                    setDeleteTarget(selectedCharacter);
+                  }
+                }}
+                $isSelected={false}
+                $isDisabled={!selectedCharacter}
+                disabled={!selectedCharacter}
+                $width="150px"
+              >
+                DELETE
+              </SelectionButton>
+              <SelectionButton
+                onClick={handleLogout}
+                $isSelected={false}
+                $width="150px"
+              >
+                QUIT
+              </SelectionButton>
+            </ButtonGroup>
           </BottomButtons>
         </LeftColumn>
 
@@ -358,10 +394,41 @@ const CharacterSelectPage = () => {
           {selectedCharacter ? (
             <>
               <CharacterPreview>
-                <CharacterImageContainer>
+                <CharacterImageContainer
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                  }}
+                >
+                  {/* Race Image (Layer 1) */}
                   <CharacterImage
-                    src="/images/ui/charactercreation/creationviewport.png"
+                    src={getRaceImageUrl(
+                      getRaceName(selectedCharacter.race),
+                      selectedCharacter.gender === 1 ? "f" : "m"
+                    )}
                     alt="Character Preview"
+                    style={{
+                      position: "absolute",
+                      height: "750px",
+                      zIndex: 1,
+                    }}
+                  />
+
+                  {/* Viewport Frame (Layer 2) */}
+                  <CharacterImage
+                    src="/images/ui/charactercreation/creationviewporttransparent.png"
+                    alt="Viewport Frame"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      zIndex: 2,
+                      pointerEvents: "none",
+                    }}
                   />
                   <CharacterLabel>
                     {getClassName(selectedCharacter.charClass)}

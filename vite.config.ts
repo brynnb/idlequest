@@ -42,7 +42,11 @@ function hashProxyPlugin(): Plugin {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), hashProxyPlugin()],
+  plugins: [
+    react({ plugins: [["@swc/plugin-styled-components", {}]] }),
+    tsconfigPaths(),
+    hashProxyPlugin(),
+  ],
 
   resolve: {
     alias: {
