@@ -20,8 +20,9 @@ func getConnection() (mysql.DBConnection, error) {
 	user := serverConfig.DBUser
 	pass := serverConfig.DBPass
 
-	if host == "" || user == "" || pass == "" {
-		return mysql.DBConnection{}, fmt.Errorf("database connection details are not set")
+	// Allow empty password for local development (common with homebrew MySQL)
+	if host == "" || user == "" {
+		return mysql.DBConnection{}, fmt.Errorf("database connection details are not set (host=%s, user=%s)", host, user)
 	}
 
 	return mysql.DBConnection{

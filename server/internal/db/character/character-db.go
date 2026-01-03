@@ -28,49 +28,8 @@ import (
 func GetCharacterByName(name string) (*model.CharacterData, error) {
 	var character model.CharacterData
 	ctx := context.Background()
-	// Select only the columns that exist in our database schema
-	// (excludes firstlogon, tradeskill columns like wind/brass/string, etc.)
 	err := table.CharacterData.
-		SELECT(
-			table.CharacterData.ID,
-			table.CharacterData.AccountID,
-			table.CharacterData.Name,
-			table.CharacterData.LastName,
-			table.CharacterData.Title,
-			table.CharacterData.Suffix,
-			table.CharacterData.ZoneID,
-			table.CharacterData.ZoneInstance,
-			table.CharacterData.Y,
-			table.CharacterData.X,
-			table.CharacterData.Z,
-			table.CharacterData.Heading,
-			table.CharacterData.Gender,
-			table.CharacterData.Race,
-			table.CharacterData.Class,
-			table.CharacterData.Level,
-			table.CharacterData.Deity,
-			table.CharacterData.Birthday,
-			table.CharacterData.LastLogin,
-			table.CharacterData.TimePlayed,
-			table.CharacterData.Anon,
-			table.CharacterData.Gm,
-			table.CharacterData.Face,
-			table.CharacterData.Exp,
-			table.CharacterData.ExpEnabled,
-			table.CharacterData.CurHp,
-			table.CharacterData.Mana,
-			table.CharacterData.Endurance,
-			table.CharacterData.Intoxication,
-			table.CharacterData.Str,
-			table.CharacterData.Sta,
-			table.CharacterData.Cha,
-			table.CharacterData.Dex,
-			table.CharacterData.Int,
-			table.CharacterData.Agi,
-			table.CharacterData.Wis,
-			table.CharacterData.HungerLevel,
-			table.CharacterData.ThirstLevel,
-		).
+		SELECT(table.CharacterData.AllColumns).
 		FROM(table.CharacterData).
 		WHERE(
 			table.CharacterData.Name.EQ(mysql.String(name)).
@@ -90,46 +49,7 @@ func GetCharacterByID(id int32) (*model.CharacterData, error) {
 	var character model.CharacterData
 	ctx := context.Background()
 	err := table.CharacterData.
-		SELECT(
-			table.CharacterData.ID,
-			table.CharacterData.AccountID,
-			table.CharacterData.Name,
-			table.CharacterData.LastName,
-			table.CharacterData.Title,
-			table.CharacterData.Suffix,
-			table.CharacterData.ZoneID,
-			table.CharacterData.ZoneInstance,
-			table.CharacterData.Y,
-			table.CharacterData.X,
-			table.CharacterData.Z,
-			table.CharacterData.Heading,
-			table.CharacterData.Gender,
-			table.CharacterData.Race,
-			table.CharacterData.Class,
-			table.CharacterData.Level,
-			table.CharacterData.Deity,
-			table.CharacterData.Birthday,
-			table.CharacterData.LastLogin,
-			table.CharacterData.TimePlayed,
-			table.CharacterData.Anon,
-			table.CharacterData.Gm,
-			table.CharacterData.Face,
-			table.CharacterData.Exp,
-			table.CharacterData.ExpEnabled,
-			table.CharacterData.CurHp,
-			table.CharacterData.Mana,
-			table.CharacterData.Endurance,
-			table.CharacterData.Intoxication,
-			table.CharacterData.Str,
-			table.CharacterData.Sta,
-			table.CharacterData.Cha,
-			table.CharacterData.Dex,
-			table.CharacterData.Int,
-			table.CharacterData.Agi,
-			table.CharacterData.Wis,
-			table.CharacterData.HungerLevel,
-			table.CharacterData.ThirstLevel,
-		).
+		SELECT(table.CharacterData.AllColumns).
 		FROM(table.CharacterData).
 		WHERE(
 			table.CharacterData.ID.EQ(mysql.Int32(id)).

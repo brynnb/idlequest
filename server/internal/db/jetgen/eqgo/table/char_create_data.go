@@ -28,18 +28,39 @@ type charCreateDataTable struct {
 
 	AllColumns     mysql.ColumnList
 	MutableColumns mysql.ColumnList
+	DefaultColumns mysql.ColumnList
 }
 
 type CharCreateDataTable struct {
 	charCreateDataTable
 
-	EXCLUDED charCreateDataTable
+	NEW charCreateDataTable
+}
+
+// AS creates new CharCreateDataTable with assigned alias
+func (a CharCreateDataTable) AS(alias string) *CharCreateDataTable {
+	return newCharCreateDataTable(a.SchemaName(), a.TableName(), alias)
+}
+
+// Schema creates new CharCreateDataTable with assigned schema name
+func (a CharCreateDataTable) FromSchema(schemaName string) *CharCreateDataTable {
+	return newCharCreateDataTable(schemaName, a.TableName(), a.Alias())
+}
+
+// WithPrefix creates new CharCreateDataTable with assigned table prefix
+func (a CharCreateDataTable) WithPrefix(prefix string) *CharCreateDataTable {
+	return newCharCreateDataTable(a.SchemaName(), prefix+a.TableName(), a.TableName())
+}
+
+// WithSuffix creates new CharCreateDataTable with assigned table suffix
+func (a CharCreateDataTable) WithSuffix(suffix string) *CharCreateDataTable {
+	return newCharCreateDataTable(a.SchemaName(), a.TableName()+suffix, a.TableName())
 }
 
 func newCharCreateDataTable(schemaName, tableName, alias string) *CharCreateDataTable {
 	return &CharCreateDataTable{
 		charCreateDataTable: newCharCreateDataTableImpl(schemaName, tableName, alias),
-		EXCLUDED:            newCharCreateDataTableImpl("", "excluded", ""),
+		NEW:                 newCharCreateDataTableImpl("", "new", ""),
 	}
 }
 
@@ -55,11 +76,13 @@ func newCharCreateDataTableImpl(schemaName, tableName, alias string) charCreateD
 		GameIDColumn       = mysql.IntegerColumn("game_id")
 		allColumns         = mysql.ColumnList{IDColumn, CategoryColumn, NameColumn, AltNameColumn, DescriptionColumn, EqstrIDStartColumn, EqstrIDEndColumn, GameIDColumn}
 		mutableColumns     = mysql.ColumnList{CategoryColumn, NameColumn, AltNameColumn, DescriptionColumn, EqstrIDStartColumn, EqstrIDEndColumn, GameIDColumn}
+		defaultColumns     = mysql.ColumnList{}
 	)
 
 	return charCreateDataTable{
 		Table: mysql.NewTable(schemaName, tableName, alias, allColumns...),
 
+		//Columns
 		ID:           IDColumn,
 		Category:     CategoryColumn,
 		Name:         NameColumn,
@@ -71,17 +94,6 @@ func newCharCreateDataTableImpl(schemaName, tableName, alias string) charCreateD
 
 		AllColumns:     allColumns,
 		MutableColumns: mutableColumns,
+		DefaultColumns: defaultColumns,
 	}
-}
-
-func (a CharCreateDataTable) AS(alias string) *CharCreateDataTable {
-	return newCharCreateDataTable(a.SchemaName(), a.TableName(), alias)
-}
-
-func (a CharCreateDataTable) SchemaName() string {
-	return a.Table.SchemaName()
-}
-
-func (a CharCreateDataTable) TableName() string {
-	return a.Table.TableName()
 }

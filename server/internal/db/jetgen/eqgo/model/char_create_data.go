@@ -7,14 +7,13 @@
 
 package model
 
-// CharCreateData represents a row in the char_create_data table
 type CharCreateData struct {
-	ID           int32   `sql:"primary_key" json:"id"`
-	Category     string  `json:"category"`
-	Name         string  `json:"name"`
-	AltName      *string `json:"alt_name"`
-	Description  *string `json:"description"`
-	EqstrIDStart *int32  `json:"eqstr_id_start"`
-	EqstrIDEnd   *int32  `json:"eqstr_id_end"`
-	GameID       *int32  `json:"game_id"`
+	ID           int32 `sql:"primary_key"`
+	Category     string
+	Name         string
+	AltName      *string
+	Description  *string
+	EqstrIDStart *int32
+	EqstrIDEnd   *int32
+	GameID       *int32
 }

@@ -64,7 +64,7 @@ func newEqstrUsTableImpl(schemaName, tableName, alias string) eqstrUsTable {
 		TextColumn     = mysql.StringColumn("text")
 		allColumns     = mysql.ColumnList{IDColumn, TextColumn}
 		mutableColumns = mysql.ColumnList{TextColumn}
-		defaultColumns = mysql.ColumnList{IDColumn}
+		defaultColumns = mysql.ColumnList{}
 	)
 
 	return eqstrUsTable{
