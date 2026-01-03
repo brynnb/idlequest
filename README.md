@@ -6,7 +6,7 @@ Current features:
 
 * Real-time Go server with real-time combat
 * Zoning between all Titanium-era zones (185+)
-* 5000+ NPCs to talk to and engage in combat with
+* 5000+ NPCs to talk to via LLM integration or engage in combat with
 * 26,000+ items, 20,000+ unique spawns, with true-to-original drop rates and stats
 * Leveling to 60 across all races and classes
 
@@ -30,3 +30,4 @@ I would like to give credit to Eric Fredricksen, the creator of [ProgressQuest](
 <img src="docs/screenshots/1.png" alt="Screenshot 1" width="1000" />
 <img src="docs/screenshots/2.png" alt="Screenshot 2" width="1000" />
 <img src="docs/screenshots/3.png" alt="Screenshot 3" width="1000" />
+<img width="1080" alt="Screenshot 2024-10-16 at 12 24 39 PM" src="https://github.com/user-attachments/assets/73e76fe8-7625-4459-bafc-5c5dea4a27be">
