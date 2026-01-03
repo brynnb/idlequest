@@ -71,6 +71,30 @@ export interface CharCreatePointAllocationData {
   allocCha: number;
 }
 
+export interface CombinationDescriptionData {
+  raceId: number;
+  classId: number;
+  deityId: number;
+  description: string;
+}
+
+export interface StartZoneData {
+  x: number;
+  y: number;
+  z: number;
+  heading: number;
+  zoneIdNumber: number;
+  playerClass: number;
+  playerDeity: number;
+  playerRace: number;
+}
+
+export interface ZoneDescriptionData {
+  zoneId: number;
+  description: string;
+  welcome: string;
+}
+
 interface StaticDataStore {
   isLoaded: boolean;
   isLoading: boolean;
@@ -81,11 +105,16 @@ interface StaticDataStore {
   deities: DeityData[];
   charCreateCombinations: CharCreateCombinationData[];
   charCreatePointAllocations: CharCreatePointAllocationData[];
+  combinationDescriptions: CombinationDescriptionData[];
+  startZones: StartZoneData[];
+  zoneDescriptions: ZoneDescriptionData[];
   loadStaticData: () => Promise<void>;
   getRaceById: (id: number) => RaceData | undefined;
   getClassById: (id: number) => ClassData | undefined;
   getDeityById: (id: number) => DeityData | undefined;
   getZoneByZoneIdNumber: (zoneidnumber: number) => ZoneData | undefined;
+  getCombinationDescription: (raceId: number, classId: number, deityId: number) => string | undefined;
+  getZoneDescription: (zoneId: number) => ZoneDescriptionData | undefined;
 }
 
 const useStaticDataStore = create<StaticDataStore>()(
@@ -100,6 +129,9 @@ const useStaticDataStore = create<StaticDataStore>()(
       deities: [],
       charCreateCombinations: [],
       charCreatePointAllocations: [],
+      combinationDescriptions: [],
+      startZones: [],
+      zoneDescriptions: [],
 
       loadStaticData: async () => {
         const { isLoaded, isLoading } = get();
@@ -219,6 +251,51 @@ const useStaticDataStore = create<StaticDataStore>()(
             });
           }
 
+          // Parse combination descriptions
+          const combinationDescriptions: CombinationDescriptionData[] = [];
+          if (response.combinationDescriptions) {
+            for (let i = 0; i < response.combinationDescriptions.length; i++) {
+              const d = response.combinationDescriptions.get(i);
+              combinationDescriptions.push({
+                raceId: d.raceId,
+                classId: d.classId,
+                deityId: d.deityId,
+                description: d.description,
+              });
+            }
+          }
+
+          // Parse start zones
+          const startZones: StartZoneData[] = [];
+          if (response.startZones) {
+            for (let i = 0; i < response.startZones.length; i++) {
+              const sz = response.startZones.get(i);
+              startZones.push({
+                x: sz.x,
+                y: sz.y,
+                z: sz.z,
+                heading: sz.heading,
+                zoneIdNumber: sz.zoneIdNumber,
+                playerClass: sz.playerClass,
+                playerDeity: sz.playerDeity,
+                playerRace: sz.playerRace,
+              });
+            }
+          }
+
+          // Parse zone descriptions
+          const zoneDescriptions: ZoneDescriptionData[] = [];
+          if (response.zoneDescriptions) {
+            for (let i = 0; i < response.zoneDescriptions.length; i++) {
+              const zd = response.zoneDescriptions.get(i);
+              zoneDescriptions.push({
+                zoneId: zd.zoneId,
+                description: zd.description,
+                welcome: zd.welcome,
+              });
+            }
+          }
+
           set({
             isLoaded: true,
             isLoading: false,
@@ -228,6 +305,9 @@ const useStaticDataStore = create<StaticDataStore>()(
             deities,
             charCreateCombinations,
             charCreatePointAllocations,
+            combinationDescriptions,
+            startZones,
+            zoneDescriptions,
           });
 
           console.log(
@@ -256,6 +336,19 @@ const useStaticDataStore = create<StaticDataStore>()(
 
       getZoneByZoneIdNumber: (zoneidnumber: number) => {
         return get().zones.find((z) => z.zoneidnumber === zoneidnumber);
+      },
+
+      getCombinationDescription: (raceId: number, classId: number, deityId: number) => {
+        return get().combinationDescriptions.find(
+          (d) =>
+            d.raceId === raceId &&
+            d.classId === classId &&
+            d.deityId === deityId
+        )?.description;
+      },
+
+      getZoneDescription: (zoneId: number) => {
+        return get().zoneDescriptions.find((d) => d.zoneId === zoneId);
       },
     }),
     { name: "Static Data Store" }

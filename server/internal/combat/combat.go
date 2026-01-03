@@ -57,6 +57,7 @@ type RoundResult struct {
 	NPCHP          int
 	NPCMaxHP       int
 	RoundNumber    int
+	NPCDied        bool // NPC died this round, don't show NPC attack message
 }
 
 // EndResult contains the result of combat ending
@@ -250,6 +251,27 @@ func (cs *CombatSession) processCombatRound() {
 
 	// Check if NPC is dead
 	if cs.State.NPCCurrentHP <= 0 {
+		// Get current HP for the round result
+		currentHP := client.GetCurrentHp()
+		maxHP := client.GetMaxHp()
+
+		// Send round update with the killing blow before ending combat
+		// NPC attack shows as miss since they died before attacking
+		if cs.onRound != nil {
+			cs.onRound(&RoundResult{
+				PlayerHit:      playerHit,
+				PlayerDamage:   playerDamage,
+				PlayerCritical: playerCrit,
+				NPCHit:         false, // NPC is dead, can't attack
+				NPCDamage:      0,
+				PlayerHP:       currentHP,
+				PlayerMaxHP:    maxHP,
+				NPCHP:          0, // NPC is dead
+				NPCMaxHP:       int(cs.State.NPC.HP),
+				RoundNumber:    cs.State.RoundNumber,
+				NPCDied:        true, // NPC died this round, skip NPC attack message
+			})
+		}
 		cs.handleNPCDeath()
 		return
 	}

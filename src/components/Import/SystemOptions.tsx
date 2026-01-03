@@ -1,4 +1,3 @@
-import React from "react";
 import ActionButton from "../Interface/ActionButton";
 import useGameStatusStore from "@stores/GameStatusStore";
 
@@ -19,12 +18,12 @@ const SystemOptions = () => {
     >
       <ActionButton
         text="Help"
-        onClick={() => {}}
+        onClick={() => { }}
         customCSS={`width: ${buttonWidth};`}
       />
       <ActionButton
         text="Options"
-        onClick={() => {}}
+        onClick={() => { }}
         customCSS={`width: ${buttonWidth};`}
       />
       <ActionButton

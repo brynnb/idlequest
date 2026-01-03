@@ -43,7 +43,7 @@ export {
   CharCreateCombination,
   CharCreatePointAllocation,
   SendChatMessageRequest,
-  ChatMessageBroadcast,
+  ChatMessageCapnp,
   DialogueHistoryEntry,
   GetNPCDialogueRequest,
   GetNPCDialogueResponse,

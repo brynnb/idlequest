@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback, useRef } from "react";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
-import { getAdjacentZones } from "@utils/zoneUtils";
-import Zone from "@entities/Zone";
+import { eqDataService, Zone } from "@utils/eqDataService";
 import ActionButton from "./Interface/ActionButton";
 import useGameStatusStore from "@/stores/GameStatusStore";
 import styled from "styled-components";
@@ -72,7 +71,7 @@ const ZoneSelector: React.FC = () => {
     lastZoneIdRef.current = zoneId;
 
     try {
-      const zones = await getAdjacentZones(zoneId);
+      const zones = await eqDataService.getAdjacentZones(zoneId);
       setAdjacentZones(zones);
     } catch (error) {
       console.error("Failed to fetch adjacent zones:", error);
@@ -124,7 +123,7 @@ const ZoneSelector: React.FC = () => {
         {adjacentZones.map((zone) => (
           <ActionButton
             key={zone.id}
-            text={zone.long_name}
+            text={zone.long_name || "Unknown Zone"}
             customCSS="
               font-size: 22px;
               width: 230px;

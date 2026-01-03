@@ -134,8 +134,9 @@ func buildAndSendCharacterState(ses *session.Session) {
 	charState.SetMaxEndurance(0)
 
 	// Compute AC and ATK
-	baseAC := mechanics.CalculatePlayerAC(int(charData.Level), int(charData.Race), 0)
-	charState.SetAc(int32(baseAC))
+	// mob.AC contains the equipped AC, calculated by CalcBonuses -> CalcAC
+	totalAC := mechanics.CalculatePlayerAC(int(charData.Level), int(charData.Race), mob.AC)
+	charState.SetAc(int32(totalAC))
 	charState.SetAtk(int32(mechanics.CalculatePlayerATK(int(charData.Str), int(charData.Level))))
 
 	// Base attributes
@@ -979,6 +980,7 @@ func sendCombatRound(ses *session.Session, result *combat.RoundResult) {
 	msg.SetNpcHp(int32(result.NPCHP))
 	msg.SetNpcMaxHp(int32(result.NPCMaxHP))
 	msg.SetRoundNumber(int32(result.RoundNumber))
+	msg.SetNpcDied(boolToInt32(result.NPCDied))
 
 	ses.SendStream(msg.Message(), opcodes.CombatRound)
 }

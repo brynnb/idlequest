@@ -39,7 +39,7 @@ const PlayerStats: React.FC = () => {
   const healthPercent =
     (characterProfile.curHp || 0) / (characterProfile.maxHp || 1);
   const manaPercent =
-    (characterProfile.curMana || 0) / (characterProfile.maxMana || 1);
+    (characterProfile.mana || 0) / (characterProfile.maxMana || 1);
 
   const currentExp = characterProfile.exp || 0;
   const { xpPercent, xpPercentSubbar } =

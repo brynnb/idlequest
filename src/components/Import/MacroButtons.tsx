@@ -55,8 +55,7 @@ const MacroButtons = () => {
 
   const { sellGeneralInventory } = useInventorySelling();
   const { clearInventory } = usePlayerCharacterStore();
-  const { addItemToInventoryByItemId, handleEquipAllItems } =
-    useInventoryActions();
+  const { handleEquipAllItems } = useInventoryActions();
 
   const MACRO_PAGES = ["1", "2", "3", "4", "5"];
 

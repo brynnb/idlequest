@@ -290,7 +290,7 @@ class EQDataService {
           name: npc.name,
           level: npc.level,
           race: npc.race,
-          class: npc.npcClass,
+          class: npc.class,
           hp: npc.hp,
           gender: npc.gender,
         });

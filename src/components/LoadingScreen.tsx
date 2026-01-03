@@ -59,7 +59,7 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen = ({
-  message = "Loading...",
+  message: _message = "Loading...",
   progress = 0,
   isIndeterminate = false,
 }: LoadingScreenProps) => {

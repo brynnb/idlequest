@@ -9,23 +9,24 @@ import {
   SlotBitmasks,
   getInventorySlotNames,
 } from "@entities/InventorySlot";
-import classesData from "@data/json/classes.json";
-import racesData from "@data/json/races.json";
 import Race from "@entities/Race";
 import { InventoryItem } from "@entities/InventoryItem";
 import CharacterClass from "@entities/CharacterClass";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import useStaticDataStore from "@stores/StaticDataStore";
 
 export const getCharacterClass = (classId: number): CharacterClass | null => {
+  const classesData = useStaticDataStore.getState().classes;
   const classData = classesData.find((c) => c.id === classId);
   if (!classData) return null;
-  return classData as CharacterClass;
+  return classData as any as CharacterClass;
 };
 
 export const getCharacterRace = (raceId: number): Race | null => {
+  const racesData = useStaticDataStore.getState().races;
   const raceData = racesData.find((r) => r.id === raceId);
   if (!raceData) return null;
-  return raceData as Race;
+  return raceData as any as Race;
 };
 
 export const isSlotAvailableForItem = (
@@ -124,6 +125,7 @@ export const getItemTypeNameWrapper = (itemtype: string | undefined) => {
 export const getClassNames = (classes: number | undefined) => {
   if (classes === undefined) return "UNKNOWN";
   const classesBitmask = parseInt(classes.toString());
+  const classesData = useStaticDataStore.getState().classes;
 
   // Get playable classes (first 14 in the list)
   const playableClasses = classesData.slice(0, 14);
@@ -143,7 +145,7 @@ export const getClassNames = (classes: number | undefined) => {
     .filter(
       (classInfo) => classInfo.bitmask && classesBitmask & classInfo.bitmask
     )
-    .map((classInfo) => classInfo.short_name);
+    .map((classInfo) => classInfo.shortName);
 
   return classNames.length > 0 ? classNames.join(" ") : "NONE";
 };
@@ -151,6 +153,7 @@ export const getClassNames = (classes: number | undefined) => {
 export const getRaceNames = (races: number | undefined) => {
   if (races === undefined) return "UNKNOWN";
   const racesBitmask = parseInt(races.toString());
+  const racesData = useStaticDataStore.getState().races;
 
   // Get only playable races with valid bitmasks
   const playableRaces = racesData.filter(

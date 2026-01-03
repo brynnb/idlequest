@@ -77,7 +77,7 @@ function DiceRoller() {
           };
 
           const originalDiceBox = window.DICE.dice_box;
-          window.DICE.dice_box = function (container, options) {
+          window.DICE.dice_box = function (container: HTMLElement, options: Record<string, unknown>) {
             const instance = new originalDiceBox(container, options);
 
             // Remove the desk from the scene
@@ -129,8 +129,8 @@ function DiceRoller() {
 
       diceBoxRef.current.setDice("d20");
       diceBoxRef.current.start_throw(
-        (notation: any) => null,
-        (notation: any) => {
+        (_notation: unknown) => null,
+        (notation: { resultTotal: number }) => {
           addMessage(
             `Rolled a d20: ${notation.resultTotal}`,
             MessageType.SYSTEM

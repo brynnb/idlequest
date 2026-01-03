@@ -43,6 +43,8 @@ func (m *MockClient) DeleteItem(key constants.InventoryKey) *constants.ItemWithI
 func (m *MockClient) GetItem(key constants.InventoryKey) *constants.ItemWithInstance                { return nil }
 func (m *MockClient) SetItem(key constants.InventoryKey, item *constants.ItemWithInstance)          {}
 func (m *MockClient) GetEquippedAC() int                                                            { return 0 }
+func (m *MockClient) AutoSellEnabled() bool                                                         { return false }
+func (m *MockClient) SetAutoSellEnabled(enabled bool)                                               {}
 
 // HP/Mana management methods
 func (m *MockClient) SetCurrentHp(hp int) {

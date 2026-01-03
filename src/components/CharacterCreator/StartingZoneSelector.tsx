@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
-import zones from "@data/json/zones.json";
 import useCharacterStore from "@stores/CharacterCreatorStore";
-import charCreateCombinations from "@data/json/char_create_combinations.json";
+import useStaticDataStore from "@stores/StaticDataStore";
 import styled from "styled-components";
 import SelectionButton from "../Interface/SelectionButton";
 
@@ -33,41 +32,59 @@ const Title = styled.h2`
 `;
 
 const ZoneSelector = () => {
-  const { selectedZone, setSelectedZone, selectedRace, selectedClass } =
+  const { selectedZone, setSelectedZone, selectedRace, selectedClass, selectedDeity } =
     useCharacterStore();
+  const { zones, startZones } = useStaticDataStore();
 
-  // Get all unique start zones from the combinations
+  // Get all unique start zone IDs from the dedicated startZones table
   const allStartZones = useMemo(() => {
-    const uniqueZones = new Set(
-      charCreateCombinations.map((c) => c.start_zone)
+    const uniqueIds = Array.from(
+      new Set(startZones.map((sz) => sz.zoneIdNumber))
     );
-    // Exclude zoneidnumber of 155 for Shar Vahl because cat people aren't classic
-    uniqueZones.delete(155);
-    return Array.from(uniqueZones);
-  }, []);
+    // Exclude zoneidnumber of 155 for Shar Vahl (Wah Shir)
+    return uniqueIds.filter((id) => id !== 155);
+  }, [startZones]);
 
-  // Filter zones based on the selected race and class
+  // Filter compatible zones based on the selected race, class, and deity from startZones table
   const compatibleZones = useMemo(() => {
-    return charCreateCombinations
+    if (!selectedRace || !selectedClass || !selectedDeity) return [];
+
+    return startZones
       .filter(
-        (combination) =>
-          combination.race === selectedRace?.id &&
-          combination.class === selectedClass?.id
+        (sz) =>
+          sz.playerRace === selectedRace.id &&
+          sz.playerClass === selectedClass.id &&
+          sz.playerDeity === selectedDeity.id
       )
-      .map((combination) => combination.start_zone);
-  }, [selectedRace, selectedClass]);
+      .map((sz) => sz.zoneIdNumber);
+  }, [selectedRace, selectedClass, selectedDeity, startZones]);
 
   // Filter available zones to only include those that are in allStartZones
+  // This deduplicates the UI options so "Qeynos City" appears once
   const availableZones = useMemo(() => {
-    return zones.filter((zone) => allStartZones.includes(zone.zoneidnumber));
-  }, [allStartZones]);
+    const filtered = zones.filter((zone) =>
+      allStartZones.includes(zone.zoneidnumber)
+    );
+
+    // Final deduplication by ID just in case the zone table itself has duplicates
+    const uniqueZones: typeof filtered = [];
+    const seenIds = new Set<number>();
+
+    for (const zone of filtered) {
+      if (!seenIds.has(zone.zoneidnumber)) {
+        uniqueZones.push(zone);
+        seenIds.add(zone.zoneidnumber);
+      }
+    }
+    return uniqueZones;
+  }, [allStartZones, zones]);
 
   const onSelectZone = (zoneId: number) => {
-    const selectedZone = availableZones.find(
+    const zoneObj = availableZones.find(
       (zone) => zone.zoneidnumber === zoneId
     );
-    if (selectedZone) {
-      setSelectedZone(selectedZone);
+    if (zoneObj) {
+      setSelectedZone(zoneObj);
     }
   };
 
@@ -95,7 +112,7 @@ const ZoneSelector = () => {
             $isSelected={selectedZone?.zoneidnumber === zone.zoneidnumber}
             $isDisabled={!compatibleZones.includes(zone.zoneidnumber)}
           >
-            {zone.long_name}
+            {zone.longName}
           </SelectionButton>
         ))}
       </ZonesGrid>

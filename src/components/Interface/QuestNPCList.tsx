@@ -89,7 +89,7 @@ const QuestNPCList: React.FC = () => {
 
   return (
     <ParentContainer>
-      <PaneTitle>{getZoneLongNameById(currentZone)}</PaneTitle>
+      <PaneTitle>{currentZone !== null ? getZoneLongNameById(currentZone) : ''}</PaneTitle>
       <NPCListContainer>
         {currentZoneNPCs
           .filter((npc) => npc.name) // Filter out NPCs with missing names

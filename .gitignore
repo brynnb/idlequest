@@ -78,4 +78,5 @@ venv/
 # IDE/Editor folders
 .claude/
 .cursor/
+.agent/
 

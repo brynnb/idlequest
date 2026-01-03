@@ -2,7 +2,7 @@ import React from "react";
 import { Item } from "@entities/Item";
 import { Spell } from "@entities/Spell";
 import { eqDataService, Spell as ServiceSpell } from "@utils/eqDataService";
-import classesData from "@data/json/classes.json";
+import useStaticDataStore from "@stores/StaticDataStore";
 import { calcSpellEffectValue } from "@utils/spellCalculations";
 
 interface SpellInfo {
@@ -142,13 +142,14 @@ export const useSpellInfo = (item: Item | null) => {
 
 export const getSpellLevels = (spell: Spell) => {
   if (!spell) return "";
+  const classesData = useStaticDataStore.getState().classes;
   const classes = classesData.slice(0, 14);
   const levels = classes
     .map((c, index) => {
       const classKey = `classes${index + 1}` as keyof Spell;
       const level = spell[classKey] as number;
       return level > 0 && level < 255
-        ? { shortName: c.short_name, level }
+        ? { shortName: c.shortName, level }
         : null;
     })
     .filter(

@@ -8,7 +8,6 @@ import { Item } from "@entities/Item";
 import { InventorySlot } from "@entities/InventorySlot";
 import useChatStore, { MessageType } from "./ChatStore";
 import useGameStatusStore from "./GameStatusStore";
-import { calculateSimpleArmorClass } from "@utils/calculateSimpleArmorClass";
 
 
 import {
@@ -27,9 +26,8 @@ import {
   DeleteItem,
   SellItemResponse,
 } from "@/net";
-import races from "@data/json/races.json";
-import classes from "@data/json/classes.json";
-import deities from "@data/json/deities.json";
+import useStaticDataStore from "./StaticDataStore";
+
 
 const defaultAttributes: CharacterAttributes = {
   str: 0,
@@ -496,17 +494,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           }
         },
         updateArmorClass: () => {
-          const { characterProfile } = get();
-          const newAC = calculateSimpleArmorClass(characterProfile);
-          set((state) => ({
-            characterProfile: {
-              ...state.characterProfile,
-              stats: {
-                ...state.characterProfile.stats,
-                ac: newAC,
-              },
-            },
-          }));
+          // Deprecated: Server is authoritative for AC calculation
         },
         updateMaxHP: () => {
           // Deprecated: Server is authoritative
@@ -551,7 +539,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
           const totalAttributes = calculateTotalAttributes(
             get().characterProfile
           );
-          const ac = calculateSimpleArmorClass(get().characterProfile);
+          // AC comes from server via CharacterState, don't calculate client-side
+          const currentAC = get().characterProfile.stats?.ac ?? 0;
 
           set((state) => {
             return {
@@ -559,7 +548,7 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
                 ...state.characterProfile,
                 stats: {
                   ...resistances,
-                  ac,
+                  ac: currentAC,
                   atk: 100 + Math.floor((totalAttributes.str ?? 0) / 4),
                 },
                 attributes: state.characterProfile.attributes || {
@@ -654,7 +643,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
             zone: serverChar.zone,
           });
 
-          // Look up race/class/deity from JSON data
+          // Look up race/class/deity from StaticDataStore
+          const { races, classes, deities } = useStaticDataStore.getState();
           const raceData = races.find(
             (r: { id: number }) => r.id === serverChar.race
           );
@@ -758,7 +748,8 @@ const usePlayerCharacterStore = create<PlayerCharacterStore>()(
         // Apply unified CharacterState from server - single source of truth
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         applyCharacterState: async (serverState: any) => {
-          // Look up race/class/deity from JSON data
+          // Look up race/class/deity from StaticDataStore
+          const { races, classes, deities } = useStaticDataStore.getState();
           const raceData = races.find(
             (r: { id: number }) => r.id === serverState.race
           );

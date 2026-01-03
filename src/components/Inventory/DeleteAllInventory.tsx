@@ -1,5 +1,5 @@
 import React from "react";
-import usePlayerCharacterStore from "@stores/playercharacterStore";
+import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 
 const DeleteAllInventory: React.FC = () => {
   const clearInventory = usePlayerCharacterStore(

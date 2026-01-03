@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import SkillTile from "./SkillTile";
-import { Skill, getSkillName } from "@entities/Skill";
+import { getSkillName } from "@entities/Skill";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
+import { getTradeskillValue, TRADESKILL_IDS } from "@utils/tradeskillUtils";
 
 const ListContainer = styled.div`
   position: absolute;
@@ -32,40 +33,18 @@ const ListContainer = styled.div`
   }
 `;
 
-// Define which skills are tradeskills
-const TRADESKILL_IDS: Skill[] = [
-    Skill.Fishing,
-    Skill.MakePoison,
-    Skill.Tinkering,
-    Skill.Research,
-    Skill.Alchemy,
-    Skill.Baking,
-    Skill.Tailoring,
-    Skill.Blacksmithing,
-    Skill.Fletching,
-    Skill.Brewing,
-    Skill.JewelryMaking,
-    Skill.Pottery,
-];
-
 const TradeskillList: React.FC = () => {
     const { characterProfile } = usePlayerCharacterStore();
-    const skills = characterProfile?.skills || [];
 
     // Build an array of tradeskill entries with name and value
-    const skillEntries: { id: number; name: string; value: number }[] = [];
-
-    for (const skillId of TRADESKILL_IDS) {
-        const name = getSkillName(skillId);
-        const value = skills[skillId] ?? 0;
-
-        if (name && name !== "Unknown") {
-            skillEntries.push({ id: skillId, name, value });
-        }
-    }
-
-    // Sort alphabetically by name
-    skillEntries.sort((a, b) => a.name.localeCompare(b.name));
+    const skillEntries = TRADESKILL_IDS
+        .map((skillId) => ({
+            id: skillId,
+            name: getSkillName(skillId),
+            value: getTradeskillValue(skillId, characterProfile),
+        }))
+        .filter((skill) => skill.name && skill.name !== "Unknown")
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     return (
         <ListContainer>

@@ -306,6 +306,54 @@ func HandleStaticDataRequest(ses *session.Session, payload []byte, wh *WorldHand
 			}
 		}
 
+		// Set combination descriptions
+		if len(data.CombinationDescriptions) > 0 {
+			descList, err := eq.NewCombinationDescription_List(resp.Segment(), int32(len(data.CombinationDescriptions)))
+			if err == nil {
+				for i, desc := range data.CombinationDescriptions {
+					d := descList.At(i)
+					d.SetRaceId(desc.RaceID)
+					d.SetClassId(desc.ClassID)
+					d.SetDeityId(desc.DeityID)
+					d.SetDescription(desc.Description)
+				}
+				resp.SetCombinationDescriptions(descList)
+			}
+		}
+
+		// Set start zones
+		if len(data.StartZones) > 0 {
+			szList, err := eq.NewStartZone_List(resp.Segment(), int32(len(data.StartZones)))
+			if err == nil {
+				for i, sz := range data.StartZones {
+					s := szList.At(i)
+					s.SetX(float32(sz.X))
+					s.SetY(float32(sz.Y))
+					s.SetZ(float32(sz.Z))
+					s.SetHeading(float32(sz.Heading))
+					s.SetZoneIdNumber(sz.StartZone)
+					s.SetPlayerClass(sz.PlayerClass)
+					s.SetPlayerDeity(sz.PlayerDeity)
+					s.SetPlayerRace(sz.PlayerRace)
+				}
+				resp.SetStartZones(szList)
+			}
+		}
+
+		// Set zone descriptions
+		if len(data.ZoneDescriptions) > 0 {
+			zdList, err := eq.NewZoneDescription_List(resp.Segment(), int32(len(data.ZoneDescriptions)))
+			if err == nil {
+				for i, zd := range data.ZoneDescriptions {
+					z := zdList.At(i)
+					z.SetZoneId(zd.ZoneID)
+					z.SetDescription(zd.Description)
+					z.SetWelcome(zd.Welcome)
+				}
+				resp.SetZoneDescriptions(zdList)
+			}
+		}
+
 		return nil
 	})
 

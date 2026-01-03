@@ -33,7 +33,7 @@ const GroupMemberName = styled.span.attrs({
   position: relative;
 `;
 
-const HealthBarMember = styled.div.attrs({
+const _HealthBarMember = styled.div.attrs({
   className: "health-bar-member",
 })`
   position: absolute;

@@ -12,14 +12,14 @@ const SpellGemDiv = styled.div.attrs({
 `;
 
 const SpellGems: React.FC = () => {
-  const spellGems: Record<string, SpellGem> = getSpellGems();
+  const spellGems: SpellGem[] = getSpellGems();
 
   return (
     <>
-      {Object.entries(spellGems).map(([key, gem]) => (
+      {spellGems.map((gem, index) => (
         <SpellGemDiv
-          key={key}
-          id={`spell_gem_${key}`}
+          key={index}
+          id={`spell_gem_${index}`}
           style={{
             background: `url('/images/${gem.spritesheet}') ${gem.x}px ${gem.y}px no-repeat`,
             backgroundSize: "263px",

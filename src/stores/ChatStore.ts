@@ -4,7 +4,7 @@ import {
   WorldSocket,
   OpCodes,
   SendChatMessageRequest,
-  ChatMessageBroadcast,
+  ChatMessageCapnp,
 } from "@/net";
 
 export enum MessageType {
@@ -140,7 +140,7 @@ const useChatStore = create<ChatStore>()(
             // Register handler for incoming chat messages via Cap'n Proto
             WorldSocket.registerOpCodeHandler(
               OpCodes.ChatMessageBroadcast,
-              ChatMessageBroadcast,
+              ChatMessageCapnp,
               (message) => {
                 get().addMessage(
                   message.text,

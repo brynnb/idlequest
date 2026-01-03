@@ -2,10 +2,8 @@ package staticdata
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 
 	"idlequest/internal/cache"
@@ -14,6 +12,8 @@ import (
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/db/jetgen/eqgo/table"
 	db_zone "idlequest/internal/db/zone"
+
+	"github.com/go-jet/jet/v2/mysql"
 )
 
 // RaceInfo represents a playable race
@@ -44,6 +44,21 @@ type DeityInfo struct {
 	AltName     string `json:"alt_name"`
 }
 
+// CombinationDescription represents a description for a specific race/class/deity combination
+type CombinationDescription struct {
+	RaceID      int32  `json:"race_id"`
+	ClassID     int32  `json:"class_id"`
+	DeityID     int32  `json:"deity_id"`
+	Description string `json:"description"`
+}
+
+// ZoneDescriptionInfo represents a description and welcome message for a zone
+type ZoneDescriptionInfo struct {
+	ZoneID      int32  `json:"zone_id"`
+	Description string `json:"description"`
+	Welcome     string `json:"welcome"`
+}
+
 // StaticData holds all static game data
 type StaticData struct {
 	Races                      []RaceInfo
@@ -51,6 +66,9 @@ type StaticData struct {
 	Deities                    []DeityInfo
 	CharCreateCombinations     []model.CharCreateCombinations
 	CharCreatePointAllocations []model.CharCreatePointAllocations
+	CombinationDescriptions    []CombinationDescription
+	StartZones                 []model.StartZones
+	ZoneDescriptions           []ZoneDescriptionInfo
 }
 
 var (
@@ -77,15 +95,15 @@ func loadStaticData(ctx context.Context) (*StaticData, error) {
 
 	data := &StaticData{}
 
-	// Load races from JSON file
-	races, err := loadRacesFromJSON()
+	// Load races from DB
+	races, err := loadRacesFromDB(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("load races: %w", err)
 	}
 	data.Races = races
 
-	// Load classes from JSON file
-	classes, err := loadClassesFromJSON()
+	// Load classes from DB
+	classes, err := loadClassesFromDB(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("load classes: %w", err)
 	}
@@ -112,6 +130,29 @@ func loadStaticData(ctx context.Context) (*StaticData, error) {
 	}
 	data.CharCreatePointAllocations = allocations
 
+	// Load combination descriptions from DB
+	descriptions, err := loadCombinationDescriptionsFromDB(ctx)
+	if err != nil {
+		fmt.Printf("Warning: failed to load combination descriptions: %v\n", err)
+	} else {
+		data.CombinationDescriptions = descriptions
+	}
+
+	// Load zone descriptions from DB
+	zoneDescs, err := loadZoneDescriptionsFromDB(ctx)
+	if err != nil {
+		fmt.Printf("Warning: failed to load zone descriptions: %v\n", err)
+	} else {
+		data.ZoneDescriptions = zoneDescs
+	}
+
+	// Load start zones from database
+	startZones, err := loadStartZonesFromDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("load start zones: %w", err)
+	}
+	data.StartZones = startZones
+
 	cache.GetCache().Set(cacheKey, data)
 	return data, nil
 }
@@ -131,32 +172,107 @@ func getDataPath() string {
 	return "../data/json" // default
 }
 
-func loadRacesFromJSON() ([]RaceInfo, error) {
-	path := filepath.Join(getDataPath(), "races.json")
-	data, err := os.ReadFile(path)
+func loadRacesFromDB(ctx context.Context) ([]RaceInfo, error) {
+	var dbRaces []model.Races
+	err := table.Races.
+		SELECT(table.Races.AllColumns).
+		FROM(table.Races).
+		WHERE(table.Races.IsPlayable.EQ(mysql.Int8(1))).
+		ORDER_BY(table.Races.ID.ASC()).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &dbRaces)
 	if err != nil {
-		return nil, fmt.Errorf("read races.json: %w", err)
+		return nil, err
 	}
 
 	var races []RaceInfo
-	if err := json.Unmarshal(data, &races); err != nil {
-		return nil, fmt.Errorf("parse races.json: %w", err)
+	for _, r := range dbRaces {
+		info := RaceInfo{
+			ID:   r.ID,
+			Name: r.Name,
+		}
+		if r.NoCoin != nil {
+			info.NoCoin = int32(*r.NoCoin)
+		}
+		if r.IsPlayable != nil {
+			info.IsPlayable = *r.IsPlayable == 1
+		}
+		if r.ShortName != nil {
+			info.ShortName = *r.ShortName
+		}
+		if r.Bitmask != nil {
+			info.Bitmask = *r.Bitmask
+		}
+		races = append(races, info)
 	}
 	return races, nil
 }
 
-func loadClassesFromJSON() ([]ClassInfo, error) {
-	path := filepath.Join(getDataPath(), "classes.json")
-	data, err := os.ReadFile(path)
+func loadClassesFromDB(ctx context.Context) ([]ClassInfo, error) {
+	var dbClasses []model.Classes
+	err := table.Classes.
+		SELECT(table.Classes.AllColumns).
+		FROM(table.Classes).
+		WHERE(table.Classes.Bitmask.IS_NOT_NULL()).
+		ORDER_BY(table.Classes.ID.ASC()).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &dbClasses)
 	if err != nil {
-		return nil, fmt.Errorf("read classes.json: %w", err)
+		return nil, err
 	}
 
 	var classes []ClassInfo
-	if err := json.Unmarshal(data, &classes); err != nil {
-		return nil, fmt.Errorf("parse classes.json: %w", err)
+	for _, c := range dbClasses {
+		classes = append(classes, ClassInfo{
+			ID:           c.ID,
+			Bitmask:      *c.Bitmask,
+			Name:         c.Name,
+			ShortName:    *c.ShortName,
+			CreatePoints: *c.CreatePoints,
+		})
 	}
 	return classes, nil
+}
+
+func loadCombinationDescriptionsFromDB(ctx context.Context) ([]CombinationDescription, error) {
+	var dbDescs []model.CombinationDescriptions
+	err := table.CombinationDescriptions.
+		SELECT(table.CombinationDescriptions.AllColumns).
+		FROM(table.CombinationDescriptions).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &dbDescs)
+	if err != nil {
+		return nil, err
+	}
+
+	var descriptions []CombinationDescription
+	for _, d := range dbDescs {
+		descriptions = append(descriptions, CombinationDescription{
+			RaceID:      d.RaceID,
+			ClassID:     d.ClassID,
+			DeityID:     d.DeityID,
+			Description: *d.Description,
+		})
+	}
+	return descriptions, nil
+}
+
+func loadZoneDescriptionsFromDB(ctx context.Context) ([]ZoneDescriptionInfo, error) {
+	var dbDescs []model.ZoneDescriptions
+	err := table.ZoneDescriptions.
+		SELECT(table.ZoneDescriptions.AllColumns).
+		FROM(table.ZoneDescriptions).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &dbDescs)
+	if err != nil {
+		return nil, err
+	}
+
+	var descriptions []ZoneDescriptionInfo
+	for _, d := range dbDescs {
+		descriptions = append(descriptions, ZoneDescriptionInfo{
+			ZoneID:      d.ZoneID,
+			Description: *d.Description,
+			Welcome:     *d.Welcome,
+		})
+	}
+	return descriptions, nil
 }
 
 func loadDeitiesFromDB() ([]DeityInfo, error) {
@@ -239,4 +355,16 @@ func loadCharCreatePointAllocations(ctx context.Context) ([]model.CharCreatePoin
 // GetAllZones returns all zones from the database
 func GetAllZones(ctx context.Context) ([]model.Zone, error) {
 	return db_zone.GetAllZones(ctx)
+}
+
+func loadStartZonesFromDB(ctx context.Context) ([]model.StartZones, error) {
+	var startZones []model.StartZones
+	err := table.StartZones.
+		SELECT(table.StartZones.AllColumns).
+		FROM(table.StartZones).
+		QueryContext(ctx, db.GlobalWorldDB.DB, &startZones)
+	if err != nil {
+		return nil, fmt.Errorf("query start_zones: %w", err)
+	}
+	return startZones, nil
 }

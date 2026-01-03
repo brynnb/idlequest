@@ -1048,7 +1048,7 @@ struct BookRequest {
   txtfile @2 :Text;
 }
 
-struct Object {
+struct WorldObject {
   linkedListAddr @0 :List(Int32);
   dropId @1 :Int32;
   zoneId @2 :Int32;
@@ -2353,6 +2353,8 @@ struct CombatRoundUpdate {
   npcMaxHp @8 :Int32;
   # Timing info
   roundNumber @9 :Int32;
+  # Death flags
+  npcDied @10 :Int32;  # 1 = NPC died this round (don't show NPC attack)
 }
 
 struct CombatEndedResponse {
@@ -2466,6 +2468,30 @@ struct CharCreatePointAllocation {
   allocCha @14 :Int32;
 }
 
+struct CombinationDescription {
+  raceId @0 :Int32;
+  classId @1 :Int32;
+  deityId @2 :Int32;
+  description @3 :Text;
+}
+
+struct StartZone {
+  x @0 :Float32;
+  y @1 :Float32;
+  z @2 :Float32;
+  heading @3 :Float32;
+  zoneIdNumber @4 :Int32;
+  playerClass @5 :Int32;
+  playerDeity @6 :Int32;
+  playerRace @7 :Int32;
+}
+
+struct ZoneDescription {
+  zoneId @0 :Int32;
+  description @1 :Text;
+  welcome @2 :Text;
+}
+
 struct StaticDataResponse {
   success @0 :Int32;
   error @1 :Text;
@@ -2475,7 +2501,12 @@ struct StaticDataResponse {
   deities @5 :List(DeityInfo);
   charCreateCombinations @6 :List(CharCreateCombination);
   charCreatePointAllocations @7 :List(CharCreatePointAllocation);
+  combinationDescriptions @8 :List(CombinationDescription);
+  startZones @9 :List(StartZone);
+  zoneDescriptions @10 :List(ZoneDescription);
 }
+
+
 
 # Spell lookup messages
 struct GetSpellRequest {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { InventorySlot } from "../src/entities/InventorySlot";
+import { InventorySlot } from "@entities/InventorySlot";
 
 // Inline implementation of getBagStartingSlot to avoid import chain issues
 const getBagStartingSlot = (baseSlot: number): number => {

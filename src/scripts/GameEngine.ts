@@ -139,7 +139,8 @@ class GameEngine {
         } damage!`,
         MessageType.COMBAT_INCOMING
       );
-    } else {
+    } else if (!round.npcDied) {
+      // Only show miss message if NPC is still alive (dead NPCs can't attack)
       addMessage(
         `${targetNPC?.name || "The enemy"} misses you!`,
         MessageType.COMBAT_INCOMING

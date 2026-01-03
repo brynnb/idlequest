@@ -40,6 +40,7 @@ interface RecipeState {
     selectedRecipe: Recipe | null;
     selectedRecipeDetails: RecipeDetails | null;
     loadingDetails: boolean;
+    recipeDetailsCache: Map<number, RecipeDetails>; // Cache recipe details by ID
     selectRecipe: (recipe: Recipe | null) => void;
     loadRecipeDetails: (recipeId: number) => Promise<void>;
 
@@ -122,6 +123,7 @@ const useRecipeStore = create<RecipeState>((set, get) => ({
     selectedRecipe: null,
     selectedRecipeDetails: null,
     loadingDetails: false,
+    recipeDetailsCache: new Map<number, RecipeDetails>(),
     selectRecipe: (recipe: Recipe | null) => {
         set({ selectedRecipe: recipe, selectedRecipeDetails: null });
         if (recipe) {
@@ -129,6 +131,13 @@ const useRecipeStore = create<RecipeState>((set, get) => ({
         }
     },
     loadRecipeDetails: async (recipeId: number) => {
+        // Check cache first
+        const cached = get().recipeDetailsCache.get(recipeId);
+        if (cached) {
+            set({ selectedRecipeDetails: cached, loadingDetails: false });
+            return;
+        }
+
         set({ loadingDetails: true });
 
         try {
@@ -186,8 +195,12 @@ const useRecipeStore = create<RecipeState>((set, get) => ({
                 outputs,
             };
 
-            set({ selectedRecipeDetails: details, loadingDetails: false });
-            console.log(`Loaded details for recipe ${recipeId}: ${components.length} components, ${outputs.length} outputs`);
+            // Add to cache
+            const cache = get().recipeDetailsCache;
+            cache.set(recipeId, details);
+
+            set({ selectedRecipeDetails: details, loadingDetails: false, recipeDetailsCache: cache });
+            console.log(`Loaded and cached details for recipe ${recipeId}: ${components.length} components, ${outputs.length} outputs`);
         } catch (error) {
             console.error("Error fetching recipe details:", error);
             set({ loadingDetails: false });

@@ -32,6 +32,7 @@ export interface CombatRoundData {
   npcHp: number;
   npcMaxHp: number;
   roundNumber: number;
+  npcDied: boolean; // NPC died this round, don't show NPC attack message
 }
 
 export interface CombatEndData {
@@ -144,6 +145,7 @@ class CombatService {
             npcHp: msg.npcHp,
             npcMaxHp: msg.npcMaxHp,
             roundNumber: msg.roundNumber,
+            npcDied: msg.npcDied === 1,
           });
         }
       }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { LoadingJokeUtil } from "../src/utils/getRandomLoadingJoke";
+import { LoadingJokeUtil } from "@utils/getRandomLoadingJoke";
 
 describe("LoadingJokeUtil", () => {
   it("should return a string from the jokes array", () => {

@@ -17,32 +17,32 @@ export default interface CharacterProfile {
   suffix?: string;                // Suffix
   zoneId?: number;                // ZoneID
   zoneInstance?: number;          // ZoneInstance
-  
+
   // Position data
   x?: number;                     // X
   y?: number;                     // Y  
   z?: number;                     // Z
   heading?: number;               // Heading
-  
+
   // Basic character info
   gender?: number;                // Gender
-  race?: Race | number;           // Race (can be Race object or number)
-  class?: CharacterClass | number; // Class (can be CharacterClass object or number)
+  race?: Race;                    // Race object
+  class?: CharacterClass;         // Class object
   level?: number;                 // Level
-  deity?: Deity | number;         // Deity (can be Deity object or number)
+  deity?: Deity;                  // Deity object
   birthday?: number;              // Birthday
   lastLogin?: number;             // LastLogin
   timePlayed?: number;            // TimePlayed
   anon?: number;                  // Anon
   gm?: number;                    // Gm
   face?: number;                  // Face
-  
+
   // Abilities and timers
   abilityTimeSeconds?: number;    // AbilityTimeSeconds
   abilityNumber?: number;         // AbilityNumber
   abilityTimeMinutes?: number;    // AbilityTimeMinutes
   abilityTimeHours?: number;      // AbilityTimeHours
-  
+
   // Experience and points
   exp?: number;                   // Exp
   expEnabled?: number;            // ExpEnabled
@@ -50,7 +50,7 @@ export default interface CharacterProfile {
   aaExp?: number;                 // AaExp
   aaPoints?: number;              // AaPoints
   points?: number;                // Points
-  
+
   // Health/Mana/Endurance
   curHp?: number;                 // CurHp
   maxHp?: number;                 // Calculated client-side
@@ -58,7 +58,7 @@ export default interface CharacterProfile {
   maxMana?: number;               // Calculated client-side  
   endurance?: number;             // Endurance
   intoxication?: number;          // Intoxication
-  
+
   // Base attributes (from Go server)
   str?: number;                   // Str
   sta?: number;                   // Sta
@@ -68,7 +68,7 @@ export default interface CharacterProfile {
   agi?: number;                   // Agi
   wis?: number;                   // Wis
   extraHaste?: number;            // ExtraHaste
-  
+
   // Game state
   zoneChangeCount?: number;       // ZoneChangeCount
   toxicity?: number;              // Toxicity
@@ -76,12 +76,12 @@ export default interface CharacterProfile {
   thirstLevel?: number;           // ThirstLevel
   abilityUp?: number;             // AbilityUp
   showHelm?: number;              // ShowHelm
-  
+
   // Social settings
   groupAutoConsent?: number;      // GroupAutoConsent
   raidAutoConsent?: number;       // RaidAutoConsent
   guildAutoConsent?: number;      // GuildAutoConsent
-  
+
   // Other game mechanics
   restTimer?: number;             // RestTimer
   airRemaining?: number;          // AirRemaining
@@ -91,18 +91,18 @@ export default interface CharacterProfile {
   mailkey?: string;               // Mailkey
   xtargets?: number;              // Xtargets
   firstLogon?: number;            // Firstlogon
-  
+
   // Advanced AA
   eAaEffects?: number;            // EAaEffects
   ePercentToAa?: number;          // EPercentToAa
   eExpendedAaSpent?: number;      // EExpendedAaSpent
   aaPointsSpentOld?: number;      // AaPointsSpentOld
   aaPointsOld?: number;           // AaPointsOld
-  
+
   // Special states
   deletedAt?: string | null;      // DeletedAt (timestamp)
   illusionBlock?: number;         // IllusionBlock
-  
+
   // Tradeskills (all from Go server)
   wind?: number;                  // Wind (instrument skill)
   brass?: number;                 // Brass (instrument skill)
@@ -121,14 +121,17 @@ export default interface CharacterProfile {
   alcohol?: number;               // Alcohol tolerance
   fishing?: number;               // Fishing
   tinkering?: number;             // Tinkering
-  
+
+  // Skills array (indexed by Skill enum) - for combat skills
+  skills?: number[];
+
   // Client-side computed fields (keep for backward compatibility)
-  stats?: CharacterStats;         
+  stats?: CharacterStats;
   attributes?: CharacterAttributes; // Computed from str/sta/cha/etc
   totalAttributes?: CharacterAttributes; // With item bonuses
   inventory?: InventoryItem[];
   startingZone?: Zone;
-  
+
   // Currency (may be separate or computed)
   platinum?: number;
   gold?: number;
@@ -136,7 +139,7 @@ export default interface CharacterProfile {
   copper?: number;
   weight?: number;
   weightAllowance?: number;
-  
+
   // Legacy fields for backward compatibility
   appearance?: {
     face?: number;
@@ -147,7 +150,7 @@ export default interface CharacterProfile {
     eyeColor1?: number;
     eyeColor2?: number;
   };
-  
+
   // Deprecated/legacy fields
   forumId?: number;
   level2?: number;

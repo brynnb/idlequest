@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import useRandomName from "../src/hooks/useRandomName";
+import useRandomName from "@hooks/useRandomName";
 
 describe("useRandomName", () => {
   it("generates a random name", () => {
