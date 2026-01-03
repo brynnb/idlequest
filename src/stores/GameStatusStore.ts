@@ -48,6 +48,8 @@ interface GameStatusStore {
   toggleNote: () => void;
   isAbilitiesOpen: boolean;
   toggleAbilities: () => void;
+  isTradeskillsOpen: boolean;
+  toggleTradeskills: () => void;
   containerPositions: Record<number, ContainerPosition>;
   setContainerPosition: (bagSlot: number, position: ContainerPosition) => void;
 }
@@ -265,10 +267,24 @@ const useGameStatusStore = create<GameStatusStore>()(
               set((state) => ({
                 isAbilitiesOpen: !state.isAbilitiesOpen,
                 isNoteOpen: false,
+                isTradeskillsOpen: false,
                 isInventoryOpen: state.isAbilitiesOpen
                   ? false
                   : state.isInventoryOpen,
                 isMapOpen: state.isAbilitiesOpen ? false : state.isMapOpen,
+              }));
+            },
+
+            isTradeskillsOpen: false,
+            toggleTradeskills: () => {
+              set((state) => ({
+                isTradeskillsOpen: !state.isTradeskillsOpen,
+                isAbilitiesOpen: false,
+                isNoteOpen: false,
+                isInventoryOpen: state.isTradeskillsOpen
+                  ? false
+                  : state.isInventoryOpen,
+                isMapOpen: state.isTradeskillsOpen ? false : state.isMapOpen,
               }));
             },
 

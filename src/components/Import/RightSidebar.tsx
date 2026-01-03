@@ -47,6 +47,8 @@ const RightSidebar = () => {
     toggleNote,
     isAbilitiesOpen,
     toggleAbilities,
+    isTradeskillsOpen,
+    toggleTradeskills,
     updateCurrentZoneNPCs,
     autoSellEnabled,
     toggleAutoSell,
@@ -116,8 +118,10 @@ const RightSidebar = () => {
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton
-          text="Invite"
-          onClick={() => { }}
+          text="Tradeskills"
+          onClick={toggleTradeskills}
+          isPressed={isTradeskillsOpen}
+          isToggleable={true}
           marginBottom={marginBottomForBottomButtons}
         />
         <ActionButton
