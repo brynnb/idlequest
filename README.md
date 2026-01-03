@@ -1,5 +1,7 @@
 <img width="1344" height="443" alt="idlequestlogonew" src="https://github.com/user-attachments/assets/d33867a5-a677-4942-b7c0-70901d5cfdd6" />
 
+Demo coming soon!
+
 IdleQuest is an online [idle/incremental game](https://en.wikipedia.org/wiki/Incremental_game) based on EverQuest, the iconic MMO released in 1999. Designed to mostly progress on its own, players get to interact with the classic EverQuest interface (and fellow players!) to relive some nostaliga and have fun managing their character as it advances. The goal is to recreate as much of the original EverQuest experience as possible using a database dump from the EverQuest emulator (EQEmu) project, which itself is data from scraping the original game. This data, rooted in the original game, allows for a nostalgic and detailed experience of EverQuest's world without the brutal time-sink of the original game.
 
 Current features:
