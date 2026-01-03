@@ -235,13 +235,17 @@ func HandleStaticDataRequest(ses *session.Session, payload []byte, wh *WorldHand
 		if len(data.Classes) > 0 {
 			classList, err := eq.NewClassInfo_List(resp.Segment(), int32(len(data.Classes)))
 			if err == nil {
-				for i, class := range data.Classes {
-					c := classList.At(i)
-					c.SetId(class.ID)
-					c.SetBitmask(class.Bitmask)
-					c.SetName(class.Name)
-					c.SetShortName(class.ShortName)
-					c.SetCreatePoints(class.CreatePoints)
+				for i, c := range data.Classes {
+					class := classList.At(i)
+					class.SetId(c.ID)
+					class.SetBitmask(c.Bitmask)
+					class.SetName(c.Name)
+					class.SetShortName(c.ShortName)
+					class.SetCreatePoints(c.CreatePoints)
+					class.SetSpellListId(c.SpellListID)
+					class.SetFirstTitle(c.FirstTitle)
+					class.SetSecondTitle(c.SecondTitle)
+					class.SetThirdTitle(c.ThirdTitle)
 				}
 				resp.SetClasses(classList)
 			}
@@ -251,17 +255,41 @@ func HandleStaticDataRequest(ses *session.Session, payload []byte, wh *WorldHand
 		if len(data.Deities) > 0 {
 			deityList, err := eq.NewDeityInfo_List(resp.Segment(), int32(len(data.Deities)))
 			if err == nil {
-				for i, deity := range data.Deities {
-					d := deityList.At(i)
-					d.SetId(deity.ID)
-					d.SetName(deity.Name)
-					d.SetBitmask(deity.Bitmask)
-					d.SetDescription(deity.Description)
-					d.SetAltName(deity.AltName)
+				for i, d := range data.Deities {
+					deity := deityList.At(i)
+					deity.SetId(d.ID)
+					deity.SetName(d.Name)
+					deity.SetBitmask(d.Bitmask)
+					deity.SetDescription(d.Description)
+					deity.SetAltName(d.AltName)
+					deity.SetSpellsId(d.SpellsID)
 				}
 				resp.SetDeities(deityList)
 			}
 		}
+
+		return nil
+	})
+
+	return false
+}
+
+// HandleCharCreateDataRequest handles CharCreateDataRequest Cap'n Proto messages
+func HandleCharCreateDataRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	ctx := context.Background()
+
+	// Get all static data (cached)
+	data, dataErr := staticdata.GetStaticData(ctx)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootCharCreateDataResponse, opcodes.CharCreateDataResponse, func(resp eq.CharCreateDataResponse) error {
+		if dataErr != nil {
+			resp.SetSuccess(0)
+			resp.SetError(dataErr.Error())
+			return nil
+		}
+
+		resp.SetSuccess(1)
 
 		// Set char create combinations
 		if len(data.CharCreateCombinations) > 0 {

@@ -3,6 +3,7 @@ import useStaticDataStore from "@stores/StaticDataStore";
 import useGameScreenStore from "@stores/GameScreenStore";
 import { WorldSocket } from "@/net";
 import LoadingScreen from "./LoadingScreen";
+import { useMinimumLoadingTime } from "@hooks/useMinimumLoadingTime";
 
 interface StaticDataGateProps {
   children: ReactNode;
@@ -25,12 +26,12 @@ const StaticDataGate = ({ children, fallback }: StaticDataGateProps) => {
     }
   }, [isLoaded, isLoading, loadStaticData, setScreen]);
 
-  // If not connected, show loading while redirecting
-  if (!WorldSocket.isConnected) {
-    return <LoadingScreen message="Connecting..." isIndeterminate />;
-  }
+  const showLoading = useMinimumLoadingTime(!WorldSocket.isConnected || !isLoaded);
 
-  if (!isLoaded) {
+  if (showLoading) {
+    if (!WorldSocket.isConnected) {
+      return <LoadingScreen message="Connecting..." isIndeterminate />;
+    }
     return fallback ? (
       <>{fallback}</>
     ) : (

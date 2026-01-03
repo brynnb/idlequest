@@ -633,6 +633,8 @@ const (
 	ChatMessageBroadcast
 	GetNPCDialogueRequest
 	GetNPCDialogueResponse
+	CharCreateDataRequest
+	CharCreateDataResponse
 
 	// IdleQuest combat opcodes
 	StartCombat

@@ -2431,6 +2431,10 @@ struct ClassInfo {
   name @2 :Text;
   shortName @3 :Text;
   createPoints @4 :Int32;
+  spellListId @5 :Int32;
+  firstTitle @6 :Text;
+  secondTitle @7 :Text;
+  thirdTitle @8 :Text;
 }
 
 struct DeityInfo {
@@ -2439,6 +2443,7 @@ struct DeityInfo {
   bitmask @2 :Int32;
   description @3 :Text;
   altName @4 :Text;
+  spellsId @5 :Int32;
 }
 
 struct CharCreateCombination {
@@ -2499,11 +2504,20 @@ struct StaticDataResponse {
   races @3 :List(RaceInfo);
   classes @4 :List(ClassInfo);
   deities @5 :List(DeityInfo);
-  charCreateCombinations @6 :List(CharCreateCombination);
-  charCreatePointAllocations @7 :List(CharCreatePointAllocation);
-  combinationDescriptions @8 :List(CombinationDescription);
-  startZones @9 :List(StartZone);
-  zoneDescriptions @10 :List(ZoneDescription);
+}
+
+struct CharCreateDataRequest {
+  # Empty
+}
+
+struct CharCreateDataResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  charCreateCombinations @2 :List(CharCreateCombination);
+  charCreatePointAllocations @3 :List(CharCreatePointAllocation);
+  combinationDescriptions @4 :List(CombinationDescription);
+  startZones @5 :List(StartZone);
+  zoneDescriptions @6 :List(ZoneDescription);
 }
 
 

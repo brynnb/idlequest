@@ -222,7 +222,7 @@ export enum OpCodes {
   ControlBoat,
   DumpName,
   SafeFallSuccess,
-  Heartbeat,
+  Heartbeat = 216,
   SafePoint,
   FindPersonRequest,
   LeadershipExpToggle,
@@ -625,6 +625,8 @@ export enum OpCodes {
   ChatMessageBroadcast,
   GetNPCDialogueRequest,
   GetNPCDialogueResponse,
+  CharCreateDataRequest,
+  CharCreateDataResponse,
 
   // IdleQuest combat opcodes
   StartCombat,

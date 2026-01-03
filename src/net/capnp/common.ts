@@ -12181,7 +12181,7 @@ export class ClassInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "ClassInfo",
     id: "e0e21a45b920ef5d",
-    size: new $.ObjectSize(16, 2),
+    size: new $.ObjectSize(16, 5),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -12213,13 +12213,37 @@ export class ClassInfo extends $.Struct {
   set createPoints(value: number) {
     $.utils.setInt32(8, value, this);
   }
+  get spellListId(): number {
+    return $.utils.getInt32(12, this);
+  }
+  set spellListId(value: number) {
+    $.utils.setInt32(12, value, this);
+  }
+  get firstTitle(): string {
+    return $.utils.getText(2, this);
+  }
+  set firstTitle(value: string) {
+    $.utils.setText(2, value, this);
+  }
+  get secondTitle(): string {
+    return $.utils.getText(3, this);
+  }
+  set secondTitle(value: string) {
+    $.utils.setText(3, value, this);
+  }
+  get thirdTitle(): string {
+    return $.utils.getText(4, this);
+  }
+  set thirdTitle(value: string) {
+    $.utils.setText(4, value, this);
+  }
   toString(): string { return "ClassInfo_" + super.toString(); }
 }
 export class DeityInfo extends $.Struct {
   static readonly _capnp = {
     displayName: "DeityInfo",
     id: "9ffefc830e54652f",
-    size: new $.ObjectSize(8, 3),
+    size: new $.ObjectSize(16, 3),
   };
   get id(): number {
     return $.utils.getInt32(0, this);
@@ -12250,6 +12274,12 @@ export class DeityInfo extends $.Struct {
   }
   set altName(value: string) {
     $.utils.setText(2, value, this);
+  }
+  get spellsId(): number {
+    return $.utils.getInt32(8, this);
+  }
+  set spellsId(value: number) {
+    $.utils.setInt32(8, value, this);
   }
   toString(): string { return "DeityInfo_" + super.toString(); }
 }
@@ -12486,7 +12516,7 @@ export class StartZone extends $.Struct {
 export class ZoneDescription extends $.Struct {
   static readonly _capnp = {
     displayName: "ZoneDescription",
-    id: "f37a5e929b0115ee",
+    id: "9a90a23b04d7e7b8",
     size: new $.ObjectSize(8, 2),
   };
   get zoneId(): number {
@@ -12513,17 +12543,12 @@ export class StaticDataResponse extends $.Struct {
   static readonly _capnp = {
     displayName: "StaticDataResponse",
     id: "cd39989290a115ee",
-    size: new $.ObjectSize(8, 10),
+    size: new $.ObjectSize(8, 5),
   };
   static _Zones: $.ListCtor<ZoneData>;
   static _Races: $.ListCtor<RaceInfo>;
   static _Classes: $.ListCtor<ClassInfo>;
   static _Deities: $.ListCtor<DeityInfo>;
-  static _CharCreateCombinations: $.ListCtor<CharCreateCombination>;
-  static _CharCreatePointAllocations: $.ListCtor<CharCreatePointAllocation>;
-  static _CombinationDescriptions: $.ListCtor<CombinationDescription>;
-  static _StartZones: $.ListCtor<StartZone>;
-  static _ZoneDescriptions: $.ListCtor<ZoneDescription>;
   get success(): number {
     return $.utils.getInt32(0, this);
   }
@@ -12608,97 +12633,134 @@ export class StaticDataResponse extends $.Struct {
   set deities(value: $.List<DeityInfo>) {
     $.utils.copyFrom(value, $.utils.getPointer(4, this));
   }
+  toString(): string { return "StaticDataResponse_" + super.toString(); }
+}
+/**
+* Empty
+*
+*/
+export class CharCreateDataRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CharCreateDataRequest",
+    id: "9bb334389bc94f2e",
+    size: new $.ObjectSize(0, 0),
+  };
+  toString(): string { return "CharCreateDataRequest_" + super.toString(); }
+}
+export class CharCreateDataResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "CharCreateDataResponse",
+    id: "900f8cde079be748",
+    size: new $.ObjectSize(8, 6),
+  };
+  static _CharCreateCombinations: $.ListCtor<CharCreateCombination>;
+  static _CharCreatePointAllocations: $.ListCtor<CharCreatePointAllocation>;
+  static _CombinationDescriptions: $.ListCtor<CombinationDescription>;
+  static _StartZones: $.ListCtor<StartZone>;
+  static _ZoneDescriptions: $.ListCtor<ZoneDescription>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
   _adoptCharCreateCombinations(value: $.Orphan<$.List<CharCreateCombination>>): void {
-    $.utils.adopt(value, $.utils.getPointer(5, this));
+    $.utils.adopt(value, $.utils.getPointer(1, this));
   }
   _disownCharCreateCombinations(): $.Orphan<$.List<CharCreateCombination>> {
     return $.utils.disown(this.charCreateCombinations);
   }
   get charCreateCombinations(): $.List<CharCreateCombination> {
-    return $.utils.getList(5, StaticDataResponse._CharCreateCombinations, this);
+    return $.utils.getList(1, CharCreateDataResponse._CharCreateCombinations, this);
   }
   _hasCharCreateCombinations(): boolean {
-    return !$.utils.isNull($.utils.getPointer(5, this));
+    return !$.utils.isNull($.utils.getPointer(1, this));
   }
   _initCharCreateCombinations(length: number): $.List<CharCreateCombination> {
-    return $.utils.initList(5, StaticDataResponse._CharCreateCombinations, length, this);
+    return $.utils.initList(1, CharCreateDataResponse._CharCreateCombinations, length, this);
   }
   set charCreateCombinations(value: $.List<CharCreateCombination>) {
-    $.utils.copyFrom(value, $.utils.getPointer(5, this));
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
   }
   _adoptCharCreatePointAllocations(value: $.Orphan<$.List<CharCreatePointAllocation>>): void {
-    $.utils.adopt(value, $.utils.getPointer(6, this));
+    $.utils.adopt(value, $.utils.getPointer(2, this));
   }
   _disownCharCreatePointAllocations(): $.Orphan<$.List<CharCreatePointAllocation>> {
     return $.utils.disown(this.charCreatePointAllocations);
   }
   get charCreatePointAllocations(): $.List<CharCreatePointAllocation> {
-    return $.utils.getList(6, StaticDataResponse._CharCreatePointAllocations, this);
+    return $.utils.getList(2, CharCreateDataResponse._CharCreatePointAllocations, this);
   }
   _hasCharCreatePointAllocations(): boolean {
-    return !$.utils.isNull($.utils.getPointer(6, this));
+    return !$.utils.isNull($.utils.getPointer(2, this));
   }
   _initCharCreatePointAllocations(length: number): $.List<CharCreatePointAllocation> {
-    return $.utils.initList(6, StaticDataResponse._CharCreatePointAllocations, length, this);
+    return $.utils.initList(2, CharCreateDataResponse._CharCreatePointAllocations, length, this);
   }
   set charCreatePointAllocations(value: $.List<CharCreatePointAllocation>) {
-    $.utils.copyFrom(value, $.utils.getPointer(6, this));
+    $.utils.copyFrom(value, $.utils.getPointer(2, this));
   }
   _adoptCombinationDescriptions(value: $.Orphan<$.List<CombinationDescription>>): void {
-    $.utils.adopt(value, $.utils.getPointer(7, this));
+    $.utils.adopt(value, $.utils.getPointer(3, this));
   }
   _disownCombinationDescriptions(): $.Orphan<$.List<CombinationDescription>> {
     return $.utils.disown(this.combinationDescriptions);
   }
   get combinationDescriptions(): $.List<CombinationDescription> {
-    return $.utils.getList(7, StaticDataResponse._CombinationDescriptions, this);
+    return $.utils.getList(3, CharCreateDataResponse._CombinationDescriptions, this);
   }
   _hasCombinationDescriptions(): boolean {
-    return !$.utils.isNull($.utils.getPointer(7, this));
+    return !$.utils.isNull($.utils.getPointer(3, this));
   }
   _initCombinationDescriptions(length: number): $.List<CombinationDescription> {
-    return $.utils.initList(7, StaticDataResponse._CombinationDescriptions, length, this);
+    return $.utils.initList(3, CharCreateDataResponse._CombinationDescriptions, length, this);
   }
   set combinationDescriptions(value: $.List<CombinationDescription>) {
-    $.utils.copyFrom(value, $.utils.getPointer(7, this));
+    $.utils.copyFrom(value, $.utils.getPointer(3, this));
   }
   _adoptStartZones(value: $.Orphan<$.List<StartZone>>): void {
-    $.utils.adopt(value, $.utils.getPointer(8, this));
+    $.utils.adopt(value, $.utils.getPointer(4, this));
   }
   _disownStartZones(): $.Orphan<$.List<StartZone>> {
     return $.utils.disown(this.startZones);
   }
   get startZones(): $.List<StartZone> {
-    return $.utils.getList(8, StaticDataResponse._StartZones, this);
+    return $.utils.getList(4, CharCreateDataResponse._StartZones, this);
   }
   _hasStartZones(): boolean {
-    return !$.utils.isNull($.utils.getPointer(8, this));
+    return !$.utils.isNull($.utils.getPointer(4, this));
   }
   _initStartZones(length: number): $.List<StartZone> {
-    return $.utils.initList(8, StaticDataResponse._StartZones, length, this);
+    return $.utils.initList(4, CharCreateDataResponse._StartZones, length, this);
   }
   set startZones(value: $.List<StartZone>) {
-    $.utils.copyFrom(value, $.utils.getPointer(8, this));
+    $.utils.copyFrom(value, $.utils.getPointer(4, this));
   }
   _adoptZoneDescriptions(value: $.Orphan<$.List<ZoneDescription>>): void {
-    $.utils.adopt(value, $.utils.getPointer(9, this));
+    $.utils.adopt(value, $.utils.getPointer(5, this));
   }
   _disownZoneDescriptions(): $.Orphan<$.List<ZoneDescription>> {
     return $.utils.disown(this.zoneDescriptions);
   }
   get zoneDescriptions(): $.List<ZoneDescription> {
-    return $.utils.getList(9, StaticDataResponse._ZoneDescriptions, this);
+    return $.utils.getList(5, CharCreateDataResponse._ZoneDescriptions, this);
   }
   _hasZoneDescriptions(): boolean {
-    return !$.utils.isNull($.utils.getPointer(9, this));
+    return !$.utils.isNull($.utils.getPointer(5, this));
   }
   _initZoneDescriptions(length: number): $.List<ZoneDescription> {
-    return $.utils.initList(9, StaticDataResponse._ZoneDescriptions, length, this);
+    return $.utils.initList(5, CharCreateDataResponse._ZoneDescriptions, length, this);
   }
   set zoneDescriptions(value: $.List<ZoneDescription>) {
-    $.utils.copyFrom(value, $.utils.getPointer(9, this));
+    $.utils.copyFrom(value, $.utils.getPointer(5, this));
   }
-  toString(): string { return "StaticDataResponse_" + super.toString(); }
+  toString(): string { return "CharCreateDataResponse_" + super.toString(); }
 }
 export class GetSpellRequest extends $.Struct {
   static readonly _capnp = {
@@ -13387,11 +13449,11 @@ StaticDataResponse._Zones = $.CompositeList(ZoneData);
 StaticDataResponse._Races = $.CompositeList(RaceInfo);
 StaticDataResponse._Classes = $.CompositeList(ClassInfo);
 StaticDataResponse._Deities = $.CompositeList(DeityInfo);
-StaticDataResponse._CharCreateCombinations = $.CompositeList(CharCreateCombination);
-StaticDataResponse._CharCreatePointAllocations = $.CompositeList(CharCreatePointAllocation);
-StaticDataResponse._CombinationDescriptions = $.CompositeList(CombinationDescription);
-StaticDataResponse._StartZones = $.CompositeList(StartZone);
-StaticDataResponse._ZoneDescriptions = $.CompositeList(ZoneDescription);
+CharCreateDataResponse._CharCreateCombinations = $.CompositeList(CharCreateCombination);
+CharCreateDataResponse._CharCreatePointAllocations = $.CompositeList(CharCreatePointAllocation);
+CharCreateDataResponse._CombinationDescriptions = $.CompositeList(CombinationDescription);
+CharCreateDataResponse._StartZones = $.CompositeList(StartZone);
+CharCreateDataResponse._ZoneDescriptions = $.CompositeList(ZoneDescription);
 GetRecipesResponse._Recipes = $.CompositeList(RecipeData);
 GetRecipeDetailsResponse._Components = $.CompositeList(RecipeComponent);
 GetRecipeDetailsResponse._Outputs = $.CompositeList(RecipeComponent);

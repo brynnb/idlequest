@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import useCharacterStore from "@stores/CharacterCreatorStore";
 import useStaticDataStore from "@stores/StaticDataStore";
 import styled from "styled-components";
-import SelectionButton from "../Interface/SelectionButton";
+
 
 const ZoneSelectorContainer = styled.div`
   display: flex;
@@ -197,7 +197,7 @@ const ZoneSelector = () => {
             $isSelected={selectedZone?.zoneidnumber === zone.zoneidnumber}
             $isDisabled={!compatibleZones.includes(zone.zoneidnumber)}
           >
-            {zone.longName}
+            {zone.long_name}
           </ZoneButton>
         ))}
       </ScrollableZones>
@@ -209,10 +209,10 @@ const ZoneSelector = () => {
             <>
               <ZoneText>
                 {currentZoneDesc?.description ||
-                  `The journey of a thousand leagues begins with a single step. Here in ${selectedZone.longName}, your path through the realm of Norrath commences.`}
+                  `The journey of a thousand leagues begins with a single step. Here in ${selectedZone.long_name}, your path through the realm of Norrath commences.`}
               </ZoneText>
               <WelcomeMessage style={{ marginTop: '20px', borderTop: '1px solid #444', borderBottom: 'none', paddingTop: '15px' }}>
-                {currentZoneDesc?.welcome || `Welcome to ${selectedZone.longName}`}
+                {currentZoneDesc?.welcome || `Welcome to ${selectedZone.long_name}`}
               </WelcomeMessage>
             </>
           ) : (

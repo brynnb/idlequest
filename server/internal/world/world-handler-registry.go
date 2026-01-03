@@ -41,6 +41,7 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.GetSpellRequest:         HandleGetSpellRequest,
 		opcodes.GetEqstrRequest:         HandleGetEqstrRequest,
 		opcodes.ValidateNameRequest:     HandleValidateNameRequest,
+		opcodes.CharCreateDataRequest:   HandleCharCreateDataRequest,
 		// Zone handlers moved to world (no ZoneInstance needed for idle game)
 		opcodes.Camp:           HandleCamp,
 		opcodes.ChannelMessage: HandleChannelMessage,
@@ -59,6 +60,7 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		// Tradeskill recipe handlers
 		opcodes.GetRecipesRequest:       HandleGetRecipesRequest,
 		opcodes.GetRecipeDetailsRequest: HandleGetRecipeDetailsRequest,
+		opcodes.Heartbeat:               HandleHeartbeat,
 	}
 
 	globalOpcodes := make(map[opcodes.OpCode]bool)

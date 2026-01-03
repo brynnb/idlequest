@@ -128,7 +128,7 @@ const DeitySelector = () => {
             $isSelected={selectedDeity?.id === deity.id}
             $isDisabled={!compatibleDeities.includes(deity.id)}
           >
-            {deity.altName || deity.name}
+            {deity.alt_name || deity.name}
           </DeityButton>
         ))}
       </DeityButtonsColumn>

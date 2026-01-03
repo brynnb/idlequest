@@ -73,16 +73,20 @@ export class EqSocket {
 
   public isConnected = false;
   private onClose: (() => void) | null = null;
+  public onDisconnect: (() => void) | null = null;
   private isClosing = false; // Track intentional close to suppress expected errors
 
   // Reconnect
   private url: string | null = null;
   private port: number | string | null = null;
-  private sessionId: number | null = null;
   private allowReconnect: boolean;
   private maxRetries: number;
   private retryCount = 0;
-  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Heartbeat
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+  public latency = 0;
+  public onPing: ((latency: number) => void) | null = null;
 
   constructor(config: { maxRetries?: number; allowReconnect?: boolean } = {}) {
     this.allowReconnect = config.allowReconnect ?? true;
@@ -92,7 +96,7 @@ export class EqSocket {
   }
 
   public setSessionId(id: number) {
-    this.sessionId = id;
+    // Session ID no longer used for now
   }
 
   public async connect(
@@ -163,6 +167,18 @@ export class EqSocket {
       this.isConnected = true;
       this.isClosing = false;
       this.retryCount = 0;
+
+      // Register heartbeat handler
+      this.registerRawHandler(OpCodes.Heartbeat, (payload) => {
+        const sendTime = new DataView(payload.buffer).getFloat64(payload.byteOffset, true);
+        const now = performance.now();
+        this.latency = Math.round(now - sendTime);
+        this.onPing?.(this.latency);
+      });
+
+      // Start heartbeat
+      this.startHeartbeat();
+
       // watch for close - don't auto-reconnect on normal close
       this.webtransport.closed
         .then((info) => {
@@ -330,10 +346,16 @@ export class EqSocket {
     this.datagramWriter = null;
     this.controlWriter = null;
 
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+
     if (scheduleReconnect && this.allowReconnect) {
       this.scheduleReconnect();
     } else {
       this.onClose?.();
+      this.onDisconnect?.();
     }
   }
 
@@ -433,16 +455,38 @@ export class EqSocket {
       !this.onClose
     ) {
       this.onClose?.();
+      this.onDisconnect?.();
       this.retryCount = 0;
       return;
     }
     const delay = Math.min(2 ** this.retryCount * 1000, 30_000);
     this.retryCount++;
-    this.reconnectTimer = setTimeout(async () => {
+    setTimeout(async () => {
       const ok = await this.connect(this.url!, this.port!, this.onClose!);
       if (!ok) {
         this.scheduleReconnect();
       }
     }, delay);
+  }
+
+  private startHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+    // Heartbeat every 5 seconds is plenty for "keep-alive" while keeping UI responsive
+    this.heartbeatInterval = setInterval(() => {
+      this.ping();
+    }, 5000);
+  }
+
+  private async ping() {
+    if (!this.isConnected) return;
+    const now = performance.now();
+    const payload = new Uint8Array(8);
+    new DataView(payload.buffer).setFloat64(0, now, true);
+
+    const op = new Uint16Array([OpCodes.Heartbeat]).buffer;
+    const buf = concatArrayBuffer(op, payload.buffer);
+    await this.sendDatagram(new Uint8Array(buf));
   }
 }

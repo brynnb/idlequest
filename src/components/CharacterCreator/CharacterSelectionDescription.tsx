@@ -23,7 +23,7 @@ const CharacterDescription: React.FC = () => {
     } else {
       return `You are a ${selectedRace.name} ${selectedClass.name
         } who worships ${selectedDeity.name}. 
-              Your journey begins in ${selectedZone?.longName || "an unknown location"
+              Your journey begins in ${selectedZone?.long_name || "an unknown location"
         }. 
              `;
     }

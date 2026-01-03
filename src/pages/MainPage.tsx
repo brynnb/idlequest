@@ -13,6 +13,8 @@ import Spellbook from "@/components/Interface/Spellbook";
 import QuestDisplay from "@/components/Interface/QuestDisplay";
 import AbilitiesDisplay from "@/components/Interface/AbilitiesDisplay";
 import TradeskillsDisplay from "@/components/Interface/TradeskillsDisplay";
+import NetworkMeter from "@components/Interface/NetworkMeter";
+
 const MainPage: React.FC = () => {
   const { setScreen } = useGameScreenStore();
   const { characterProfile } = usePlayerCharacterStore((state) => ({
@@ -44,6 +46,7 @@ const MainPage: React.FC = () => {
       {/* <DiceRoller /> */}
       <Chatbox />
       <VideoBackground />
+      <NetworkMeter />
       {/* <GameEngine isRunning={isRunning} setIsRunning={setIsRunning} /> */}
       <LeftSidebar />
       <RightSidebar />

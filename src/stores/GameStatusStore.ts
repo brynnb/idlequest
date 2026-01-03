@@ -109,13 +109,13 @@ const useGameStatusStore = create<GameStatusStore>()(
                   const mappedZones = staticData.zones.map((z) => ({
                     id: z.id,
                     zoneidnumber: z.zoneidnumber,
-                    short_name: z.shortName,
-                    long_name: z.longName,
-                    safe_x: z.safeX,
-                    safe_y: z.safeY,
-                    safe_z: z.safeZ,
-                    min_level: z.minLevel,
-                    max_level: z.maxLevel,
+                    short_name: z.short_name,
+                    long_name: z.long_name,
+                    safe_x: z.safe_x,
+                    safe_y: z.safe_y,
+                    safe_z: z.safe_z,
+                    min_level: z.min_level,
+                    max_level: z.max_level,
                   }));
                   set({ zones: mappedZones as any });
                   return;

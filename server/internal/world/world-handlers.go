@@ -723,6 +723,13 @@ func HandleClientAnimation(ses *session.Session, payload []byte, wh *WorldHandle
 	return false
 }
 
+// HandleHeartbeat echoes the heartbeat back to the client to measure latency
+func HandleHeartbeat(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	// Just echo the heartbeat back via the same transport it arrived on
+	ses.SendRawDatagram(opcodes.Heartbeat, payload)
+	return false
+}
+
 // HandleGMCommand handles GM commands
 func HandleGMCommand(ses *session.Session, payload []byte, wh *WorldHandler) bool {
 	if !ses.HasValidClient() {

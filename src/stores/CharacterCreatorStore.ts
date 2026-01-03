@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import CharacterCreationAttributes from "@entities/CharacterCreationAttributes";
-import Zone from "@entities/Zone";
 import { InventoryItem } from "@entities/InventoryItem";
 import {
   RaceData,
   ClassData,
   DeityData,
+  ZoneData,
   CharCreatePointAllocationData,
 } from "@stores/StaticDataStore";
 
@@ -30,7 +30,7 @@ const defaultAttributes: CharacterCreationAttributes = {
 export interface CharacterCreatorStore {
   selectedRace: RaceData | null;
   selectedClass: ClassData | null;
-  selectedZone: Zone | null;
+  selectedZone: ZoneData | null;
   attributes: CharacterCreationAttributes;
   setSelectedRace: (race: RaceData | null) => void;
   setSelectedClass: (charClass: ClassData | null) => void;
@@ -39,7 +39,7 @@ export interface CharacterCreatorStore {
     classes: ClassData[],
     combinations: { race: number; class: number }[]
   ) => void;
-  setSelectedZone: (zone: Zone | null) => void;
+  setSelectedZone: (zone: ZoneData | null) => void;
   setAttributes: (attributes: CharacterCreationAttributes) => void;
   setAttributePoints: (points: number) => void;
   attributePoints: number;
@@ -124,20 +124,20 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
           set({
             selectedRace,
             selectedClass,
-            attributePoints: selectedClass?.createPoints || 0,
+            attributePoints: selectedClass?.create_points || 0,
           });
         },
 
         setSelectedRace: (race) =>
           set((state) => ({
             selectedRace: race,
-            attributePoints: state.selectedClass?.createPoints || 0,
+            attributePoints: state.selectedClass?.create_points || 0,
           })),
 
         setSelectedClass: (charClass) =>
           set(() => ({
             selectedClass: charClass,
-            attributePoints: charClass?.createPoints || 0,
+            attributePoints: charClass?.create_points || 0,
           })),
 
         setSelectedZone: (zone) => set({ selectedZone: zone }),
@@ -239,7 +239,7 @@ const useCharacterCreatorStore = create<CharacterCreatorStore>()(
         resetAttributes: () =>
           set((state) => ({
             attributes: { ...defaultAttributes },
-            attributePoints: state.selectedClass?.createPoints || 0,
+            attributePoints: state.selectedClass?.create_points || 0,
           })),
 
         setInventory: (items) => set({ inventory: items }),

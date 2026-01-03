@@ -145,7 +145,7 @@ export const getClassNames = (classes: number | undefined) => {
     .filter(
       (classInfo) => classInfo.bitmask && classesBitmask & classInfo.bitmask
     )
-    .map((classInfo) => classInfo.shortName);
+    .map((classInfo) => classInfo.short_name);
 
   return classNames.length > 0 ? classNames.join(" ") : "NONE";
 };

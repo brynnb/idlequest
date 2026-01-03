@@ -149,14 +149,14 @@ export const getSpellLevels = (spell: Spell) => {
       const classKey = `classes${index + 1}` as keyof Spell;
       const level = spell[classKey] as number;
       return level > 0 && level < 255
-        ? { shortName: c.shortName, level }
+        ? { short_name: c.short_name, level }
         : null;
     })
     .filter(
-      (item): item is { shortName: string; level: number } => item !== null
+      (item): item is { short_name: string; level: number } => item !== null
     )
     .sort((a, b) => a.level - b.level)
-    .map((item) => `${item.shortName}(${item.level})`);
+    .map((item) => `${item.short_name}(${item.level})`);
 
   return levels.length > 0 ? `Level Needed: ${levels.join(" ")}` : "";
 };

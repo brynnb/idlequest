@@ -4,9 +4,10 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	capnp "capnproto.org/go/capnp/v3"
 	capnpext "idlequest/internal/api"
 	"idlequest/internal/api/opcodes"
+
+	capnp "capnproto.org/go/capnp/v3"
 )
 
 func (s *Session) SendData(
@@ -32,6 +33,21 @@ func (s *Session) SendData(
 	}
 
 	binary.LittleEndian.PutUint16(s.writeBuffer[:2], uint16(opcode))
+	return s.Messenger.SendDatagram(s.SessionID, s.writeBuffer[:totalLen])
+}
+
+func (s *Session) SendRawDatagram(
+	opcode opcodes.OpCode,
+	payload []byte,
+) error {
+	s.sendMu.Lock()
+	defer s.sendMu.Unlock()
+	totalLen := 2 + len(payload)
+	if cap(s.writeBuffer) < totalLen {
+		s.writeBuffer = make([]byte, totalLen)
+	}
+	binary.LittleEndian.PutUint16(s.writeBuffer[:2], uint16(opcode))
+	copy(s.writeBuffer[2:totalLen], payload)
 	return s.Messenger.SendDatagram(s.SessionID, s.writeBuffer[:totalLen])
 }
 

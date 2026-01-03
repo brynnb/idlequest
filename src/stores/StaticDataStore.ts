@@ -5,43 +5,50 @@ import {
   OpCodes,
   StaticDataRequest,
   StaticDataResponse,
+  CharCreateDataRequest,
+  CharCreateDataResponse,
 } from "@/net";
 
 export interface RaceData {
   id: number;
   name: string;
   no_coin: number;
-  is_playable: boolean;
-  short_name: string;
-  bitmask: number;
+  is_playable?: boolean;
+  short_name?: string;
+  bitmask?: number;
 }
 
 export interface ClassData {
   id: number;
-  bitmask: number;
+  bitmask: number | null;
   name: string;
-  shortName: string;
-  createPoints: number;
+  short_name?: string;
+  spell_list_id: number | null;
+  create_points: number;
+  first_title: string;
+  second_title: string;
+  third_title: string;
 }
 
 export interface DeityData {
   id: number;
   name: string;
   bitmask: number;
+  spells_id: number | null;
   description: string;
-  altName: string;
+  alt_name?: string;
 }
 
 export interface ZoneData {
   id: number;
   zoneidnumber: number;
-  shortName: string;
-  longName: string;
-  safeX: number;
-  safeY: number;
-  safeZ: number;
-  minLevel: number;
-  maxLevel: number;
+  short_name: string;
+  long_name: string;
+  safe_x: number;
+  safe_y: number;
+  safe_z: number;
+  min_level: number;
+  max_level: number;
 }
 
 export interface CharCreateCombinationData {
@@ -98,6 +105,8 @@ export interface ZoneDescriptionData {
 interface StaticDataStore {
   isLoaded: boolean;
   isLoading: boolean;
+  isCharCreateLoaded: boolean;
+  isLoadingCharCreate: boolean;
   error: string | null;
   zones: ZoneData[];
   races: RaceData[];
@@ -109,6 +118,7 @@ interface StaticDataStore {
   startZones: StartZoneData[];
   zoneDescriptions: ZoneDescriptionData[];
   loadStaticData: () => Promise<void>;
+  loadCharCreateData: () => Promise<void>;
   getRaceById: (id: number) => RaceData | undefined;
   getClassById: (id: number) => ClassData | undefined;
   getDeityById: (id: number) => DeityData | undefined;
@@ -122,6 +132,8 @@ const useStaticDataStore = create<StaticDataStore>()(
     (set, get) => ({
       isLoaded: false,
       isLoading: false,
+      isCharCreateLoaded: false,
+      isLoadingCharCreate: false,
       error: null,
       zones: [],
       races: [],
@@ -163,13 +175,13 @@ const useStaticDataStore = create<StaticDataStore>()(
             zones.push({
               id: z.id,
               zoneidnumber: z.zoneidnumber,
-              shortName: z.shortName,
-              longName: z.longName,
-              safeX: z.safeX,
-              safeY: z.safeY,
-              safeZ: z.safeZ,
-              minLevel: z.minLevel,
-              maxLevel: z.maxLevel,
+              short_name: z.shortName,
+              long_name: z.longName,
+              safe_x: z.safeX,
+              safe_y: z.safeY,
+              safe_z: z.safeZ,
+              min_level: z.minLevel,
+              max_level: z.maxLevel,
             });
           }
 
@@ -195,8 +207,12 @@ const useStaticDataStore = create<StaticDataStore>()(
               id: c.id,
               bitmask: c.bitmask,
               name: c.name,
-              shortName: c.shortName,
-              createPoints: c.createPoints,
+              short_name: c.shortName,
+              create_points: c.createPoints,
+              spell_list_id: c.spellListId || null,
+              first_title: c.firstTitle || "",
+              second_title: c.secondTitle || "",
+              third_title: c.thirdTitle || "",
             });
           }
 
@@ -209,8 +225,53 @@ const useStaticDataStore = create<StaticDataStore>()(
               name: d.name,
               bitmask: d.bitmask,
               description: d.description,
-              altName: d.altName,
+              spells_id: d.spellsId || null,
+              alt_name: d.altName || undefined,
             });
+          }
+
+          set({
+            isLoaded: true,
+            isLoading: false,
+            zones,
+            races,
+            classes,
+            deities,
+          });
+
+          console.log(
+            `[StaticData] Loaded: ${zones.length} zones, ${races.length} races, ${classes.length} classes, ${deities.length} deities`
+          );
+        } catch (error) {
+          console.error("Failed to load static data:", error);
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+      },
+
+      loadCharCreateData: async () => {
+        const { isCharCreateLoaded, isLoadingCharCreate } = get();
+        if (isCharCreateLoaded || isLoadingCharCreate) return;
+
+        set({ isLoadingCharCreate: true, error: null });
+
+        try {
+          if (!WorldSocket.isConnected) {
+            throw new Error("WorldSocket not connected");
+          }
+
+          const response = await WorldSocket.sendRequest(
+            OpCodes.CharCreateDataRequest,
+            OpCodes.CharCreateDataResponse,
+            CharCreateDataRequest,
+            CharCreateDataResponse,
+            {}
+          );
+
+          if (!response.success) {
+            throw new Error(response.error || "Failed to load character creation data");
           }
 
           // Parse char create combinations
@@ -228,8 +289,7 @@ const useStaticDataStore = create<StaticDataStore>()(
           }
 
           // Parse char create point allocations
-          const charCreatePointAllocations: CharCreatePointAllocationData[] =
-            [];
+          const charCreatePointAllocations: CharCreatePointAllocationData[] = [];
           for (let i = 0; i < response.charCreatePointAllocations.length; i++) {
             const a = response.charCreatePointAllocations.get(i);
             charCreatePointAllocations.push({
@@ -297,12 +357,8 @@ const useStaticDataStore = create<StaticDataStore>()(
           }
 
           set({
-            isLoaded: true,
-            isLoading: false,
-            zones,
-            races,
-            classes,
-            deities,
+            isCharCreateLoaded: true,
+            isLoadingCharCreate: false,
             charCreateCombinations,
             charCreatePointAllocations,
             combinationDescriptions,
@@ -311,12 +367,12 @@ const useStaticDataStore = create<StaticDataStore>()(
           });
 
           console.log(
-            `[StaticData] Loaded: ${zones.length} zones, ${races.length} races, ${classes.length} classes, ${deities.length} deities`
+            `[StaticData] Loaded CharCreate: ${charCreateCombinations.length} combinations, ${startZones.length} start zones`
           );
         } catch (error) {
-          console.error("Failed to load static data:", error);
+          console.error("Failed to load character creation data:", error);
           set({
-            isLoading: false,
+            isLoadingCharCreate: false,
             error: error instanceof Error ? error.message : "Unknown error",
           });
         }

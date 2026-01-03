@@ -34,6 +34,10 @@ type ClassInfo struct {
 	Name         string `json:"name"`
 	ShortName    string `json:"short_name"`
 	CreatePoints int32  `json:"create_points"`
+	SpellListID  int32  `json:"spell_list_id"`
+	FirstTitle   string `json:"first_title"`
+	SecondTitle  string `json:"second_title"`
+	ThirdTitle   string `json:"third_title"`
 }
 
 // DeityInfo represents a deity
@@ -43,6 +47,7 @@ type DeityInfo struct {
 	Bitmask     int32  `json:"bitmask"`
 	Description string `json:"description"`
 	AltName     string `json:"alt_name"`
+	SpellsID    int32  `json:"spells_id"`
 }
 
 // CombinationDescription represents a description for a specific race/class/deity combination
