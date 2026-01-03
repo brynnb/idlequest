@@ -660,4 +660,12 @@ const (
 
 	// IdleQuest auto-sell toggle
 	SetAutoSell
+
+	// IdleQuest tradeskill recipe opcodes
+	GetRecipesRequest
+	GetRecipesResponse
+	GetRecipeDetailsRequest
+	GetRecipeDetailsResponse
+	CraftRecipeRequest
+	CraftRecipeResponse
 )

@@ -54,6 +54,13 @@ export {
   ValidateNameRequest,
   ValidateNameResponse,
   CommandMessage,
+  // Recipe types
+  RecipeData,
+  RecipeComponent,
+  GetRecipesRequest,
+  GetRecipesResponse,
+  GetRecipeDetailsRequest,
+  GetRecipeDetailsResponse,
 } from "./capnp/common";
 
 export { DeleteItem, SellItem, SellItemResponse } from "./capnp/item";

@@ -2546,3 +2546,54 @@ struct ValidateNameResponse {
   available @1 :Int32;
   errorMessage @2 :Text;
 }
+
+# Tradeskill Recipe Messages
+
+struct RecipeData {
+  id @0 :Int32;
+  name @1 :Text;
+  tradeskill @2 :Int16;
+  skillneeded @3 :Int16;
+  trivial @4 :Int16;
+  nofail @5 :Bool;
+}
+
+struct RecipeComponent {
+  itemId @0 :Int32;
+  itemName @1 :Text;
+  itemIcon @2 :Int32;
+  quantity @3 :Int8;
+  isOutput @4 :Bool;
+}
+
+struct GetRecipesRequest {
+  tradeskillId @0 :Int16;
+}
+
+struct GetRecipesResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  recipes @2 :List(RecipeData);
+}
+
+struct GetRecipeDetailsRequest {
+  recipeId @0 :Int32;
+}
+
+struct GetRecipeDetailsResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  recipe @2 :RecipeData;
+  components @3 :List(RecipeComponent);
+  outputs @4 :List(RecipeComponent);
+}
+
+struct CraftRecipeRequest {
+  recipeId @0 :Int32;
+}
+
+struct CraftRecipeResponse {
+  success @0 :Int32;
+  error @1 :Text;
+  producedItems @2 :List(RecipeComponent);
+}

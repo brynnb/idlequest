@@ -56,6 +56,9 @@ func NewWorldOpCodeRegistry() *HandlerRegistry {
 		opcodes.AutoPlaceCursorItem: HandleAutoPlaceCursorItem,
 		// Auto-sell toggle
 		opcodes.SetAutoSell: HandleSetAutoSell,
+		// Tradeskill recipe handlers
+		opcodes.GetRecipesRequest:       HandleGetRecipesRequest,
+		opcodes.GetRecipeDetailsRequest: HandleGetRecipeDetailsRequest,
 	}
 
 	globalOpcodes := make(map[opcodes.OpCode]bool)

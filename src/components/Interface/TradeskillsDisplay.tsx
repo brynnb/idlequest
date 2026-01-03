@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TradeskillList from "./TradeskillList";
+import ForgeSlots from "./ForgeSlots";
+import RecipeList from "./RecipeList";
+import RecipeDetail from "./RecipeDetail";
 import usePlayerCharacterStore from "@stores/PlayerCharacterStore";
 import useGameStatusStore from "@stores/GameStatusStore";
 import { useInventoryActions } from "@hooks/useInventoryActions";
@@ -55,6 +58,22 @@ height: 723px;
 
 `;
 
+// Forge area positioned in the top-left of center viewport
+const ForgeArea = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000000;
+`;
+
+// Recipe detail area below the forge
+const RecipeDetailArea = styled.div`
+  position: absolute;
+  top: 320px;
+  left: 20px;
+  z-index: 1000000;
+`;
+
 // Right sidebar container - matching InventoryLayout structure
 const RightSidebarBackground = styled.div`
   position: absolute;
@@ -65,6 +84,32 @@ const RightSidebarBackground = styled.div`
   background-image: url("/images/ui/rightsidebarinventory.png");
   background-size: cover;
   background-repeat: no-repeat;
+`;
+
+// Recipe list area - right side of center viewport
+const RecipeListArea = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 350px;
+  height: 680px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(80, 80, 80, 0.6);
+  border-radius: 6px;
+  padding: 15px;
+  z-index: 1000000;
+  display: flex;
+  flex-direction: column;
+`;
+
+const RecipeListTitle = styled.div`
+  color: #e0e0e0;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(80, 80, 80, 0.6);
+  padding-bottom: 10px;
 `;
 
 const GeneralInventory = styled.div`
@@ -104,6 +149,20 @@ const TradeskillsDisplay: React.FC = () => {
     const { toggleTradeskills } = useGameStatusStore();
     const { handleItemClick } = useInventoryActions();
     const [openBagSlots, setOpenBagSlots] = useState<Set<number>>(new Set());
+
+    // Build a map of item ID -> quantity owned for crafting checks
+    const playerInventory = React.useMemo(() => {
+        const map = new Map<number, number>();
+        if (characterProfile?.inventory) {
+            for (const item of characterProfile.inventory) {
+                if (item.itemDetails && item.itemDetails.id !== undefined) {
+                    const currentQty = map.get(item.itemDetails.id) || 0;
+                    map.set(item.itemDetails.id, currentQty + 1);
+                }
+            }
+        }
+        return map;
+    }, [characterProfile?.inventory]);
 
     // General inventory slots 22-29 (matches server slot IDs)
     const generalSlots = [
@@ -153,6 +212,11 @@ const TradeskillsDisplay: React.FC = () => {
         });
     };
 
+    const handleCraft = () => {
+        // TODO: Send craft request to server
+        console.log("Craft button clicked - not yet implemented");
+    };
+
     return (
         <>
             {/* Left sidebar with tradeskills list */}
@@ -164,7 +228,26 @@ const TradeskillsDisplay: React.FC = () => {
             </TradeskillsSidebar>
 
             {/* Center viewport with character creation background */}
-            <CenterViewport />
+            <CenterViewport>
+                {/* Forge slots - top left of viewport */}
+                <ForgeArea>
+                    <ForgeSlots playerInventory={playerInventory} />
+                </ForgeArea>
+
+                {/* Recipe detail - below forge */}
+                <RecipeDetailArea>
+                    <RecipeDetail
+                        playerInventory={playerInventory}
+                        playerSkillLevel={characterProfile?.blacksmithing || 0}
+                        onCraft={handleCraft}
+                    />
+                </RecipeDetailArea>
+                {/* Recipe list - right side of viewport */}
+                <RecipeListArea>
+                    <RecipeListTitle>Blacksmithing Recipes</RecipeListTitle>
+                    <RecipeList playerSkillLevel={characterProfile?.blacksmithing || 0} />
+                </RecipeListArea>
+            </CenterViewport>
 
             {/* Right sidebar background - same as inventory */}
             <RightSidebarBackground />
@@ -233,3 +316,4 @@ const TradeskillsDisplay: React.FC = () => {
 };
 
 export default TradeskillsDisplay;
+

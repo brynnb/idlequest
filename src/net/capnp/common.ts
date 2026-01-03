@@ -13291,3 +13291,172 @@ export class ValidateNameResponse extends $.Struct {
     $.utils.setText(0, value, this);
   }
 }
+
+// Tradeskill Recipe Types
+export class RecipeData extends $.Struct {
+  static readonly _capnp = {
+    displayName: "RecipeData",
+    id: "a754edf0a3cccf31",
+    size: new $.ObjectSize(16, 2),
+  };
+  get id(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set id(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get name(): string {
+    return $.utils.getText(0, this);
+  }
+  set name(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get tradeskill(): number {
+    return $.utils.getInt16(4, this);
+  }
+  set tradeskill(value: number) {
+    $.utils.setInt16(4, value, this);
+  }
+  get skillneeded(): number {
+    return $.utils.getInt16(6, this);
+  }
+  set skillneeded(value: number) {
+    $.utils.setInt16(6, value, this);
+  }
+  get trivial(): number {
+    return $.utils.getInt16(8, this);
+  }
+  set trivial(value: number) {
+    $.utils.setInt16(8, value, this);
+  }
+}
+
+export class RecipeComponent extends $.Struct {
+  static readonly _capnp = {
+    displayName: "RecipeComponent",
+    id: "99618626b3ec1f42",
+    size: new $.ObjectSize(16, 2),
+  };
+  get itemId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set itemId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get itemName(): string {
+    return $.utils.getText(0, this);
+  }
+  set itemName(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get itemIcon(): number {
+    return $.utils.getInt32(4, this);
+  }
+  set itemIcon(value: number) {
+    $.utils.setInt32(4, value, this);
+  }
+  get quantity(): number {
+    return $.utils.getInt8(8, this);
+  }
+  set quantity(value: number) {
+    $.utils.setInt8(8, value, this);
+  }
+}
+
+export class GetRecipesRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetRecipesRequest",
+    id: "c80da15169d336da",
+    size: new $.ObjectSize(8, 0),
+  };
+  get tradeskillId(): number {
+    return $.utils.getInt16(0, this);
+  }
+  set tradeskillId(value: number) {
+    $.utils.setInt16(0, value, this);
+  }
+}
+
+export class GetRecipesResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetRecipesResponse",
+    id: "aedd92c148e52f6b",
+    size: new $.ObjectSize(8, 2),
+  };
+  static _Recipes: $.ListCtor<RecipeData>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get recipes(): $.List<RecipeData> {
+    return $.utils.getList(1, GetRecipesResponse._Recipes, this);
+  }
+  set recipes(value: $.List<RecipeData>) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+}
+GetRecipesResponse._Recipes = $.CompositeList(RecipeData);
+
+export class GetRecipeDetailsRequest extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetRecipeDetailsRequest",
+    id: "e3ae917210919c50",
+    size: new $.ObjectSize(8, 0),
+  };
+  get recipeId(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set recipeId(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+}
+
+export class GetRecipeDetailsResponse extends $.Struct {
+  static readonly _capnp = {
+    displayName: "GetRecipeDetailsResponse",
+    id: "a1b2c3d4e5f60060",
+    size: new $.ObjectSize(8, 4),
+  };
+  static _Components: $.ListCtor<RecipeComponent>;
+  static _Outputs: $.ListCtor<RecipeComponent>;
+  get success(): number {
+    return $.utils.getInt32(0, this);
+  }
+  set success(value: number) {
+    $.utils.setInt32(0, value, this);
+  }
+  get error(): string {
+    return $.utils.getText(0, this);
+  }
+  set error(value: string) {
+    $.utils.setText(0, value, this);
+  }
+  get recipe(): RecipeData {
+    return $.utils.getStruct(1, RecipeData, this);
+  }
+  set recipe(value: RecipeData) {
+    $.utils.copyFrom(value, $.utils.getPointer(1, this));
+  }
+  get components(): $.List<RecipeComponent> {
+    return $.utils.getList(2, GetRecipeDetailsResponse._Components, this);
+  }
+  set components(value: $.List<RecipeComponent>) {
+    $.utils.copyFrom(value, $.utils.getPointer(2, this));
+  }
+  get outputs(): $.List<RecipeComponent> {
+    return $.utils.getList(3, GetRecipeDetailsResponse._Outputs, this);
+  }
+  set outputs(value: $.List<RecipeComponent>) {
+    $.utils.copyFrom(value, $.utils.getPointer(3, this));
+  }
+}
+GetRecipeDetailsResponse._Components = $.CompositeList(RecipeComponent);
+GetRecipeDetailsResponse._Outputs = $.CompositeList(RecipeComponent);

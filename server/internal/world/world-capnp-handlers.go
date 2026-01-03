@@ -13,6 +13,7 @@ import (
 	"idlequest/internal/db/items"
 	"idlequest/internal/db/jetgen/eqgo/model"
 	"idlequest/internal/db/spells"
+	"idlequest/internal/db/tradeskill"
 	db_zone "idlequest/internal/db/zone"
 	"idlequest/internal/dialogue"
 	"idlequest/internal/session"
@@ -753,6 +754,138 @@ func HandleValidateNameRequest(ses *session.Session, payload []byte, wh *WorldHa
 		resp.SetValid(validInt)
 		resp.SetAvailable(availableInt)
 		resp.SetErrorMessage(errorMessage)
+		return nil
+	})
+
+	return false
+}
+
+// HandleGetRecipesRequest handles GetRecipesRequest Cap'n Proto messages
+func HandleGetRecipesRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	req, err := session.Deserialize(ses, payload, eq.ReadRootGetRecipesRequest)
+	if err != nil {
+		log.Printf("Failed to read GetRecipesRequest: %v", err)
+		session.QueueMessage(ses, eq.NewRootGetRecipesResponse, opcodes.GetRecipesResponse, func(resp eq.GetRecipesResponse) error {
+			resp.SetSuccess(0)
+			resp.SetError("Failed to parse request")
+			return nil
+		})
+		return false
+	}
+
+	tradeskillId := req.TradeskillId()
+	log.Printf("GetRecipesRequest for tradeskill: %d", tradeskillId)
+
+	// Get recipes from database
+	recipes, recipesErr := tradeskill.GetRecipesByTradeskill(tradeskillId)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootGetRecipesResponse, opcodes.GetRecipesResponse, func(resp eq.GetRecipesResponse) error {
+		if recipesErr != nil {
+			resp.SetSuccess(0)
+			resp.SetError("Failed to fetch recipes")
+			return nil
+		}
+
+		resp.SetSuccess(1)
+
+		recipeCount := int32(len(recipes))
+		if recipeCount == 0 {
+			return nil
+		}
+
+		recipeList, listErr := eq.NewRecipeData_List(resp.Segment(), recipeCount)
+		if listErr != nil {
+			log.Printf("Failed to create recipe list: %v", listErr)
+			return nil
+		}
+
+		for i, recipe := range recipes {
+			recipeData := recipeList.At(i)
+			recipeData.SetId(recipe.ID)
+			recipeData.SetName(recipe.Name)
+			recipeData.SetTradeskill(recipe.Tradeskill)
+			recipeData.SetSkillneeded(recipe.Skillneeded)
+			recipeData.SetTrivial(recipe.Trivial)
+			// Note: nofail is skipped due to complex Cap'n Proto Bool type
+		}
+		resp.SetRecipes(recipeList)
+		log.Printf("GetRecipesRequest: sending %d recipes for tradeskill %d", recipeCount, tradeskillId)
+		return nil
+	})
+
+	return false
+}
+
+// HandleGetRecipeDetailsRequest handles GetRecipeDetailsRequest Cap'n Proto messages
+func HandleGetRecipeDetailsRequest(ses *session.Session, payload []byte, wh *WorldHandler) bool {
+	req, err := session.Deserialize(ses, payload, eq.ReadRootGetRecipeDetailsRequest)
+	if err != nil {
+		log.Printf("Failed to read GetRecipeDetailsRequest: %v", err)
+		session.QueueMessage(ses, eq.NewRootGetRecipeDetailsResponse, opcodes.GetRecipeDetailsResponse, func(resp eq.GetRecipeDetailsResponse) error {
+			resp.SetSuccess(0)
+			resp.SetError("Failed to parse request")
+			return nil
+		})
+		return false
+	}
+
+	recipeId := req.RecipeId()
+	log.Printf("GetRecipeDetailsRequest for recipe: %d", recipeId)
+
+	// Get recipe details from database
+	details, detailsErr := tradeskill.GetRecipeDetails(recipeId)
+
+	// Build and send response
+	session.QueueMessage(ses, eq.NewRootGetRecipeDetailsResponse, opcodes.GetRecipeDetailsResponse, func(resp eq.GetRecipeDetailsResponse) error {
+		if detailsErr != nil || details == nil {
+			resp.SetSuccess(0)
+			resp.SetError("Recipe not found")
+			return nil
+		}
+
+		resp.SetSuccess(1)
+
+		// Set recipe data
+		recipeData, _ := eq.NewRecipeData(resp.Segment())
+		recipeData.SetId(details.Recipe.ID)
+		recipeData.SetName(details.Recipe.Name)
+		recipeData.SetTradeskill(details.Recipe.Tradeskill)
+		recipeData.SetSkillneeded(details.Recipe.Skillneeded)
+		recipeData.SetTrivial(details.Recipe.Trivial)
+		// Note: nofail is skipped due to complex Cap'n Proto Bool type
+		resp.SetRecipe(recipeData)
+
+		// Set components
+		if len(details.Components) > 0 {
+			componentList, _ := eq.NewRecipeComponent_List(resp.Segment(), int32(len(details.Components)))
+			for i, comp := range details.Components {
+				c := componentList.At(i)
+				c.SetItemId(comp.ItemID)
+				c.SetItemName(comp.ItemName)
+				c.SetItemIcon(comp.ItemIcon)
+				c.SetQuantity(comp.Quantity)
+				// Note: isOutput is skipped; client infers from list (components vs outputs)
+			}
+			resp.SetComponents(componentList)
+		}
+
+		// Set outputs
+		if len(details.Outputs) > 0 {
+			outputList, _ := eq.NewRecipeComponent_List(resp.Segment(), int32(len(details.Outputs)))
+			for i, out := range details.Outputs {
+				o := outputList.At(i)
+				o.SetItemId(out.ItemID)
+				o.SetItemName(out.ItemName)
+				o.SetItemIcon(out.ItemIcon)
+				o.SetQuantity(out.Quantity)
+				// Note: isOutput is skipped; client infers from list
+			}
+			resp.SetOutputs(outputList)
+		}
+
+		log.Printf("GetRecipeDetailsRequest: sending details for recipe %d with %d components and %d outputs",
+			recipeId, len(details.Components), len(details.Outputs))
 		return nil
 	})
 
